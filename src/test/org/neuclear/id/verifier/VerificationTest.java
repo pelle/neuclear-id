@@ -2,11 +2,11 @@ package org.neuclear.id.verifier;
 
 import junit.framework.TestCase;
 import org.dom4j.DocumentException;
+import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.SignedNamedObject;
 import org.neudist.crypto.CryptoTools;
 import org.neudist.xml.XMLException;
-import org.neuclear.commons.NeuClearException;
 
 import java.io.*;
 
@@ -28,8 +28,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerificationTest.java,v 1.4 2003/10/21 22:31:14 pelle Exp $
+$Id: VerificationTest.java,v 1.5 2003/10/23 22:02:36 pelle Exp $
 $Log: VerificationTest.java,v $
+Revision 1.5  2003/10/23 22:02:36  pelle
+Moved some certificates to live status at http://repository.neuclear.org
+Updated NSTools.url2path to support neuids with @ signs.
+
 Revision 1.4  2003/10/21 22:31:14  pelle
 Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
 Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -50,7 +54,6 @@ Added Builders to create named objects from scratch.
 */
 
 /**
- * 
  * User: pelleb
  * Date: Sep 27, 2003
  * Time: 11:38:01 AM
@@ -64,6 +67,10 @@ public class VerificationTest extends TestCase {
     }
 
     public void testSimple() throws IOException, DocumentException, NeuClearException, XMLException {
+        runDirectoryTest("src/testdata/simple", true);
+    }
+
+    public void testSimpleSecond() throws IOException, DocumentException, NeuClearException, XMLException {
         runDirectoryTest("src/testdata/simple", true);
     }
 

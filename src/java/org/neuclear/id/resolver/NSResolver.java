@@ -1,11 +1,11 @@
 package org.neuclear.id.resolver;
 
+import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.Identity;
 import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.cache.NSCache;
 import org.neuclear.source.Source;
-import org.neuclear.commons.NeuClearException;
 
 /**
  * Secure Identity resolver
@@ -19,9 +19,10 @@ public final class NSResolver {
     /**
      * Retrieves the Identity object of the given name
      * defaultstore for the given namespace.
-     *  This is guaranteed to be valid as it checks the signatures on each level.
-     * @param name
-     * @return
+     * This is guaranteed to be valid as it checks the signatures on each level.
+     * 
+     * @param name 
+     * @return 
      */
     public final static Identity resolveIdentity(String name) throws NeuClearException, InvalidIdentityException {
         Identity ns = NSCACHE.fetchCached(name);
@@ -30,8 +31,10 @@ public final class NSResolver {
 
         String parentname = NSTools.getParentNSURI(name);
         String store = NSROOTSTORE;
-        if (parentname == null || parentname.equals("neu://"))
+
+        if (parentname == null || name.equals("neu://"))
             return Identity.NEUROOT;
+
         Identity parent = resolveIdentity(parentname);
         store = parent.getRepository();
         // fetches Identity from parent Identity's Default Store

@@ -1,6 +1,10 @@
 /*
- * $Id: NSTools.java,v 1.10 2003/10/22 23:16:00 pelle Exp $
+ * $Id: NSTools.java,v 1.11 2003/10/23 22:02:36 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.11  2003/10/23 22:02:36  pelle
+ * Moved some certificates to live status at http://repository.neuclear.org
+ * Updated NSTools.url2path to support neuids with @ signs.
+ *
  * Revision 1.10  2003/10/22 23:16:00  pelle
  * Cleaned up some unused stuff in NSTools
  *
@@ -217,6 +221,10 @@ public final class NSTools {
 
     public static String url2path(String name) {
         if (!Utility.isEmpty(name)) {
+            Matcher matcher = STRIP_URI_ARROBA.matcher(name);
+            if (matcher.matches()) {
+                return "/" + matcher.group(3) + "/@" + matcher.group(2) + Utility.denullString(matcher.group(4));
+            }
             int loc = name.indexOf("://");
             if (loc >= 0)
                 return name.substring(loc + 2); //leave in one '/'
@@ -238,5 +246,9 @@ public final class NSTools {
             "((\\/)|" + VALID_TOKEN + ")*)$";
 
     private static final Pattern VALID = Pattern.compile(VALID_ID);
+    private static final String STRIP_URI_ARROBA_EX = "^(neu:\\/)?" +
+            "\\/(" + VALID_TOKEN + ")@(" + VALID_TOKEN + ")([\\/\\w.]*)$";
+
+    private static final Pattern STRIP_URI_ARROBA = Pattern.compile(STRIP_URI_ARROBA_EX);
 
 }

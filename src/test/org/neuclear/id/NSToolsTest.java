@@ -1,6 +1,10 @@
 /*
-  $Id: NSToolsTest.java,v 1.7 2003/10/22 23:11:43 pelle Exp $
+  $Id: NSToolsTest.java,v 1.8 2003/10/23 22:02:36 pelle Exp $
   $Log: NSToolsTest.java,v $
+  Revision 1.8  2003/10/23 22:02:36  pelle
+  Moved some certificates to live status at http://repository.neuclear.org
+  Updated NSTools.url2path to support neuids with @ signs.
+
   Revision 1.7  2003/10/22 23:11:43  pelle
   Updated the getParentURI method to support the new neu://test@home format.
 
@@ -147,5 +151,18 @@ public class NSToolsTest extends TestCase {
 
     }
 
+    public static void testURL2Path() {
+        assertEquals("/", NSTools.url2path("neu://"));
+        assertEquals("/", NSTools.url2path("/"));
+        assertEquals("/test", NSTools.url2path("neu://test"));
+        assertEquals("/test", NSTools.url2path("/test"));
+        assertEquals("/test/@pelle", NSTools.url2path("neu://pelle@test"));
+        assertEquals("/test/@pelle", NSTools.url2path("/pelle@test"));
+        assertEquals("/test/@pelle/one", NSTools.url2path("neu://pelle@test/one"));
+        assertEquals("/test/@pelle/one", NSTools.url2path("/pelle@test/one"));
+        assertEquals("/test/@pelle/one/two", NSTools.url2path("neu://pelle@test/one/two"));
+        assertEquals("/test/@pelle/one/two", NSTools.url2path("/pelle@test/one/two"));
+
+    }
 
 }

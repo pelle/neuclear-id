@@ -75,6 +75,15 @@
                  <war.bundle.jar>true</war.bundle.jar>
            </properties>
        </dependency>
+       <dependency>
+          <id>neuclear-commons</id>
+       <name>neuclear-commons</name>
+       <version>0.3-SNAPSHOT</version>
+           <properties>
+                 <war.bundle.jar>true</war.bundle.jar>
+           </properties>
+       </dependency>
+
     <dependency>
     	<id>commons-collections</id>
       <name>commons-collections</name>
