@@ -1,5 +1,5 @@
 
-<nsdl:NameSpace xmlns:nsdl="http://neudist.org/neu/nsdl" nsdl:name="neu://test/one" nsdl:store="http://neudist.org:8080/neudistframework/Store" nsdl:signer="http://neudist.org:8080/neudistframework/Signer" nsdl:logger="http://neudist.org:8080/neudistframework/Logger" nsdl:timestamp="20021002T104758045GMT+00:00">
+<nsdl:NameSpace xmlns:nsdl="http://neuclear.org/neu/nsdl" nsdl:name="neu://test/one" nsdl:store="http://neuclear.org:8080/neuclearframework/Store" nsdl:signer="http://neuclear.org:8080/neuclearframework/Signer" nsdl:logger="http://neuclear.org:8080/neuclearframework/Logger" nsdl:timestamp="20021002T104758045GMT+00:00">
   <nsdl:allow>
     <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
       <ds:KeyValue>

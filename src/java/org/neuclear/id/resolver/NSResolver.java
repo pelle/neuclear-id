@@ -4,6 +4,7 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.Identity;
 import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.NSTools;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.cache.NSCache;
 import org.neuclear.source.Source;
 
@@ -15,7 +16,20 @@ public final class NSResolver {
 
     public static final String NSROOTSTORE = "http://repository.neuclear.org";
 
-
+    /**
+         * Retrieves the Identity object of the given name
+         * defaultstore for the given namespace.
+         * This is guaranteed to be valid as it checks the signatures on each level.
+         *
+         * @param name
+         * @return
+         */
+    public final static Identity resolveIdentity(String name) throws NeuClearException, InvalidIdentityException {
+       SignedNamedObject id=resolve(name);
+        if (id instanceof Identity)
+            return (Identity)id;
+        throw new InvalidIdentityException(name +" is not a valid Identity");
+    }
     /**
      * Retrieves the Identity object of the given name
      * defaultstore for the given namespace.
@@ -24,10 +38,10 @@ public final class NSResolver {
      * @param name 
      * @return 
      */
-    public final static Identity resolveIdentity(String name) throws NeuClearException, InvalidIdentityException {
-        Identity ns = NSCACHE.fetchCached(name);
-        if (ns != null)
-            return ns;
+    public final static SignedNamedObject resolve(String name) throws NeuClearException, InvalidIdentityException {
+        SignedNamedObject obj = NSCACHE.fetchCached(name);
+        if (obj != null)
+            return obj;
 
         String parentname = NSTools.getParentNSURI(name);
         String store = NSROOTSTORE;
@@ -38,11 +52,11 @@ public final class NSResolver {
         Identity parent = resolveIdentity(parentname);
         store = parent.getRepository();
         // fetches Identity from parent Identity's Default Store
-        ns = (Identity) Source.getInstance().fetch(store, name);
-        if (ns == null)
+        obj = (Identity) Source.getInstance().fetch(store, name);
+        if (obj == null)
             throw new NeuClearException("Identity: " + name + " was not resolved");
-        NSCACHE.cache(ns);
-        return ns; //This may not be null
+        NSCACHE.cache(obj);
+        return obj; //This may not be null
     }
 
 }

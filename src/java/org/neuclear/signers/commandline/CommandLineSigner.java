@@ -1,5 +1,11 @@
-/* $Id: CommandLineSigner.java,v 1.11 2003/10/31 23:58:53 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.12 2003/11/11 21:18:43 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.12  2003/11/11 21:18:43  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.11  2003/10/31 23:58:53  pelle
  * The IdentityCreator now fully works with the new Signer architecture.
  *
@@ -51,7 +57,7 @@
  * More fixes throughout to problems caused by renaming.
  *
  * Revision 1.1.1.1  2003/09/19 14:41:31  pelle
- * First import into the neuclear project. This was originally under the SF neudist
+ * First import into the neuclear project. This was originally under the SF neuclear
  * project. This marks a general major refactoring and renaming ahead.
  *
  * The new name for this code is NeuClear Identity and has the general package header of
@@ -154,17 +160,17 @@ import org.neuclear.commons.configuration.Configuration;
 import org.neuclear.commons.configuration.ConfigurationException;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.NamedObjectBuilder;
-import org.neudist.crypto.CryptoTools;
-import org.neudist.crypto.Signer;
-import org.neudist.utils.Utility;
-import org.neudist.xml.XMLException;
-import org.neudist.xml.XMLTools;
+import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.Utility;
+import org.neuclear.xml.XMLException;
+import org.neuclear.xml.XMLTools;
 
 import java.io.*;
 
 /**
  * @author pelleb
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class CommandLineSigner {
     public CommandLineSigner(String args[]) throws ParseException, ConfigurationException {

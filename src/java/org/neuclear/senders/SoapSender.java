@@ -5,8 +5,14 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:50:30 AM
- * $Id: SoapSender.java,v 1.10 2003/11/10 17:42:36 pelle Exp $
+ * $Id: SoapSender.java,v 1.11 2003/11/11 21:18:43 pelle Exp $
  * $Log: SoapSender.java,v $
+ * Revision 1.11  2003/11/11 21:18:43  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.10  2003/11/10 17:42:36  pelle
  * The AssetController interface has been more or less finalized.
  * CurrencyController fully implemented
@@ -60,7 +66,7 @@ package org.neuclear.senders;
  * More fixes throughout to problems caused by renaming.
  *
  * Revision 1.1.1.1  2003/09/19 14:41:29  pelle
- * First import into the neuclear project. This was originally under the SF neudist
+ * First import into the neuclear project. This was originally under the SF neuclear
  * project. This marks a general major refactoring and renaming ahead.
  *
  * The new name for this code is NeuClear Identity and has the general package header of
@@ -81,8 +87,8 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.verifier.VerifyingReader;
-import org.neudist.xml.XMLException;
-import org.neudist.xml.soap.SOAPTools;
+import org.neuclear.xml.XMLException;
+import org.neuclear.xml.soap.SOAPTools;
 
 
 public class SoapSender extends Sender {

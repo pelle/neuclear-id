@@ -1,6 +1,12 @@
 /*
- * $Id: IdentityBuilder.java,v 1.6 2003/11/10 21:08:49 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.7 2003/11/11 21:18:42 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.7  2003/11/11 21:18:42  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.6  2003/11/10 21:08:49  pelle
  * More JavaDoc
  *
@@ -41,7 +47,7 @@
  *
  * Revision 1.9  2003/02/16 00:22:59  pelle
  * LogSender now works and there is a corresponding server side cgi script to do the logging in
- * http://neudist.org/logger/ Site is not yet up but will be soon.
+ * http://neuclear.org/logger/ Site is not yet up but will be soon.
  *
  * Revision 1.8  2003/02/14 21:10:29  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
@@ -130,7 +136,7 @@
  * The example .ns objects in the neuspace folder have been updated with the
  * latest version of the format.
  * "neuspace/root.ns" should now be considered the universal parent of the
- * neudist system.
+ * neuclear system.
  * Still more to go, but we're getting there. I will now focus on a quick
  * Web interface. After which Contracts will be added.
  *
@@ -160,10 +166,10 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.neuclear.id.Identity;
 import org.neuclear.id.NSTools;
-import org.neudist.utils.Utility;
-import org.neudist.xml.XMLException;
-import org.neudist.xml.xmlsec.XMLSecTools;
-import org.neudist.xml.xmlsec.XMLSecurityException;
+import org.neuclear.commons.Utility;
+import org.neuclear.xml.XMLException;
+import org.neuclear.xml.xmlsec.XMLSecTools;
+import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.security.PublicKey;
 

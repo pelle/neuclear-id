@@ -1,6 +1,12 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.9 2003/11/09 03:27:19 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.10 2003/11/11 21:18:44 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
+ * Revision 1.10  2003/11/11 21:18:44  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.9  2003/11/09 03:27:19  pelle
  * More house keeping and shuffling about mainly pay
  *
@@ -40,7 +46,7 @@
  * More fixes throughout to problems caused by renaming.
  *
  * Revision 1.1.1.1  2003/09/19 14:41:22  pelle
- * First import into the neuclear project. This was originally under the SF neudist
+ * First import into the neuclear project. This was originally under the SF neuclear
  * project. This marks a general major refactoring and renaming ahead.
  *
  * The new name for this code is NeuClear Identity and has the general package header of

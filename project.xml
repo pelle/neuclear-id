@@ -3,7 +3,7 @@
 
   <name>NeuClear Identity Framework</name>
   <id>neuclear-id</id>
-  <currentVersion>0.7</currentVersion>
+  <currentVersion>0.8-SNAPSHOT</currentVersion>
   <inceptionYear>2002</inceptionYear>
   <package>org.neuclear</package>
   <logo>/images/logo.gif</logo>
@@ -68,9 +68,9 @@
   <!-- Need to mark these as compile-time/run-time -->
    <dependencies>
        <dependency>
-           <id>neudist-xmlsig</id>
-           <name>neudist-xmlsig</name>
-           <version>0.9</version>
+           <id>neuclear-xmlsig</id>
+           <name>neuclear-xmlsig</name>
+           <version>0.10-SNAPSHOT</version>
            <properties>
                  <war.bundle.jar>true</war.bundle.jar>
            </properties>
@@ -78,7 +78,7 @@
        <dependency>
           <id>neuclear-commons</id>
        <name>neuclear-commons</name>
-       <version>0.3</version>
+       <version>0.4-SNAPSHOT</version>
            <properties>
                  <war.bundle.jar>true</war.bundle.jar>
            </properties>

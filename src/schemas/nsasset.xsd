@@ -19,18 +19,18 @@
         - This new request gets returned to A or sent directly to B
         - On receipt B presents it to I, causing a book entry transfer, thus transfering the asset.
 -->
-<xs:schema targetNamespace="http://neudist.org/neu/nsasset"
-    xmlns:nsdl="http://neudist.org/neu/nsdl"
-    xmlns:nsasset="http://neudist.org/neu/nsasset"
-    xmlns:nswsdl="http://neudist.org/neu/nswsdl"
+<xs:schema targetNamespace="http://neuclear.org/neu/nsasset"
+    xmlns:nsdl="http://neuclear.org/neu/nsdl"
+    xmlns:nsasset="http://neuclear.org/neu/nsasset"
+    xmlns:nswsdl="http://neuclear.org/neu/nswsdl"
 
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns="http://neudist.org/neu/nsasset"
+    xmlns="http://neuclear.org/neu/nsasset"
     elementFormDefault="qualified" version="0.2" id="nsasset">
 
-    <xs:import namespace="http://neudist.org/neu/nswsdl" schemaLocation="nswsdl.xsd"/>
-<!--    <xs:import namespace="http://neudist.org/neu/nscondition" schemaLocation="nscondition.xsd"/> -->
-  	<xs:import namespace="http://neudist.org/neu/nsdl" schemaLocation="nsdl.xsd"/>
+    <xs:import namespace="http://neuclear.org/neu/nswsdl" schemaLocation="nswsdl.xsd"/>
+<!--    <xs:import namespace="http://neuclear.org/neu/nscondition" schemaLocation="nscondition.xsd"/> -->
+  	<xs:import namespace="http://neuclear.org/neu/nsdl" schemaLocation="nsdl.xsd"/>
     <xs:import namespace="http://www.w3.org/2001/XMLSchema" schemaLocation="XMLSchema.xsd"/>
 
     <xs:complexType name="AssetType">

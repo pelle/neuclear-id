@@ -9,14 +9,14 @@
     Service A verifies the request within the naming hierarchy.
     If everything is OK user is authenticated.
 -->
-<xs:schema targetNamespace="http://neudist.org/neu/nsauth"
+<xs:schema targetNamespace="http://neuclear.org/neu/nsauth"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:nsdl="http://neudist.org/neu/nsdl"
-    xmlns:nsauth="http://neudist.org/neu/nsauth"
-    xmlns="http://neudist.org/neu/nsauth"
+    xmlns:nsdl="http://neuclear.org/neu/nsdl"
+    xmlns:nsauth="http://neuclear.org/neu/nsauth"
+    xmlns="http://neuclear.org/neu/nsauth"
     elementFormDefault="qualified" version="0.2" id="nsauth">
     <xs:import namespace="http://www.w3.org/2001/XMLSchema" schemaLocation="XMLSchema.xsd"/>
-	<xs:import namespace="http://neudist.org/neu/nsdl" schemaLocation="nsdl.xsd"/>
+	<xs:import namespace="http://neuclear.org/neu/nsdl" schemaLocation="nsdl.xsd"/>
 
     <xs:complexType name="AuthenticationTicketType">
 		<xs:complexContent>

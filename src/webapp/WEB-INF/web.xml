@@ -61,7 +61,7 @@
         </init-param>
         <init-param>
           <param-name>keystore.password</param-name>
-          <param-value>neudist</param-value>
+          <param-value>neuclear</param-value>
         </init-param>
         <init-param>
           <param-name>title</param-name>

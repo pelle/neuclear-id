@@ -1,6 +1,12 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.6 2003/11/10 17:42:36 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.7 2003/11/11 21:18:42 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.7  2003/11/11 21:18:42  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.6  2003/11/10 17:42:36  pelle
  * The AssetController interface has been more or less finalized.
  * CurrencyController fully implemented
@@ -148,15 +154,15 @@ import org.neuclear.id.NSTools;
 import org.neuclear.id.Named;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.Sender;
-import org.neuclear.time.TimeTools;
+import org.neuclear.commons.time.TimeTools;
 import org.neuclear.commons.NeuClearException;
-import org.neudist.utils.Utility;
-import org.neudist.xml.AbstractElementProxy;
-import org.neudist.xml.XMLException;
-import org.neudist.xml.xmlsec.SignedElement;
-import org.neudist.xml.xmlsec.XMLSecTools;
-import org.neudist.xml.xmlsec.XMLSecurityException;
-import org.neudist.crypto.Signer;
+import org.neuclear.commons.Utility;
+import org.neuclear.xml.AbstractElementProxy;
+import org.neuclear.xml.XMLException;
+import org.neuclear.xml.xmlsec.SignedElement;
+import org.neuclear.xml.xmlsec.XMLSecTools;
+import org.neuclear.xml.xmlsec.XMLSecurityException;
+import org.neuclear.commons.crypto.signers.Signer;
 
 import java.sql.Timestamp;
 import java.util.Iterator;

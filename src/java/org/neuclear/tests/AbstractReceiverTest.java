@@ -1,8 +1,8 @@
 package org.neuclear.tests;
 
 import junit.framework.TestCase;
-import org.neudist.crypto.CryptoTools;
-import org.neudist.xml.XMLException;
+import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.xml.XMLException;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.InvalidIdentityException;
@@ -29,8 +29,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AbstractReceiverTest.java,v 1.1 2003/11/10 17:42:37 pelle Exp $
+$Id: AbstractReceiverTest.java,v 1.2 2003/11/11 21:18:44 pelle Exp $
 $Log: AbstractReceiverTest.java,v $
+Revision 1.2  2003/11/11 21:18:44  pelle
+Further vital reshuffling.
+org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+Did a bit of work on the Canonicalizer and changed a few other minor bits.
+
 Revision 1.1  2003/11/10 17:42:37  pelle
 The AssetController interface has been more or less finalized.
 CurrencyController fully implemented

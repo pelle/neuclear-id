@@ -1,10 +1,10 @@
-<%@page import="org.neudist.utils.Utility,
+<%@page import="org.neuclear.commons.Utility,
                  com.opensymphony.util.TextUtils,
                  org.neuclear.auth.AuthenticationTicket,
                  java.util.Date,
-                 org.neudist.xml.xmlsec.XMLSecTools,
+                 org.neuclear.xml.xmlsec.XMLSecTools,
 
-                org.neudist.utils.ServletTools,
+                org.neuclear.commons.servlets.ServletTools,
                 org.neuclear.id.Identity,
 
                 org.neuclear.commons.NeuClearException,

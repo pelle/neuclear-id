@@ -4,8 +4,8 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.verifier.VerifyingReader;
-import org.neudist.utils.Utility;
-import org.neudist.xml.XMLException;
+import org.neuclear.commons.Utility;
+import org.neuclear.xml.XMLException;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -16,8 +16,14 @@ import java.util.Map;
  * User: pelleb
  * Date: Feb 10, 2003
  * Time: 8:26:04 PM
- * $Id: Source.java,v 1.5 2003/11/05 18:50:34 pelle Exp $
+ * $Id: Source.java,v 1.6 2003/11/11 21:18:44 pelle Exp $
  * $Log: Source.java,v $
+ * Revision 1.6  2003/11/11 21:18:44  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.5  2003/11/05 18:50:34  pelle
  * Refactored org.neuclear.signers.source.Source and implementing classes to provide support for a local filesystem cache.
  * Also added Unit tests to make sure it actually works and modified IdentityCreator to write directly to the cache if no output filename is given.
@@ -40,7 +46,7 @@ import java.util.Map;
  * More fixes throughout to problems caused by renaming.
  * <p/>
  * Revision 1.1.1.1  2003/09/19 14:41:49  pelle
- * First import into the neuclear project. This was originally under the SF neudist
+ * First import into the neuclear project. This was originally under the SF neuclear
  * project. This marks a general major refactoring and renaming ahead.
  * <p/>
  * The new name for this code is NeuClear Identity and has the general package header of

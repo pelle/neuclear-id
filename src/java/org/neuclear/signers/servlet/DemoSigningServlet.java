@@ -1,6 +1,12 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.7 2003/10/29 21:16:27 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.8 2003/11/11 21:18:44 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.8  2003/11/11 21:18:44  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.7  2003/10/29 21:16:27  pelle
  * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
  * To use it you pass a byte array and an alias. The sign method then returns the signature.
@@ -33,7 +39,7 @@
  * More fixes throughout to problems caused by renaming.
  *
  * Revision 1.1.1.1  2003/09/19 14:41:32  pelle
- * First import into the neuclear project. This was originally under the SF neudist
+ * First import into the neuclear project. This was originally under the SF neuclear
  * project. This marks a general major refactoring and renaming ahead.
  *
  * The new name for this code is NeuClear Identity and has the general package header of
@@ -154,7 +160,7 @@ public class DemoSigningServlet extends SigningServlet {
         KeyPair kp = kpg.generateKeyPair();
         ((SimpleSigner) getKeyStore()).addKey(name, newPassword.toCharArray(), kp.getPrivate());
         System.out.println("NEUDIST: Creating Identity");
-        Identity ns = new Identity(name, kp.getPublic(), "http://neuclear.org:8080/neudistframework/Store", "http://neuclear.org:8080/neudistframework/Signer", "http://neuclear.org:8080/neudistframework/Logger", "");//TODO Fix these values
+        Identity ns = new Identity(name, kp.getPublic(), "http://neuclear.org:8080/neuclearframework/Store", "http://neuclear.org:8080/neuclearframework/Signer", "http://neuclear.org:8080/neuclearframework/Logger", "");//TODO Fix these values
 //        id.addTarget(new TargetReference(id,,"store"));
         System.out.println("NEUDIST: Signing");
         ns.sign(signer);

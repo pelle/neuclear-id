@@ -1,10 +1,10 @@
-<%@ page import="org.neudist.utils.Utility,
+<%@ page import="org.neuclear.commons.Utility,
                  com.opensymphony.util.TextUtils,
                  org.neuclear.receiver.ReceiverServlet,
                  org.neuclear.id.SignedNamedObject,
                  org.neuclear.auth.AuthenticationTicket,
                  org.neuclear.id.NSTools,
-                 org.neudist.utils.ServletTools
+                 org.neuclear.commons.servlets.ServletTools
                  ,
                  org.neuclear.id.Identity,
                  org.neuclear.id.resolver.NSResolver"%>

@@ -4,11 +4,11 @@ import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.Named;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.time.TimeTools;
-import org.neudist.crypto.Base64;
+import org.neuclear.commons.time.TimeTools;
+import org.neuclear.commons.crypto.Base64;
 import org.neuclear.commons.NeuClearException;
-import org.neudist.utils.Utility;
-import org.neudist.xml.xmlsec.XMLSecurityException;
+import org.neuclear.commons.Utility;
+import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,8 +23,14 @@ import java.sql.Timestamp;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 1:23:05 PM
- * $Id: LogSender.java,v 1.9 2003/11/09 03:27:19 pelle Exp $
+ * $Id: LogSender.java,v 1.10 2003/11/11 21:18:43 pelle Exp $
  * $Log: LogSender.java,v $
+ * Revision 1.10  2003/11/11 21:18:43  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.9  2003/11/09 03:27:19  pelle
  * More house keeping and shuffling about mainly pay
  *
@@ -61,7 +67,7 @@ import java.sql.Timestamp;
  * More fixes throughout to problems caused by renaming.
  *
  * Revision 1.1.1.1  2003/09/19 14:41:29  pelle
- * First import into the neuclear project. This was originally under the SF neudist
+ * First import into the neuclear project. This was originally under the SF neuclear
  * project. This marks a general major refactoring and renaming ahead.
  *
  * The new name for this code is NeuClear Identity and has the general package header of

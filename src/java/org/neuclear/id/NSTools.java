@@ -1,6 +1,12 @@
 /*
- * $Id: NSTools.java,v 1.12 2003/10/25 00:39:54 pelle Exp $
+ * $Id: NSTools.java,v 1.13 2003/11/11 21:18:43 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.13  2003/11/11 21:18:43  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.12  2003/10/25 00:39:54  pelle
  * Fixed SmtpSender it now sends the messages.
  * Refactored CommandLineSigner. Now it simply signs files read from command line. However new class IdentityCreator
@@ -53,7 +59,7 @@
  * More fixes throughout to problems caused by renaming.
  *
  * Revision 1.1.1.1  2003/09/19 14:40:58  pelle
- * First import into the neuclear project. This was originally under the SF neudist
+ * First import into the neuclear project. This was originally under the SF neuclear
  * project. This marks a general major refactoring and renaming ahead.
  *
  * The new name for this code is NeuClear Identity and has the general package header of
@@ -136,8 +142,8 @@ package org.neuclear.id;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Namespace;
 import org.neuclear.commons.NeuClearException;
-import org.neudist.crypto.CryptoTools;
-import org.neudist.utils.Utility;
+import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.commons.Utility;
 
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -242,7 +248,7 @@ public final class NSTools {
         return "/";
     }
 
-    public static final String NEUID_URI = "http://neudist.org/neu/neuid";
+    public static final String NEUID_URI = "http://neuclear.org/neu/neuid";
     public static final Namespace NS_NEUID = DocumentHelper.createNamespace("neuid", NEUID_URI);
 
     public static final String NEUID_PREFIX = "neuid:";

@@ -1,6 +1,12 @@
 /*
- * $Id: Identity.java,v 1.15 2003/11/10 21:08:49 pelle Exp $
+ * $Id: Identity.java,v 1.16 2003/11/11 21:18:43 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.16  2003/11/11 21:18:43  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.15  2003/11/10 21:08:49  pelle
  * More JavaDoc
  *
@@ -88,7 +94,7 @@
  * More fixes throughout to problems caused by renaming.
  *
  * Revision 1.1.1.1  2003/09/19 14:41:08  pelle
- * First import into the neuclear project. This was originally under the SF neudist
+ * First import into the neuclear project. This was originally under the SF neuclear
  * project. This marks a general major refactoring and renaming ahead.
  *
  * The new name for this code is NeuClear Identity and has the general package header of
@@ -227,12 +233,12 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.Sender;
-import org.neudist.crypto.CryptoException;
-import org.neudist.crypto.CryptoTools;
-import org.neudist.utils.Utility;
-import org.neudist.xml.xmlsec.KeyInfo;
-import org.neudist.xml.xmlsec.XMLSecTools;
-import org.neudist.xml.xmlsec.XMLSecurityException;
+import org.neuclear.commons.crypto.CryptoException;
+import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.commons.Utility;
+import org.neuclear.xml.xmlsec.KeyInfo;
+import org.neuclear.xml.xmlsec.XMLSecTools;
+import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.security.*;
 import java.security.cert.Certificate;
@@ -334,8 +340,6 @@ public class Identity extends SignedNamedObject {
                     null, null, null, rootpk);
         } catch (NeuClearException e) {
             e.printStackTrace();
-        } catch (CryptoException e) {
-            e.printStackTrace();
         }
         return null;
     }
@@ -346,7 +350,7 @@ public class Identity extends SignedNamedObject {
     /**
      * Returns the fixed Root PublicKey
      */
-    private final static PublicKey getRootPK() throws XMLSecurityException {
+    private final static PublicKey getRootPK() throws CryptoException {
         if (nsrootpk == null)
             nsrootpk = CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
         return nsrootpk;

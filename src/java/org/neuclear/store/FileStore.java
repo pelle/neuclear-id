@@ -1,6 +1,12 @@
 /*
- * $Id: FileStore.java,v 1.8 2003/10/29 21:16:28 pelle Exp $
+ * $Id: FileStore.java,v 1.9 2003/11/11 21:18:44 pelle Exp $
  * $Log: FileStore.java,v $
+ * Revision 1.9  2003/11/11 21:18:44  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.8  2003/10/29 21:16:28  pelle
  * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
  * To use it you pass a byte array and an alias. The sign method then returns the signature.
@@ -39,7 +45,7 @@
  * More fixes throughout to problems caused by renaming.
  *
  * Revision 1.1.1.1  2003/09/19 14:41:19  pelle
- * First import into the neuclear project. This was originally under the SF neudist
+ * First import into the neuclear project. This was originally under the SF neuclear
  * project. This marks a general major refactoring and renaming ahead.
  *
  * The new name for this code is NeuClear Identity and has the general package header of
@@ -142,7 +148,7 @@ import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.verifier.VerifyingReader;
-import org.neudist.xml.XMLException;
+import org.neuclear.xml.XMLException;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -1,5 +1,5 @@
 
-<nsdl:NameSpace xmlns:nsdl="http://neudist.org/neu/nsdl" nsdl:name="neu://org" nsdl:store="http://neudist.org:8080/neudistframework/root/Store" nsdl:timestamp="20021010T211329985GMT+00:00">
+<nsdl:NameSpace xmlns:nsdl="http://neuclear.org/neu/nsdl" nsdl:name="neu://org" nsdl:store="http://neuclear.org:8080/neuclearframework/root/Store" nsdl:timestamp="20021010T211329985GMT+00:00">
   <nsdl:allow>
     <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
       <ds:KeyValue>

@@ -25,14 +25,14 @@
 
 
 -->
-<xs:schema targetNamespace="http://neudist.org/neu/nscondition"
+<xs:schema targetNamespace="http://neuclear.org/neu/nscondition"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:nsdl="http://neudist.org/neu/nsdl"
-    xmlns:nsauth="http://neudist.org/neu/nscondition"
-    xmlns="http://neudist.org/neu/nscondition"
+    xmlns:nsdl="http://neuclear.org/neu/nsdl"
+    xmlns:nsauth="http://neuclear.org/neu/nscondition"
+    xmlns="http://neuclear.org/neu/nscondition"
     elementFormDefault="qualified" version="0.1" id="nscondition">
     <xs:import namespace="http://www.w3.org/2001/XMLSchema" schemaLocation="XMLSchema.xsd"/>
-	<xs:import namespace="http://neudist.org/neu/nsdl" schemaLocation="nsdl.xsd"/>
+	<xs:import namespace="http://neuclear.org/neu/nsdl" schemaLocation="nsdl.xsd"/>
 
     <xs:complexType name="ConditionType">
         <!--

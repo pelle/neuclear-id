@@ -7,14 +7,14 @@
     If user agree's signing service B signs the enclosed element.
     Signing Service B sends element to it's target elements
 -->
-<xs:schema targetNamespace="http://neudist.org/neu/nssign"
+<xs:schema targetNamespace="http://neuclear.org/neu/nssign"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:nsdl="http://neudist.org/neu/nsdl"
-    xmlns:nssign="http://neudist.org/neu/nssign"
-    xmlns="http://neudist.org/neu/nssign"
+    xmlns:nsdl="http://neuclear.org/neu/nsdl"
+    xmlns:nssign="http://neuclear.org/neu/nssign"
+    xmlns="http://neuclear.org/neu/nssign"
     elementFormDefault="qualified" version="0.2" id="nsauth">
     <xs:import namespace="http://www.w3.org/2001/XMLSchema" schemaLocation="XMLSchema.xsd"/>
-	<xs:import namespace="http://neudist.org/neu/nsdl" schemaLocation="nsdl.xsd"/>
+	<xs:import namespace="http://neuclear.org/neu/nsdl" schemaLocation="nsdl.xsd"/>
 
     <xs:complexType name="SignatureRequestType">
 		<xs:complexContent>

@@ -1,6 +1,12 @@
 /*
- * $Id: ReceiverServlet.java,v 1.5 2003/10/21 22:31:13 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.6 2003/11/11 21:18:43 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.6  2003/11/11 21:18:43  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.5  2003/10/21 22:31:13  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
  * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -22,7 +28,7 @@
  * More fixes throughout to problems caused by renaming.
  *
  * Revision 1.1.1.1  2003/09/19 14:41:49  pelle
- * First import into the neuclear project. This was originally under the SF neudist
+ * First import into the neuclear project. This was originally under the SF neuclear
  * project. This marks a general major refactoring and renaming ahead.
  *
  * The new name for this code is NeuClear Identity and has the general package header of
@@ -73,8 +79,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.commons.NeuClearException;
-import org.neudist.xml.soap.XMLInputStreamServlet;
-import org.neudist.xml.XMLException;
+import org.neuclear.xml.soap.XMLInputStreamServlet;
+import org.neuclear.xml.XMLException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

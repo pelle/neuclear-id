@@ -1,5 +1,11 @@
-/* $Id: IdentityCreator.java,v 1.4 2003/11/05 18:50:33 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.5 2003/11/11 21:18:43 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.5  2003/11/11 21:18:43  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.4  2003/11/05 18:50:33  pelle
  * Refactored org.neuclear.signers.source.Source and implementing classes to provide support for a local filesystem cache.
  * Also added Unit tests to make sure it actually works and modified IdentityCreator to write directly to the cache if no output filename is given.
@@ -51,7 +57,7 @@
  * More fixes throughout to problems caused by renaming.
  *
  * Revision 1.1.1.1  2003/09/19 14:41:31  pelle
- * First import into the neuclear project. This was originally under the SF neudist
+ * First import into the neuclear project. This was originally under the SF neuclear
  * project. This marks a general major refactoring and renaming ahead.
  *
  * The new name for this code is NeuClear Identity and has the general package header of
@@ -155,16 +161,16 @@ import org.neuclear.id.builders.IdentityBuilder;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.LogSender;
-import org.neuclear.signers.PublicKeySource;
-import org.neudist.crypto.CryptoException;
-import org.neudist.utils.Utility;
+import org.neuclear.commons.crypto.signers.PublicKeySource;
+import org.neuclear.commons.crypto.CryptoException;
+import org.neuclear.commons.Utility;
 
 import java.io.File;
 import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(String args[]) throws Exception {

@@ -3,7 +3,7 @@ package org.neuclear.id.jce;
 import org.neuclear.id.Identity;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.commons.NeuClearException;
-import org.neudist.xml.XMLException;
+import org.neuclear.xml.XMLException;
 
 import java.security.cert.*;
 import java.io.InputStream;
@@ -30,8 +30,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearCertificateFactory.java,v 1.3 2003/10/21 22:31:12 pelle Exp $
+$Id: NeuClearCertificateFactory.java,v 1.4 2003/11/11 21:18:42 pelle Exp $
 $Log: NeuClearCertificateFactory.java,v $
+Revision 1.4  2003/11/11 21:18:42  pelle
+Further vital reshuffling.
+org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+Did a bit of work on the Canonicalizer and changed a few other minor bits.
+
 Revision 1.3  2003/10/21 22:31:12  pelle
 Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
 Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.

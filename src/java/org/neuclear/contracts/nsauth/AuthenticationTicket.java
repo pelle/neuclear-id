@@ -12,7 +12,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Namespace;
 import org.neuclear.id.Identity;
 import org.neuclear.id.SignedNamedObject;
-import org.neudist.crypto.CryptoTools;
+import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.NeuClearException;
 
 import java.sql.Timestamp;
@@ -28,7 +28,7 @@ public class AuthenticationTicket extends SignedNamedObject {
      * <p>Eg.:<br>
      * <tt>SignedNamedObject ticket=new AuthenticationTicket("neu://test/bob","neu://site/neubay",36000,"http://neubay.com");</tt><br>
      * Would give you a namedobject containing the following xml:<br>
-     * <pre>&lt;nsauth:AuthenticationTicket xmlns:nsauth="http://neuclear.org/neu/nsauth" xmlns:nsdl="http://neuclear.org/neu/nsdl" nsdl:name="/test/two/neu.testapp.-2o1qkqrvxyesyt7dae22ulvp56eju30zyys5t6nxjjie2gw3qq" nsauth:validto="20021002T084919848GMT+00:00" nsauth:href="http://localhost:8080/neudistframework/"&gt;
+     * <pre>&lt;nsauth:AuthenticationTicket xmlns:nsauth="http://neuclear.org/neu/nsauth" xmlns:nsdl="http://neuclear.org/neu/nsdl" nsdl:name="/test/two/neu.testapp.-2o1qkqrvxyesyt7dae22ulvp56eju30zyys5t6nxjjie2gw3qq" nsauth:validto="20021002T084919848GMT+00:00" nsauth:href="http://localhost:8080/neuclearframework/"&gt;
      * &lt;/nsauth:AuthenticationTicket&gt;
      *</pre>
  *

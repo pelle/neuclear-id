@@ -7,11 +7,11 @@ import org.neuclear.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.*;
 import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.time.TimeTools;
-import org.neudist.crypto.CryptoTools;
-import org.neudist.xml.XMLException;
-import org.neudist.xml.XMLTools;
-import org.neudist.xml.xmlsec.XMLSecTools;
+import org.neuclear.commons.time.TimeTools;
+import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.xml.XMLException;
+import org.neuclear.xml.XMLTools;
+import org.neuclear.xml.xmlsec.XMLSecTools;
 
 import java.io.InputStream;
 import java.security.PublicKey;
@@ -37,8 +37,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.6 2003/11/06 20:01:54 pelle Exp $
+$Id: VerifyingReader.java,v 1.7 2003/11/11 21:18:43 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.7  2003/11/11 21:18:43  pelle
+Further vital reshuffling.
+org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+Did a bit of work on the Canonicalizer and changed a few other minor bits.
+
 Revision 1.6  2003/11/06 20:01:54  pelle
 Implemented AuthenticationTicket and friends to comply with the newer model.
 Created SignatureRequest and friends to send unsigned NamedObjectBuilders to interactive signing services.

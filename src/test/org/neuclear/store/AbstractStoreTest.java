@@ -1,6 +1,12 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.7 2003/10/29 21:16:28 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.8 2003/11/11 21:18:46 pelle Exp $
   $Log: AbstractStoreTest.java,v $
+  Revision 1.8  2003/11/11 21:18:46  pelle
+  Further vital reshuffling.
+  org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+  org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+  Did a bit of work on the Canonicalizer and changed a few other minor bits.
+
   Revision 1.7  2003/10/29 21:16:28  pelle
   Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
   To use it you pass a byte array and an alias. The sign method then returns the signature.
@@ -36,7 +42,7 @@
   More fixes throughout to problems caused by renaming.
 
   Revision 1.1.1.1  2003/09/19 14:42:03  pelle
-  First import into the neuclear project. This was originally under the SF neudist
+  First import into the neuclear project. This was originally under the SF neuclear
   project. This marks a general major refactoring and renaming ahead.
 
   The new name for this code is NeuClear Identity and has the general package header of
@@ -118,7 +124,7 @@ package org.neuclear.store;
 import junit.framework.TestCase;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.InvalidIdentityException;
-import org.neudist.xml.xmlsec.XMLSecurityException;
+import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;

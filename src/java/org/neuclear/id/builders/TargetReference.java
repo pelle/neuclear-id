@@ -1,6 +1,12 @@
 /*
- * $Id: TargetReference.java,v 1.3 2003/10/21 22:31:12 pelle Exp $
+ * $Id: TargetReference.java,v 1.4 2003/11/11 21:18:42 pelle Exp $
  * $Log: TargetReference.java,v $
+ * Revision 1.4  2003/11/11 21:18:42  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.3  2003/10/21 22:31:12  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
  * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -54,8 +60,8 @@ import org.dom4j.Namespace;
 import org.neuclear.id.NSTools;
 import org.neuclear.senders.Sender;
 import org.neuclear.commons.NeuClearException;
-import org.neudist.utils.Utility;
-import org.neudist.xml.AbstractElementProxy;
+import org.neuclear.commons.Utility;
+import org.neuclear.xml.AbstractElementProxy;
 
 public class TargetReference extends AbstractElementProxy {
     public TargetReference(NamedObjectBuilder obj, Element elem) throws NeuClearException {

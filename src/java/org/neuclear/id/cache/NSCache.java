@@ -4,6 +4,7 @@ import com.waterken.adt.NoSuchElement;
 import com.waterken.adt.cache.Cache;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.Identity;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.commons.NeuClearException;
 
 /**
@@ -26,7 +27,7 @@ public final class NSCache {
      * @param name Fully Normalised name
      * @return a valid Identity object if found otherwise null
      */
-    public Identity fetchCached(String name) {
+    public SignedNamedObject fetchCached(String name) {
         try { // I dont like the way it forces me to catch this. I need to rewrite it.
             return (Identity) spaces.fetch(name);
         } catch (NoSuchElement noSuchElement) {
@@ -34,7 +35,7 @@ public final class NSCache {
         }
     }
 
-    public void cache(Identity ns) throws NeuClearException {
+    public void cache(SignedNamedObject ns) throws NeuClearException {
         // Only store if it's parent is already here
         String parentName = NSTools.getParentNSURI(ns.getName());
         if ((fetchCached(parentName) != null) || (parentName.equals("neu://"))) {

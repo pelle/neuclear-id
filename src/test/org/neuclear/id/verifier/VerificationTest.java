@@ -5,8 +5,8 @@ import org.dom4j.DocumentException;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.SignedNamedObject;
-import org.neudist.crypto.CryptoTools;
-import org.neudist.xml.XMLException;
+import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.xml.XMLException;
 
 import java.io.*;
 
@@ -28,8 +28,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerificationTest.java,v 1.5 2003/10/23 22:02:36 pelle Exp $
+$Id: VerificationTest.java,v 1.6 2003/11/11 21:18:45 pelle Exp $
 $Log: VerificationTest.java,v $
+Revision 1.6  2003/11/11 21:18:45  pelle
+Further vital reshuffling.
+org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+Did a bit of work on the Canonicalizer and changed a few other minor bits.
+
 Revision 1.5  2003/10/23 22:02:36  pelle
 Moved some certificates to live status at http://repository.neuclear.org
 Updated NSTools.url2path to support neuids with @ signs.

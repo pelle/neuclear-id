@@ -1,6 +1,12 @@
 /*
- * $Id: SigningServlet.java,v 1.8 2003/11/05 23:40:21 pelle Exp $
+ * $Id: SigningServlet.java,v 1.9 2003/11/11 21:18:44 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.9  2003/11/11 21:18:44  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.8  2003/11/05 23:40:21  pelle
  * A few minor fixes to make all the unit tests work
  * Also the start of getting SigningServlet and friends back working.
@@ -37,7 +43,7 @@
  * More fixes throughout to problems caused by renaming.
  *
  * Revision 1.1.1.1  2003/09/19 14:41:40  pelle
- * First import into the neuclear project. This was originally under the SF neudist
+ * First import into the neuclear project. This was originally under the SF neuclear
  * project. This marks a general major refactoring and renaming ahead.
  *
  * The new name for this code is NeuClear Identity and has the general package header of
@@ -158,13 +164,13 @@ import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.receiver.ReceiverServlet;
-import org.neuclear.signers.InvalidPassphraseException;
-import org.neuclear.signers.NonExistingSignerException;
-import org.neudist.crypto.Signer;
-import org.neudist.utils.ServletTools;
-import org.neudist.utils.Utility;
-import org.neudist.xml.xmlsec.XMLSecTools;
-import org.neudist.xml.xmlsec.XMLSecurityException;
+import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
+import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.servlets.ServletTools;
+import org.neuclear.commons.Utility;
+import org.neuclear.xml.xmlsec.XMLSecTools;
+import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

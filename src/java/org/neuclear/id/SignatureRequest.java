@@ -4,7 +4,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.builders.NamedObjectBuilder;
-import org.neudist.xml.xmlsec.XMLSecurityException;
+import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.sql.Timestamp;
 
@@ -26,8 +26,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequest.java,v 1.1 2003/11/06 20:01:54 pelle Exp $
+$Id: SignatureRequest.java,v 1.2 2003/11/11 21:18:43 pelle Exp $
 $Log: SignatureRequest.java,v $
+Revision 1.2  2003/11/11 21:18:43  pelle
+Further vital reshuffling.
+org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+Did a bit of work on the Canonicalizer and changed a few other minor bits.
+
 Revision 1.1  2003/11/06 20:01:54  pelle
 Implemented AuthenticationTicket and friends to comply with the newer model.
 Created SignatureRequest and friends to send unsigned NamedObjectBuilders to interactive signing services.

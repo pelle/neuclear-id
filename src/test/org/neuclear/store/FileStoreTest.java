@@ -1,6 +1,12 @@
 /*
- * $Id: FileStoreTest.java,v 1.2 2003/10/02 23:29:03 pelle Exp $
+ * $Id: FileStoreTest.java,v 1.3 2003/11/11 21:18:46 pelle Exp $
  * $Log: FileStoreTest.java,v $
+ * Revision 1.3  2003/11/11 21:18:46  pelle
+ * Further vital reshuffling.
+ * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
+ * org.neuclear.signers.* as well as org.neuclear.passphraseagents have been moved under org.neuclear.commons.crypto as well.
+ * Did a bit of work on the Canonicalizer and changed a few other minor bits.
+ *
  * Revision 1.2  2003/10/02 23:29:03  pelle
  * Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
  * VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
@@ -8,7 +14,7 @@
  * The FileStoreTests need to be rethought out, by adding a test key.
  *
  * Revision 1.1.1.1  2003/09/19 14:41:56  pelle
- * First import into the neuclear project. This was originally under the SF neudist
+ * First import into the neuclear project. This was originally under the SF neuclear
  * project. This marks a general major refactoring and renaming ahead.
  *
  * The new name for this code is NeuClear Identity and has the general package header of

@@ -6,15 +6,15 @@
     take an XML NamedObject as a parameter and a SOAPAction of "/receive"
     Thus all we need to do when publishing a service is provide the URL.
 -->
-<xs:schema targetNamespace="http://neudist.org/neu/nswsdl"
+<xs:schema targetNamespace="http://neuclear.org/neu/nswsdl"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:nsdl="http://neudist.org/neu/nsdl"
-    xmlns="http://neudist.org/neu/nswsdl"
-    xmlns:nswsdl="http://neudist.org/neu/nswsdl"
+    xmlns:nsdl="http://neuclear.org/neu/nsdl"
+    xmlns="http://neuclear.org/neu/nswsdl"
+    xmlns:nswsdl="http://neuclear.org/neu/nswsdl"
 
     elementFormDefault="qualified" version="0.1" id="nswsdl">
 
-	<xs:import namespace="http://neudist.org/neu/nsdl" schemaLocation="nsdl.xsd"/>
+	<xs:import namespace="http://neuclear.org/neu/nsdl" schemaLocation="nsdl.xsd"/>
     <xs:import namespace="http://www.w3.org/2001/XMLSchema" schemaLocation="XMLSchema.xsd"/>
 
     <xs:complexType name="ServiceDescriptorType">

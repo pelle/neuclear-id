@@ -13,9 +13,9 @@ import org.dom4j.Element;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.store.FileStore;
 import org.neuclear.store.Store;
-import org.neudist.utils.Utility;
-import org.neudist.xml.soap.SOAPException;
-import org.neudist.xml.soap.SOAPServlet;
+import org.neuclear.commons.Utility;
+import org.neuclear.xml.soap.SOAPException;
+import org.neuclear.xml.soap.SOAPServlet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

@@ -15,8 +15,8 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.Identity;
 import org.neuclear.id.NamedObjectReader;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.time.TimeTools;
-import org.neudist.xml.xmlsec.XMLSecurityException;
+import org.neuclear.commons.time.TimeTools;
+import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.sql.Timestamp;
 
@@ -30,7 +30,7 @@ public class AuthenticationTicket extends SignedNamedObject {
      * <p>Eg.:<br>
      * <tt>SignedNamedObject ticket=new AuthenticationTicket("neu://test/bob","neu://site/neubay",36000,"http://neubay.com");</tt><br>
      * Would give you a namedobject containing the following xml:<br>
-     * <pre>&lt;auth:AuthenticationTicket xmlns:auth="http://neuclear.org/neu/auth" xmlns:nsdl="http://neuclear.org/neu/nsdl" nsdl:name="/test/two/neu.testapp.-2o1qkqrvxyesyt7dae22ulvp56eju30zyys5t6nxjjie2gw3qq" auth:validto="20021002T084919848GMT+00:00" auth:href="http://localhost:8080/neudistframework/"&gt;
+     * <pre>&lt;auth:AuthenticationTicket xmlns:auth="http://neuclear.org/neu/auth" xmlns:nsdl="http://neuclear.org/neu/nsdl" nsdl:name="/test/two/neu.testapp.-2o1qkqrvxyesyt7dae22ulvp56eju30zyys5t6nxjjie2gw3qq" auth:validto="20021002T084919848GMT+00:00" auth:href="http://localhost:8080/neuclearframework/"&gt;
      * &lt;/auth:AuthenticationTicket&gt;
      * </pre>
      * 
