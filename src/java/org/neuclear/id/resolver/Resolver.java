@@ -71,6 +71,10 @@ public final class Resolver {
         return NSCACHE.cache(obj);
     }
 
+    public static SignedNamedObject resolveFromCache(final String name) {
+        return NSCACHE.fetchCached(name);
+    }
+
     private static String getURLString(final String name) {
         if ((name.startsWith("http://") || name.startsWith("https://")))
             return name;
