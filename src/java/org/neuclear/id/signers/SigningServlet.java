@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.14 2004/05/24 19:10:12 pelle Exp $
+ * $Id: SigningServlet.java,v 1.15 2004/06/03 18:50:08 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.15  2004/06/03 18:50:08  pelle
+ * Added support for Account Page on your own page
+ *
  * Revision 1.14  2004/05/24 19:10:12  pelle
  * Fixed Javascript errors on Mozilla and Firefox
  *
@@ -532,8 +535,9 @@ public class SigningServlet extends XMLInputStreamServlet {
 
     private boolean sign(final Builder named, final PrintWriter out) throws NeuClearException, XMLException {
         boolean isSigned;
-        context.log("SIGN: Signing with ");
+        info("Signing");
         final SignedNamedObject signed = named.convert(signer);
+        info("Signed");
         isSigned = true;
         out.write("<script language=\"javascript\">\n");
         out.write("<!--\n   if (signing) signing.style.backgroundColor=\"#F0F0FF\";\n" +
@@ -570,6 +574,13 @@ public class SigningServlet extends XMLInputStreamServlet {
         return title;
     }
 
+    protected void info(String message) {
+        context.log("Signing Servlet: " + message);
+    }
+
+    protected void error(Throwable e) {
+        context.log("Signing Servlet Error: ", e);
+    }
 
     protected javax.servlet.ServletContext context;
     private BrowsableSigner signer;
