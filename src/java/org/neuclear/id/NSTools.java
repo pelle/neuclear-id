@@ -1,6 +1,10 @@
 /*
- * $Id: NSTools.java,v 1.18 2003/12/10 23:58:51 pelle Exp $
+ * $Id: NSTools.java,v 1.19 2003/12/11 16:16:14 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.19  2003/12/11 16:16:14  pelle
+ * Some changes to make the xml a bit more readable.
+ * Also added some helper methods in AbstractElementProxy to make it easier to build objects.
+ *
  * Revision 1.18  2003/12/10 23:58:51  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -167,11 +171,11 @@ package org.neuclear.id;
 
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.SHA1Digest;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Namespace;
+import org.dom4j.*;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.xml.XMLTools;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -375,6 +379,26 @@ public final class NSTools {
         }
         return null;
 
+    }
+
+    /**
+     * Verifies that Dom4j node is an element or document containing a NamedObject.
+     * <br><b>Important</b>
+     * It does not verify if it has been signed.
+     * @param node
+     * @return
+     */
+    public static boolean isNamedObject(Node node) {
+
+        if (node==null) return false;
+        Element elem=null;
+        if (node instanceof Document)
+            elem=((Document)node).getRootElement();
+        else if (node instanceof Element)
+            elem=(Element)node;
+        else
+            return false;
+        return !Utility.isEmpty(elem.attributeValue(DocumentHelper.createQName("name",NS_NEUID)));
     }
 
     private static final String HTTP_SCHEME_EX = "^neu:(neuid:)?\\/\\/(([\\w-]+\\.)+[\\w-]+)$";

@@ -1,5 +1,9 @@
-/* $Id: IdentityCreator.java,v 1.2 2003/12/10 23:58:51 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.3 2003/12/11 16:16:14 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.3  2003/12/11 16:16:14  pelle
+ * Some changes to make the xml a bit more readable.
+ * Also added some helper methods in AbstractElementProxy to make it easier to build objects.
+ *
  * Revision 1.2  2003/12/10 23:58:51  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -201,7 +205,7 @@ import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public final class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(final String[] args) throws Exception {
@@ -218,8 +222,6 @@ public final class IdentityCreator extends CommandLineSigner {
             of = Utility.denullString(of, "_NEUID" + NSTools.name2path(identity) + "/root.id");
             alias = Utility.denullString(alias, NSTools.getSignatoryURI(identity));
         }
-
-
     }
 
     public final NamedObjectBuilder build() throws Exception {

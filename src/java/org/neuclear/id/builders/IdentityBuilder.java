@@ -1,6 +1,10 @@
 /*
- * $Id: IdentityBuilder.java,v 1.10 2003/12/10 23:58:51 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.11 2003/12/11 16:16:14 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.11  2003/12/11 16:16:14  pelle
+ * Some changes to make the xml a bit more readable.
+ * Also added some helper methods in AbstractElementProxy to make it easier to build objects.
+ *
  * Revision 1.10  2003/12/10 23:58:51  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -219,6 +223,7 @@ public class IdentityBuilder extends NamedObjectBuilder {
         super(name, tag);
 
         final Element root = getElement();
+        addLineBreak();
         // We have meaningful defaults for the following two
         root.addAttribute(DocumentHelper.createQName("repository", NSTools.NS_NEUID), repository);
         root.addAttribute(DocumentHelper.createQName("logger", NSTools.NS_NEUID), receiver);
@@ -231,6 +236,7 @@ public class IdentityBuilder extends NamedObjectBuilder {
         if (allow != null) {
             final QName allowName = DocumentHelper.createQName("allow", NSTools.NS_NEUID);
             final Element pub = root.addElement(allowName);
+            pub.addText("\n");
             pub.add(XMLSecTools.createKeyInfo(allow));
         }
     }

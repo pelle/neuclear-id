@@ -1,6 +1,10 @@
 /*
-  $Id: NSToolsTest.java,v 1.14 2003/12/10 23:58:52 pelle Exp $
+  $Id: NSToolsTest.java,v 1.15 2003/12/11 16:16:14 pelle Exp $
   $Log: NSToolsTest.java,v $
+  Revision 1.15  2003/12/11 16:16:14  pelle
+  Some changes to make the xml a bit more readable.
+  Also added some helper methods in AbstractElementProxy to make it easier to build objects.
+
   Revision 1.14  2003/12/10 23:58:52  pelle
   Did some cleaning up in the builders
   Fixed some stuff in IdentityCreator
@@ -124,6 +128,12 @@ package org.neuclear.id;
 import junit.framework.TestCase;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.id.builders.AuthenticationTicketBuilder;
+import org.neuclear.id.builders.SignatureRequestBuilder;
+import org.neuclear.id.builders.IdentityBuilder;
+import org.neuclear.xml.xmlsec.XMLSecurityException;
+import org.dom4j.DocumentHelper;
 
 
 /**
@@ -238,5 +248,16 @@ public final class NSToolsTest extends TestCase {
         assertEquals("test", NSTools.getLocalName("neu://no/test"));
         assertEquals("test", NSTools.getLocalName("neu://no!test"));
         assertEquals("test", NSTools.getLocalName("neu://no@no!test"));
+    }
+
+    public static void testIsNamedObject() throws NeuClearException, XMLSecurityException {
+        AuthenticationTicketBuilder builder = new AuthenticationTicketBuilder("neu://test","neu://neuclear.org","http://neuclear.org");
+        assertTrue(NSTools.isNamedObject(builder.getElement()));
+        assertTrue(NSTools.isNamedObject(new SignatureRequestBuilder("neu://neuclear.org","neu://bob@test",builder,"Test").getElement()));
+        assertTrue(NSTools.isNamedObject(new IdentityBuilder("neu://test",Identity.getRootPK()).getElement()));
+        assertFalse(NSTools.isNamedObject(DocumentHelper.createElement("test")));
+        assertFalse(NSTools.isNamedObject(null));
+
+
     }
 }
