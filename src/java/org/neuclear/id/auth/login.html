@@ -39,20 +39,18 @@
         return  (status.src=="http://127.0.0.1:11870/login.png");
     }
 </script>
-<div id="login">
-    <p id="trader">
-        <a href="Authorize">
-            <img id="loginbutton" src="http://127.0.0.1:11870/login.png" border="0" onmouseover="reloadStatus()"
-                onload="document.getElementById('startbutton').style.display='none';this.style.display='inline'"
-                onerror="this.style.display='none';document.getElementById('startbutton').style.display='inline';"/>
-        </a>
-        <a href="http://dist.neuclear.org/app/neuclear-signer.jnlp">
-            <img id="startbutton" src="images/neuclear_start.png" onmouseover="reloadStatus()" border="0" style="display:none"/>
-        </a>
-    </p>
-    <p id="tiqt">
-        <a href="Authorize?signer=http://tiqt.com/Signer" text="Log in using a TIQT">
-            <img id="tiqtbutton" src="http://tiqt.com/images/login.png" border="0"/>
-        </a>
-    </p>
-</div>
+<p id="trader">
+    <a href="Authorize">
+        <img id="loginbutton" src="http://127.0.0.1:11870/login.png" border="0" onmouseover="reloadStatus()"
+            onload="document.getElementById('startbutton').style.display='none';this.style.display='inline'"
+            onerror="this.style.display='none';document.getElementById('startbutton').style.display='inline';"/>
+    </a>
+    <a href="http://dist.neuclear.org/app/neuclear-signer.jnlp">
+        <img id="startbutton" src="images/neuclear_start.png" onmouseover="reloadStatus()" border="0" style="display:none"/>
+    </a>
+</p>
+<p id="tiqt">
+    <a href="Authorize?signer=http://tiqt.com/Signer" text="Log in using a TIQT">
+        <img id="tiqtbutton" src="http://tiqt.com/images/login.png" border="0"/>
+    </a>
+</p>
