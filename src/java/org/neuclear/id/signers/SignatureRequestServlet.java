@@ -1,7 +1,6 @@
 package org.neuclear.id.signers;
 
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
 import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.ServletSignerFactory;
@@ -16,7 +15,6 @@ import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,8 +41,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.7 2004/06/02 20:01:27 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.8 2004/06/11 22:40:29 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.8  2004/06/11 22:40:29  pelle
+readded a timestamp to the Builder. This is given when signed. It shouldn't really be trusted. It just gives an indication to the signer, when he signed it.
+The SignatureRequestServlet had some problems with using selected neuclear-signer.
+
 Revision 1.7  2004/06/02 20:01:27  pelle
 Added tool for creating a Rules file.
 
@@ -137,6 +139,7 @@ public abstract class SignatureRequestServlet extends HttpServlet {
         final String siteurl = ServletTools.getAbsoluteURL(request, "/");
 
         String signingserver = Identity.DEFAULT_SIGNER;
+/*
         String reqSigner = request.getParameter("signer");
         if (!Utility.isEmpty(reqSigner)) {
             signingserver = reqSigner;
@@ -157,6 +160,7 @@ public abstract class SignatureRequestServlet extends HttpServlet {
         usercookie.setMaxAge(2592000);
         response.addCookie(usercookie);
 
+*/
         final PrintWriter out = response.getWriter();
         out.write("\n ");
         out.write("<html>\n");
