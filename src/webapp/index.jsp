@@ -2,7 +2,7 @@
                  com.opensymphony.util.TextUtils,
                  org.neuclear.receiver.ReceiverServlet,
                  org.neuclear.id.SignedNamedObject,
-                 org.neuclear.contracts.nsauth.AuthenticationTicket,
+                 org.neuclear.auth.AuthenticationTicket,
                  org.neuclear.id.NSTools,
                  org.neudist.utils.ServletTools
                  ,

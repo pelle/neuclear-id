@@ -3,6 +3,7 @@ package org.neuclear.id.verifier;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
+import org.neuclear.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.*;
 import org.neuclear.id.resolver.NSResolver;
@@ -36,8 +37,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.5 2003/10/25 00:39:54 pelle Exp $
+$Id: VerifyingReader.java,v 1.6 2003/11/06 20:01:54 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.6  2003/11/06 20:01:54  pelle
+Implemented AuthenticationTicket and friends to comply with the newer model.
+Created SignatureRequest and friends to send unsigned NamedObjectBuilders to interactive signing services.
+
 Revision 1.5  2003/10/25 00:39:54  pelle
 Fixed SmtpSender it now sends the messages.
 Refactored CommandLineSigner. Now it simply signs files read from command line. However new class IdentityCreator
@@ -78,6 +83,8 @@ public class VerifyingReader {
     private VerifyingReader() {
         readers = new HashMap();
         readers.put("Identity", new Identity.Reader());
+        readers.put(AuthenticationTicket.TAG_NAME, new AuthenticationTicket.Reader());
+        readers.put(SignatureRequest.SIGREQUEST_TAG, new SignatureRequest.Reader());
         defaultReader = new SignedNamedObject.Reader();
     }
 
