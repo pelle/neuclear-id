@@ -1,6 +1,9 @@
 /*
- * $Id: ReceiverServlet.java,v 1.9 2003/11/24 23:33:37 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.10 2003/11/28 00:12:58 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.10  2003/11/28 00:12:58  pelle
+ * Getting the NeuClear web transactions working.
+ *
  * Revision 1.9  2003/11/24 23:33:37  pelle
  * More Cactus unit testing going on.
  *
@@ -93,9 +96,9 @@ package org.neuclear.receiver;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.ElementProxy;
-import org.neuclear.xml.XMLException;
 import org.neuclear.xml.soap.XMLInputStreamServlet;
 
 import javax.servlet.ServletConfig;
@@ -121,16 +124,24 @@ public class ReceiverServlet extends XMLInputStreamServlet {
             writer.print("<html><head><title>ReceiverServler</title></head><body>");
         }
         try {
-            ElementProxy receipt = receiver.receive(VerifyingReader.getInstance().read(is));
+
+            final SignedNamedObject obj = VerifyingReader.getInstance().read(is);
+            if (obj == null)
+                throw new NeuClearException("Missing Request");
+            ctx.log("NeuClear: Got Request " + obj.getName());
+            ctx.log(obj.getEncoded());
+            ElementProxy receipt = receiver.receive(obj);
             if (isXML)
                 writer.print(receipt.canonicalize());
             else
                 writer.print(receipt.getTagName());
 
-        } catch (NeuClearException e) {
+        } catch (Exception e) {
+            writer.println("<h1>Error</h1><h3>");
+            writer.println(e.getLocalizedMessage());
+            writer.println("</h3><pre>");
             e.printStackTrace(writer);
-        } catch (XMLException e) {
-            e.printStackTrace(writer);
+            writer.println("</pre>");
         }
         writer.close();
 

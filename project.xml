@@ -1,188 +1,189 @@
 <?xml version="1.0"?>
 <project>
 
-  <name>NeuClear Identity Framework</name>
-  <id>neuclear-id</id>
-  <currentVersion>0.8-SNAPSHOT</currentVersion>
-  <inceptionYear>2002</inceptionYear>
-  <package>org.neuclear</package>
-  <logo>/images/logo.gif</logo>
-  <shortDescription>NeuClear Identity Framework</shortDescription>
-	<organization>
-		<name>Antilles Software Ventures SA</name>
-		<url>http://talk.org/</url>
+    <name>NeuClear Identity Framework</name>
+    <id>neuclear-id</id>
+    <currentVersion>0.8-SNAPSHOT</currentVersion>
+    <inceptionYear>2002</inceptionYear>
+    <package>org.neuclear</package>
+    <logo>/images/logo.gif</logo>
+    <shortDescription>NeuClear Identity Framework</shortDescription>
+    <organization>
+        <name>Antilles Software Ventures SA</name>
+        <url>http://talk.org/</url>
 
-<!--	  <logo>/images/neubiasmallnotext.png</logo>-->
-	</organization>
-  <description>
+        <!--	  <logo>/images/neubiasmallnotext.png</logo>-->
+    </organization>
+    <description>
     Java framework for NeuClear Distributed PKI Authentication Framework
-  </description>
+    </description>
 
-  <url>http://neuclear.org/id/</url>
+    <url>http://neuclear.org/id/</url>
     <repository>
-     <connection>
+        <connection>
          scm:cvs:pserver:anonymous@cvs.neuclear.sourceforge.net:/cvsroot/neuclear:neuclear-id
-     </connection>
-     <url>
+        </connection>
+        <url>
       http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/neuclear/neuclear-id/
-    </url>
-  </repository>
+        </url>
+    </repository>
 
-  <siteAddress>neuclear.org</siteAddress>
-  <siteDirectory>/home/sites/neuclear.org/public_html/id/</siteDirectory>
-  <issueTrackingUrl>http://jira.neuclear.org:8080/</issueTrackingUrl>
+    <siteAddress>neuclear.org</siteAddress>
+    <siteDirectory>/home/sites/neuclear.org/public_html/id/</siteDirectory>
+    <issueTrackingUrl>http://jira.neuclear.org:8080/</issueTrackingUrl>
     <mailingLists>
-      <mailingList>
-        <name>NeuClear Announce</name>
-        <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-announce</subscribe>
-        <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-announce</unsubscribe>
-        <archive>http://sourceforge.net/mailarchive/forum.php?forum=neuclear-announce</archive>
-      </mailingList>
-      <mailingList>
-        <name>NeuClear General</name>
-        <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-general</subscribe>
-        <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-general</unsubscribe>
-        <archive>http://sourceforge.net/mailarchive/forum.php?forum=neuclear-general</archive>
-      </mailingList>
         <mailingList>
-          <name>NeuClear Develop</name>
-          <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-develop</subscribe>
-          <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-develop</unsubscribe>
-          <archive>http://sourceforge.net/mailarchive/forum.php?forum=neuclear-develop</archive>
+            <name>NeuClear Announce</name>
+            <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-announce</subscribe>
+            <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-announce</unsubscribe>
+            <archive>http://sourceforge.net/mailarchive/forum.php?forum=neuclear-announce</archive>
+        </mailingList>
+        <mailingList>
+            <name>NeuClear General</name>
+            <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-general</subscribe>
+            <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-general</unsubscribe>
+            <archive>http://sourceforge.net/mailarchive/forum.php?forum=neuclear-general</archive>
+        </mailingList>
+        <mailingList>
+            <name>NeuClear Develop</name>
+            <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-develop</subscribe>
+            <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-develop</unsubscribe>
+            <archive>http://sourceforge.net/mailarchive/forum.php?forum=neuclear-develop</archive>
         </mailingList>
     </mailingLists>
 
 
-  <developers>
+    <developers>
 
-     <developer>
-      <name>Pelle Braendgaard</name>
-      <id>pelle</id>
-      <email>pelle@neubia.com</email>
-      <organization>Antilles Software Ventures SA</organization>
-    </developer>
+        <developer>
+            <name>Pelle Braendgaard</name>
+            <id>pelle</id>
+            <email>pelle@neubia.com</email>
+            <organization>Antilles Software Ventures SA</organization>
+        </developer>
 
-  </developers>
+    </developers>
 
 
-  <!-- Need to mark these as compile-time/run-time -->
-   <dependencies>
-       <dependency>
-           <id>neuclear-xmlsig</id>
-           <name>neuclear-xmlsig</name>
-           <version>0.11-SNAPSHOT</version>
-           <properties>
-                 <war.bundle>true</war.bundle>
-           </properties>
-       </dependency>
-
-       <dependency>
-          <id>neuclear-commons</id>
-       <name>neuclear-commons</name>
-       <version>0.5-SNAPSHOT</version>
-           <properties>
-                 <war.bundle>true</war.bundle>
-           </properties>
-       </dependency>
-       <dependency>
-           <id>cactus</id>
-           <version>13-1.5-rc1</version>
-       </dependency>
-
-    <dependency>
-    	<id>commons-collections</id>
-      <name>commons-collections</name>
-      <version>2.1</version>
-      <jar>commons-collections-2.1.jar</jar>
-      <properties>
-            <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>dom4j</id>
-      <version>1.4</version>
-      <jar>dom4j-1.4.jar</jar>
-      <properties>
-            <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-   <dependency>
-      <id>bouncycastle</id>
-      <name>bouncycastle</name>
-      <jar>bouncycastle-jce-jdk13-112.jar</jar>
-      <properties>
-            <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-   <dependency>
-      <id>junit</id>
-      <name>junit</name>
-      <version>3.8.1</version>
-    </dependency>
-   <dependency>
-      <id>servletapi</id>
-      <name>servletapi</name>
-      <version>2.3</version>
-    </dependency>
-       <dependency>
-          <id>commons-cli</id>
-          <name>commons-cli</name>
-          <version>1.0-beta-2</version>
+    <!-- Need to mark these as compile-time/run-time -->
+    <dependencies>
+        <dependency>
+            <id>neuclear-xmlsig</id>
+            <name>neuclear-xmlsig</name>
+            <version>0.11-SNAPSHOT</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
         </dependency>
-      <dependency>
-      <id>waterken-adt</id>
-      <version>2.0-beta13</version>
-      <properties>
-            <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>javamail</id>
-      <version>1.3</version>
-      <jar>mail.jar</jar>
-      <url>http://java.sun.com/products/javamail/</url>
-   </dependency>
-    <dependency>
-      <id>activation</id>
-      <version>1.0.2</version>
-      <jar>activation.jar</jar>
-      <url>http://java.sun.com/products/javabeans/glasgow/jaf.html</url>
-   </dependency>
-   <dependency>
-       <id>picocontainer</id>
-       <version>1.0-beta-1</version>
-       <properties>
-             <war.bundle>true</war.bundle>
-       </properties>
-   </dependency>
-   <dependency>
-       <id>nanocontainer</id>
-       <version>1.0-alpha-PRESPLIT-1</version>
-       <properties>
-             <war.bundle>true</war.bundle>
-       </properties>
-   </dependency>
-  </dependencies>
-  <build>
 
-<!--    <sourceDirectories>-->
-      <sourceDirectory>src/java</sourceDirectory>
-<!--    </sourceDirectories>-->
+        <dependency>
+            <id>neuclear-commons</id>
+            <name>neuclear-commons</name>
+            <version>0.5-SNAPSHOT</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <id>cactus</id>
+            <version>13-1.5-rc1</version>
+        </dependency>
 
-    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
-    <integrationUnitTestSourceDirectory/>
+        <dependency>
+            <id>commons-collections</id>
+            <name>commons-collections</name>
+            <version>2.1</version>
+            <jar>commons-collections-2.1.jar</jar>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <id>dom4j</id>
+            <version>1.4</version>
+            <jar>dom4j-1.4.jar</jar>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <id>bouncycastle</id>
+            <name>bouncycastle</name>
+            <version>120</version>
+            <jar>bcprov-jdk14-120.jar</jar>
+            <properties>
+                <war.bundle>false</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <id>junit</id>
+            <name>junit</name>
+            <version>3.8.1</version>
+        </dependency>
+        <dependency>
+            <id>servletapi</id>
+            <name>servletapi</name>
+            <version>2.3</version>
+        </dependency>
+        <dependency>
+            <id>commons-cli</id>
+            <name>commons-cli</name>
+            <version>1.0-beta-2</version>
+        </dependency>
+        <dependency>
+            <id>waterken-adt</id>
+            <version>2.0-beta13</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <id>javamail</id>
+            <version>1.3</version>
+            <jar>mail.jar</jar>
+            <url>http://java.sun.com/products/javamail/</url>
+        </dependency>
+        <dependency>
+            <id>activation</id>
+            <version>1.0.2</version>
+            <jar>activation.jar</jar>
+            <url>http://java.sun.com/products/javabeans/glasgow/jaf.html</url>
+        </dependency>
+        <dependency>
+            <id>picocontainer</id>
+            <version>1.0-beta-1</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <id>nanocontainer</id>
+            <version>1.0-alpha-PRESPLIT-1</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+    </dependencies>
+    <build>
 
-    <aspectSourceDirectory/>
+        <!--    <sourceDirectories>-->
+        <sourceDirectory>src/java</sourceDirectory>
+        <!--    </sourceDirectories>-->
 
-    <!-- Unit test cases -->
-    <unitTest>
-      <includes>
-        <!--<include>**/*Test.java</include>-->
-      </includes>
-      <excludes>
-        <exclude>**/Abstract*Test.java</exclude>
-      </excludes>
-    </unitTest>
-  </build>
+        <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
+        <integrationUnitTestSourceDirectory/>
+
+        <aspectSourceDirectory/>
+
+        <!-- Unit test cases -->
+        <unitTest>
+            <includes>
+                <!--<include>**/*Test.java</include>-->
+            </includes>
+            <excludes>
+                <exclude>**/Abstract*Test.java</exclude>
+            </excludes>
+        </unitTest>
+    </build>
 </project>
 

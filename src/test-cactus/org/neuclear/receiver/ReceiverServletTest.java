@@ -32,8 +32,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: ReceiverServletTest.java,v 1.1 2003/11/24 23:33:38 pelle Exp $
+$Id: ReceiverServletTest.java,v 1.2 2003/11/28 00:12:59 pelle Exp $
 $Log: ReceiverServletTest.java,v $
+Revision 1.2  2003/11/28 00:12:59  pelle
+Getting the NeuClear web transactions working.
+
 Revision 1.1  2003/11/24 23:33:38  pelle
 More Cactus unit testing going on.
 
@@ -51,7 +54,7 @@ public class ReceiverServletTest extends ServletTestCase {
         AuthenticationTicketBuilder builder = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://localhost");
         AuthenticationTicket ticket = (AuthenticationTicket) builder.sign(signer);
         String b64 = XMLSecTools.encodeElementBase64(builder.getElement());
-        theRequest.addParameter("base64xml", b64, WebRequest.POST_METHOD);
+        theRequest.addParameter("neuclear-request", b64, WebRequest.POST_METHOD);
     }
 
     public void testReceiveBase64() {

@@ -8,74 +8,32 @@
     <description>
 	Storage System for Named Objects in Neubia
     </description>
-<!--
-    <servlet>
-        <servlet-name>storage</servlet-name>
-        <servlet-class>org.neuclear.store.servlet.StorageServlet</servlet-class>
-        <init-param>
-          <param-name>type</param-name>
-          <param-value>clear</param-value>
-        </init-param>
-        <init-param>
-          <param-name>basedir</param-name>
-          <param-value>/WEB-INF/store</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet>
-        <servlet-name>rootstorage</servlet-name>
-        <servlet-class>org.neuclear.store.servlet.StorageServlet</servlet-class>
-        <init-param>
-          <param-name>type</param-name>
-          <param-value>clear</param-value>
-        </init-param>
-        <init-param>
-          <param-name>basedir</param-name>
-          <param-value>/WEB-INF/root</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet>
-        <servlet-name>demosigner</servlet-name>
-        <servlet-class>org.neuclear.signers.servlet.DemoSigningServlet</servlet-class>
-        <init-param>
-          <param-name>keystore</param-name>
-          <param-value>/WEB-INF/signer/signerstore.ser</param-value>
-        </init-param>
-        <init-param>
-          <param-name>keystore.password</param-name>
-          <param-value></param-value>
-        </init-param>
-        <init-param>
-          <param-name>title</param-name>
-          <param-value>NeuDist Demo Signer</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    -->
     <filter>
         <filter-name>authfilter</filter-name>
         <filter-class>org.neuclear.auth.AuthenticationFilter</filter-class>
         <init-param>
-          <param-name>serviceid</param-name>
-          <param-value>neu://test</param-value>
+            <param-name>serviceid</param-name>
+            <param-value>neu://test</param-value>
         </init-param>
-
     </filter>
+    <filter-mapping>
+        <filter-name>authfilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     <servlet>
         <servlet-name>jcesigner</servlet-name>
         <servlet-class>org.neuclear.signers.servlet.SigningServlet</servlet-class>
         <init-param>
-          <param-name>keystore</param-name>
-          <param-value>/WEB-INF/testkeys.ks</param-value>
+            <param-name>keystore</param-name>
+            <param-value>/WEB-INF/testkeys.ks</param-value>
         </init-param>
         <init-param>
-          <param-name>keystore.password</param-name>
-          <param-value>neuclear</param-value>
+            <param-name>keystore.password</param-name>
+            <param-value>neuclear</param-value>
         </init-param>
         <init-param>
-          <param-name>title</param-name>
-          <param-value>NeuClear Remote Signer</param-value>
+            <param-name>title</param-name>
+            <param-value>NeuClear Remote Signer</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -83,34 +41,15 @@
         <servlet-name>authenticator</servlet-name>
         <servlet-class>org.neuclear.auth.AuthenticationServlet</servlet-class>
         <init-param>
-          <param-name>title</param-name>
-          <param-value>NeuClear Example Application</param-value>
+            <param-name>title</param-name>
+            <param-value>NeuClear Example Application</param-value>
         </init-param>
         <init-param>
-          <param-name>serviceid</param-name>
-          <param-value>neu://test</param-value>
+            <param-name>serviceid</param-name>
+            <param-value>neu://test</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    <filter-mapping>
-        <filter-name>authfilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-
- <!--
-    <servlet-mapping>
-        <servlet-name>storage</servlet-name>
-        <url-pattern>/Store</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>rootstorage</servlet-name>
-        <url-pattern>/root/Store</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>demosigner</servlet-name>
-        <url-pattern>/demo/Signer</url-pattern>
-    </servlet-mapping>-->
     <servlet-mapping>
         <servlet-name>jcesigner</servlet-name>
         <url-pattern>/Signer</url-pattern>
@@ -119,20 +58,7 @@
         <servlet-name>authenticator</servlet-name>
         <url-pattern>/Authorize</url-pattern>
     </servlet-mapping>
-
-<!--
-    <servlet>
-        <servlet-name>webauth</servlet-name>
-        <servlet-class>org.neuclear.store.servlet.StorageServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>storage</servlet-name>
-        <url-pattern>soap/Storage</url-pattern>
-    </servlet-mapping>
--->
-	<welcome-file-list>
-		<welcome-file>index.jsp</welcome-file>
-	</welcome-file-list>
-
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
 </web-app>
