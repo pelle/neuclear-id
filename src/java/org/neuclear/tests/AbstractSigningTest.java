@@ -8,6 +8,7 @@ import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.id.Signatory;
 
 import java.security.GeneralSecurityException;
+import java.security.KeyPair;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -27,8 +28,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AbstractSigningTest.java,v 1.7 2004/04/01 23:19:50 pelle Exp $
+$Id: AbstractSigningTest.java,v 1.8 2004/04/12 19:27:27 pelle Exp $
 $Log: AbstractSigningTest.java,v $
+Revision 1.8  2004/04/12 19:27:27  pelle
+Hibernate and Pervayler implementations of the Ledger all pass now for both currency and ledger tests.
+
 Revision 1.7  2004/04/01 23:19:50  pelle
 Split Identity into Signatory and Identity class.
 Identity remains a signed named object and will in the future just be used for self declared information.
@@ -81,6 +85,8 @@ public class AbstractSigningTest extends TestCase {
         assertNotNull(alice);
         bob = new Signatory(signer.getPublicKey("neu://bob@test"));
         assertNotNull(bob);
+        issuerkp = CryptoTools.createTinyRSAKeyPair();
+        issuer = new Signatory(issuerkp.getPublic());
     }
 
     /**
@@ -103,11 +109,18 @@ public class AbstractSigningTest extends TestCase {
         return alice;
     }
 
+    protected final Signatory getIssuer() {
+        return issuer;
+    }
+
     protected final JCESigner getSigner() {
         return signer;
     }
 
     private Signatory bob;
     private Signatory alice;
+    private Signatory issuer;
+    private KeyPair issuerkp;
+
     protected final JCESigner signer;
 }
