@@ -1,5 +1,8 @@
-/* $Id: CommandLineSigner.java,v 1.13 2004/04/01 23:19:49 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.14 2004/04/15 16:10:24 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.14  2004/04/15 16:10:24  pelle
+ * Got rid of unnecessary catch clause for InvalidPassphrase
+ *
  * Revision 1.13  2004/04/01 23:19:49  pelle
  * Split Identity into Signatory and Identity class.
  * Identity remains a signed named object and will in the future just be used for self declared information.
@@ -240,7 +243,6 @@ import org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent;
 import org.neuclear.commons.crypto.passphraseagents.InteractiveAgent;
 import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
 import org.neuclear.commons.crypto.signers.DefaultSigner;
-import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
 import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.time.TimeTools;
@@ -254,7 +256,7 @@ import java.io.*;
 
 /**
  * @author pelleb
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class CommandLineSigner {
     private final String executable;
@@ -307,11 +309,7 @@ public class CommandLineSigner {
     }
 
     private DefaultSigner createSigner(final InteractiveAgent agent) throws UserCancellationException {
-        try {
-            return new DefaultSigner(agent);
-        } catch (InvalidPassphraseException e) {
-            return createSigner(agent);
-        }
+        return new DefaultSigner(agent);
     }
 
     public static void main(final String[] args) {
