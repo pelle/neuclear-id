@@ -1,13 +1,6 @@
 package org.neuclear.id;
 
-import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.time.TimeTools;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
-import org.neuclear.id.auth.AuthenticationTicket;
 import org.dom4j.Element;
-import org.dom4j.DocumentHelper;
-
-import java.sql.Timestamp;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,16 +9,11 @@ import java.sql.Timestamp;
  * Time: 11:48:34 PM
  * To change this template use Options | File Templates.
  */
-public class SignedMessage extends SignedNamedObject{
-    private SignedMessage(SignedNamedCore core, String recipient,String subject, String message)  {
+public class SignedMessage extends SignedNamedObject {
+    private SignedMessage(SignedNamedCore core, String subject, String message) {
         super(core);
-        this.recipient=recipient;
-        this.subject=subject;
-        this.message=message;
-    }
-
-    public String getRecipient() {
-        return recipient;
+        this.subject = subject;
+        this.message = message;
     }
 
     public String getSubject() {
@@ -44,16 +32,15 @@ public class SignedMessage extends SignedNamedObject{
          * @return
          */
         public final SignedNamedObject read(final SignedNamedCore core, final Element elem) {
-            final String to=elem.element("Recipient").getText();
-            final String subject=elem.element("Subject").getText();
-            final String message=elem.element("Message").getText();
-            return new SignedMessage(core, to,subject,message);
+            final String subject = elem.element("Subject").getText();
+            final String message = elem.element("Message").getText();
+            return new SignedMessage(core, subject, message);
         }
 
     }
-    private final String recipient;
+
     private final String subject;
     private final String message;
 
-    public static final String TAG_NAME="SignedMessage";
+    public static final String TAG_NAME = "SignedMessage";
 }

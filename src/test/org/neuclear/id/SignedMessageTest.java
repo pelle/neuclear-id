@@ -21,8 +21,7 @@ public class SignedMessageTest extends AbstractObjectCreationTest {
 
     protected void verifyObject(SignedNamedObject obj) {
         assertTrue(obj instanceof SignedMessage);
-        SignedMessage msg=(SignedMessage)obj;
-        assertNotNull(msg.getRecipient());
+        SignedMessage msg = (SignedMessage) obj;
         assertNotNull(msg.getSubject());
         assertNotNull(msg.getMessage());
     }
@@ -32,6 +31,6 @@ public class SignedMessageTest extends AbstractObjectCreationTest {
     }
 
     protected Builder createBuilder() throws NeuClearException {
-        return new SignedMessageBuilder("neu://alice@test","Test","Hello there");
+        return new SignedMessageBuilder("Test", "Hello there");
     }
 }

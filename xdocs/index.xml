@@ -1,34 +1,37 @@
 <?xml version="1.0"?>
 <document>
 
-	<properties>
-		<title>NeuClear - ID</title>
-		<author email="pelle@neubia.com">Pelle Braendgaard</author>
-	</properties>
+    <properties>
+        <title>NeuClear - ID</title>
+        <author email="pelle@neubia.com">Pelle Braendgaard</author>
+    </properties>
 
-	<body>
-		<section name="Introduction">
-			<p>
+    <body>
+        <section name="Introduction">
+            <p>
 				NeuClear is an umbrella project to create various technologies to enable a truely distributed future of
                 electronic commerce. The NeuClear ID project is a new simplified PKI system to help try to enable the kinds
                 applications that people have been talking about the last 10 years, but never got of the ground due to
                 usability and logistical reasons.
-
-			</p>
-       </section>
-        <section name="[12th of December 2003] Milestone Release 0.8">
+            </p>
             <p>
-                Panama City, 12th of December, 2003. We are happy to announce
-                the milestone 0.8 release of NeuClear ID. Major new features are:
+                NeuClear ID can be used in web applications, web service and traditional GUI applications. The architecture is
+                all about making it simple to use for end users and simple to develop for for coders.
+            </p>
+        </section>
+        <section name="[29th of April 2004] Milestone Release 0.9">
+            <p>
+                Panama City, 29th of April, 2004. We are happy to announce
+                the milestone 0.9 release of NeuClear ID. Major new features are:
             </p>
             <ul>
-                <li>HTTP/DNS based PKI</li>
-                <li>Developers Tools for creating ID's and certifying others</li>
-                <li>Web based Signing Application</li>
-                <li>Easy to integrate User Authentication filter for Web frameworks</li>
-                <li>Added Jakarta Cactus web unit tests</li>
-                <li>Major cleanup work has been done throughout the API. API changes should
-                only be minimal in the future.</li>
+                <li>Completely revamped non hierarchical PKI</li>
+                <li>API pretty much stable</li>
+                <li>XML format stable</li>
+                <li>Much smaller and lighter than version 0.8</li>
+                <li>
+                    <a href="http://dist.neuclear.org/">New end user based Signing Tool</a>
+                </li>
             </ul>
             <p>
                 The goal of this release has been in particular to make it easier
@@ -39,22 +42,19 @@
         </section>
         <section name="Busy Developer Guide">
             <p>
-                We are working on expanding our documentation now. Besides expanding our <a href="apidocs/index.html">API Documentation</a>,
-                we also now have a <a href="bdg.html">busy developers guide</a>. Aimed to get developers started with their own Identities
+                We are working on expanding our documentation now. Besides expanding our
+                <a href="apidocs/index.html">API Documentation</a>,
+                we also now have a
+                <a href="bdg.html">busy developers guide</a>. Aimed to get developers started with their own Identities
                 quickly and easily.
             </p>
         </section>
         <section name="Road Map">
             <p>
-                Our aim for the next version 0.9 is to stabilize and freeze the underlying xml formats and standards as well
-                as to create more userland tools. Thus the goal is to fix the underlying format making it easier for other implementations
-                of NeuClear ID. This should be reached early on in January 2004
-            </p>
-            <p>
                 Our goal is for 1.0 the following release to be fairly polished from a usability standpoint. Our goal is to release this
-                in February 2004.
+                in May 2004.
             </p>
         </section>
-	</body>
+    </body>
 
 </document>
