@@ -1,6 +1,10 @@
 /*
- * $Id: Identity.java,v 1.24 2003/12/16 15:05:00 pelle Exp $
+ * $Id: Identity.java,v 1.25 2003/12/17 12:45:57 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.25  2003/12/17 12:45:57  pelle
+ * NeuClear JCE Certificates now work with KeyStore.
+ * We can now create JCE certificates based on NeuClear Identity's and store them in a keystore.
+ *
  * Revision 1.24  2003/12/16 15:05:00  pelle
  * Added SignedMessage contract for signing simple textual contracts.
  * Added NeuSender, updated SmtpSender and Sender to take plain email addresses (without the mailto:)
@@ -372,7 +376,7 @@ public class Identity extends SignedNamedObject implements Principal {
     }
 
     public final java.security.cert.Certificate getCertificate() {
-        return new NeuClearCertificate();
+        return new NeuClearCertificate(this);
     }
 
     private final String repository;
@@ -397,22 +401,23 @@ public class Identity extends SignedNamedObject implements Principal {
     public static final Identity NEUROOT = createRootIdentity();
 
     public final java.security.cert.Certificate[] getCertificateChain() {
-        final ArrayList certs = new ArrayList(3);
-        Identity id = this;
-        while (id != null) {
-            certs.add(id.getCertificate());
-            id = id.getSignatory();
-        }
-        certs.add(NEUROOT.getCertificate());
-        certs.trimToSize();
-        final Certificate[] cert = new Certificate[certs.size()];
-        final Iterator iter = certs.iterator();
-        int i = 0;
-        while (iter.hasNext()) {
-            final Certificate certificate = (java.security.cert.Certificate) iter.next();
-            cert[i++] = certificate;
-        }
-        return cert;
+        return new Certificate[]{getCertificate()};
+//        final ArrayList certs = new ArrayList(3);
+//        Identity id = this;
+//        while (id != null) {
+//            certs.add(id.getCertificate());
+//            id = id.getSignatory();
+//        }
+//        certs.add(NEUROOT.getCertificate());
+//        certs.trimToSize();
+//        final Certificate[] cert = new Certificate[certs.size()];
+//        final Iterator iter = certs.iterator();
+//        int i = 0;
+//        while (iter.hasNext()) {
+//            final Certificate certificate = (java.security.cert.Certificate) iter.next();
+//            cert[i++] = certificate;
+//        }
+//        return cert;
     }
 
     /**
@@ -425,8 +430,9 @@ public class Identity extends SignedNamedObject implements Principal {
     }
 
     private final class NeuClearCertificate extends Certificate {
-        public NeuClearCertificate() {
+        public NeuClearCertificate(Identity id) {
             super("NeuClear");
+            this.id=id;
 
         }
 
@@ -438,7 +444,7 @@ public class Identity extends SignedNamedObject implements Principal {
          * @throws CertificateEncodingException 
          */
         public final byte[] getEncoded() throws CertificateEncodingException {
-            return getEncoded();
+            return id.getEncoded().getBytes();
         }
 
         /**
@@ -473,7 +479,7 @@ public class Identity extends SignedNamedObject implements Principal {
         public final String toString() {
             return getName();
         }
-
+        private final Identity id;
     }
 
     //TODO I dont like this being public

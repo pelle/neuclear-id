@@ -28,8 +28,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AbstractSigningTest.java,v 1.4 2003/11/22 00:23:47 pelle Exp $
+$Id: AbstractSigningTest.java,v 1.5 2003/12/17 12:45:57 pelle Exp $
 $Log: AbstractSigningTest.java,v $
+Revision 1.5  2003/12/17 12:45:57  pelle
+NeuClear JCE Certificates now work with KeyStore.
+We can now create JCE certificates based on NeuClear Identity's and store them in a keystore.
+
 Revision 1.4  2003/11/22 00:23:47  pelle
 All unit tests in commons, id and xmlsec now work.
 AssetController now successfully processes payments in the unit test.
@@ -62,8 +66,13 @@ public class AbstractSigningTest extends TestCase {
         super(string);
         CryptoTools.ensureProvider();
         signer = new TestCaseSigner();
+        assertNotNull(signer);
+        assertNotNull(signer.getPublicKey("neu://bob@test"));
+
         alice = NSResolver.resolveIdentity("neu://alice@test");
+        assertNotNull(alice);
         bob = NSResolver.resolveIdentity("neu://bob@test");
+        assertNotNull(bob);
     }
 
     /**

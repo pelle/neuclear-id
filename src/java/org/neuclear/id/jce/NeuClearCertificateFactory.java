@@ -32,8 +32,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearCertificateFactory.java,v 1.7 2003/11/21 04:45:11 pelle Exp $
+$Id: NeuClearCertificateFactory.java,v 1.8 2003/12/17 12:45:57 pelle Exp $
 $Log: NeuClearCertificateFactory.java,v $
+Revision 1.8  2003/12/17 12:45:57  pelle
+NeuClear JCE Certificates now work with KeyStore.
+We can now create JCE certificates based on NeuClear Identity's and store them in a keystore.
+
 Revision 1.7  2003/11/21 04:45:11  pelle
 EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
 Otherwise You will Finaliate.
@@ -84,22 +88,10 @@ public final class NeuClearCertificateFactory extends CertificateFactorySpi {
         try {
             //Identity id=(Identity) VerifyingReader.getInstance().read(inputStream);
             final BufferedReader d = new BufferedReader(new InputStreamReader(inputStream));
-            if (d.ready()) {
-                final String name = d.readLine();
-                if (name==null)
-                    throw new CertificateEncodingException("Certificate is empty");
-                if (!NSTools.isValidName(name))
-                    throw new CertificateParsingException("Invalid format");
-                Identity identity = null;
-                identity = NSResolver.resolveIdentity(name);
-                if (identity==null)
-                    throw new CertificateException("Invalid Certificate");
-                return identity.getCertificate();
-            }
-            return null;
+            return ((Identity)VerifyingReader.getInstance().read(inputStream)).getCertificate();
         } catch (NeuClearException e) {
             throw new CertificateException("NeuClear: Problem reading Certificate:"+e.getMessage());
-        } catch (IOException e) {
+        } catch (XMLException e) {
             throw new CertificateException("NeuClear: Problem reading Certificate:"+e.getMessage());
         }
     }

@@ -10,6 +10,9 @@ import org.neuclear.tests.AbstractSigningTest;
 import org.neuclear.xml.XMLException;
 
 import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -33,8 +36,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearJCETest.java,v 1.6 2003/12/10 23:58:52 pelle Exp $
+$Id: NeuClearJCETest.java,v 1.7 2003/12/17 12:45:57 pelle Exp $
 $Log: NeuClearJCETest.java,v $
+Revision 1.7  2003/12/17 12:45:57  pelle
+NeuClear JCE Certificates now work with KeyStore.
+We can now create JCE certificates based on NeuClear Identity's and store them in a keystore.
+
 Revision 1.6  2003/12/10 23:58:52  pelle
 Did some cleaning up in the builders
 Fixed some stuff in IdentityCreator
@@ -103,10 +110,11 @@ public final class NeuClearJCETest extends AbstractSigningTest {
         assertEquals(cert.getPublicKey(), bob.getPublicKey());
     }
 
-    public final void testStoreKey() throws NeuClearException, XMLException, NoSuchProviderException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
-        final KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", "BC");
+    public final void testStoreKey() throws NeuClearException, XMLException, NoSuchProviderException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, UnrecoverableKeyException {
+        final KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
         final KeyStore ks = KeyStore.getInstance("jks", "SUN");
         ks.load(null, null);
+
         kpg.initialize(512);
         final KeyPair kp = kpg.generateKeyPair();
         final JCESigner sig2 = new JCESigner(ks, new AlwaysTheSamePassphraseAgent("neuclear"));
@@ -114,8 +122,42 @@ public final class NeuClearJCETest extends AbstractSigningTest {
         final Identity eve = (Identity) id.sign(signer);
 
         ks.setKeyEntry("neu://eve@test", kp.getPrivate(), "neuclear".toCharArray(), eve.getCertificateChain());
+        assertTrue(ks.containsAlias("neu://eve@test"));
+//        assertTrue(ks.isCertificateEntry("neu://eve@test"));
+        assertTrue(ks.isKeyEntry("neu://eve@test"));
+        assertNotNull(ks.getCertificate("neu://eve@test"));
+        assertNotNull(ks.getCertificate("neu://eve@test").getPublicKey());
+        assertEquals(eve.getCertificate(),ks.getCertificate("neu://eve@test"));
+        assertEquals(eve.getPublicKey(),ks.getCertificate("neu://eve@test").getPublicKey());
+        assertEquals(kp.getPrivate(),ks.getKey("neu://eve@test","neuclear".toCharArray()));
 
-        final AuthenticationTicketBuilder authb = new AuthenticationTicketBuilder("neu://eve@test", "neu://test", "http://users.neuclear.org:8080");
+        //Lets write it
+        File ksfile=new File("target/testdata/keystores/testneuclearcert.jks");
+        ksfile.getParentFile().mkdirs();
+        try {
+            ks.store(new FileOutputStream(ksfile),"neuclear".toCharArray());
+        } catch (Exception e) {
+            e.printStackTrace();
+            assertTrue("Couldnt write file",false);
+        }
+        final KeyStore ks2 = KeyStore.getInstance("jks", "SUN");
+        try {
+            ks2.load(new FileInputStream(ksfile), "neuclear".toCharArray());
+        } catch (Exception e) {
+            e.printStackTrace();
+            assertTrue("Couldnt Read File",false);
+        }
+
+        assertTrue(ks2.containsAlias("neu://eve@test"));
+//        assertTrue(ks2.isCertificateEntry("neu://eve@test"));
+        assertTrue(ks2.isKeyEntry("neu://eve@test"));
+        assertNotNull(ks2.getCertificate("neu://eve@test"));
+        assertNotNull(ks2.getCertificate("neu://eve@test").getPublicKey());
+        assertEquals(eve.getCertificate(),ks2.getCertificate("neu://eve@test"));
+        assertEquals(eve.getPublicKey(),ks2.getCertificate("neu://eve@test").getPublicKey());
+        assertEquals(kp.getPrivate(),ks2.getKey("neu://eve@test","neuclear".toCharArray()));
+
+        //final AuthenticationTicketBuilder authb = new AuthenticationTicketBuilder("neu://eve@test", "neu://test", "http://users.neuclear.org:8080");
         //authb.sign(sig2);
 
     }
