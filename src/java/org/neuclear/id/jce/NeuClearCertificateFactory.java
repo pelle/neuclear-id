@@ -32,8 +32,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearCertificateFactory.java,v 1.5 2003/11/18 15:07:36 pelle Exp $
+$Id: NeuClearCertificateFactory.java,v 1.6 2003/11/18 15:45:09 pelle Exp $
 $Log: NeuClearCertificateFactory.java,v $
+Revision 1.6  2003/11/18 15:45:09  pelle
+FileStoreTest now passes. FileStore works again.
+
 Revision 1.5  2003/11/18 15:07:36  pelle
 Changes to JCE Implementation
 Working on getting all tests working including store tests
@@ -84,7 +87,7 @@ public class NeuClearCertificateFactory extends CertificateFactorySpi {
                 Identity identity = null;
                 identity = NSResolver.resolveIdentity(name);
                 if (identity==null)
-                    throw new CertificateException("Invalid Certificate")
+                    throw new CertificateException("Invalid Certificate");
                 return identity.getCertificate();
             }
             return null;

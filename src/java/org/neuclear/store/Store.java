@@ -1,6 +1,9 @@
 /*
- * $Id: Store.java,v 1.12 2003/11/18 15:07:36 pelle Exp $
+ * $Id: Store.java,v 1.13 2003/11/18 15:45:09 pelle Exp $
  * $Log: Store.java,v $
+ * Revision 1.13  2003/11/18 15:45:09  pelle
+ * FileStoreTest now passes. FileStore works again.
+ *
  * Revision 1.12  2003/11/18 15:07:36  pelle
  * Changes to JCE Implementation
  * Working on getting all tests working including store tests
@@ -184,10 +187,6 @@ abstract public class Store implements RawReceiver {
             //TODO: Implement versioning
             obj.verify();
             rawStore(obj);
-            if (next != null)
-                next.receive(obj);
-
-
         } catch (IOException e) {
             throw new NeuClearException(e);
         } catch (XMLException e) {
@@ -198,11 +197,11 @@ abstract public class Store implements RawReceiver {
     /**
      * Override this for each specific Store type
      */
-    protected void rawStore(NamedObjectBuilder obj) throws IOException, NeuClearException {
+    protected void rawStore(NamedObjectBuilder obj) throws IOException, NeuClearException, XMLException {
         ;
     }
 
-    private RawReceiver next;
+
 
     abstract SignedNamedObject fetch(String name) throws NeuClearException;
 }

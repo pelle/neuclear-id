@@ -1,6 +1,9 @@
 /*
- * $Id: FileStore.java,v 1.10 2003/11/15 01:58:16 pelle Exp $
+ * $Id: FileStore.java,v 1.11 2003/11/18 15:45:09 pelle Exp $
  * $Log: FileStore.java,v $
+ * Revision 1.11  2003/11/18 15:45:09  pelle
+ * FileStoreTest now passes. FileStore works again.
+ *
  * Revision 1.10  2003/11/15 01:58:16  pelle
  * More work all around on web applications.
  *
@@ -152,11 +155,10 @@ import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.XMLException;
+import org.neuclear.xml.XMLTools;
+import org.neuclear.xml.xmlsec.XMLSecTools;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * We need both a simple FileStore and an encrypted one. The encrypted one stores each object using a filename generated through
@@ -168,12 +170,14 @@ public class FileStore extends Store {
         this.base = base;
     }
 
-    protected void rawStore(NamedObjectBuilder obj) throws IOException, NeuClearException {
+    protected void rawStore(NamedObjectBuilder obj) throws IOException, NeuClearException, XMLException {
         String outputFilename = base + getFileName(obj);
         System.out.println("Outputting to: " + outputFilename);
         File outputFile = new File(outputFilename);
         outputFile.getParentFile().mkdirs();
-//TODO Find alternative        XMLTools.writeFile(outputFile, obj.getElement());
+        OutputStream out=new FileOutputStream(outputFile);
+        out.write(obj.canonicalize());
+        out.close();
     }
 
 //    public void store(Document doc) throws InvalidNamedObject,IOException {
@@ -181,7 +185,7 @@ public class FileStore extends Store {
 //    }
 
     SignedNamedObject fetch(String name) throws NeuClearException {
-        String inputFilename = base + getFileName(NSTools.normalizeNameURI(name));
+        String inputFilename = base + getFileName(name);
         System.out.println("Loading from: " + inputFilename);
         File fin = new File(inputFilename);
         if (!fin.exists())
@@ -199,12 +203,7 @@ public class FileStore extends Store {
 
 
     protected static String getFileName(String name) throws NeuClearException {
-        if (name.startsWith("neu://"))
-            name = name.substring(5);
-        if (name.equals("/") || name.equals(""))
-            return "/root.id";
-        else
-            return name + ".id";
+        return NSTools.url2path(name)+"/root.id";
     }
 
     protected static String getFileName(NamedObjectBuilder obj) throws NeuClearException {
