@@ -1,7 +1,0 @@
-<components>
-    <component type="org.neuclear.commons.crypto.signers.Signer"
-        class="org.neuclear.commons.crypto.signers.DefaultSigner"/>
-    <component type="org.neuclear.commons.crypto.passphraseagents.PassPhraseAgent"
-        class="org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent"/>
-
-</components>

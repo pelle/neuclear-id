@@ -1,6 +1,9 @@
 /*
- * $Id: IdentityBuilder.java,v 1.25 2004/04/23 23:34:03 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.26 2004/04/26 23:58:04 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.26  2004/04/26 23:58:04  pelle
+ * Trying to find the verifying error
+ *
  * Revision 1.25  2004/04/23 23:34:03  pelle
  * Major update. Added an original url and nickname to Identity and friends.
  *
@@ -251,6 +254,16 @@ package org.neuclear.id.builders;
 
 import org.dom4j.Element;
 import org.neuclear.commons.Utility;
+import org.neuclear.commons.crypto.signers.JCESigner;
+import org.neuclear.commons.crypto.signers.TestCaseSigner;
+import org.neuclear.id.Identity;
+import org.neuclear.id.verifier.VerifyingReader;
+import org.neuclear.xml.XMLTools;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 public class IdentityBuilder extends Builder {
 
@@ -309,6 +322,28 @@ public class IdentityBuilder extends Builder {
         target.addAttribute("href", href);
     }
 
+
+    public static void main(final String[] args) {
+        try {
+            final JCESigner signer = new TestCaseSigner();
+
+
+            final IdentityBuilder assetraw = new IdentityBuilder("Bob",
+                    "http://neuclear.org/bob.html",
+                    "http://portfolio.neuclear.org", "Bobs ID");
+            assetraw.sign("neu://bob@test", signer);
+//            System.out.println("Length:"+assetraw.asXML().length());
+            File out = new File("target/testdata/ids/bob.html");
+            out.getParentFile().mkdirs();
+            XMLTools.writeFile(out, assetraw.getElement().getDocument());
+            final InputStream is = new BufferedInputStream(new FileInputStream(out));
+            final Identity asset = (Identity) VerifyingReader.getInstance().read(is);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     protected final Element head;
     protected final Element body;
