@@ -2,6 +2,7 @@ package org.neuclear.receiver;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.xml.ElementProxy;
 
 /*
@@ -22,8 +23,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: MockReceiver.java,v 1.1 2003/12/11 23:57:30 pelle Exp $
+$Id: MockReceiver.java,v 1.2 2003/12/12 00:13:11 pelle Exp $
 $Log: MockReceiver.java,v $
+Revision 1.2  2003/12/12 00:13:11  pelle
+This may actually work now. Need to put a few more test cases in to make sure.
+
 Revision 1.1  2003/12/11 23:57:30  pelle
 Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
 Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -46,7 +50,7 @@ public class MockReceiver implements Receiver {
      */
     public ElementProxy receive(SignedNamedObject obj) throws UnsupportedTransaction, NeuClearException {
         received = obj;
-        return;
+        return new AuthenticationTicketBuilder("neu://test", obj.getName(), "http://localhost");//Just some dummy
     }
 
     public SignedNamedObject getLastReceived() {

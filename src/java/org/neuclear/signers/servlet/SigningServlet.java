@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.17 2003/12/11 23:57:29 pelle Exp $
+ * $Id: SigningServlet.java,v 1.18 2003/12/12 00:13:11 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.18  2003/12/12 00:13:11  pelle
+ * This may actually work now. Need to put a few more test cases in to make sure.
+ *
  * Revision 1.17  2003/12/11 23:57:29  pelle
  * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
  * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -312,7 +315,7 @@ public class SigningServlet extends ReceiverServlet implements PassPhraseAgent {
                 out.println("<b>Requesting Site:</b><br/>");
                 out.println(sigreq.getSignatory().getName());
                 out.println("<br><b>Type:</b><br/>");
-                out.println(named.getTagName());
+                out.println(named.getElement().getName());
                 if (!Utility.isEmpty(sigreq.getDescription())) {
                     out.println("<br><b>Description:</b><br/>");
                     out.println(sigreq.getDescription());

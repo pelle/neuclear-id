@@ -1,5 +1,8 @@
-/* $Id: CommandLineSigner.java,v 1.2 2003/12/10 23:58:51 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.3 2003/12/12 00:13:11 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.3  2003/12/12 00:13:11  pelle
+ * This may actually work now. Need to put a few more test cases in to make sure.
+ *
  * Revision 1.2  2003/12/10 23:58:51  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -204,7 +207,7 @@ import java.security.GeneralSecurityException;
 
 /**
  * @author pelleb
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CommandLineSigner {
     public CommandLineSigner(final String[] args) throws ParseException, FileNotFoundException, GeneralSecurityException, NeuClearException {
@@ -326,7 +329,7 @@ public class CommandLineSigner {
             }
 
             System.out.println("You are about to sign the following Contract. Please make sure that is what you want.");
-            System.out.println("Type: " + subject.getTagName());
+            System.out.println("Type: " + subject.getElement().getName());
             System.out.println("Proposed Name: " + subject.getName());
             System.out.println("Raw XML:\n===================");
             System.out.println(subject.asXML());

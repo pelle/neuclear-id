@@ -1,6 +1,9 @@
 /*
- * $Id: ReceiverServlet.java,v 1.11 2003/12/08 19:32:32 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.12 2003/12/12 00:13:11 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.12  2003/12/12 00:13:11  pelle
+ * This may actually work now. Need to put a few more test cases in to make sure.
+ *
  * Revision 1.11  2003/12/08 19:32:32  pelle
  * Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
  *
@@ -137,7 +140,7 @@ public class ReceiverServlet extends XMLInputStreamServlet {
             if (isXML)
                 writer.print(receipt.canonicalize());
             else
-                writer.print(receipt.getTagName());
+                writer.print(receipt.getElement().getName());
 
         } catch (Exception e) {
             writer.println("<h1>Error</h1><h3>");
