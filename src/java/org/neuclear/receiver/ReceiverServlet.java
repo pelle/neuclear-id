@@ -1,6 +1,9 @@
 /*
- * $Id: ReceiverServlet.java,v 1.8 2003/11/22 00:23:47 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.9 2003/11/24 23:33:37 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.9  2003/11/24 23:33:37  pelle
+ * More Cactus unit testing going on.
+ *
  * Revision 1.8  2003/11/22 00:23:47  pelle
  * All unit tests in commons, id and xmlsec now work.
  * AssetController now successfully processes payments in the unit test.
@@ -103,7 +106,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
-public abstract class ReceiverServlet extends XMLInputStreamServlet {
+public class ReceiverServlet extends XMLInputStreamServlet {
     public void init(final ServletConfig config) throws ServletException {
         super.init(config);
     }
@@ -133,11 +136,11 @@ public abstract class ReceiverServlet extends XMLInputStreamServlet {
 
     }
 
-    protected final void setReceiver(final Receiver receiver) {
+    public final void setReceiver(final Receiver receiver) {
         this.receiver = receiver;
     }
 
-    protected final Receiver getReceiver() {
+    final Receiver getReceiver() {
         return receiver;
     }
 

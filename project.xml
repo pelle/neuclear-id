@@ -70,11 +70,12 @@
        <dependency>
            <id>neuclear-xmlsig</id>
            <name>neuclear-xmlsig</name>
-           <version>0.10</version>
+           <version>0.11-SNAPSHOT</version>
            <properties>
                  <war.bundle>true</war.bundle>
            </properties>
        </dependency>
+
        <dependency>
           <id>neuclear-commons</id>
        <name>neuclear-commons</name>
@@ -82,6 +83,10 @@
            <properties>
                  <war.bundle>true</war.bundle>
            </properties>
+       </dependency>
+       <dependency>
+           <id>cactus</id>
+           <version>13-1.5-rc1</version>
        </dependency>
 
     <dependency>
