@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedCore.java,v 1.26 2004/05/11 16:00:31 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.27 2004/07/21 23:04:05 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.27  2004/07/21 23:04:05  pelle
+ * Added DelegatingReceiver and friends. This was created to make it easier to create complex services in NeuClear.
+ *
  * Revision 1.26  2004/05/11 16:00:31  pelle
  * Changed the way hashCode works. Now hashCode is created during instantiation as the integer value of the first 4 bytes of the raw digest.
  * equals has been fixed
@@ -332,11 +335,12 @@ public final class SignedNamedCore {
      * @param pub
      * @param encoded
      */
-    private SignedNamedCore(final PublicKey pub, final String encoded) {
+    private SignedNamedCore(final PublicKey pub, final String tagname, final String encoded) {
         this.signer = new Signatory(pub);
         final byte[] sha = CryptoTools.digest(encoded.getBytes());
         this.digest = CryptoTools.encodeBase32(sha);
         this.name = "neu:" + signer.getName() + "!" + digest;
+        this.tagname = tagname;
         this.timestamp = System.currentTimeMillis();
         this.encoded = encoded;
         this.hashcode = sha[0] | sha[1] << 8 | sha[2] << 16 | sha[3] << 24;
@@ -399,7 +403,7 @@ public final class SignedNamedCore {
         try {
             final XMLSignature sig = new EnvelopedSignature(elem);
             final PublicKey pub = sig.getSignersKey();
-            return new SignedNamedCore(pub, encodeElement(elem));
+            return new SignedNamedCore(pub, elem.getName(), encodeElement(elem));
         } catch (InvalidSignatureException e) {
             throw new InvalidNamedObjectException("Unnamed object failed Signature verification");
         }
@@ -408,7 +412,7 @@ public final class SignedNamedCore {
 
     /**
      * The full name (URI) of an object
-     * 
+     *
      * @return String containing the fully qualified URI of an object
      */
     public final String getName() {
@@ -417,19 +421,23 @@ public final class SignedNamedCore {
 
     /**
      * The time the object was signed
-     * 
-     * @return 
+     *
+     * @return
      */
     public final Timestamp getTimeStamp() {
         return new Timestamp(timestamp);
 
     }
 
+    public final String getTagName() {
+        return tagname;
+    }
+
     /**
      * The Signatory of the current document. If the objects name is <tt>"neu://bob/abc"</tt>, then the signer
      * would be the Identity object <tt>"neu://bob/"</tt>
-     * 
-     * @return 
+     *
+     * @return
      */
     public final Signatory getSignatory() {
         return signer;
@@ -437,8 +445,8 @@ public final class SignedNamedCore {
 
     /**
      * The original xml document
-     * 
-     * @return 
+     *
+     * @return
      */
     public final String getEncoded() {
         return encoded;
@@ -478,6 +486,7 @@ public final class SignedNamedCore {
     }
 
     private final String name;
+    private final String tagname;
     private final Signatory signer;
     private final long timestamp;
     private final String encoded;

@@ -3,7 +3,7 @@
 
     <name>NeuClear Identity Framework</name>
     <id>neuclear-id</id>
-    <currentVersion>1.0-beta16</currentVersion>
+    <currentVersion>1.0-beta17</currentVersion>
     <inceptionYear>2002</inceptionYear>
     <package>org.neuclear</package>
     <logo>/images/logo.gif</logo>
@@ -184,6 +184,16 @@
             <version>1.1</version>
             <type>plugin</type>
             <url>http://maven-taglib.sourceforge.net</url>
+        </dependency>
+        <dependency>
+            <groupId>picocontainer</groupId>
+            <artifactId>picocontainer</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>nanocontainer</groupId>
+            <artifactId>nanocontainer-servlet</artifactId>
+            <version>1.0-beta-1</version>
         </dependency>
     </dependencies>
     <build>

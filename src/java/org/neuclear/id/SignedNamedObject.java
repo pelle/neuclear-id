@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedObject.java,v 1.23 2004/05/11 16:00:32 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.24 2004/07/21 23:04:05 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.24  2004/07/21 23:04:05  pelle
+ * Added DelegatingReceiver and friends. This was created to make it easier to create complex services in NeuClear.
+ *
  * Revision 1.23  2004/05/11 16:00:32  pelle
  * Changed the way hashCode works. Now hashCode is created during instantiation as the integer value of the first 4 bytes of the raw digest.
  * equals has been fixed
@@ -279,7 +282,7 @@ import java.sql.Timestamp;
  * To actually create and sign your own object use the NamedObjectBuilder or its subclasses. Each subclass of
  * SignedNamedObject should have a corresponding subclass of NamedObjectBuilder.<p>
  * These NamedObjectBuilder objects should be signed using your Signer, before being sent on to a web service.
- * 
+ *
  * @see NamedObjectReader
  * @see org.neuclear.id.verifier.VerifyingReader
  * @see org.neuclear.id.resolver.Resolver
@@ -294,7 +297,7 @@ public class SignedNamedObject {
 
     /**
      * The full name (URI) of an object
-     * 
+     *
      * @return String containing the fully qualified URI of an object
      */
     public final String getName() {
@@ -302,9 +305,18 @@ public class SignedNamedObject {
     }
 
     /**
+     * The full name (URI) of an object
+     *
+     * @return String containing the fully qualified URI of an object
+     */
+    public final String getTagName() {
+        return core.getTagName();
+    }
+
+    /**
      * The time the object was signed
-     * 
-     * @return 
+     *
+     * @return
      */
     public final Timestamp getTimeStamp() {
         return core.getTimeStamp();
@@ -314,8 +326,8 @@ public class SignedNamedObject {
     /**
      * The Signatory of the current document. If the objects name is <tt>"neu://bob/abc"</tt>, then the signer
      * would be the Identity object <tt>"neu://bob/"</tt>
-     * 
-     * @return 
+     *
+     * @return
      */
     public final Signatory getSignatory() {
         return core.getSignatory();
@@ -323,8 +335,8 @@ public class SignedNamedObject {
 
     /**
      * The original xml document
-     * 
-     * @return 
+     *
+     * @return
      */
     public final String getEncoded() {
         return core.getEncoded();
