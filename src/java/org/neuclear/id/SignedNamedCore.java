@@ -1,6 +1,10 @@
 /*
- * $Id: SignedNamedCore.java,v 1.5 2003/12/10 23:58:51 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.6 2003/12/11 23:57:29 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.6  2003/12/11 23:57:29  pelle
+ * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
+ * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
+ *
  * Revision 1.5  2003/12/10 23:58:51  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -280,7 +284,7 @@ public final class SignedNamedCore {
             final Timestamp timestamp = TimeTools.parseTimeStamp(elem.attributeValue("timestamp"));
             return new SignedNamedCore(name, signatory, timestamp, new String(XMLSecTools.canonicalize(elem)));
         } else
-            throw new InvalidNamedObject(name + " isnt valid");
+            throw new InvalidNamedObjectException(name + " isnt valid");
     }
 
     /**

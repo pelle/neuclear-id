@@ -1,6 +1,10 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.11 2003/12/10 23:58:52 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.12 2003/12/11 23:57:29 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.12  2003/12/11 23:57:29  pelle
+ * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
+ * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
+ *
  * Revision 1.11  2003/12/10 23:58:52  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -186,7 +190,7 @@ public final class DemoSigningServlet extends SigningServlet {
 //            id.store();
 //            getStore().receive(id);//Test locally first
             ns.sendObject();
-        } catch (InvalidNamedObject e) {
+        } catch (InvalidNamedObjectException e) {
             System.out.println("NEUDIST: Identity Error: " + e.getLocalizedMessage());
         }
     }

@@ -1,7 +1,6 @@
 package org.neuclear.id.resolver;
 
 import junit.framework.TestCase;
-import org.neuclear.id.InvalidNamedObject;
 import org.neuclear.commons.NeuClearException;
 
 /**

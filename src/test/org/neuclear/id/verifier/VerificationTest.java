@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import org.dom4j.DocumentException;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.id.InvalidNamedObject;
+import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.xml.XMLException;
 
@@ -28,8 +28,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerificationTest.java,v 1.9 2003/12/06 00:17:04 pelle Exp $
+$Id: VerificationTest.java,v 1.10 2003/12/11 23:57:30 pelle Exp $
 $Log: VerificationTest.java,v $
+Revision 1.10  2003/12/11 23:57:30  pelle
+Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
+Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
+
 Revision 1.9  2003/12/06 00:17:04  pelle
 Updated various areas in NSTools.
 Updated URI Validation in particular to support new expanded format
@@ -124,7 +128,7 @@ public final class VerificationTest extends TestCase {
                 System.out.println("Name : " + obj.getName() + " VERIFIED");
                 assertTrue(wantValid);
 
-            } catch (InvalidNamedObject e) {
+            } catch (InvalidNamedObjectException e) {
                 System.out.println("INVALID  " + e.getMessage());
                 assertTrue(!wantValid);
             }

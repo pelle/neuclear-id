@@ -1,6 +1,10 @@
 /*
- * $Id: SigningServlet.java,v 1.16 2003/12/10 23:58:52 pelle Exp $
+ * $Id: SigningServlet.java,v 1.17 2003/12/11 23:57:29 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.17  2003/12/11 23:57:29  pelle
+ * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
+ * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
+ *
  * Revision 1.16  2003/12/10 23:58:52  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -196,7 +200,7 @@ import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.commons.servlets.ServletTools;
-import org.neuclear.id.InvalidNamedObject;
+import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignatureRequest;
 import org.neuclear.id.SignedNamedObject;
@@ -286,7 +290,7 @@ public class SigningServlet extends ReceiverServlet implements PassPhraseAgent {
                         out.flush();
                         out.println(signed.getName() + " Verified<br>");
 
-                    } catch (InvalidNamedObject e) {
+                    } catch (InvalidNamedObjectException e) {
                         out.println("<br><font color=\"red\"><b>ERROR: Invalid Identity</b></font><br>");
                         //e.printStackTrace(out);
                         isSigned = false;
@@ -387,7 +391,7 @@ public class SigningServlet extends ReceiverServlet implements PassPhraseAgent {
         try {
             signObject(obj, "hello".toCharArray());// TODO How do we get the passphrase here? Popup request?
             return obj.getElement();
-        } catch (InvalidNamedObject e) {
+        } catch (InvalidNamedObjectException e) {
             throw new SOAPException(e);
         } catch (InvalidPassphraseException e) {
             throw new SOAPException(e);
@@ -398,7 +402,7 @@ public class SigningServlet extends ReceiverServlet implements PassPhraseAgent {
         }
     }
 
-    protected static void signObject(SignedNamedObject obj, char passphrase[]) throws NeuClearException, InvalidNamedObject, InvalidPassphraseException, NonExistingSignerException {
+    protected static void signObject(SignedNamedObject obj, char passphrase[]) throws NeuClearException, InvalidNamedObjectException, InvalidPassphraseException, NonExistingSignerException {
         if (!obj.isSigned()) {
             try {
                 String parentName = NSTools.getSignatoryURI(obj.getName());

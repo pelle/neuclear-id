@@ -1,6 +1,10 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.17 2003/12/11 16:29:26 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.18 2003/12/11 23:57:29 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.18  2003/12/11 23:57:29  pelle
+ * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
+ * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
+ *
  * Revision 1.17  2003/12/11 16:29:26  pelle
  * Updated various builders to use the new helper methods in AbstractElementProxy hopefully making them more readable.
  *
@@ -208,7 +212,6 @@ import org.neuclear.id.Named;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.id.verifier.VerifyingReader;
-import org.neuclear.xml.AbstractElementProxy;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.xmlsec.SignedElement;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
@@ -253,11 +256,6 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
         super(doc.getRootElement());
     }
 
-    public String getTagName() {
-        if (getElement() == null)
-            return "Invalid";
-        return getElement().getName();
-    }
 
     final public SignedNamedObject sign(final Signer signer) throws NeuClearException, XMLException {
         sign(getSignatory().getName(), signer); //Sign with parent key
@@ -298,15 +296,18 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
 
     /**
      * Helper method to create and add an attribute to this element within the NEUID namespace
-     * @param name
+     * 
+     * @param name 
      */
-    protected final void createNEUIDAttribute(String name,String value){
-        getElement().addAttribute(createNEUIDQName(name),value);
+    protected final void createNEUIDAttribute(String name, String value) {
+        getElement().addAttribute(createNEUIDQName(name), value);
     }
+
     /**
      * Helper method to create a QName within the NEUID namespace
-     * @param name
-     * @return
+     * 
+     * @param name 
+     * @return 
      */
     protected static QName createNEUIDQName(String name) {
         return DocumentHelper.createQName(name, NSTools.NS_NEUID);
@@ -324,13 +325,6 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
      */
     public final String getURI() throws XMLSecurityException {
         return getName();
-    }
-
-    /**
-     * @return the XML NameSpace object
-     */
-    public final Namespace getNS() {
-        return NSTools.NS_NEUID;
     }
 
 

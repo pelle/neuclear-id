@@ -29,8 +29,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignedNamedCoreTest.java,v 1.3 2003/11/22 00:23:48 pelle Exp $
+$Id: SignedNamedCoreTest.java,v 1.4 2003/12/11 23:57:30 pelle Exp $
 $Log: SignedNamedCoreTest.java,v $
+Revision 1.4  2003/12/11 23:57:30  pelle
+Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
+Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
+
 Revision 1.3  2003/11/22 00:23:48  pelle
 All unit tests in commons, id and xmlsec now work.
 AssetController now successfully processes payments in the unit test.
@@ -74,7 +78,7 @@ public final class SignedNamedCoreTest extends TestCase {
         try {
             final SignedNamedCore core = SignedNamedCore.read(builder.getElement());
             assertEquals(core.getSignatory().getName(), name);
-        } catch (InvalidNamedObject e) {
+        } catch (InvalidNamedObjectException e) {
             assertTrue(e.getLocalizedMessage(), false);
         }
 

@@ -1,6 +1,10 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.15 2003/12/10 23:58:52 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.16 2003/12/11 23:57:30 pelle Exp $
   $Log: AbstractStoreTest.java,v $
+  Revision 1.16  2003/12/11 23:57:30  pelle
+  Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
+  Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
+
   Revision 1.15  2003/12/10 23:58:52  pelle
   Did some cleaning up in the builders
   Fixed some stuff in IdentityCreator
@@ -158,7 +162,7 @@
 package org.neuclear.store;
 
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.InvalidNamedObject;
+import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.IdentityBuilder;
 import org.neuclear.tests.AbstractSigningTest;
@@ -187,7 +191,7 @@ public abstract class AbstractStoreTest extends AbstractSigningTest {
     }
 
 
-    public final void testStore() throws NeuClearException, InvalidNamedObject, XMLException {
+    public final void testStore() throws NeuClearException, InvalidNamedObjectException, XMLException {
         System.out.println("\nTesting " + this.getClass().getName());
         System.out.println("Storing " + bobName);
         final IdentityBuilder bob = new IdentityBuilder(bobName, signer.getPublicKey(bobName));

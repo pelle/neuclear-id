@@ -6,12 +6,12 @@ import org.neuclear.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.signers.JCESigner;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
-import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
-import org.neuclear.xml.ElementProxy;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 
+import javax.servlet.ServletException;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 /*
@@ -32,8 +32,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: ReceiverServletTest.java,v 1.2 2003/11/28 00:12:59 pelle Exp $
+$Id: ReceiverServletTest.java,v 1.3 2003/12/11 23:57:30 pelle Exp $
 $Log: ReceiverServletTest.java,v $
+Revision 1.3  2003/12/11 23:57:30  pelle
+Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
+Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
+
 Revision 1.2  2003/11/28 00:12:59  pelle
 Getting the NeuClear web transactions working.
 
@@ -57,22 +61,16 @@ public class ReceiverServletTest extends ServletTestCase {
         theRequest.addParameter("neuclear-request", b64, WebRequest.POST_METHOD);
     }
 
-    public void testReceiveBase64() {
+    public void testReceiveBase64() throws ServletException, IOException {
         ReceiverServlet servlet = new ReceiverServlet();
-        servlet.setReceiver(new Receiver() {
-            /**
-             * Add your main transaction processing logic within this method.
-             * Remember you must check the validity of the SignedNamedObject here. Until you do so
-             * you can not trust it.
-             * 
-             * @param obj 
-             * @throws org.neuclear.receiver.UnsupportedTransaction
-             *          
-             */
-            public ElementProxy receive(SignedNamedObject obj) throws UnsupportedTransaction, NeuClearException {
-                return null;
-            }
+        MockReceiver receiver = new MockReceiver();
+        servlet.setReceiver(receiver);
+        servlet.init(config);
+        servlet.service(request, response);
+        assertNotNull(receiver.getLastReceived());
+        assertEquals(receiver.getLastReceived().getSignatory().getName(), "neu://bob@test");
 
-        });
     }
+
+
 }

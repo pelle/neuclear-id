@@ -1,6 +1,10 @@
 /*
- * $Id: NSTools.java,v 1.19 2003/12/11 16:16:14 pelle Exp $
+ * $Id: NSTools.java,v 1.20 2003/12/11 23:57:29 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.20  2003/12/11 23:57:29  pelle
+ * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
+ * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
+ *
  * Revision 1.19  2003/12/11 16:16:14  pelle
  * Some changes to make the xml a bit more readable.
  * Also added some helper methods in AbstractElementProxy to make it easier to build objects.
@@ -175,7 +179,6 @@ import org.dom4j.*;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.xml.XMLTools;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -192,10 +195,12 @@ public final class NSTools {
      * @throws NeuClearException If name isn't a valid NEU Name
      */
     public static String normalizeNameURI(String name) throws NeuClearException {
+        if (name == null)
+            return "neu://";
         if (!name.startsWith("neu://"))
             name = "neu:/" + name;
         if (!isValidName(name))
-            throw new InvalidNamedObject("Name: '" + name + "' is not valid");
+            throw new InvalidNamedObjectException("Name: '" + name + "' is not valid");
         return name;
     }
 
@@ -251,7 +256,7 @@ public final class NSTools {
      */
     public static String getSignatoryURI(final String uri) throws NeuClearException {
         if (!isValidName(uri))
-            throw new InvalidNamedObject("Invalid Neu ID: " + uri);
+            throw new InvalidNamedObjectException("Invalid Neu ID: " + uri);
         final int bang = uri.indexOf('!');
 
         // We hava a Transaction ID. We always return its signer
@@ -279,7 +284,7 @@ public final class NSTools {
      */
     public static String getLocalName(final String uri) throws NeuClearException {
         if (!isValidName(uri))
-            throw new InvalidNamedObject("Invalid Neu ID: " + uri);
+            throw new InvalidNamedObjectException("Invalid Neu ID: " + uri);
         final int bang = uri.indexOf('!');
 
         // We hava a Transaction ID. We always return its signer
@@ -353,16 +358,16 @@ public final class NSTools {
      * 
      * @param name NEU Name URI
      * @return Path
-     * @throws InvalidNamedObject If the URI is invalid
+     * @throws InvalidNamedObjectException If the URI is invalid
      */
-    public static String name2path(final String name) throws InvalidNamedObject {
+    public static String name2path(final String name) throws InvalidNamedObjectException {
         if (!Utility.isEmpty(name)) {
             final Matcher matcher = STRIP_URI_ARROBA.matcher(name);
             if (matcher.matches()) {
                 return "/" + Utility.denullString(matcher.group(3)) + (matcher.group(1) != null ? ("/@" + matcher.group(2)) : "") + Utility.denullString(matcher.group(4));
             }
         }
-        throw new InvalidNamedObject("Invalid NEU ID: " + name);
+        throw new InvalidNamedObjectException("Invalid NEU ID: " + name);
     }
 
     /**
@@ -385,20 +390,21 @@ public final class NSTools {
      * Verifies that Dom4j node is an element or document containing a NamedObject.
      * <br><b>Important</b>
      * It does not verify if it has been signed.
-     * @param node
-     * @return
+     * 
+     * @param node 
+     * @return 
      */
     public static boolean isNamedObject(Node node) {
 
-        if (node==null) return false;
-        Element elem=null;
+        if (node == null) return false;
+        Element elem = null;
         if (node instanceof Document)
-            elem=((Document)node).getRootElement();
+            elem = ((Document) node).getRootElement();
         else if (node instanceof Element)
-            elem=(Element)node;
+            elem = (Element) node;
         else
             return false;
-        return !Utility.isEmpty(elem.attributeValue(DocumentHelper.createQName("name",NS_NEUID)));
+        return !Utility.isEmpty(elem.attributeValue(DocumentHelper.createQName("name", NS_NEUID)));
     }
 
     private static final String HTTP_SCHEME_EX = "^neu:(neuid:)?\\/\\/(([\\w-]+\\.)+[\\w-]+)$";

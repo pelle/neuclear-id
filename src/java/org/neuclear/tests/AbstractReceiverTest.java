@@ -2,7 +2,7 @@ package org.neuclear.tests;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.id.InvalidNamedObject;
+import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.receiver.Receiver;
@@ -29,8 +29,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AbstractReceiverTest.java,v 1.5 2003/11/21 04:45:16 pelle Exp $
+$Id: AbstractReceiverTest.java,v 1.6 2003/12/11 23:57:29 pelle Exp $
 $Log: AbstractReceiverTest.java,v $
+Revision 1.6  2003/12/11 23:57:29  pelle
+Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
+Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
+
 Revision 1.5  2003/11/21 04:45:16  pelle
 EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
 Otherwise You will Finaliate.
@@ -138,7 +142,7 @@ public abstract class AbstractReceiverTest extends AbstractSigningTest {
                 getReceiver().receive(obj);
                 assertTrue(verifyTransaction(obj, prestate));
 
-            } catch (InvalidNamedObject e) {
+            } catch (InvalidNamedObjectException e) {
                 System.out.println("INVALID  " + e.getMessage());
                 assertTrue(false);
             }

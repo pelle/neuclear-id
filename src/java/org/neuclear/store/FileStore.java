@@ -1,6 +1,10 @@
 /*
- * $Id: FileStore.java,v 1.17 2003/12/10 23:58:52 pelle Exp $
+ * $Id: FileStore.java,v 1.18 2003/12/11 23:57:29 pelle Exp $
  * $Log: FileStore.java,v $
+ * Revision 1.18  2003/12/11 23:57:29  pelle
+ * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
+ * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
+ *
  * Revision 1.17  2003/12/10 23:58:52  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -217,7 +221,7 @@ public class FileStore extends Store {
         return out;
     }
 
-//    public void store(Document doc) throws InvalidNamedObject,IOException {
+//    public void store(Document doc) throws InvalidNamedObjectException,IOException {
 //        store(new NSDLObject(doc));
 //    }
 

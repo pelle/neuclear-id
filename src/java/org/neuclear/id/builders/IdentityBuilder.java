@@ -1,6 +1,10 @@
 /*
- * $Id: IdentityBuilder.java,v 1.12 2003/12/11 16:29:26 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.13 2003/12/11 23:57:29 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.13  2003/12/11 23:57:29  pelle
+ * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
+ * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
+ *
  * Revision 1.12  2003/12/11 16:29:26  pelle
  * Updated various builders to use the new helper methods in AbstractElementProxy hopefully making them more readable.
  *
@@ -208,7 +212,7 @@ public class IdentityBuilder extends NamedObjectBuilder {
      */
 
     public IdentityBuilder(final String name, final PublicKey allow, final String repository, final String signer, final String logger, final String receiver) throws NeuClearException {
-        this(DocumentHelper.createQName("Identity", NSTools.NS_NEUID), name, allow, repository, signer, logger, receiver);
+        this(createNEUIDQName(TAGNAME), name, allow, repository, signer, logger, receiver);
 
     }
 
@@ -231,10 +235,10 @@ public class IdentityBuilder extends NamedObjectBuilder {
         createNEUIDAttribute("repository", repository);
         createNEUIDAttribute("logger", receiver);
         if (!Utility.isEmpty(signer))
-            createNEUIDAttribute("signer",signer);
+            createNEUIDAttribute("signer", signer);
 
         if (!Utility.isEmpty(receiver))
-            createNEUIDAttribute("receiver",receiver);
+            createNEUIDAttribute("receiver", receiver);
 
         if (allow != null) {
             final QName allowName = DocumentHelper.createQName("allow", NSTools.NS_NEUID);
@@ -253,9 +257,7 @@ public class IdentityBuilder extends NamedObjectBuilder {
     }
 
 
-    public final String getTagName() {
-        return "Identity";
-    }
+    private static final String TAGNAME = "Identity";
 
 
 }

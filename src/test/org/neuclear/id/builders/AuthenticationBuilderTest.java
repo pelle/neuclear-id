@@ -2,7 +2,7 @@ package org.neuclear.id.builders;
 
 import org.neuclear.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.InvalidNamedObject;
+import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.tests.AbstractSigningTest;
 import org.neuclear.xml.XMLException;
 
@@ -26,8 +26,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationBuilderTest.java,v 1.4 2003/12/10 23:58:52 pelle Exp $
+$Id: AuthenticationBuilderTest.java,v 1.5 2003/12/11 23:57:29 pelle Exp $
 $Log: AuthenticationBuilderTest.java,v $
+Revision 1.5  2003/12/11 23:57:29  pelle
+Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
+Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
+
 Revision 1.4  2003/12/10 23:58:52  pelle
 Did some cleaning up in the builders
 Fixed some stuff in IdentityCreator
@@ -74,7 +78,7 @@ public final class AuthenticationBuilderTest extends AbstractSigningTest {
             assertTrue(authreq.isSigned());
             assertEquals(auth.getName(), authreq.getName());
             assertEquals(auth.getSiteHref(), "http://users.neuclear.org:8080");
-        } catch (InvalidNamedObject e) {
+        } catch (InvalidNamedObjectException e) {
             assertTrue(false);
         }
 

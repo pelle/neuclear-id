@@ -1,6 +1,5 @@
 package org.neuclear.id.builders;
 
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
@@ -25,8 +24,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestBuilder.java,v 1.6 2003/12/11 16:29:26 pelle Exp $
+$Id: SignatureRequestBuilder.java,v 1.7 2003/12/11 23:57:29 pelle Exp $
 $Log: SignatureRequestBuilder.java,v $
+Revision 1.7  2003/12/11 23:57:29  pelle
+Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
+Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
+
 Revision 1.6  2003/12/11 16:29:26  pelle
 Updated various builders to use the new helper methods in AbstractElementProxy hopefully making them more readable.
 
@@ -72,14 +75,10 @@ public final class SignatureRequestBuilder extends NamedObjectBuilder {
         super(NSTools.createUniqueTransactionID(requestor, userid), SignatureRequest.SIGREQUEST_TAG);
         final Element unsignedElem = addElement("Unsigned");
         unsignedElem.add(unsigned.getElement());
-        createAttribute("userid",  userid);
+        createAttribute("userid", userid);
         if (!Utility.isEmpty(description))
             addElement("Description").setText(description);
 
-    }
-
-    public final String getTagName() {
-        return SignatureRequest.SIGREQUEST_TAG;
     }
 
 }

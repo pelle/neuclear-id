@@ -2,7 +2,7 @@ package org.neuclear.id.resolver;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.Identity;
-import org.neuclear.id.InvalidNamedObject;
+import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.cache.NSCache;
@@ -31,11 +31,11 @@ public final class NSResolver {
      * @param name 
      * @return 
      */
-    public final static Identity resolveIdentity(final String name) throws NeuClearException, InvalidNamedObject {
+    public final static Identity resolveIdentity(final String name) throws NeuClearException, InvalidNamedObjectException {
         final SignedNamedObject id = resolve(name);
         if (id instanceof Identity)
             return (Identity) id;
-        throw new InvalidNamedObject(name + " is not a valid Identity");
+        throw new InvalidNamedObjectException(name + " is not a valid Identity");
     }
 
     /**
@@ -46,7 +46,7 @@ public final class NSResolver {
      * @param name 
      * @return 
      */
-    public final static SignedNamedObject resolve(final String name) throws NeuClearException, InvalidNamedObject {
+    public final static SignedNamedObject resolve(final String name) throws NeuClearException, InvalidNamedObjectException {
         SignedNamedObject obj = NSCACHE.fetchCached(name);
         if (obj != null)
             return obj;
