@@ -1,6 +1,9 @@
 /*
- * $Id: JCESigner.java,v 1.2 2003/10/29 23:17:53 pelle Exp $
+ * $Id: JCESigner.java,v 1.3 2003/11/08 20:27:06 pelle Exp $
  * $Log: JCESigner.java,v $
+ * Revision 1.3  2003/11/08 20:27:06  pelle
+ * Updated the Signer interface to return a key type to be used for XML SignatureInfo. Thus we now support DSA sigs yet again.
+ *
  * Revision 1.2  2003/10/29 23:17:53  pelle
  * Updated some javadocs
  * Added a neuclear specific maven repository at:
@@ -73,6 +76,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.*;
+import java.security.interfaces.RSAPublicKey;
+import java.security.interfaces.DSAPublicKey;
 
 /**
  * Wrapper around JCE KeyStore
@@ -141,6 +146,28 @@ public class JCESigner implements org.neudist.crypto.Signer, PublicKeySource {
         } catch (KeyStoreException e) {
             throw new CryptoException(e);
         }
+    }
+
+    /**
+     * Checks the key type of the given alias
+     * @param name
+     * @return KEY_NONE,KEY_RSA,KEY_DSA
+     * @throws CryptoException
+     */
+    public int getKeyType(String name) throws CryptoException {
+        try {
+            if (ks.isKeyEntry(name)) {
+                PublicKey pk=getPublicKey(name);
+                if (pk instanceof RSAPublicKey)
+                   return KEY_RSA;
+                if (pk instanceof DSAPublicKey)
+                    return KEY_DSA;
+                return KEY_OTHER;
+            }
+        } catch (KeyStoreException e) {
+            throw new CryptoException(e);
+        }
+        return KEY_NONE;  //To change body of implemented methods use Options | File Templates.
     }
 
     public PublicKey getPublicKey(String name) throws CryptoException {

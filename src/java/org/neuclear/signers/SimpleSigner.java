@@ -1,6 +1,9 @@
 /*
- * $Id: SimpleSigner.java,v 1.2 2003/10/29 23:17:53 pelle Exp $
+ * $Id: SimpleSigner.java,v 1.3 2003/11/08 20:27:06 pelle Exp $
  * $Log: SimpleSigner.java,v $
+ * Revision 1.3  2003/11/08 20:27:06  pelle
+ * Updated the Signer interface to return a key type to be used for XML SignatureInfo. Thus we now support DSA sigs yet again.
+ *
  * Revision 1.2  2003/10/29 23:17:53  pelle
  * Updated some javadocs
  * Added a neuclear specific maven repository at:
@@ -170,6 +173,16 @@ public class SimpleSigner implements Signer {
         return ks.containsKey(getDigestedName(name));
     }
 
+    /**
+     * Checks the key type of the given alias
+     * @param name
+     * @return KEY_NONE,KEY_RSA,KEY_DSA
+     * @throws CryptoException
+     */
+    public int getKeyType(String name) throws CryptoException {
+        return (canSignFor(name))?KEY_RSA:KEY_NONE; // We always use RSA here
+    }
+
     static final protected String getDigestedName(String name) {
         return new String(CryptoTools.digest(name.getBytes()));
     }
@@ -201,6 +214,7 @@ public class SimpleSigner implements Signer {
 
     private KeyFactory kf;
     private Map ks;
+
     private final File signerFile;
     private final PassPhraseAgent agent;
 }
