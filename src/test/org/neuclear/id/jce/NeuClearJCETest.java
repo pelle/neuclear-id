@@ -36,8 +36,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearJCETest.java,v 1.7 2003/12/17 12:45:57 pelle Exp $
+$Id: NeuClearJCETest.java,v 1.8 2003/12/17 18:02:44 pelle Exp $
 $Log: NeuClearJCETest.java,v $
+Revision 1.8  2003/12/17 18:02:44  pelle
+NeuClear JCE Certificates now work with KeyStore.
+We can now create JCE certificates based on NeuClear Identity's and store them in a keystore.
+
 Revision 1.7  2003/12/17 12:45:57  pelle
 NeuClear JCE Certificates now work with KeyStore.
 We can now create JCE certificates based on NeuClear Identity's and store them in a keystore.
@@ -130,7 +134,14 @@ public final class NeuClearJCETest extends AbstractSigningTest {
         assertEquals(eve.getCertificate(),ks.getCertificate("neu://eve@test"));
         assertEquals(eve.getPublicKey(),ks.getCertificate("neu://eve@test").getPublicKey());
         assertEquals(kp.getPrivate(),ks.getKey("neu://eve@test","neuclear".toCharArray()));
-
+        assertEquals(ks.getCertificateAlias(eve.getCertificate()),"neu://eve@test");
+        try {
+            ks.getCertificate("neu://eve@test").verify(signer.getPublicKey("neu://test"));;
+        } catch (InvalidKeyException e) {
+            assertTrue("Invalid Key",false);
+        } catch (SignatureException e) {
+            assertTrue("Invalid Signature",false);
+        }
         //Lets write it
         File ksfile=new File("target/testdata/keystores/testneuclearcert.jks");
         ksfile.getParentFile().mkdirs();
@@ -157,6 +168,14 @@ public final class NeuClearJCETest extends AbstractSigningTest {
         assertEquals(eve.getPublicKey(),ks2.getCertificate("neu://eve@test").getPublicKey());
         assertEquals(kp.getPrivate(),ks2.getKey("neu://eve@test","neuclear".toCharArray()));
 
+        assertEquals(ks2.getCertificateAlias(eve.getCertificate()),"neu://eve@test");
+        try {
+            ks2.getCertificate("neu://eve@test").verify(signer.getPublicKey("neu://test"));;
+        } catch (InvalidKeyException e) {
+            assertTrue("Invalid Key",false);
+        } catch (SignatureException e) {
+            assertTrue("Invalid Signature",false);
+        }
         //final AuthenticationTicketBuilder authb = new AuthenticationTicketBuilder("neu://eve@test", "neu://test", "http://users.neuclear.org:8080");
         //authb.sign(sig2);
 
