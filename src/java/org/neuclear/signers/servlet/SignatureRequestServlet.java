@@ -41,8 +41,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.2 2003/12/20 00:21:19 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.3 2003/12/22 22:15:27 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.3  2003/12/22 22:15:27  pelle
+Last minute cleanups and documentation prior to release 0.8.1
+
 Revision 1.2  2003/12/20 00:21:19  pelle
 overwrote the standard Object.toString(), hashCode() and equals() methods for SignedNamedObject/Core
 fixed cactus tests
@@ -121,7 +124,7 @@ public abstract class SignatureRequestServlet extends HttpServlet {
             sigreq.sign(serviceid, signer);
             out.write("<form action=\"");
             out.print(user.getSigner());
-            out.write("\" method=\"POST\">\n    ");
+            out.write("\" method=\"POST\" id=\"sigrequest\">\n    ");
             out.write("<input name=\"neuclear-request\" value=\"");
             out.print(XMLSecTools.encodeElementBase64(sigreq));
             out.write("\" type=\"hidden\">\n    ");
@@ -131,7 +134,7 @@ public abstract class SignatureRequestServlet extends HttpServlet {
 //            out.write("<input type=\"submit\">");
             out.write("</form>\n");
             out.write("<script language=\"javascript\">\n");
-            out.write("<!--\n   document.forms[0].submit();\n-->\n");
+            out.write("<!--\n   sigrequest.submit();\n-->\n");
             out.write("</script>\n");
 
         } catch (NeuClearException e) {

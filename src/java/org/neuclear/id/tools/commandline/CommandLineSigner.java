@@ -1,5 +1,8 @@
-/* $Id: CommandLineSigner.java,v 1.6 2003/12/19 18:03:34 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.7 2003/12/22 22:15:26 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.7  2003/12/22 22:15:26  pelle
+ * Last minute cleanups and documentation prior to release 0.8.1
+ *
  * Revision 1.6  2003/12/19 18:03:34  pelle
  * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
  * - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -235,7 +238,7 @@ import java.util.regex.Matcher;
 
 /**
  * @author pelleb
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class CommandLineSigner {
     private final String EXECUTABLE ;
@@ -356,7 +359,7 @@ public class CommandLineSigner {
             XMLTools.writeFile(dest, subject.getElement());
             System.out.println();
             System.out.println("You now need to copy the file: "+of+ " to your webserver so it is visible at the following location:\n" +
-                    NSTools.getRepositoryURL(alias)+NSTools.name2path(subject.getName())+"root.id");
+                    NSTools.getRepositoryURL(alias)+NSTools.name2path(subject.getName())+"/root.id");
 
             System.out.println("\nOnce this is done you will be able to verify your new Identity like this:");
             System.out.println(EXECUTABLE+" -v "+subject.getName());
