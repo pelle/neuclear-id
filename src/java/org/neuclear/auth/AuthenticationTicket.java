@@ -12,10 +12,10 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.Identity;
 import org.neuclear.id.NamedObjectReader;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.commons.time.TimeTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.sql.Timestamp;
@@ -37,14 +37,14 @@ public class AuthenticationTicket extends SignedNamedObject {
      * @param name      
      * @param signatory 
      * @param timestamp 
-     * @param digest    
+     * @param encoded   
      * @param requester 
      * @param validto   
      * @param siteurl   
      * @throws NeuClearException 
      */
-    private AuthenticationTicket(String name, Identity signatory, Timestamp timestamp, String digest, String requester, Timestamp validto, String siteurl) throws NeuClearException {
-        super(name, signatory, timestamp, digest);
+    private AuthenticationTicket(String name, Identity signatory, Timestamp timestamp, String encoded, String requester, Timestamp validto, String siteurl) throws NeuClearException {
+        super(name, signatory, timestamp, encoded);
         this.validTo = validto;
         this.siteurl = siteurl;
         this.requester = requester;

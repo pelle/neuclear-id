@@ -1,6 +1,15 @@
 /*
- * $Id: SignedNamedObject.java,v 1.9 2003/11/11 21:18:43 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.10 2003/11/19 23:33:59 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.10  2003/11/19 23:33:59  pelle
+ * Signers now can generatekeys via the generateKey() method.
+ * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+ * SignedNamedObject now contains the full xml which is returned with getEncoded()
+ * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * NamedObjectBuilder for its original purposes of purely generating new Contracts.
+ * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+ * Updated all major interfaces that used the old model to use the new model.
+ *
  * Revision 1.9  2003/11/11 21:18:43  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -178,6 +187,7 @@ package org.neuclear.id;
 
 import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.CryptoTools;
 
 import java.sql.Timestamp;
 
@@ -194,7 +204,7 @@ import java.sql.Timestamp;
  * To actually create and sign your own object use the NamedObjectBuilder or its subclasses. Each subclass of
  * SignedNamedObject should have a corresponding subclass of NamedObjectBuilder.<p>
  * These NamedObjectBuilder objects should be signed using your Signer, before being sent on to a web service.
- *
+ * 
  * @see NamedObjectReader
  * @see org.neuclear.id.builders.NamedObjectBuilder
  * @see org.neuclear.id.verifier.VerifyingReader
@@ -204,11 +214,11 @@ import java.sql.Timestamp;
  */
 public class SignedNamedObject implements SignedObject, Named {
 
-    protected SignedNamedObject(String name, Identity signer, Timestamp timestamp, String digest) throws NeuClearException {
+    protected SignedNamedObject(String name, Identity signer, Timestamp timestamp, String encoded) throws NeuClearException {
         this.name = NSTools.normalizeNameURI(name);
         this.signer = signer;
         this.timestamp = timestamp;
-        this.digest = digest;
+        this.encoded = encoded;
     }
 
     /**
@@ -222,12 +232,13 @@ public class SignedNamedObject implements SignedObject, Named {
 
     /**
      * The Name of an object within it's parent Identity
-     *  <p>
+     * <p/>
      * eg.:<pre>
      * getName() = "neu://test/hello"
      * getLocalName() = "hello":
      * </pre>
-     * @return  Name
+     * 
+     * @return Name
      */
     public String getLocalName() {
         String fullName = getName();
@@ -238,7 +249,8 @@ public class SignedNamedObject implements SignedObject, Named {
 
     /**
      * The time the object was signed
-     * @return
+     * 
+     * @return 
      */
     public Timestamp getTimeStamp() {
         return timestamp;
@@ -256,18 +268,22 @@ public class SignedNamedObject implements SignedObject, Named {
     }
 
     /**
-     * The SHA1 Digest of the original xml signed document
+     * The original xml document
      * 
      * @return 
      */
-    public String getDigest() {
-        return digest;
+    public final String getEncoded() {
+        return encoded;
+    }
+
+    public final byte[] getDigest() {
+        return CryptoTools.digest(encoded.getBytes());
     }
 
     private final String name;
     private final Identity signer;
     private final Timestamp timestamp;
-    private final String digest;
+    private final String encoded;
 
     final public static class Reader implements NamedObjectReader {
         /**
@@ -276,9 +292,9 @@ public class SignedNamedObject implements SignedObject, Named {
          * @param elem 
          * @return 
          */
-        public SignedNamedObject read(Element elem, String name, Identity signatory, String digest, Timestamp timestamp) throws NeuClearException {
+        public SignedNamedObject read(Element elem, String name, Identity signatory, String encoded, Timestamp timestamp) throws NeuClearException {
 
-            return new SignedNamedObject(name, signatory, timestamp, digest);
+            return new SignedNamedObject(name, signatory, timestamp, encoded);
         }
 
     }

@@ -5,8 +5,17 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:52:38 AM
- * $Id: SmtpSender.java,v 1.12 2003/11/11 21:18:43 pelle Exp $
+ * $Id: SmtpSender.java,v 1.13 2003/11/19 23:33:59 pelle Exp $
  * $Log: SmtpSender.java,v $
+ * Revision 1.13  2003/11/19 23:33:59  pelle
+ * Signers now can generatekeys via the generateKey() method.
+ * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+ * SignedNamedObject now contains the full xml which is returned with getEncoded()
+ * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * NamedObjectBuilder for its original purposes of purely generating new Contracts.
+ * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+ * Updated all major interfaces that used the old model to use the new model.
+ *
  * Revision 1.12  2003/11/11 21:18:43  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -90,10 +99,8 @@ package org.neuclear.senders;
  */
 
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.commons.Utility;
-import org.neuclear.xml.XMLException;
+import org.neuclear.id.SignedNamedObject;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -104,7 +111,7 @@ import java.util.Date;
 import java.util.Properties;
 
 public class SmtpSender extends Sender {
-    public SignedNamedObject send(String endpoint, NamedObjectBuilder obj) throws NeuClearException {
+    public SignedNamedObject send(String endpoint, SignedNamedObject obj) throws NeuClearException {
         Properties props = System.getProperties();
         if (endpoint.startsWith("mailto:"))
             endpoint = endpoint.substring(7);
@@ -135,7 +142,7 @@ public class SmtpSender extends Sender {
             Multipart multi = new MimeMultipart();
             multi.addBodyPart(body);
             BodyPart objpart = new MimeBodyPart();
-            objpart.setText(obj.asXML());
+            objpart.setText(obj.getEncoded());
             objpart.setHeader("Content-type", "application/nsdl");
             multi.addBodyPart(objpart);
             msg.setContent(multi);
@@ -147,9 +154,6 @@ public class SmtpSender extends Sender {
             Transport.send(msg);
         } catch (MessagingException e) {
             e.printStackTrace();  //To change body of catch statement use Options | File Templates.
-            Utility.rethrowException(e);
-        } catch (XMLException e) {
-            e.printStackTrace();
             Utility.rethrowException(e);
         }
 

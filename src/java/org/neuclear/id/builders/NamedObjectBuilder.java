@@ -1,6 +1,15 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.8 2003/11/15 01:58:16 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.9 2003/11/19 23:33:58 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.9  2003/11/19 23:33:58  pelle
+ * Signers now can generatekeys via the generateKey() method.
+ * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+ * SignedNamedObject now contains the full xml which is returned with getEncoded()
+ * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * NamedObjectBuilder for its original purposes of purely generating new Contracts.
+ * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+ * Updated all major interfaces that used the old model to use the new model.
+ *
  * Revision 1.8  2003/11/15 01:58:16  pelle
  * More work all around on web applications.
  *
@@ -159,11 +168,9 @@ import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.*;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.id.verifier.VerifyingReader;
-import org.neuclear.senders.Sender;
 import org.neuclear.xml.AbstractElementProxy;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.xmlsec.SignedElement;
-import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.io.ByteArrayInputStream;
@@ -215,11 +222,12 @@ public class NamedObjectBuilder extends SignedElement implements Named {
         super(doc.getRootElement());
     }
 
-    final public void sign(Signer signer) throws NeuClearException, XMLSecurityException {
+    final public SignedNamedObject sign(Signer signer) throws NeuClearException, XMLException {
         sign(getParent().getName(), signer);
+        return verify();
     }
 
-    public final SignedNamedObject verify() throws NeuClearException, XMLException {
+    private final SignedNamedObject verify() throws NeuClearException, XMLException {
         if (!isSigned())
             throw new InvalidNamedObject("Invalid: " + this.getName());
         return VerifyingReader.getInstance().read(new ByteArrayInputStream(canonicalize()));
@@ -292,18 +300,6 @@ public class NamedObjectBuilder extends SignedElement implements Named {
         getElement().addAttribute(DocumentHelper.createQName("timestamp", NSTools.NS_NEUID), TimeTools.createTimeStamp());
     }
 
-    /**
-     * This is called after signing to handle any post signing tasks such as logging
-     * 
-     * @throws XMLSecurityException 
-     */
-    protected void postSign() throws XMLSecurityException {
-        try {
-            log();
-        } catch (NeuClearException e) {
-            XMLSecTools.rethrowException(e);
-        }
-    }
 
     /**
      * Adds a TargetReference to a NamedObject.<br>
@@ -349,7 +345,6 @@ public class NamedObjectBuilder extends SignedElement implements Named {
             Iterator iter = listTargets();
             while (iter.hasNext()) {
                 TargetReference tg = ((TargetReference) iter.next());
-                tg.send();
                 System.out.println("NEUDIST: Sent to " + tg.getHref());
             }
 
@@ -372,11 +367,6 @@ public class NamedObjectBuilder extends SignedElement implements Named {
 
     }
 
-    public final void log() throws NeuClearException {
-        Identity ns = getParent();
-        if (ns != null && ns.getLogger() != null)
-            Sender.quickSend(ns.getLogger(), this);
-    }
 
     public Identity getParent() throws NeuClearException {
         return NSResolver.resolveIdentity(NSTools.getParentNSURI(getName()));

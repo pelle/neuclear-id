@@ -5,8 +5,17 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:29:29 AM
- * $Id: Sender.java,v 1.10 2003/11/11 21:18:43 pelle Exp $
+ * $Id: Sender.java,v 1.11 2003/11/19 23:33:59 pelle Exp $
  * $Log: Sender.java,v $
+ * Revision 1.11  2003/11/19 23:33:59  pelle
+ * Signers now can generatekeys via the generateKey() method.
+ * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+ * SignedNamedObject now contains the full xml which is returned with getEncoded()
+ * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * NamedObjectBuilder for its original purposes of purely generating new Contracts.
+ * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+ * Updated all major interfaces that used the old model to use the new model.
+ *
  * Revision 1.10  2003/11/11 21:18:43  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -53,7 +62,6 @@ package org.neuclear.senders;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.xml.XMLException;
 
 import java.util.HashMap;
@@ -61,9 +69,9 @@ import java.util.Map;
 
 public abstract class Sender {
 
-    public abstract SignedNamedObject send(String endpoint, NamedObjectBuilder obj) throws NeuClearException, XMLException;
+    public abstract SignedNamedObject send(String endpoint, SignedNamedObject obj) throws NeuClearException, XMLException;
 
-    public static SignedNamedObject quickSend(String endpoint, NamedObjectBuilder obj) throws NeuClearException {
+    public static SignedNamedObject quickSend(String endpoint, SignedNamedObject obj) throws NeuClearException {
         int protloc = endpoint.indexOf(":");
         if (protloc < 0)
             throw new NeuClearException(endpoint + "Is not in URL format");

@@ -24,8 +24,17 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NamedObjectReader.java,v 1.3 2003/11/11 21:18:43 pelle Exp $
+$Id: NamedObjectReader.java,v 1.4 2003/11/19 23:33:59 pelle Exp $
 $Log: NamedObjectReader.java,v $
+Revision 1.4  2003/11/19 23:33:59  pelle
+Signers now can generatekeys via the generateKey() method.
+Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+SignedNamedObject now contains the full xml which is returned with getEncoded()
+This means that it is now possible to further send on or process a SignedNamedObject, leaving
+NamedObjectBuilder for its original purposes of purely generating new Contracts.
+NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+Updated all major interfaces that used the old model to use the new model.
+
 Revision 1.3  2003/11/11 21:18:43  pelle
 Further vital reshuffling.
 org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -49,7 +58,6 @@ todo with regards to cleaning up some of the outlying parts of the code.
 */
 
 /**
- * 
  * User: pelleb
  * Date: Sep 23, 2003
  * Time: 5:09:57 PM
@@ -58,8 +66,9 @@ public interface NamedObjectReader {
 
     /**
      * Read object from Element and fill in its details
-     * @param elem
-     * @return
+     * 
+     * @param elem 
+     * @return 
      */
-    public SignedNamedObject read(Element elem,String name,Identity signatory,String digest,Timestamp timestamp) throws NeuClearException, XMLSecurityException;
+    public SignedNamedObject read(Element elem, String name, Identity signatory, String encoded, Timestamp timestamp) throws NeuClearException, XMLSecurityException;
 }

@@ -6,8 +6,17 @@ package org.neuclear.receiver;
  * Date: Oct 10, 2002
  * Time: 11:24:59 PM
  * To change this template use Options | File Templates.
- * $Id: Receiver.java,v 1.11 2003/11/11 21:18:43 pelle Exp $
+ * $Id: Receiver.java,v 1.12 2003/11/19 23:33:59 pelle Exp $
  * $Log: Receiver.java,v $
+ * Revision 1.12  2003/11/19 23:33:59  pelle
+ * Signers now can generatekeys via the generateKey() method.
+ * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+ * SignedNamedObject now contains the full xml which is returned with getEncoded()
+ * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * NamedObjectBuilder for its original purposes of purely generating new Contracts.
+ * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+ * Updated all major interfaces that used the old model to use the new model.
+ *
  * Revision 1.11  2003/11/11 21:18:43  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -87,6 +96,7 @@ package org.neuclear.receiver;
  *
  */
 
+import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.SignedNamedObject;
 
 /**
@@ -103,5 +113,5 @@ public interface Receiver {
      * @param obj 
      * @throws UnsupportedTransaction 
      */
-    org.neuclear.xml.ElementProxy receive(SignedNamedObject obj) throws UnsupportedTransaction;
+    org.neuclear.xml.ElementProxy receive(SignedNamedObject obj) throws UnsupportedTransaction, NeuClearException;
 }

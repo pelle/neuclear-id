@@ -1,6 +1,15 @@
 /*
- * $Id: TargetReference.java,v 1.4 2003/11/11 21:18:42 pelle Exp $
+ * $Id: TargetReference.java,v 1.5 2003/11/19 23:33:59 pelle Exp $
  * $Log: TargetReference.java,v $
+ * Revision 1.5  2003/11/19 23:33:59  pelle
+ * Signers now can generatekeys via the generateKey() method.
+ * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+ * SignedNamedObject now contains the full xml which is returned with getEncoded()
+ * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * NamedObjectBuilder for its original purposes of purely generating new Contracts.
+ * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+ * Updated all major interfaces that used the old model to use the new model.
+ *
  * Revision 1.4  2003/11/11 21:18:42  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -57,10 +66,9 @@ package org.neuclear.id.builders;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
-import org.neuclear.id.NSTools;
-import org.neuclear.senders.Sender;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
+import org.neuclear.id.NSTools;
 import org.neuclear.xml.AbstractElementProxy;
 
 public class TargetReference extends AbstractElementProxy {
@@ -98,9 +106,6 @@ public class TargetReference extends AbstractElementProxy {
         return NSTools.NS_NEUID;
     }
 
-    public void send() throws NeuClearException {
-        Sender.quickSend(getHref(), owner);
-    }
 
     private NamedObjectBuilder owner;
 }

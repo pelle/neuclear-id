@@ -1,6 +1,15 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.12 2003/11/18 15:45:09 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.13 2003/11/19 23:34:00 pelle Exp $
   $Log: AbstractStoreTest.java,v $
+  Revision 1.13  2003/11/19 23:34:00  pelle
+  Signers now can generatekeys via the generateKey() method.
+  Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+  SignedNamedObject now contains the full xml which is returned with getEncoded()
+  This means that it is now possible to further send on or process a SignedNamedObject, leaving
+  NamedObjectBuilder for its original purposes of purely generating new Contracts.
+  NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+  Updated all major interfaces that used the old model to use the new model.
+
   Revision 1.12  2003/11/18 15:45:09  pelle
   FileStoreTest now passes. FileStore works again.
 
@@ -135,19 +144,14 @@
 
 package org.neuclear.store;
 
-import junit.framework.TestCase;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.InvalidNamedObject;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.NSTools;
 import org.neuclear.id.builders.IdentityBuilder;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
 import org.neuclear.tests.AbstractSigningTest;
+import org.neuclear.xml.XMLException;
 
 import java.security.GeneralSecurityException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.SecureRandom;
 
 
 /**
@@ -170,25 +174,23 @@ public abstract class AbstractStoreTest extends AbstractSigningTest {
     }
 
 
-    public void testStore() throws NeuClearException, InvalidNamedObject, XMLSecurityException {
+    public void testStore() throws NeuClearException, InvalidNamedObject, XMLException {
         System.out.println("\nTesting " + this.getClass().getName());
         System.out.println("Storing " + bobName);
-        IdentityBuilder bob=new IdentityBuilder(bobName,signer.getPublicKey(bobName));
-        bob.sign(signer);
-        store.receive(bob);
+        IdentityBuilder bob = new IdentityBuilder(bobName, signer.getPublicKey(bobName));
+        store.receive(bob.sign(signer));
         System.out.println("Storing " + aliceName);
-        IdentityBuilder alice=new IdentityBuilder(aliceName,signer.getPublicKey(aliceName));
-        alice.sign(signer);
-        store.receive(alice);
+        IdentityBuilder alice = new IdentityBuilder(aliceName, signer.getPublicKey(aliceName));
+        store.receive(alice.sign(signer));
 
-        System.out.println("Fetching "+bobName);
-        SignedNamedObject nobj2=store.fetch(bobName);
+        System.out.println("Fetching " + bobName);
+        SignedNamedObject nobj2 = store.fetch(bobName);
         assertNotNull(nobj2);
-        assertEquals(bobName,nobj2.getName());
+        assertEquals(bobName, nobj2.getName());
 
-        System.out.println("Fetching "+aliceName);
-        SignedNamedObject nobj4=store.fetch(aliceName);
-        assertEquals(aliceName,nobj4.getName());
+        System.out.println("Fetching " + aliceName);
+        SignedNamedObject nobj4 = store.fetch(aliceName);
+        assertEquals(aliceName, nobj4.getName());
     }
 
     private Store store;

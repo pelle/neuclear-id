@@ -9,7 +9,6 @@ import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.tests.AbstractSigningTest;
 import org.neuclear.xml.XMLException;
-import org.neuclear.xml.XMLTools;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,8 +32,17 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: IdentityBuilderTest.java,v 1.5 2003/11/18 15:07:37 pelle Exp $
+$Id: IdentityBuilderTest.java,v 1.6 2003/11/19 23:34:00 pelle Exp $
 $Log: IdentityBuilderTest.java,v $
+Revision 1.6  2003/11/19 23:34:00  pelle
+Signers now can generatekeys via the generateKey() method.
+Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+SignedNamedObject now contains the full xml which is returned with getEncoded()
+This means that it is now possible to further send on or process a SignedNamedObject, leaving
+NamedObjectBuilder for its original purposes of purely generating new Contracts.
+NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+Updated all major interfaces that used the old model to use the new model.
+
 Revision 1.5  2003/11/18 15:07:37  pelle
 Changes to JCE Implementation
 Working on getting all tests working including store tests
@@ -77,17 +85,16 @@ public class IdentityBuilderTest extends AbstractSigningTest {
                     "mailto:pelle@neuclear.org");
 
             final String parent = NSTools.getParentNSURI(id.getName());
+            SignedNamedObject sec = null;
             if (getSigner().canSignFor(parent)) {
                 id.sign(getSigner());
-
             } else if (parent.equals("neu://")) {
                 id.sign(rootsigner);
             }
+            assertNotNull(sec);
             File file = new File(PATH + NSTools.url2path(id.getName()) + "/root.id");
             file.getParentFile().mkdirs();
-//            XMLTools.writeFile(file, id.getElement());
             System.out.println("Wrote: " + file.getAbsolutePath());
-            SignedNamedObject sec = id.verify();
             assertEquals(id.getName(), sec.getName());
             assertTrue(true);
         } else {

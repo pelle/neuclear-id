@@ -1,6 +1,15 @@
 /*
- * $Id: Identity.java,v 1.18 2003/11/18 15:07:36 pelle Exp $
+ * $Id: Identity.java,v 1.19 2003/11/19 23:33:59 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.19  2003/11/19 23:33:59  pelle
+ * Signers now can generatekeys via the generateKey() method.
+ * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+ * SignedNamedObject now contains the full xml which is returned with getEncoded()
+ * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * NamedObjectBuilder for its original purposes of purely generating new Contracts.
+ * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+ * Updated all major interfaces that used the old model to use the new model.
+ *
  * Revision 1.18  2003/11/18 15:07:36  pelle
  * Changes to JCE Implementation
  * Working on getting all tests working including store tests
@@ -240,7 +249,6 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.CryptoException;
 import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.Sender;
 import org.neuclear.xml.xmlsec.KeyInfo;
@@ -288,8 +296,8 @@ public class Identity extends SignedNamedObject implements Principal {
      * @throws NeuClearException 
      */
 
-    protected Identity(String name, Identity signatory, Timestamp timestamp, String digest, String repository, String signer, String logger, String receiver, PublicKey pub) throws NeuClearException {
-        super(name, signatory, timestamp, digest);
+    protected Identity(String name, Identity signatory, Timestamp timestamp, String encoded, String repository, String signer, String logger, String receiver, PublicKey pub) throws NeuClearException {
+        super(name, signatory, timestamp, encoded);
         this.repository = repository;
         this.logger = logger;
         this.signer = signer;
@@ -310,14 +318,14 @@ public class Identity extends SignedNamedObject implements Principal {
         return logger;
     }
 
-    public SignedNamedObject send(NamedObjectBuilder obj) throws NeuClearException {
+    public SignedNamedObject send(SignedNamedObject obj) throws NeuClearException {
         if (!Utility.isEmpty(receiver))
             return Sender.quickSend(receiver, obj);
         else
             throw new NeuClearException("Cant send object, " + getName() + " doesnt have a registered Receiver");
     }
 
-    void log(NamedObjectBuilder obj) throws NeuClearException {
+    void log(SignedNamedObject obj) throws NeuClearException {
         if (!Utility.isEmpty(logger))
             Sender.quickSend(logger, obj);
     }
@@ -355,16 +363,16 @@ public class Identity extends SignedNamedObject implements Principal {
 
     public static final Identity NEUROOT = createRootIdentity();
 
-    public final Certificate[] getCertificateChain(){
-        ArrayList certs=new ArrayList(3);
-        Identity id=this;
-        while(id!=null ||id.getName().equals("neu://")) {
+    public final Certificate[] getCertificateChain() {
+        ArrayList certs = new ArrayList(3);
+        Identity id = this;
+        while (id != null || id.getName().equals("neu://")) {
             certs.add(id.getCertificate());
-            id=id.getSignatory();
+            id = id.getSignatory();
         }
         certs.add(NEUROOT);
         certs.trimToSize();
-        return (Certificate[])certs.toArray();
+        return (Certificate[]) certs.toArray();
     }
 
     /**
@@ -390,7 +398,7 @@ public class Identity extends SignedNamedObject implements Principal {
          * @throws CertificateEncodingException 
          */
         public byte[] getEncoded() throws CertificateEncodingException {
-            return getName().getBytes();
+            return getEncoded();
         }
 
         /**
@@ -432,7 +440,7 @@ public class Identity extends SignedNamedObject implements Principal {
          * @param elem 
          * @return 
          */
-        public SignedNamedObject read(Element elem, String name, Identity signatory, String digest, Timestamp timestamp) throws XMLSecurityException, NeuClearException {
+        public SignedNamedObject read(Element elem, String name, Identity signatory, String encoded, Timestamp timestamp) throws XMLSecurityException, NeuClearException {
             String repository = elem.attributeValue(DocumentHelper.createQName("repository", NSTools.NS_NEUID));
             String signer = elem.attributeValue(DocumentHelper.createQName("signer", NSTools.NS_NEUID));
             String logger = elem.attributeValue(DocumentHelper.createQName("logger", NSTools.NS_NEUID));
@@ -441,7 +449,7 @@ public class Identity extends SignedNamedObject implements Principal {
             Element allowElement = elem.element(DocumentHelper.createQName("allow", NSTools.NS_NEUID));
             KeyInfo ki = new KeyInfo(allowElement.element(XMLSecTools.createQName("KeyInfo")));
             PublicKey pub = ki.getPublicKey();
-            return new Identity(name, signatory, timestamp, digest, repository, signer, logger, receiver, pub);
+            return new Identity(name, signatory, timestamp, encoded, repository, signer, logger, receiver, pub);
         }
 
     }

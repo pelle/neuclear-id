@@ -1,6 +1,15 @@
 /*
- * $Id: SigningServlet.java,v 1.13 2003/11/18 23:35:45 pelle Exp $
+ * $Id: SigningServlet.java,v 1.14 2003/11/19 23:33:59 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.14  2003/11/19 23:33:59  pelle
+ * Signers now can generatekeys via the generateKey() method.
+ * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+ * SignedNamedObject now contains the full xml which is returned with getEncoded()
+ * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * NamedObjectBuilder for its original purposes of purely generating new Contracts.
+ * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+ * Updated all major interfaces that used the old model to use the new model.
+ *
  * Revision 1.13  2003/11/18 23:35:45  pelle
  * Payment Web Application is getting there.
  *
@@ -257,12 +266,11 @@ public class SigningServlet extends ReceiverServlet implements PassPhraseAgent {
                     out.flush();
                     try {
                         context.log("SIGN: Signing with " + parent);
-                        named.sign(signer);
+                        SignedNamedObject signed = named.sign(signer);
                         isSigned = true;
                         out.println("Signed<br>");
                         out.println("<br>Verifying...");
                         out.flush();
-                        SignedNamedObject signed = named.verify();
                         out.println(signed.getName() + " Verified<br>");
 
                     } catch (InvalidNamedObject e) {

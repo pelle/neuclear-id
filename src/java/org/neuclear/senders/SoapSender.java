@@ -5,8 +5,17 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:50:30 AM
- * $Id: SoapSender.java,v 1.11 2003/11/11 21:18:43 pelle Exp $
+ * $Id: SoapSender.java,v 1.12 2003/11/19 23:33:59 pelle Exp $
  * $Log: SoapSender.java,v $
+ * Revision 1.12  2003/11/19 23:33:59  pelle
+ * Signers now can generatekeys via the generateKey() method.
+ * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+ * SignedNamedObject now contains the full xml which is returned with getEncoded()
+ * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * NamedObjectBuilder for its original purposes of purely generating new Contracts.
+ * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+ * Updated all major interfaces that used the old model to use the new model.
+ *
  * Revision 1.11  2003/11/11 21:18:43  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -85,15 +94,14 @@ package org.neuclear.senders;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.soap.SOAPTools;
 
 
 public class SoapSender extends Sender {
-    public SignedNamedObject send(String endpoint, NamedObjectBuilder obj) throws NeuClearException, XMLException {
-        return VerifyingReader.getInstance().read(SOAPTools.soapRequest(endpoint, obj.getElement(), "/receive"));
+    public SignedNamedObject send(String endpoint, SignedNamedObject obj) throws NeuClearException, XMLException {
+        return VerifyingReader.getInstance().read(SOAPTools.soapRequest(endpoint, obj.getEncoded(), "/receive"));
 
     }
 }

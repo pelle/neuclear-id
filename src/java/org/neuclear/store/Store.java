@@ -1,6 +1,15 @@
 /*
- * $Id: Store.java,v 1.13 2003/11/18 15:45:09 pelle Exp $
+ * $Id: Store.java,v 1.14 2003/11/19 23:34:00 pelle Exp $
  * $Log: Store.java,v $
+ * Revision 1.14  2003/11/19 23:34:00  pelle
+ * Signers now can generatekeys via the generateKey() method.
+ * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+ * SignedNamedObject now contains the full xml which is returned with getEncoded()
+ * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * NamedObjectBuilder for its original purposes of purely generating new Contracts.
+ * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+ * Updated all major interfaces that used the old model to use the new model.
+ *
  * Revision 1.13  2003/11/18 15:45:09  pelle
  * FileStoreTest now passes. FileStore works again.
  *
@@ -164,16 +173,13 @@
 package org.neuclear.store;
 
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.InvalidNamedObject;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.builders.NamedObjectBuilder;
-import org.neuclear.receiver.RawReceiver;
-import org.neuclear.receiver.UnsupportedTransaction;
+import org.neuclear.receiver.Receiver;
 import org.neuclear.xml.XMLException;
 
 import java.io.IOException;
 
-abstract public class Store implements RawReceiver {
+abstract public class Store implements Receiver {
 
 
     //protected Store(Store store)
@@ -181,26 +187,23 @@ abstract public class Store implements RawReceiver {
     /**
      * This handles the Identity checking on the object.
      */
-    public final void receive(NamedObjectBuilder obj) throws InvalidNamedObject,NeuClearException {
+    public final org.neuclear.xml.ElementProxy receive(SignedNamedObject obj) throws NeuClearException {
         try {
-            // Dont allow overwrites
-            //TODO: Implement versioning
-            obj.verify();
             rawStore(obj);
         } catch (IOException e) {
             throw new NeuClearException(e);
         } catch (XMLException e) {
             throw new NeuClearException(e);
         }
+        return null;
     }
 
     /**
      * Override this for each specific Store type
      */
-    protected void rawStore(NamedObjectBuilder obj) throws IOException, NeuClearException, XMLException {
+    protected void rawStore(SignedNamedObject obj) throws IOException, NeuClearException, XMLException {
         ;
     }
-
 
 
     abstract SignedNamedObject fetch(String name) throws NeuClearException;

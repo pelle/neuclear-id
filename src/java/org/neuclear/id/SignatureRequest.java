@@ -27,8 +27,17 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequest.java,v 1.3 2003/11/18 00:01:55 pelle Exp $
+$Id: SignatureRequest.java,v 1.4 2003/11/19 23:33:59 pelle Exp $
 $Log: SignatureRequest.java,v $
+Revision 1.4  2003/11/19 23:33:59  pelle
+Signers now can generatekeys via the generateKey() method.
+Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+SignedNamedObject now contains the full xml which is returned with getEncoded()
+This means that it is now possible to further send on or process a SignedNamedObject, leaving
+NamedObjectBuilder for its original purposes of purely generating new Contracts.
+NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+Updated all major interfaces that used the old model to use the new model.
+
 Revision 1.3  2003/11/18 00:01:55  pelle
 The sample signing web application for logging in and out is now working.
 There had been an issue in the canonicalizer when dealing with the embedded object of the SignatureRequest object.
@@ -54,8 +63,8 @@ Created SignatureRequest and friends to send unsigned NamedObjectBuilders to int
  * Time: 12:23:52 PM
  */
 public class SignatureRequest extends SignedNamedObject {
-    private SignatureRequest(String name, Identity signer, Timestamp timestamp, String digest, String userid, NamedObjectBuilder unsigned, String description) throws NeuClearException {
-        super(name, signer, timestamp, digest);
+    private SignatureRequest(String name, Identity signer, Timestamp timestamp, String encoded, String userid, NamedObjectBuilder unsigned, String description) throws NeuClearException {
+        super(name, signer, timestamp, encoded);
         this.userid = userid;
         this.unsigned = unsigned;
         this.description = description;

@@ -27,8 +27,17 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningRequestBuilderTest.java,v 1.1 2003/11/18 00:01:56 pelle Exp $
+$Id: SigningRequestBuilderTest.java,v 1.2 2003/11/19 23:34:00 pelle Exp $
 $Log: SigningRequestBuilderTest.java,v $
+Revision 1.2  2003/11/19 23:34:00  pelle
+Signers now can generatekeys via the generateKey() method.
+Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+SignedNamedObject now contains the full xml which is returned with getEncoded()
+This means that it is now possible to further send on or process a SignedNamedObject, leaving
+NamedObjectBuilder for its original purposes of purely generating new Contracts.
+NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+Updated all major interfaces that used the old model to use the new model.
+
 Revision 1.1  2003/11/18 00:01:56  pelle
 The sample signing web application for logging in and out is now working.
 There had been an issue in the canonicalizer when dealing with the embedded object of the SignatureRequest object.
@@ -49,17 +58,16 @@ public class SigningRequestBuilderTest extends AbstractSigningTest {
         AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://users.neuclear.org:8080");
         SignatureRequestBuilder sigreq = new SignatureRequestBuilder("neu://test", "neu://bob@test", authreq, "For testing purposes");
         assertEquals(sigreq.getParent().getName(), "neu://test");
-        sigreq.sign(signer);
-        assertTrue(sigreq.isSigned());
         try {
-            SignatureRequest tosign = (SignatureRequest) sigreq.verify();
+            SignatureRequest tosign = (SignatureRequest) sigreq.sign(signer);
+            assertTrue(sigreq.isSigned());
             assertEquals(tosign.getName(), sigreq.getName());
+
             NamedObjectBuilder auth2 = tosign.getUnsigned();
             assertEquals(auth2.getParent().getName(), "neu://bob@test");
-            auth2.sign(signer);
-            assertTrue(auth2.isSigned());
 
-            AuthenticationTicket auth = (AuthenticationTicket) auth2.verify();
+            AuthenticationTicket auth = (AuthenticationTicket) auth2.sign(signer);
+            assertTrue(auth2.isSigned());
             assertEquals(auth.getName(), authreq.getName());
             assertEquals(auth.getSiteHref(), "http://users.neuclear.org:8080");
         } catch (InvalidNamedObject e) {

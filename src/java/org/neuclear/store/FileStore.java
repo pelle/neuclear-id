@@ -1,6 +1,15 @@
 /*
- * $Id: FileStore.java,v 1.13 2003/11/18 23:35:46 pelle Exp $
+ * $Id: FileStore.java,v 1.14 2003/11/19 23:34:00 pelle Exp $
  * $Log: FileStore.java,v $
+ * Revision 1.14  2003/11/19 23:34:00  pelle
+ * Signers now can generatekeys via the generateKey() method.
+ * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
+ * SignedNamedObject now contains the full xml which is returned with getEncoded()
+ * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * NamedObjectBuilder for its original purposes of purely generating new Contracts.
+ * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
+ * Updated all major interfaces that used the old model to use the new model.
+ *
  * Revision 1.13  2003/11/18 23:35:46  pelle
  * Payment Web Application is getting there.
  *
@@ -158,7 +167,6 @@ package org.neuclear.store;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.XMLException;
 
@@ -174,13 +182,13 @@ public class FileStore extends Store {
         this.base = base;
     }
 
-    protected void rawStore(NamedObjectBuilder obj) throws IOException, NeuClearException, XMLException {
+    protected void rawStore(SignedNamedObject obj) throws IOException, NeuClearException, XMLException {
         OutputStream out = getOutputStream(obj);
-        out.write(obj.canonicalize());
+        out.write(obj.getEncoded().getBytes("UTF-8"));
         out.close();
     }
 
-    protected OutputStream getOutputStream(NamedObjectBuilder obj) throws NeuClearException, FileNotFoundException {
+    protected OutputStream getOutputStream(SignedNamedObject obj) throws NeuClearException, FileNotFoundException {
         String outputFilename = base + getFileName(obj);
         System.out.println("Outputting to: " + outputFilename);
         File outputFile = new File(outputFilename);
@@ -220,7 +228,7 @@ public class FileStore extends Store {
         return NSTools.url2path(name) + "/root.id";
     }
 
-    protected String getFileName(NamedObjectBuilder obj) throws NeuClearException {
+    protected String getFileName(SignedNamedObject obj) throws NeuClearException {
         return getFileName(obj.getName());
 //        if (! (obj instanceof Identity))
 //            return obj.getName();
