@@ -20,8 +20,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: Named.java,v 1.1 2003/09/24 23:56:48 pelle Exp $
+$Id: Named.java,v 1.2 2003/10/01 17:05:37 pelle Exp $
 $Log: Named.java,v $
+Revision 1.2  2003/10/01 17:05:37  pelle
+Moved the NeuClearCertificate class to be an inner class of Identity.
+
 Revision 1.1  2003/09/24 23:56:48  pelle
 Refactoring nearly done. New model for creating signed objects.
 With view for supporting the xmlpull api shortly for performance reasons.
@@ -40,7 +43,7 @@ todo with regards to cleaning up some of the outlying parts of the code.
  * Time: 4:06:57 PM
  */
 public interface Named {
-    String getName() throws NeudistException;
+    String getName() ;
 
-    String getLocalName() throws NeudistException;
+    String getLocalName();
 }

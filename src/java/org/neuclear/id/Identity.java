@@ -1,6 +1,9 @@
 /*
- * $Id: Identity.java,v 1.4 2003/09/29 23:17:31 pelle Exp $
+ * $Id: Identity.java,v 1.5 2003/10/01 17:05:37 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.5  2003/10/01 17:05:37  pelle
+ * Moved the NeuClearCertificate class to be an inner class of Identity.
+ *
  * Revision 1.4  2003/09/29 23:17:31  pelle
  * Changes to the senders. Now the senders only work with NamedObjectBuilders
  * which are the only NamedObject representations that contain full XML.
@@ -171,7 +174,10 @@ import org.neuclear.senders.Sender;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.id.builders.NamedObjectBuilder;
 
-import java.security.PublicKey;
+import java.security.*;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
 import java.util.Iterator;
 import java.util.List;
 import java.sql.Timestamp;
@@ -192,13 +198,13 @@ public final class Identity extends SignedNamedObject {
      * @throws NeudistException
      */
 
-    Identity(String name, Identity signatory, Timestamp timestamp, String digest, String repository, String signer, String logger, String receiver, PublicKey[] pubs) throws NeudistException {
+    Identity(String name, Identity signatory, Timestamp timestamp, String digest, String repository, String signer, String logger, String receiver, PublicKey pub) throws NeudistException {
         super(name, signatory, timestamp, digest);
         this.repository = repository;
         this.logger = logger;
         this.signer = signer;
         this.receiver = receiver;
-        this.pubs = pubs;
+        this.pub = pub;
     }
 
 
@@ -232,22 +238,26 @@ public final class Identity extends SignedNamedObject {
     public String getTagName() {
         return "Identity";
     }
-    public PublicKey[] getPublicKeys(){
-        return pubs;
+
+    public PublicKey getPublicKey(){
+        return pub;
+    }
+    public Certificate getCertificate() {
+        return new NeuClearCertificate();
     }
     private final String repository;
     private final String signer;
     private final String logger;
     private final String receiver;
 
-    private final PublicKey pubs[];
+    private final PublicKey pub;
 
     private final static Identity createRootIdentity() {
 
         try {
             PublicKey rootpk=CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
             return new Identity("neu://",null,new Timestamp(0),null,NSResolver.NSROOTSTORE,
-                    null,null,null,new PublicKey[]{rootpk});
+                    null,null,null,rootpk);
         } catch (NeudistException e) {
             e.printStackTrace();
 
@@ -258,6 +268,7 @@ public final class Identity extends SignedNamedObject {
 
     public static final Identity NEUROOT=createRootIdentity();
 
+
     /**
      *  Returns the fixed Root PublicKey
      */
@@ -267,6 +278,50 @@ public final class Identity extends SignedNamedObject {
         return nsrootpk;
     }
 
+    private class NeuClearCertificate extends Certificate {
+        public NeuClearCertificate() {
+            super("NeuClear");
+
+        }
+
+        /**
+         * For efficiency purposes we do not store the source material here but instead
+         * return the URI of the certificate which allows us to regenerate it from source.
+         * @return
+         * @throws CertificateEncodingException
+         */
+        public byte[] getEncoded() throws CertificateEncodingException {
+            return getName().getBytes();
+        }
+
+        /**
+         * Since the Instance of Identity implies that it has already been verified in the
+         * creation process. I just check if the signers key is the same as the given.
+         * TODO: This almost certainly has bad security implications and needs to be though through
+         * @param publicKey
+         * @throws CertificateException
+         * @throws NoSuchAlgorithmException
+         * @throws InvalidKeyException
+         * @throws NoSuchProviderException
+         * @throws SignatureException
+         */
+        public void verify(PublicKey publicKey) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
+            if (!getSignatory().getPublicKey().equals(publicKey))
+                throw new SignatureException("Key didnt match Signature");
+        }
+
+        public void verify(PublicKey publicKey, String string) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
+            verify(publicKey);
+        }
+
+        public PublicKey getPublicKey() {
+            return pub;
+        }
+        public String toString() {
+                return getName();
+        }
+
+    }
     //TODO I dont like this being public
     public final static class Reader implements NamedObjectReader {
         /**
@@ -281,20 +336,12 @@ public final class Identity extends SignedNamedObject {
             String receiver=elem.attributeValue(DocumentHelper.createQName("receiver",SignedNamedObject.NS_NSDL));
 
             Element allowElement=elem.element(DocumentHelper.createQName("allow",SignedNamedObject.NS_NSDL));
-            List keys=allowElement.elements(XMLSecTools.createQName("KeyInfo"));
-            PublicKey pubs[]=new PublicKey[keys.size()];
-            int i=0;
-            for (Iterator iter=keys.iterator();iter.hasNext();i++) {
-                KeyInfo ki=new KeyInfo((Element)iter.next());
-                pubs[i]=ki.getPublicKey();
-            }
-
-            return new Identity(name,signatory,timestamp,digest,repository,signer,logger,receiver,pubs);
+            KeyInfo ki=new KeyInfo(allowElement.element(XMLSecTools.createQName("KeyInfo")));
+            PublicKey pub=ki.getPublicKey();
+            return new Identity(name,signatory,timestamp,digest,repository,signer,logger,receiver,pub);
         }
 
     }
 
-    public static void main(String args[]){
 
-    }
 }

@@ -1,6 +1,9 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.1 2003/09/27 19:23:11 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.2 2003/10/01 17:05:37 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.2  2003/10/01 17:05:37  pelle
+ * Moved the NeuClearCertificate class to be an inner class of Identity.
+ *
  * Revision 1.1  2003/09/27 19:23:11  pelle
  * Added Builders to create named objects from scratch.
  *
@@ -168,15 +171,19 @@ public abstract class NamedObjectBuilder extends SignedElement implements Named 
      * The full name (URI) of an object
      * @return String containing the fully qualified URI of an object
      */
-    public String getName() throws NeudistException{
-        return NSTools.normalizeNameURI(getElement().attributeValue(getNameAttrQName()));
+    public String getName() {
+        try {
+            return NSTools.normalizeNameURI(getElement().attributeValue(getNameAttrQName()));
+        } catch (NeudistException e) {
+            return "Unknown";
+        }
     }
 
     /**
      * The Name of an object within it's parent NameSpace
      * @return Parent Name
      */
-    public String getLocalName()  throws NeudistException{
+    public String getLocalName()  {
         String fullName=getName();
         int i=fullName.lastIndexOf('/');
         return fullName.substring(i+1);
@@ -200,12 +207,7 @@ public abstract class NamedObjectBuilder extends SignedElement implements Named 
      * @return the URI of the object. In this case the same as getName();
      */
     public final String getURI() throws XMLSecurityException {
-        try {
-            return getName();
-        } catch (NeudistException e) {
-            XMLSecTools.rethrowException(e);  //To change body of catch statement use Options | File Templates.
-        }
-        return null;
+         return getName();
     }
 
     /**

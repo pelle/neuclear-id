@@ -29,40 +29,50 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearCertificateFactory.java,v 1.1 2003/09/30 23:25:15 pelle Exp $
+$Id: NeuClearCertificateFactory.java,v 1.2 2003/10/01 17:05:37 pelle Exp $
 $Log: NeuClearCertificateFactory.java,v $
+Revision 1.2  2003/10/01 17:05:37  pelle
+Moved the NeuClearCertificate class to be an inner class of Identity.
+
 Revision 1.1  2003/09/30 23:25:15  pelle
 Added new JCE Provider and java Certificate implementation for NeuClear Identity.
 
 */
 
 /**
- * 
+ * This is the beginnings of integrating NeuClear into the JCE architecture allowing
+ * NeuClear to be plugged in relatively easily for other types of applications such as
+ * Code signing.
+ * <p>
+ * Currently the provider provides a CertificateFactory with the name NeuClear. This
+ * can be instantiated using:<br>
+ * <tt> CertificateFactory certfact=CertificateFactory.getInstance("NeuClear");</tt><p>
+ *
  * User: pelleb
  * Date: Sep 30, 2003
  * Time: 4:39:08 PM
  */
 public class NeuClearCertificateFactory extends CertificateFactorySpi {
-    public Certificate engineGenerateCertificate(InputStream inputStream) throws CertificateException {
+    final public Certificate engineGenerateCertificate(InputStream inputStream) throws CertificateException {
         try {
             Identity id=(Identity) VerifyingReader.getInstance().read(inputStream);
-            return new NeuClearCertificate(id);
+            return id.getCertificate();
         } catch (NeudistException e) {
             throw new CertificateException("NeuClear: Problem reading Certificate:"+e.getMessage());
         }
     }
 
-    public Collection engineGenerateCertificates(InputStream inputStream) throws CertificateException {
+    final public Collection engineGenerateCertificates(InputStream inputStream) throws CertificateException {
         List list=new ArrayList(1);
         list.add(engineGenerateCertificate(inputStream));
         return list;
     }
 
-    public CRL engineGenerateCRL(InputStream inputStream) throws CRLException {
+    final public CRL engineGenerateCRL(InputStream inputStream) throws CRLException {
         return null;
     }
 
-    public Collection engineGenerateCRLs(InputStream inputStream) throws CRLException {
+    final public Collection engineGenerateCRLs(InputStream inputStream) throws CRLException {
         return new ArrayList(0);
     }
 }

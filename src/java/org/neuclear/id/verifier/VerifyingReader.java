@@ -40,8 +40,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.1 2003/09/24 23:56:48 pelle Exp $
+$Id: VerifyingReader.java,v 1.2 2003/10/01 17:05:38 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.2  2003/10/01 17:05:38  pelle
+Moved the NeuClearCertificate class to be an inner class of Identity.
+
 Revision 1.1  2003/09/24 23:56:48  pelle
 Refactoring nearly done. New model for creating signed objects.
 With view for supporting the xmlpull api shortly for performance reasons.
@@ -82,7 +85,7 @@ public class VerifyingReader {
         String signatoryName=NSTools.getParentNSURI(name);
         PublicKey pubs[]=null;
         Identity signatory=NSResolver.resolveIdentity(signatoryName);
-        if (XMLSecTools.verifySignature(elem,signatory.getPublicKeys())) {
+        if (XMLSecTools.verifySignature(elem,signatory.getPublicKey())) {
             //I should be able to get this from within. This is just a quick hack.
             String digest=new String(CryptoTools.digest(XMLSecTools.canonicalize(elem)));
             Timestamp timestamp=TimeTools.parseTimeStamp(elem.attributeValue("timestamp"));

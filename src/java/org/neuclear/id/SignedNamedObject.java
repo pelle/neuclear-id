@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedObject.java,v 1.3 2003/09/30 23:25:14 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.4 2003/10/01 17:05:37 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.4  2003/10/01 17:05:37  pelle
+ * Moved the NeuClearCertificate class to be an inner class of Identity.
+ *
  * Revision 1.3  2003/09/30 23:25:14  pelle
  * Added new JCE Provider and java Certificate implementation for NeuClear Identity.
  *
@@ -170,7 +173,7 @@ public class SignedNamedObject implements SignedObject, Named {
      * The full name (URI) of an object
      * @return String containing the fully qualified URI of an object
      */
-    public String getName() throws NeudistException {
+    public String getName() {
         return name;
     }
 
@@ -178,7 +181,7 @@ public class SignedNamedObject implements SignedObject, Named {
      * The Name of an object within it's parent Identity
      * @return Parent Name
      */
-    public String getLocalName() throws NeudistException {
+    public String getLocalName()  {
         String fullName = getName();
         int i = fullName.lastIndexOf('/');
         return fullName.substring(i + 1);
