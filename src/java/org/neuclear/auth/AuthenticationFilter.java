@@ -32,8 +32,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationFilter.java,v 1.1 2003/11/15 01:58:16 pelle Exp $
+$Id: AuthenticationFilter.java,v 1.2 2003/11/21 04:45:10 pelle Exp $
 $Log: AuthenticationFilter.java,v $
+Revision 1.2  2003/11/21 04:45:10  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.1  2003/11/15 01:58:16  pelle
 More work all around on web applications.
 
@@ -44,16 +50,16 @@ More work all around on web applications.
  * Date: Nov 14, 2003
  * Time: 3:56:48 PM
  */
-public class AuthenticationFilter implements Filter {
-    public void init(FilterConfig filterConfig) throws ServletException {
+public final class AuthenticationFilter implements Filter {
+    public final void init(final FilterConfig filterConfig) throws ServletException {
         serviceid = filterConfig.getInitParameter("serviceid");
         ctx = filterConfig.getServletContext();
         ctx.log("AUTH: Starting AuthenticationFilter");
 
     }
 
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpSession sess = ((HttpServletRequest) request).getSession(true);
+    public final void doFilter(ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
+        final HttpSession sess = ((HttpServletRequest) request).getSession(true);
         ctx.log("AUTH: Filtering request: " + ((HttpServletRequest) request).getServletPath());
 
         if (!Utility.isEmpty(request.getParameter("logout"))) {
@@ -94,7 +100,7 @@ public class AuthenticationFilter implements Filter {
 
     }
 
-    public void destroy() {
+    public final void destroy() {
 
     }
 

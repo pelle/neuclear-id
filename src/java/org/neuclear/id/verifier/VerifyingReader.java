@@ -29,8 +29,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.12 2003/11/20 23:42:24 pelle Exp $
+$Id: VerifyingReader.java,v 1.13 2003/11/21 04:45:12 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.13  2003/11/21 04:45:12  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.12  2003/11/20 23:42:24  pelle
 Getting all the tests to work in id
 Removing usage of BC in CryptoTools as it was causing issues.
@@ -107,7 +113,7 @@ todo with regards to cleaning up some of the outlying parts of the code.
  * Date: Sep 23, 2003
  * Time: 4:47:15 PM
  */
-public class VerifyingReader {
+public final class VerifyingReader {
     private VerifyingReader() {
         readers = new HashMap();
         readers.put("Identity", new Identity.Reader());
@@ -128,17 +134,17 @@ public class VerifyingReader {
      * @return 
      * @throws NeuClearException 
      */
-    public final SignedNamedObject read(InputStream is) throws XMLException, NeuClearException {
-        Element elem = XMLTools.loadDocument(is).getRootElement();
+    public final SignedNamedObject read(final InputStream is) throws XMLException, NeuClearException {
+        final Element elem = XMLTools.loadDocument(is).getRootElement();
         return read(elem);
     }
 
-    public final SignedNamedObject read(Element elem) throws NeuClearException, XMLException {
+    public final SignedNamedObject read(final Element elem) throws NeuClearException, XMLException {
         return resolveReader(elem).read(SignedNamedCore.read(elem), elem);
     }
 
 
-    private NamedObjectReader resolveReader(Element elem) {
+    private NamedObjectReader resolveReader(final Element elem) {
         NamedObjectReader reader = (NamedObjectReader) readers.get(elem.getName());
         if (reader == null)
             reader = defaultReader;
@@ -146,11 +152,12 @@ public class VerifyingReader {
     }
 
 
-    public void registerReader(String name, NamedObjectReader reader) {
+    public final void registerReader(final String name, final NamedObjectReader reader) {
+        System.out.println("Registering: "+name);
         readers.put(name, reader);
     }
 
-    private Map readers;
-    private NamedObjectReader defaultReader;
-    private static VerifyingReader instance = new VerifyingReader();
+    private final Map readers;
+    private final NamedObjectReader defaultReader;
+    private static final VerifyingReader instance = new VerifyingReader();
 }

@@ -1,6 +1,12 @@
 /*
- * $Id: NSTools.java,v 1.14 2003/11/18 23:35:45 pelle Exp $
+ * $Id: NSTools.java,v 1.15 2003/11/21 04:45:13 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.15  2003/11/21 04:45:13  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.14  2003/11/18 23:35:45  pelle
  * Payment Web Application is getting there.
  *
@@ -163,7 +169,7 @@ public final class NSTools {
      * @return Valid URI
      * @throws NeuClearException If name isn't a valid NEU Name
      */
-    public static String normalizeNameURI(String name) throws NeuClearException {
+    public static String normalizeNameURI(final String name) throws NeuClearException {
         if (!isValidName(name))
             throw new InvalidNamedObject("Name: '" + name + "' is not valid");
         if (!name.startsWith("neu://"))
@@ -181,10 +187,10 @@ public final class NSTools {
      * @param name to test
      * @return boolean
      */
-    public static boolean isValidName(String name) {
+    public static boolean isValidName(final String name) {
         if (Utility.isEmpty(name))
             return false;
-        Matcher matcher = VALID.matcher(name);
+        final Matcher matcher = VALID.matcher(name);
         return (matcher.matches());
     }
 
@@ -195,10 +201,10 @@ public final class NSTools {
      * @return Parent URI or null if name is the root
      * @throws NeuClearException if name is invalid
      */
-    public static String getParentNSURI(String name) throws NeuClearException {
-        String uri = normalizeNameURI(name);
-        int slash = uri.lastIndexOf('/');
-        int at = uri.indexOf('@');
+    public static String getParentNSURI(final String name) throws NeuClearException {
+        final String uri = normalizeNameURI(name);
+        final int slash = uri.lastIndexOf('/');
+        final int at = uri.indexOf('@');
         if (slash < at)
             return uri.substring(0, slash + 1) + uri.substring(at + 1);
         if (uri.equals("neu://") || (slash < 5))
@@ -208,13 +214,13 @@ public final class NSTools {
         return uri.substring(0, slash);
     }
 
-    public static String createUniqueNamedID(String nameSpace, String reqNameSpace) {
+    public static String createUniqueNamedID(final String nameSpace, final String reqNameSpace) {
         // Yeah, yeah there are better ways to do this
-        String ms = new Long(System.currentTimeMillis() + new Random().nextLong()).toString(); //TODO seed the Random number generator
-        byte ticketsrc[] = new byte[ms.length() + reqNameSpace.length()];
+        final String ms = new Long(System.currentTimeMillis() + new Random().nextLong()).toString(); //TODO seed the Random number generator
+        final byte[] ticketsrc = new byte[ms.length() + reqNameSpace.length()];
         System.arraycopy(ms.getBytes(), 0, ticketsrc, 0, ms.length());
         System.arraycopy(reqNameSpace.getBytes(), 0, ticketsrc, ms.length(), reqNameSpace.length());
-        String ticket = CryptoTools.formatAsURLSafe(CryptoTools.digest256(ticketsrc));
+        final String ticket = CryptoTools.formatAsURLSafe(CryptoTools.digest256(ticketsrc));
         //Lets reuse ticketsrc for memory reasons
         int offset = ms.length() + 1;
         if (reqNameSpace.startsWith("neu://"))
@@ -234,13 +240,13 @@ public final class NSTools {
         return nameSpace + '/' + new String(ticketsrc, offset, ticketsrc.length - offset) + '.' + ticket;
     }
 
-    public static String url2path(String name) {
+    public static String url2path(final String name) {
         if (!Utility.isEmpty(name)) {
-            Matcher matcher = STRIP_URI_ARROBA.matcher(name);
+            final Matcher matcher = STRIP_URI_ARROBA.matcher(name);
             if (matcher.matches()) {
                 return "/" + matcher.group(3) + "/@" + matcher.group(2) + Utility.denullString(matcher.group(4));
             }
-            int loc = name.indexOf("://");
+            final int loc = name.indexOf("://");
             if (loc >= 0)
                 return name.substring(loc + 2); //leave in one '/'
             else if (name.substring(0, 1).equals("/"))

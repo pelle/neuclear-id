@@ -27,8 +27,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequest.java,v 1.5 2003/11/20 16:01:25 pelle Exp $
+$Id: SignatureRequest.java,v 1.6 2003/11/21 04:45:13 pelle Exp $
 $Log: SignatureRequest.java,v $
+Revision 1.6  2003/11/21 04:45:13  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.5  2003/11/20 16:01:25  pelle
 Did a security review of the basic Verification process and needed to make changes.
 I've introduced the SignedNamedCore which all subclasses of SignedNamedObject need to include in their constructor.
@@ -71,7 +77,7 @@ Created SignatureRequest and friends to send unsigned NamedObjectBuilders to int
  * Time: 12:23:52 PM
  */
 public final class SignatureRequest extends SignedNamedObject {
-    private SignatureRequest(SignedNamedCore core, String userid, NamedObjectBuilder unsigned, String description) throws NeuClearException {
+    private SignatureRequest(final SignedNamedCore core, final String userid, final NamedObjectBuilder unsigned, final String description) throws NeuClearException {
         super(core);
         this.userid = userid;
         this.unsigned = unsigned;
@@ -97,14 +103,14 @@ public final class SignatureRequest extends SignedNamedObject {
          * @param elem 
          * @return 
          */
-        public final SignedNamedObject read(SignedNamedCore core, Element elem) throws NeuClearException, XMLSecurityException {
-            Element request = elem.element(DocumentHelper.createQName("Unsigned", NSTools.NS_NEUID));
-            String userid = elem.attributeValue(DocumentHelper.createQName("userid", NSTools.NS_NEUID));
-            Element uelem = ((Element) request.elements().get(0)).createCopy();
-            Document doc = DocumentHelper.createDocument(uelem);
-            NamedObjectBuilder unsigned = new NamedObjectBuilder(uelem);
+        public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws NeuClearException, XMLSecurityException {
+            final Element request = elem.element(DocumentHelper.createQName("Unsigned", NSTools.NS_NEUID));
+            final String userid = elem.attributeValue(DocumentHelper.createQName("userid", NSTools.NS_NEUID));
+            final Element uelem = ((Element) request.elements().get(0)).createCopy();
+            final Document doc = DocumentHelper.createDocument(uelem);
+            final NamedObjectBuilder unsigned = new NamedObjectBuilder(uelem);
             String description = null;
-            Element descrelem = elem.element(DocumentHelper.createQName("Description", NSTools.NS_NEUID));
+            final Element descrelem = elem.element(DocumentHelper.createQName("Description", NSTools.NS_NEUID));
             if (descrelem != null)
                 description = descrelem.getText();
 

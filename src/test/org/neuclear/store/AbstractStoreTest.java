@@ -1,6 +1,12 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.13 2003/11/19 23:34:00 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.14 2003/11/21 04:45:17 pelle Exp $
   $Log: AbstractStoreTest.java,v $
+  Revision 1.14  2003/11/21 04:45:17  pelle
+  EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+  Otherwise You will Finaliate.
+  Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+  This should hopefully make everything more stable (and secure).
+
   Revision 1.13  2003/11/19 23:34:00  pelle
   Signers now can generatekeys via the generateKey() method.
   Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -158,7 +164,7 @@ import java.security.GeneralSecurityException;
  * @author Pelle Braendgaard
  */
 public abstract class AbstractStoreTest extends AbstractSigningTest {
-    public AbstractStoreTest(String name) throws GeneralSecurityException, NeuClearException {
+    public AbstractStoreTest(final String name) throws GeneralSecurityException, NeuClearException {
         super(name);
         store = getStoreInstance();
         //generateKeys();
@@ -169,27 +175,27 @@ public abstract class AbstractStoreTest extends AbstractSigningTest {
     public abstract Store getStoreInstance();
 
 
-    protected void tearDown() {
+    protected final void tearDown() {
         store = null;
     }
 
 
-    public void testStore() throws NeuClearException, InvalidNamedObject, XMLException {
+    public final void testStore() throws NeuClearException, InvalidNamedObject, XMLException {
         System.out.println("\nTesting " + this.getClass().getName());
         System.out.println("Storing " + bobName);
-        IdentityBuilder bob = new IdentityBuilder(bobName, signer.getPublicKey(bobName));
+        final IdentityBuilder bob = new IdentityBuilder(bobName, signer.getPublicKey(bobName));
         store.receive(bob.sign(signer));
         System.out.println("Storing " + aliceName);
-        IdentityBuilder alice = new IdentityBuilder(aliceName, signer.getPublicKey(aliceName));
+        final IdentityBuilder alice = new IdentityBuilder(aliceName, signer.getPublicKey(aliceName));
         store.receive(alice.sign(signer));
 
         System.out.println("Fetching " + bobName);
-        SignedNamedObject nobj2 = store.fetch(bobName);
+        final SignedNamedObject nobj2 = store.fetch(bobName);
         assertNotNull(nobj2);
         assertEquals(bobName, nobj2.getName());
 
         System.out.println("Fetching " + aliceName);
-        SignedNamedObject nobj4 = store.fetch(aliceName);
+        final SignedNamedObject nobj4 = store.fetch(aliceName);
         assertEquals(aliceName, nobj4.getName());
     }
 

@@ -1,6 +1,12 @@
 /*
-  $Id: NSToolsTest.java,v 1.10 2003/11/11 21:18:46 pelle Exp $
+  $Id: NSToolsTest.java,v 1.11 2003/11/21 04:45:17 pelle Exp $
   $Log: NSToolsTest.java,v $
+  Revision 1.11  2003/11/21 04:45:17  pelle
+  EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+  Otherwise You will Finaliate.
+  Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+  This should hopefully make everything more stable (and secure).
+
   Revision 1.10  2003/11/11 21:18:46  pelle
   Further vital reshuffling.
   org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -105,21 +111,21 @@ import org.neuclear.commons.NeuClearException;
 /**
  * @author Pelle Braendgaard
  */
-public class NSToolsTest extends TestCase {
+public final class NSToolsTest extends TestCase {
 
-    public NSToolsTest(String name) {
+    public NSToolsTest(final String name) {
         super(name);
     }
 
-    private static void assertValidName(String name) throws NeuClearException {
+    private static void assertValidName(final String name) throws NeuClearException {
         assertTrue("Should be valid='" + name + "'", NSTools.isValidName(name));
     }
 
-    private static void assertInvalidName(String name) throws NeuClearException {
+    private static void assertInvalidName(final String name) throws NeuClearException {
         assertTrue("Should be invalid='" + name + "'", !NSTools.isValidName(name));
     }
 
-    public void testValidName() throws NeuClearException {
+    public final void testValidName() throws NeuClearException {
         assertValidName("/");
         assertValidName("neu://");
         assertValidName("/help");

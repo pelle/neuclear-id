@@ -41,7 +41,7 @@ public final class AuthenticationTicket extends SignedNamedObject {
      * @param siteurl   
      * @throws NeuClearException 
      */
-    private AuthenticationTicket(SignedNamedCore core, String requester, Timestamp validto, String siteurl) throws NeuClearException {
+    private AuthenticationTicket(final SignedNamedCore core, final String requester, final Timestamp validto, final String siteurl) throws NeuClearException {
         super(core);
         this.validTo = validto;
         this.siteurl = siteurl;
@@ -76,10 +76,10 @@ public final class AuthenticationTicket extends SignedNamedObject {
          * @param elem 
          * @return 
          */
-        public final SignedNamedObject read(SignedNamedCore core, Element elem) throws NeuClearException, XMLSecurityException {
-            String requester = elem.attributeValue(DocumentHelper.createQName("requester", NS_NSAUTH));
-            String sitehref = elem.attributeValue(DocumentHelper.createQName("sitehref", NS_NSAUTH));
-            Timestamp validto = TimeTools.parseTimeStamp(elem.attributeValue(DocumentHelper.createQName("validto", NS_NSAUTH)));
+        public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws NeuClearException, XMLSecurityException {
+            final String requester = elem.attributeValue(DocumentHelper.createQName("requester", NS_NSAUTH));
+            final String sitehref = elem.attributeValue(DocumentHelper.createQName("sitehref", NS_NSAUTH));
+            final Timestamp validto = TimeTools.parseTimeStamp(elem.attributeValue(DocumentHelper.createQName("validto", NS_NSAUTH)));
 
             return new AuthenticationTicket(core, requester, validto, sitehref);
         }

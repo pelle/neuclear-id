@@ -16,8 +16,14 @@ import java.util.Map;
  * User: pelleb
  * Date: Feb 10, 2003
  * Time: 8:26:04 PM
- * $Id: Source.java,v 1.6 2003/11/11 21:18:44 pelle Exp $
+ * $Id: Source.java,v 1.7 2003/11/21 04:45:14 pelle Exp $
  * $Log: Source.java,v $
+ * Revision 1.7  2003/11/21 04:45:14  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.6  2003/11/11 21:18:44  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -75,7 +81,7 @@ public abstract class Source {
         cache = new HashMap(CACHE_SIZE);
     }
 
-    public final SignedNamedObject fetch(String endpoint, String name) throws NeuClearException {
+    public final SignedNamedObject fetch(final String endpoint, String name) throws NeuClearException {
         try {
             name = NSTools.normalizeNameURI(name);
             SignedNamedObject candidate = (SignedNamedObject) cache.get(name);
@@ -98,11 +104,11 @@ public abstract class Source {
      * @param name     
      * @return 
      */
-    protected InputStream getStream(String endpoint, String name) throws NeuClearException {
+    protected InputStream getStream(final String endpoint, final String name) throws NeuClearException {
         return null;
     }
 
-    private void storeInCache(SignedNamedObject obj) throws NeuClearException {
+    private void storeInCache(final SignedNamedObject obj) throws NeuClearException {
         cache.put(obj.getName(), obj);
     }
 

@@ -1,5 +1,11 @@
-/* $Id: CommandLineSigner.java,v 1.13 2003/11/13 23:26:42 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.14 2003/11/21 04:45:13 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.14  2003/11/21 04:45:13  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.13  2003/11/13 23:26:42  pelle
  * The signing service and web authentication application is now almost working.
  *
@@ -173,14 +179,14 @@ import java.io.*;
 
 /**
  * @author pelleb
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class CommandLineSigner {
-    public CommandLineSigner(String args[]) throws ParseException, ConfigurationException {
+    public CommandLineSigner(final String[] args) throws ParseException, ConfigurationException {
         CryptoTools.ensureProvider();
 
         options = createOptions();
-        CommandLineParser clparser = CommandLineParserFactory.newParser();
+        final CommandLineParser clparser = CommandLineParserFactory.newParser();
 
         cmd = clparser.parse(options, args);
         checkArguments();
@@ -190,18 +196,18 @@ public class CommandLineSigner {
         of = cmd.getOptionValue("o");
     }
 
-    public static void main(String args[]) {
+    public static void main(final String[] args) {
         try {
-            CommandLineSigner signer = new CommandLineSigner(args);
+            final CommandLineSigner signer = new CommandLineSigner(args);
             signer.execute();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void checkArguments() {
+    public final void checkArguments() {
         if (!hasArguments()) {
-            HelpFormatter help = new HelpFormatter();
+            final HelpFormatter help = new HelpFormatter();
             help.printHelp("java " +
                     this.getClass().getName() +
                     " --inputfile unsigned/test.id [--outputfile signed/test.id] " +
@@ -218,10 +224,10 @@ public class CommandLineSigner {
         return cmd.hasOption("i");
     }
 
-    public void execute() {
+    public final void execute() {
 
         try {
-            NamedObjectBuilder subject = build();
+            final NamedObjectBuilder subject = build();
 
             if (Utility.isEmpty(alias)) {
                 alias = subject.getParent().getName();
@@ -236,7 +242,7 @@ public class CommandLineSigner {
 
             OutputStream dest = System.out;
             if (!Utility.isEmpty(of)) {
-                File outFile = new File(of);
+                final File outFile = new File(of);
                 if (outFile.getParentFile() != null)
                     outFile.getParentFile().mkdirs();
                 dest = new FileOutputStream(of);
@@ -252,14 +258,14 @@ public class CommandLineSigner {
     }
 
     protected NamedObjectBuilder build() throws Exception {
-        String sf = cmd.getOptionValue("i");
+        final String sf = cmd.getOptionValue("i");
         try {
             SignedNamedObject subject;
             InputStream source = System.in;
             if (!Utility.isEmpty(sf)) {
                 source = new FileInputStream(sf);
             }
-            Document doc = XMLTools.loadDocument(source);
+            final Document doc = XMLTools.loadDocument(source);
             return new NamedObjectBuilder(doc);
         } catch (FileNotFoundException e) {
             System.err.println("Couldnt find file: " + sf);
@@ -273,7 +279,7 @@ public class CommandLineSigner {
 
     private Options createOptions() {
         // create Options object
-        Options options = new Options();
+        final Options options = new Options();
 
         // add t option
 //        options.addOption("s", "keystore", true, "specify KeyStore");
@@ -289,12 +295,12 @@ public class CommandLineSigner {
         return options;
     }
 
-    protected void getLocalOptions(Options options) {
+    protected void getLocalOptions(final Options options) {
         options.addOption("i", "inputfile", true, "specify Input File");
     }
 
-    protected CommandLine cmd;
-    protected Options options;
+    protected final CommandLine cmd;
+    protected final Options options;
     public final static String keystore = System.getProperty("user.home") + "/.keystore";
     protected final Signer sig;
 //    protected final PassPhraseAgent agent;

@@ -15,8 +15,8 @@ import org.neuclear.store.FileStore;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
-public class StorageServlet extends ReceiverServlet {
-    public void init(ServletConfig config) throws ServletException {
+public final class StorageServlet extends ReceiverServlet {
+    public final void init(final ServletConfig config) throws ServletException {
         System.out.println("NEUDIST: Initialising StorageServlet");
         super.init(config);
         storePath = config.getServletContext().getRealPath(Utility.denullString(config.getInitParameter("basedir"), "/WEB-INF/store"));

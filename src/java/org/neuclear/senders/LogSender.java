@@ -19,8 +19,14 @@ import java.sql.Timestamp;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 1:23:05 PM
- * $Id: LogSender.java,v 1.11 2003/11/19 23:33:59 pelle Exp $
+ * $Id: LogSender.java,v 1.12 2003/11/21 04:45:13 pelle Exp $
  * $Log: LogSender.java,v $
+ * Revision 1.12  2003/11/21 04:45:13  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.11  2003/11/19 23:33:59  pelle
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -91,12 +97,12 @@ import java.sql.Timestamp;
  * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  */
-public class LogSender extends Sender {
-    public SignedNamedObject send(String endpoint, SignedNamedObject obj) throws NeuClearException {
+public final class LogSender extends Sender {
+    public final SignedNamedObject send(final String endpoint, final SignedNamedObject obj) throws NeuClearException {
         try {
-            String digest = URLEncoder.encode(Base64.encode(obj.getDigest()), "UTF-8");
-            String name = URLEncoder.encode(obj.getName(), "UTF-8");
-            URL url = new URL(Utility.denullString(endpoint, LOGGER) + "?nohtml=1&name=" + name + "&digest=" + digest);
+            final String digest = URLEncoder.encode(Base64.encode(obj.getDigest()), "UTF-8");
+            final String name = URLEncoder.encode(obj.getName(), "UTF-8");
+            final URL url = new URL(Utility.denullString(endpoint, LOGGER) + "?nohtml=1&name=" + name + "&digest=" + digest);
             url.openStream();
 
 //            BufferedReader reader=new BufferedReader(new InputStreamReader(url.openStream()));
@@ -126,19 +132,19 @@ public class LogSender extends Sender {
     }
 */
 
-    public static Timestamp getTimeStamp(String endpoint, byte rdigest[]) throws NeuClearException {
+    public static Timestamp getTimeStamp(final String endpoint, final byte[] rdigest) throws NeuClearException {
         try {
-            String digest = Base64.encode(rdigest);
+            final String digest = Base64.encode(rdigest);
 //            System.out.println(digest);
-            String encdigest = URLEncoder.encode(digest, "UTF-8");
+            final String encdigest = URLEncoder.encode(digest, "UTF-8");
             URL url = null;
             url = new URL(LOGGER + "?mode=Query&nohtml=1&digest=" + encdigest);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            String line = reader.readLine();
+            final BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            final String line = reader.readLine();
 //            System.out.println(line);
-            int pos = line.indexOf('\t');
+            final int pos = line.indexOf('\t');
             if (pos >= 0) {
-                String stamp = line.substring(0, pos);
+                final String stamp = line.substring(0, pos);
                 return TimeTools.parseTimeStamp(stamp);
             }
         } catch (MalformedURLException e) {
@@ -150,7 +156,7 @@ public class LogSender extends Sender {
         return null;
     }
 
-    public static Timestamp getTimeStamp(SignedNamedObject obj) throws NeuClearException {
+    public static Timestamp getTimeStamp(final SignedNamedObject obj) throws NeuClearException {
         return getTimeStamp(Utility.denullString(obj.getSignatory().getLogger(), LOGGER), obj.getEncoded().getBytes());
 
     }

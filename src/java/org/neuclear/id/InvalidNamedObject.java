@@ -1,6 +1,12 @@
 /*
- * $Id: InvalidNamedObject.java,v 1.1 2003/11/15 01:58:16 pelle Exp $
+ * $Id: InvalidNamedObject.java,v 1.2 2003/11/21 04:45:13 pelle Exp $
  * $Log: InvalidNamedObject.java,v $
+ * Revision 1.2  2003/11/21 04:45:13  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.1  2003/11/15 01:58:16  pelle
  * More work all around on web applications.
  *
@@ -87,8 +93,8 @@ package org.neuclear.id;
 
 import org.neuclear.commons.NeuClearException;
 
-public class InvalidNamedObject extends NeuClearException {
-    public InvalidNamedObject(String msg) {
+public final class InvalidNamedObject extends NeuClearException {
+    public InvalidNamedObject(final String msg) {
         super(msg);
     }
 

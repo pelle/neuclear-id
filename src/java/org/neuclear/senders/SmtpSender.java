@@ -5,8 +5,14 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:52:38 AM
- * $Id: SmtpSender.java,v 1.13 2003/11/19 23:33:59 pelle Exp $
+ * $Id: SmtpSender.java,v 1.14 2003/11/21 04:45:13 pelle Exp $
  * $Log: SmtpSender.java,v $
+ * Revision 1.14  2003/11/21 04:45:13  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.13  2003/11/19 23:33:59  pelle
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -110,19 +116,19 @@ import javax.mail.internet.MimeMultipart;
 import java.util.Date;
 import java.util.Properties;
 
-public class SmtpSender extends Sender {
-    public SignedNamedObject send(String endpoint, SignedNamedObject obj) throws NeuClearException {
-        Properties props = System.getProperties();
+public final class SmtpSender extends Sender {
+    public final SignedNamedObject send(String endpoint, final SignedNamedObject obj) throws NeuClearException {
+        final Properties props = System.getProperties();
         if (endpoint.startsWith("mailto:"))
             endpoint = endpoint.substring(7);
         // -- Attaching to default Session, or we could start a new one --
 
         props.put("mail.smtp.host", "neuclear.org");// TODO Remove this hardcoded mail server
-        Session session = Session.getDefaultInstance(props, null);
+        final Session session = Session.getDefaultInstance(props, null);
 
         try {
             // -- Create a new message --
-            Message msg = new MimeMessage(session);
+            final Message msg = new MimeMessage(session);
 
             // -- Set the FROM and TO fields --
             msg.setFrom(new InternetAddress("pelle@neuclear.org"));// TODO Remove this hardcoded email
@@ -136,12 +142,12 @@ public class SmtpSender extends Sender {
 
             // -- Set the subject and body text --
             msg.setSubject("You have received a New Named Object: " + obj.getName());
-            BodyPart body = new MimeBodyPart();
+            final BodyPart body = new MimeBodyPart();
             body.setText("This message contains a signed named object. Please see http://neuclear.org for more info.");
 
-            Multipart multi = new MimeMultipart();
+            final Multipart multi = new MimeMultipart();
             multi.addBodyPart(body);
-            BodyPart objpart = new MimeBodyPart();
+            final BodyPart objpart = new MimeBodyPart();
             objpart.setText(obj.getEncoded());
             objpart.setHeader("Content-type", "application/nsdl");
             multi.addBodyPart(objpart);

@@ -1,6 +1,12 @@
 /*
- * $Id: TargetReference.java,v 1.5 2003/11/19 23:33:59 pelle Exp $
+ * $Id: TargetReference.java,v 1.6 2003/11/21 04:45:10 pelle Exp $
  * $Log: TargetReference.java,v $
+ * Revision 1.6  2003/11/21 04:45:10  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.5  2003/11/19 23:33:59  pelle
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -71,15 +77,15 @@ import org.neuclear.commons.Utility;
 import org.neuclear.id.NSTools;
 import org.neuclear.xml.AbstractElementProxy;
 
-public class TargetReference extends AbstractElementProxy {
-    public TargetReference(NamedObjectBuilder obj, Element elem) throws NeuClearException {
+public final class TargetReference extends AbstractElementProxy {
+    public TargetReference(final NamedObjectBuilder obj, final Element elem) throws NeuClearException {
         super(elem);
         if (!elem.getName().equals(TAG_NAME))
             throw new NeuClearException("Element is not a <Target/> Element");
         owner = obj;
     }
 
-    public TargetReference(NamedObjectBuilder obj, String href, String type) {
+    public TargetReference(final NamedObjectBuilder obj, final String href, final String type) {
         super(DocumentHelper.createQName(TAG_NAME, NSTools.NS_NEUID));
         if (!Utility.isEmpty(href))
             getElement().addAttribute(DocumentHelper.createQName("href", NSTools.NS_NEUID), href);
@@ -88,21 +94,21 @@ public class TargetReference extends AbstractElementProxy {
         owner = obj;
     }
 
-    public String getHref() {
+    public final String getHref() {
         return getElement().attributeValue(DocumentHelper.createQName("href", NSTools.NS_NEUID));
     }
 
-    public String getType() {
+    public final String getType() {
         return getElement().attributeValue(DocumentHelper.createQName("type", NSTools.NS_NEUID));
     }
 
     private static final String TAG_NAME = "Target";
 
-    public String getTagName() {
+    public final String getTagName() {
         return TAG_NAME;
     }
 
-    public Namespace getNS() {
+    public final Namespace getNS() {
         return NSTools.NS_NEUID;
     }
 

@@ -1,6 +1,12 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.9 2003/11/15 01:58:16 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.10 2003/11/21 04:45:14 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.10  2003/11/21 04:45:14  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.9  2003/11/15 01:58:16  pelle
  * More work all around on web applications.
  *
@@ -137,7 +143,7 @@ package org.neuclear.signers.servlet;
 
 import java.security.KeyPairGenerator;
 
-public class DemoSigningServlet extends SigningServlet {
+public final class DemoSigningServlet extends SigningServlet {
 /*
 
     private void buildTree() throws GeneralSecurityException, NeuClearException, IOException {

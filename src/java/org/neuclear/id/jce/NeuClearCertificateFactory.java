@@ -32,8 +32,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearCertificateFactory.java,v 1.6 2003/11/18 15:45:09 pelle Exp $
+$Id: NeuClearCertificateFactory.java,v 1.7 2003/11/21 04:45:11 pelle Exp $
 $Log: NeuClearCertificateFactory.java,v $
+Revision 1.7  2003/11/21 04:45:11  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.6  2003/11/18 15:45:09  pelle
 FileStoreTest now passes. FileStore works again.
 
@@ -73,13 +79,13 @@ Added new JCE Provider and java Certificate implementation for NeuClear Identity
  * Date: Sep 30, 2003
  * Time: 4:39:08 PM
  */
-public class NeuClearCertificateFactory extends CertificateFactorySpi {
-    final public Certificate engineGenerateCertificate(InputStream inputStream) throws CertificateException {
+public final class NeuClearCertificateFactory extends CertificateFactorySpi {
+    final public Certificate engineGenerateCertificate(final InputStream inputStream) throws CertificateException {
         try {
             //Identity id=(Identity) VerifyingReader.getInstance().read(inputStream);
-            BufferedReader d = new BufferedReader(new InputStreamReader(inputStream));
+            final BufferedReader d = new BufferedReader(new InputStreamReader(inputStream));
             if (d.ready()) {
-                String name = d.readLine();
+                final String name = d.readLine();
                 if (name==null)
                     throw new CertificateEncodingException("Certificate is empty");
                 if (!NSTools.isValidName(name))
@@ -98,8 +104,8 @@ public class NeuClearCertificateFactory extends CertificateFactorySpi {
         }
     }
 
-    final public Collection engineGenerateCertificates(InputStream inputStream) throws CertificateException {
-        List list=new LinkedList();
+    final public Collection engineGenerateCertificates(final InputStream inputStream) throws CertificateException {
+        final List list=new LinkedList();
         try {
             while(inputStream.available()>0) {
                 list.add(engineGenerateCertificate(inputStream));
@@ -110,11 +116,11 @@ public class NeuClearCertificateFactory extends CertificateFactorySpi {
         return list;
     }
 
-    final public CRL engineGenerateCRL(InputStream inputStream) throws CRLException {
+    final public CRL engineGenerateCRL(final InputStream inputStream) throws CRLException {
         return null;
     }
 
-    final public Collection engineGenerateCRLs(InputStream inputStream) throws CRLException {
+    final public Collection engineGenerateCRLs(final InputStream inputStream) throws CRLException {
         return new ArrayList(0);
     }
 }

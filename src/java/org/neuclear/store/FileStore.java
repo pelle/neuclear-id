@@ -1,6 +1,12 @@
 /*
- * $Id: FileStore.java,v 1.14 2003/11/19 23:34:00 pelle Exp $
+ * $Id: FileStore.java,v 1.15 2003/11/21 04:45:16 pelle Exp $
  * $Log: FileStore.java,v $
+ * Revision 1.15  2003/11/21 04:45:16  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.14  2003/11/19 23:34:00  pelle
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -178,22 +184,22 @@ import java.io.*;
  * uniform time, so if the operator was sopeanad(Spelling) i
  */
 public class FileStore extends Store {
-    public FileStore(String base) {
+    public FileStore(final String base) {
         this.base = base;
     }
 
-    protected void rawStore(SignedNamedObject obj) throws IOException, NeuClearException, XMLException {
-        OutputStream out = getOutputStream(obj);
+    protected final void rawStore(final SignedNamedObject obj) throws IOException, NeuClearException, XMLException {
+        final OutputStream out = getOutputStream(obj);
         out.write(obj.getEncoded().getBytes("UTF-8"));
         out.close();
     }
 
-    protected OutputStream getOutputStream(SignedNamedObject obj) throws NeuClearException, FileNotFoundException {
-        String outputFilename = base + getFileName(obj);
+    protected OutputStream getOutputStream(final SignedNamedObject obj) throws NeuClearException, FileNotFoundException {
+        final String outputFilename = base + getFileName(obj);
         System.out.println("Outputting to: " + outputFilename);
-        File outputFile = new File(outputFilename);
+        final File outputFile = new File(outputFilename);
         outputFile.getParentFile().mkdirs();
-        OutputStream out = new FileOutputStream(outputFile);
+        final OutputStream out = new FileOutputStream(outputFile);
         return out;
     }
 
@@ -201,7 +207,7 @@ public class FileStore extends Store {
 //        store(new NSDLObject(doc));
 //    }
 
-    SignedNamedObject fetch(String name) throws NeuClearException {
+    final SignedNamedObject fetch(final String name) throws NeuClearException {
 
         try {
             return VerifyingReader.getInstance().read(getInputStream(name));
@@ -213,10 +219,10 @@ public class FileStore extends Store {
         return null;
     }
 
-    protected InputStream getInputStream(String name) throws FileNotFoundException, NeuClearException {
-        String inputFilename = base + getFileName(name);
+    protected InputStream getInputStream(final String name) throws FileNotFoundException, NeuClearException {
+        final String inputFilename = base + getFileName(name);
         System.out.println("Loading from: " + inputFilename);
-        File fin = new File(inputFilename);
+        final File fin = new File(inputFilename);
         if (!fin.exists())
             throw new NeuClearException("NeuClear: " + name + " doesnt exist");
 
@@ -224,11 +230,11 @@ public class FileStore extends Store {
     }
 
 
-    protected String getFileName(String name) throws NeuClearException {
+    protected String getFileName(final String name) throws NeuClearException {
         return NSTools.url2path(name) + "/root.id";
     }
 
-    protected String getFileName(SignedNamedObject obj) throws NeuClearException {
+    protected final String getFileName(final SignedNamedObject obj) throws NeuClearException {
         return getFileName(obj.getName());
 //        if (! (obj instanceof Identity))
 //            return obj.getName();

@@ -22,8 +22,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SourceTest.java,v 1.1 2003/11/05 18:50:34 pelle Exp $
+$Id: SourceTest.java,v 1.2 2003/11/21 04:45:17 pelle Exp $
 $Log: SourceTest.java,v $
+Revision 1.2  2003/11/21 04:45:17  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.1  2003/11/05 18:50:34  pelle
 Refactored org.neuclear.signers.source.Source and implementing classes to provide support for a local filesystem cache.
 Also added Unit tests to make sure it actually works and modified IdentityCreator to write directly to the cache if no output filename is given.
@@ -36,7 +42,7 @@ Also added Unit tests to make sure it actually works and modified IdentityCreato
  * Time: 1:21:24 PM
  */
 public class SourceTest extends TestCase {
-    public SourceTest(String name) {
+    public SourceTest(final String name) {
         super(name);
         source = createSource();
     }
@@ -45,14 +51,14 @@ public class SourceTest extends TestCase {
         return Source.getInstance();
     }
 
-    public void testFetch() throws NeuClearException {
-        SignedNamedObject test = source.fetch("http://repository.neuclear.org", "neu://test");
+    public final void testFetch() throws NeuClearException {
+        final SignedNamedObject test = source.fetch("http://repository.neuclear.org", "neu://test");
         assertNotNull(test);
         assertEquals("neu://test", test.getName());
-        SignedNamedObject root = source.fetch("http://repository.neuclear.org", "neu://");
+        final SignedNamedObject root = source.fetch("http://repository.neuclear.org", "neu://");
         assertNotNull(root);
         assertEquals("neu://", root.getName());
     }
 
-    private Source source;
+    private final Source source;
 }

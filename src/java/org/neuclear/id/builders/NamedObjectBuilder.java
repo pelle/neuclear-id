@@ -1,6 +1,12 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.10 2003/11/20 23:42:24 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.11 2003/11/21 04:45:10 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.11  2003/11/21 04:45:10  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.10  2003/11/20 23:42:24  pelle
  * Getting all the tests to work in id
  * Removing usage of BC in CryptoTools as it was causing issues.
@@ -191,33 +197,38 @@ import java.util.List;
  * This simple wrapper takes most of the contents of a NamedObject and puts it into a Serializable form that can be signed.
  */
 public class NamedObjectBuilder extends SignedElement implements Named {
-    public NamedObjectBuilder(String name, String tagName, String prefix, String nsURI) {
+    public NamedObjectBuilder(final String name, final String tagName, final String prefix, final String nsURI) throws NeuClearException {
         super(tagName, prefix, nsURI);
         createDocument();
         setName(name);
     }
 
-    public NamedObjectBuilder(String name, String tagName, Namespace ns) {
+    public NamedObjectBuilder(final String name, final String tagName, final Namespace ns) throws NeuClearException {
         super(tagName, ns);
         createDocument();
         setName(name);
     }
 
-    public NamedObjectBuilder(String name, String tagName) {
+    public NamedObjectBuilder(final String name, final String tagName) throws NeuClearException {
         super(tagName, NSTools.NS_NEUID);
         createDocument();
         setName(name);
     }
 
-    public NamedObjectBuilder(String name, QName qname) {
+    public NamedObjectBuilder(final String name, final QName qname) throws NeuClearException {
         super(qname);
         createDocument();
         setName(name);
     }
 
-    public NamedObjectBuilder(Element elem) throws XMLSecurityException {
+    public NamedObjectBuilder(final Element elem) throws XMLSecurityException {
         super(elem);
         //TODO Load targets
+    }
+
+
+    public NamedObjectBuilder(final Document doc) throws XMLSecurityException {
+        super(doc.getRootElement());
     }
 
     public String getTagName() {
@@ -226,11 +237,7 @@ public class NamedObjectBuilder extends SignedElement implements Named {
         return getElement().getName();
     }
 
-    public NamedObjectBuilder(Document doc) throws XMLSecurityException {
-        super(doc.getRootElement());
-    }
-
-    final public SignedNamedObject sign(Signer signer) throws NeuClearException, XMLException {
+    final public SignedNamedObject sign(final Signer signer) throws NeuClearException, XMLException {
         sign(getParent().getName(), signer);
         return VerifyingReader.getInstance().read(getElement());
     }
@@ -240,7 +247,7 @@ public class NamedObjectBuilder extends SignedElement implements Named {
      * 
      * @return String containing the fully qualified URI of an object
      */
-    public String getName() {
+    public final String getName() {
         return getElement().attributeValue(getNameAttrQName());
     }
 
@@ -249,14 +256,14 @@ public class NamedObjectBuilder extends SignedElement implements Named {
      * 
      * @return Parent Name
      */
-    public String getLocalName() {
-        String fullName = getName();
-        int i = fullName.lastIndexOf('/');
+    public final String getLocalName() {
+        final String fullName = getName();
+        final int i = fullName.lastIndexOf('/');
         return fullName.substring(i + 1);
     }
 
-    private void setName(String name) {
-        getElement().addAttribute(getNameAttrQName(), name);
+    private void setName(final String name) throws NeuClearException {
+        getElement().addAttribute(getNameAttrQName(), NSTools.normalizeNameURI(name));
     }
 
     private static QName getNameAttrQName() {
@@ -265,9 +272,9 @@ public class NamedObjectBuilder extends SignedElement implements Named {
     }
 
     private void createDocument() {
-        Element elem = getElement();
+        final Element elem = getElement();
         if (elem.getDocument() == null) {
-            Document doc = DocumentHelper.createDocument(elem);
+            final Document doc = DocumentHelper.createDocument(elem);
         }
     }
 
@@ -281,11 +288,11 @@ public class NamedObjectBuilder extends SignedElement implements Named {
     /**
      * @return the XML NameSpace object
      */
-    public Namespace getNS() {
+    public final Namespace getNS() {
         return NSTools.NS_NEUID;
     }
 
-    protected void addElement(NamedObjectBuilder child) throws XMLException {
+    protected final void addElement(final NamedObjectBuilder child) throws XMLException {
         addElement((AbstractElementProxy) child);
     }
 
@@ -305,10 +312,10 @@ public class NamedObjectBuilder extends SignedElement implements Named {
      * 
      * @param target object
      */
-    public void addTarget(TargetReference target) throws NeuClearException {
+    public final void addTarget(final TargetReference target) throws NeuClearException {
         if (target == null)
             return;
-        QName targetsQN = DocumentHelper.createQName("Targets", NSTools.NS_NEUID);
+        final QName targetsQN = DocumentHelper.createQName("Targets", NSTools.NS_NEUID);
         Element targetsElem = getElement().element(targetsQN);
         if (targetsElem == null) {
             targetsElem = DocumentHelper.createElement(targetsQN);
@@ -329,20 +336,20 @@ public class NamedObjectBuilder extends SignedElement implements Named {
      * 
      * @return Iterator of targets
      */
-    public Iterator listTargets() throws NeuClearException {
+    public final Iterator listTargets() throws NeuClearException {
         return targetList().iterator();
     }
 
     /**
      * Sends copy of object to all targets within
      */
-    public void sendObject() throws NeuClearException {
+    public final void sendObject() throws NeuClearException {
         System.out.println("NEUDIST: Sending Object " + getName());
 
         if (this.isSigned()) {
-            Iterator iter = listTargets();
+            final Iterator iter = listTargets();
             while (iter.hasNext()) {
-                TargetReference tg = ((TargetReference) iter.next());
+                final TargetReference tg = ((TargetReference) iter.next());
                 System.out.println("NEUDIST: Sent to " + tg.getHref());
             }
 
@@ -350,8 +357,8 @@ public class NamedObjectBuilder extends SignedElement implements Named {
 
     }
 
-    public Timestamp getTimeStamp() throws NeuClearException {
-        String timeString = getElement().attributeValue(DocumentHelper.createQName("timestamp", NSTools.NS_NEUID));
+    public final Timestamp getTimeStamp() throws NeuClearException {
+        final String timeString = getElement().attributeValue(DocumentHelper.createQName("timestamp", NSTools.NS_NEUID));
         if (isSigned() && !Utility.isEmpty(timeString)) {
             try {
                 return TimeTools.parseTimeStamp(timeString);
@@ -366,7 +373,7 @@ public class NamedObjectBuilder extends SignedElement implements Named {
     }
 
 
-    public Identity getParent() throws NeuClearException {
+    public final Identity getParent() throws NeuClearException {
         return NSResolver.resolveIdentity(NSTools.getParentNSURI(getName()));
     }
 

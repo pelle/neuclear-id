@@ -1,6 +1,12 @@
 /*
-  $Id: NameSpaceTest.java,v 1.8 2003/11/18 15:07:37 pelle Exp $
+  $Id: NameSpaceTest.java,v 1.9 2003/11/21 04:45:17 pelle Exp $
   $Log: NameSpaceTest.java,v $
+  Revision 1.9  2003/11/21 04:45:17  pelle
+  EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+  Otherwise You will Finaliate.
+  Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+  This should hopefully make everything more stable (and secure).
+
   Revision 1.8  2003/11/18 15:07:37  pelle
   Changes to JCE Implementation
   Working on getting all tests working including store tests
@@ -155,9 +161,9 @@ import org.neuclear.commons.crypto.CryptoTools;
 /**
  * @author Pelle Braendgaard
  */
-public class NameSpaceTest extends TestCase {
+public final class NameSpaceTest extends TestCase {
 
-    public NameSpaceTest(String string) {
+    public NameSpaceTest(final String string) {
         super(string);
         CryptoTools.ensureProvider();
     }
@@ -183,7 +189,7 @@ public class NameSpaceTest extends TestCase {
      * <li>neu://bob/eve (owned by eve)
      * </ul>
      */
-    protected void setUp() throws FileNotFoundException, GeneralSecurityException, IOException {
+    protected final void setUp() throws FileNotFoundException, GeneralSecurityException, IOException {
 
 /*
         try {
@@ -222,7 +228,7 @@ public class NameSpaceTest extends TestCase {
     }
 
 
-    public void testGetRoot() {
+    public final void testGetRoot() {
         assertNotNull(Identity.NEUROOT);
     }
 

@@ -18,8 +18,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: HttpSourceTest.java,v 1.1 2003/11/05 18:50:34 pelle Exp $
+$Id: HttpSourceTest.java,v 1.2 2003/11/21 04:45:17 pelle Exp $
 $Log: HttpSourceTest.java,v $
+Revision 1.2  2003/11/21 04:45:17  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.1  2003/11/05 18:50:34  pelle
 Refactored org.neuclear.signers.source.Source and implementing classes to provide support for a local filesystem cache.
 Also added Unit tests to make sure it actually works and modified IdentityCreator to write directly to the cache if no output filename is given.
@@ -31,12 +37,12 @@ Also added Unit tests to make sure it actually works and modified IdentityCreato
  * Date: Nov 5, 2003
  * Time: 1:27:17 PM
  */
-public class HttpSourceTest extends SourceTest {
-    public HttpSourceTest(String name) {
+public final class HttpSourceTest extends SourceTest {
+    public HttpSourceTest(final String name) {
         super(name);
     }
 
-    protected Source createSource() {
+    protected final Source createSource() {
         return new HttpSource();
     }
 }

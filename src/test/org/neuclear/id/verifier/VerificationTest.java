@@ -28,8 +28,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerificationTest.java,v 1.7 2003/11/15 01:58:19 pelle Exp $
+$Id: VerificationTest.java,v 1.8 2003/11/21 04:45:17 pelle Exp $
 $Log: VerificationTest.java,v $
+Revision 1.8  2003/11/21 04:45:17  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.7  2003/11/15 01:58:19  pelle
 More work all around on web applications.
 
@@ -67,47 +73,47 @@ Added Builders to create named objects from scratch.
  * Date: Sep 27, 2003
  * Time: 11:38:01 AM
  */
-public class VerificationTest extends TestCase {
-    public VerificationTest(String string) {
+public final class VerificationTest extends TestCase {
+    public VerificationTest(final String string) {
 
         super(string);
         CryptoTools.ensureProvider();
         reader = VerifyingReader.getInstance();
     }
 
-    public void testSimple() throws IOException, DocumentException, NeuClearException, XMLException {
+    public final void testSimple() throws IOException, DocumentException, NeuClearException, XMLException {
         runDirectoryTest("src/testdata/simple", true);
     }
 
-    public void testSimpleSecond() throws IOException, DocumentException, NeuClearException, XMLException {
+    public final void testSimpleSecond() throws IOException, DocumentException, NeuClearException, XMLException {
         runDirectoryTest("src/testdata/simple", true);
     }
 
-    public void testFakes() throws IOException, DocumentException, NeuClearException, XMLException {
+    public final void testFakes() throws IOException, DocumentException, NeuClearException, XMLException {
         runDirectoryTest("src/testdata/fakes", false);
     }
 
-    public void runDirectoryTest(String path, boolean wantValid) throws DocumentException, IOException, FileNotFoundException, NeuClearException, XMLException {
-        File dir = new File(path);
+    public final void runDirectoryTest(final String path, final boolean wantValid) throws DocumentException, IOException, FileNotFoundException, NeuClearException, XMLException {
+        final File dir = new File(path);
         if (!dir.exists()) {
             System.out.println("Doesnt exist");
             return;
         }
-        FilenameFilter filter;
+        final FilenameFilter filter;
         filter = new FilenameFilter() {
-            public boolean accept(File dirf, String name) {
+            public boolean accept(final File dirf, final String name) {
                 return name.endsWith(".id");
             }
         };
 
-        File xmlfiles[] = dir.listFiles(filter);
+        final File[] xmlfiles = dir.listFiles(filter);
         System.out.println("There are " + xmlfiles.length + " files in the directory");
         for (int i = 0; i < xmlfiles.length; i++) {
 
-            File xmlfile = xmlfiles[i];
+            final File xmlfile = xmlfiles[i];
             System.out.print("Testing file: " + xmlfile.getName() + "... ");
             try {
-                SignedNamedObject obj = reader.read(new FileInputStream(xmlfile));
+                final SignedNamedObject obj = reader.read(new FileInputStream(xmlfile));
                 System.out.println("Name : " + obj.getName() + " VERIFIED");
                 assertTrue(wantValid);
 
@@ -120,6 +126,6 @@ public class VerificationTest extends TestCase {
 
     }
 
-    VerifyingReader reader;
+    final VerifyingReader reader;
 
 }

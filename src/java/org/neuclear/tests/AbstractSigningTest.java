@@ -28,8 +28,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AbstractSigningTest.java,v 1.2 2003/11/18 15:07:36 pelle Exp $
+$Id: AbstractSigningTest.java,v 1.3 2003/11/21 04:45:16 pelle Exp $
 $Log: AbstractSigningTest.java,v $
+Revision 1.3  2003/11/21 04:45:16  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.2  2003/11/18 15:07:36  pelle
 Changes to JCE Implementation
 Working on getting all tests working including store tests
@@ -46,7 +52,7 @@ PaymentReceiverTest works, but needs a abit more work in its environment to succ
  * Time: 5:36:25 PM
  */
 public class AbstractSigningTest extends TestCase {
-    public AbstractSigningTest(String string) throws NeuClearException, GeneralSecurityException {
+    public AbstractSigningTest(final String string) throws NeuClearException, GeneralSecurityException {
         super(string);
         CryptoTools.ensureProvider();
         signer = new TestCaseSigner();
@@ -60,7 +66,7 @@ public class AbstractSigningTest extends TestCase {
      * @return 
      */
 
-    protected Identity getBob() {
+    protected final Identity getBob() {
         return bob;
     }
 
@@ -70,7 +76,7 @@ public class AbstractSigningTest extends TestCase {
      * @return 
      */
 
-    protected Identity getAlice() {
+    protected final Identity getAlice() {
         return alice;
     }
 

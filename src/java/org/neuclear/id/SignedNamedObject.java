@@ -1,6 +1,12 @@
 /*
- * $Id: SignedNamedObject.java,v 1.11 2003/11/20 16:01:25 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.12 2003/11/21 04:45:13 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.12  2003/11/21 04:45:13  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.11  2003/11/20 16:01:25  pelle
  * Did a security review of the basic Verification process and needed to make changes.
  * I've introduced the SignedNamedCore which all subclasses of SignedNamedObject need to include in their constructor.
@@ -223,7 +229,7 @@ import java.sql.Timestamp;
  */
 public class SignedNamedObject implements SignedObject, Named {
 
-    protected SignedNamedObject(SignedNamedCore core) throws NeuClearException {
+    protected SignedNamedObject(final SignedNamedCore core) throws NeuClearException {
         this.core=core;
     }
 
@@ -293,7 +299,7 @@ public class SignedNamedObject implements SignedObject, Named {
          * @param elem
          * @return
          */
-        public SignedNamedObject read(SignedNamedCore core, Element elem) throws NeuClearException, XMLSecurityException {
+        public SignedNamedObject read(final SignedNamedCore core, final Element elem) throws NeuClearException, XMLSecurityException {
             return new SignedNamedObject(core);
         }
         /**

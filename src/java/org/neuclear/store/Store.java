@@ -1,6 +1,12 @@
 /*
- * $Id: Store.java,v 1.14 2003/11/19 23:34:00 pelle Exp $
+ * $Id: Store.java,v 1.15 2003/11/21 04:45:16 pelle Exp $
  * $Log: Store.java,v $
+ * Revision 1.15  2003/11/21 04:45:16  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.14  2003/11/19 23:34:00  pelle
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -187,7 +193,7 @@ abstract public class Store implements Receiver {
     /**
      * This handles the Identity checking on the object.
      */
-    public final org.neuclear.xml.ElementProxy receive(SignedNamedObject obj) throws NeuClearException {
+    public final org.neuclear.xml.ElementProxy receive(final SignedNamedObject obj) throws NeuClearException {
         try {
             rawStore(obj);
         } catch (IOException e) {
@@ -201,7 +207,7 @@ abstract public class Store implements Receiver {
     /**
      * Override this for each specific Store type
      */
-    protected void rawStore(SignedNamedObject obj) throws IOException, NeuClearException, XMLException {
+    protected void rawStore(final SignedNamedObject obj) throws IOException, NeuClearException, XMLException {
         ;
     }
 

@@ -28,8 +28,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationTicketBuilder.java,v 1.2 2003/11/11 21:18:42 pelle Exp $
+$Id: AuthenticationTicketBuilder.java,v 1.3 2003/11/21 04:45:10 pelle Exp $
 $Log: AuthenticationTicketBuilder.java,v $
+Revision 1.3  2003/11/21 04:45:10  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.2  2003/11/11 21:18:42  pelle
 Further vital reshuffling.
 org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -47,23 +53,23 @@ Created SignatureRequest and friends to send unsigned NamedObjectBuilders to int
  * Date: Nov 6, 2003
  * Time: 11:59:58 AM
  */
-public class AuthenticationTicketBuilder extends NamedObjectBuilder {
-    public AuthenticationTicketBuilder(String user, String requester, String site) throws NeuClearException {
+public final class AuthenticationTicketBuilder extends NamedObjectBuilder {
+    public AuthenticationTicketBuilder(final String user, final String requester, final String site) throws NeuClearException {
         this(user, requester, new Timestamp(new Date().getTime() + 1800000), site);
     }
 
-    public AuthenticationTicketBuilder(String user, String requester, Date validto, String site) throws NeuClearException {
+    public AuthenticationTicketBuilder(final String user, final String requester, final Date validto, final String site) throws NeuClearException {
         super(NSTools.createUniqueNamedID(user, requester), AuthenticationTicket.TAG_NAME, AuthenticationTicket.NS_NSAUTH);
         getElement().addAttribute(createQName("requester"), NSTools.normalizeNameURI(requester));
         getElement().addAttribute(createQName("validto"), TimeTools.formatTimeStamp(validto));
         getElement().addAttribute(createQName("sitehref"), site);
     }
 
-    private static QName createQName(String name) {
+    private static QName createQName(final String name) {
         return DocumentHelper.createQName(name, AuthenticationTicket.NS_NSAUTH);
     }
 
-    public String getTagName() {
+    public final String getTagName() {
         return AuthenticationTicket.TAG_NAME;
     }
 

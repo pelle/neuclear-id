@@ -26,8 +26,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationBuilderTest.java,v 1.2 2003/11/19 23:34:00 pelle Exp $
+$Id: AuthenticationBuilderTest.java,v 1.3 2003/11/21 04:45:16 pelle Exp $
 $Log: AuthenticationBuilderTest.java,v $
+Revision 1.3  2003/11/21 04:45:16  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.2  2003/11/19 23:34:00  pelle
 Signers now can generatekeys via the generateKey() method.
 Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -48,16 +54,16 @@ There had been an issue in the canonicalizer when dealing with the embedded obje
  * Date: Nov 17, 2003
  * Time: 3:28:05 PM
  */
-public class AuthenticationBuilderTest extends AbstractSigningTest {
-    public AuthenticationBuilderTest(String string) throws NeuClearException, GeneralSecurityException {
+public final class AuthenticationBuilderTest extends AbstractSigningTest {
+    public AuthenticationBuilderTest(final String string) throws NeuClearException, GeneralSecurityException {
         super(string);
     }
 
-    public void testAuthenticate() throws NeuClearException, XMLException {
-        AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://users.neuclear.org:8080");
+    public final void testAuthenticate() throws NeuClearException, XMLException {
+        final AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://users.neuclear.org:8080");
         assertEquals(authreq.getParent().getName(), "neu://bob@test");
         try {
-            AuthenticationTicket auth = (AuthenticationTicket) authreq.sign(signer);
+            final AuthenticationTicket auth = (AuthenticationTicket) authreq.sign(signer);
             assertTrue(authreq.isSigned());
             assertEquals(auth.getName(), authreq.getName());
             assertEquals(auth.getSiteHref(), "http://users.neuclear.org:8080");

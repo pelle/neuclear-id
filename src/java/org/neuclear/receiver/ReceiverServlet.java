@@ -1,6 +1,12 @@
 /*
- * $Id: ReceiverServlet.java,v 1.6 2003/11/11 21:18:43 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.7 2003/11/21 04:45:13 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.7  2003/11/21 04:45:13  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.6  2003/11/11 21:18:43  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -90,11 +96,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public abstract class ReceiverServlet extends XMLInputStreamServlet {
-    public void init(ServletConfig config) throws ServletException {
+    public void init(final ServletConfig config) throws ServletException {
         super.init(config);
     }
 
-    protected void handleInputStream(InputStream is, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected final void handleInputStream(final InputStream is, final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         try {
             receiver.receive(VerifyingReader.getInstance().read(is));
         } catch (NeuClearException e) {
@@ -105,11 +111,11 @@ public abstract class ReceiverServlet extends XMLInputStreamServlet {
 
     }
 
-    protected void setReceiver(Receiver receiver) {
+    protected final void setReceiver(final Receiver receiver) {
         this.receiver = receiver;
     }
 
-    protected Receiver getReceiver() {
+    protected final Receiver getReceiver() {
         return receiver;
     }
 

@@ -1,6 +1,12 @@
 /*
- * $Id: Identity.java,v 1.21 2003/11/20 23:42:24 pelle Exp $
+ * $Id: Identity.java,v 1.22 2003/11/21 04:45:13 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.22  2003/11/21 04:45:13  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.21  2003/11/20 23:42:24  pelle
  * Getting all the tests to work in id
  * Removing usage of BC in CryptoTools as it was causing issues.
@@ -307,7 +313,7 @@ public class Identity extends SignedNamedObject implements Principal {
      * @throws NeuClearException 
      */
 
-    protected Identity(SignedNamedCore core, String repository, String signer, String logger, String receiver, PublicKey pub) throws NeuClearException {
+    protected Identity(final SignedNamedCore core, final String repository, final String signer, final String logger, final String receiver, final PublicKey pub) throws NeuClearException {
         super(core);
         this.repository = repository;
         this.logger = logger;
@@ -329,14 +335,14 @@ public class Identity extends SignedNamedObject implements Principal {
         return logger;
     }
 
-    public SignedNamedObject send(SignedNamedObject obj) throws NeuClearException {
+    public SignedNamedObject send(final SignedNamedObject obj) throws NeuClearException {
         if (!Utility.isEmpty(receiver))
             return Sender.quickSend(receiver, obj);
         else
             throw new NeuClearException("Cant send object, " + getName() + " doesnt have a registered Receiver");
     }
 
-    final void log(SignedNamedObject obj) throws NeuClearException {
+    final void log(final SignedNamedObject obj) throws NeuClearException {
         if (!Utility.isEmpty(logger))
             Sender.quickSend(logger, obj);
     }
@@ -359,7 +365,7 @@ public class Identity extends SignedNamedObject implements Principal {
     private final static Identity createRootIdentity() {
 
         try {
-            PublicKey rootpk = CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
+            final PublicKey rootpk = CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
             return new Identity(SignedNamedCore.createRootCore(), NSResolver.NSROOTSTORE,
                     null, null, null, rootpk);
         } catch (NeuClearException e) {
@@ -371,7 +377,7 @@ public class Identity extends SignedNamedObject implements Principal {
     public static final Identity NEUROOT = createRootIdentity();
 
     public final java.security.cert.Certificate[] getCertificateChain() {
-        ArrayList certs = new ArrayList(3);
+        final ArrayList certs = new ArrayList(3);
         Identity id = this;
         while (id != null) {
             certs.add(id.getCertificate());
@@ -379,11 +385,11 @@ public class Identity extends SignedNamedObject implements Principal {
         }
         certs.add(NEUROOT.getCertificate());
         certs.trimToSize();
-        Certificate cert[] = new Certificate[certs.size()];
-        Iterator iter = certs.iterator();
+        final Certificate[] cert = new Certificate[certs.size()];
+        final Iterator iter = certs.iterator();
         int i = 0;
         while (iter.hasNext()) {
-            Certificate certificate = (java.security.cert.Certificate) iter.next();
+            final Certificate certificate = (java.security.cert.Certificate) iter.next();
             cert[i++] = certificate;
         }
         return cert;
@@ -431,12 +437,12 @@ public class Identity extends SignedNamedObject implements Principal {
          * @throws java.security.SignatureException
          *                              
          */
-        public final void verify(PublicKey publicKey) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
+        public final void verify(final PublicKey publicKey) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
             if (!getSignatory().getPublicKey().equals(publicKey))
                 throw new SignatureException("Key didnt match Signature");
         }
 
-        public final void verify(PublicKey publicKey, String string) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
+        public final void verify(final PublicKey publicKey, final String string) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
             verify(publicKey);
         }
 
@@ -451,22 +457,22 @@ public class Identity extends SignedNamedObject implements Principal {
     }
 
     //TODO I dont like this being public
-    public static class Reader implements NamedObjectReader {
+    public static final class Reader implements NamedObjectReader {
         /**
          * Read object from Element and fill in its details
          * 
          * @param elem 
          * @return 
          */
-        public final SignedNamedObject read(SignedNamedCore core, Element elem) throws NeuClearException, XMLSecurityException {
-            String repository = elem.attributeValue(DocumentHelper.createQName("repository", NSTools.NS_NEUID));
-            String signer = elem.attributeValue(DocumentHelper.createQName("signer", NSTools.NS_NEUID));
-            String logger = elem.attributeValue(DocumentHelper.createQName("logger", NSTools.NS_NEUID));
-            String receiver = elem.attributeValue(DocumentHelper.createQName("receiver", NSTools.NS_NEUID));
+        public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws NeuClearException, XMLSecurityException {
+            final String repository = elem.attributeValue(DocumentHelper.createQName("repository", NSTools.NS_NEUID));
+            final String signer = elem.attributeValue(DocumentHelper.createQName("signer", NSTools.NS_NEUID));
+            final String logger = elem.attributeValue(DocumentHelper.createQName("logger", NSTools.NS_NEUID));
+            final String receiver = elem.attributeValue(DocumentHelper.createQName("receiver", NSTools.NS_NEUID));
 
-            Element allowElement = elem.element(DocumentHelper.createQName("allow", NSTools.NS_NEUID));
-            KeyInfo ki = new KeyInfo(allowElement.element(XMLSecTools.createQName("KeyInfo")));
-            PublicKey pub = ki.getPublicKey();
+            final Element allowElement = elem.element(DocumentHelper.createQName("allow", NSTools.NS_NEUID));
+            final KeyInfo ki = new KeyInfo(allowElement.element(XMLSecTools.createQName("KeyInfo")));
+            final PublicKey pub = ki.getPublicKey();
             return new Identity(core, repository, signer, logger, receiver, pub);
         }
 

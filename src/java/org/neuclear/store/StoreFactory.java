@@ -1,6 +1,12 @@
 /*
- * $Id: StoreFactory.java,v 1.3 2003/11/11 21:18:44 pelle Exp $
+ * $Id: StoreFactory.java,v 1.4 2003/11/21 04:45:16 pelle Exp $
  * $Log: StoreFactory.java,v $
+ * Revision 1.4  2003/11/21 04:45:16  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.3  2003/11/11 21:18:44  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -68,12 +74,12 @@ package org.neuclear.store;
 
 
 
-public class StoreFactory {
+public final class StoreFactory {
 
     private StoreFactory() {
     }
 
-    public synchronized Store getStoreInstance(String path) {
+    public final synchronized Store getStoreInstance(final String path) {
 //        synchronized (store) {
             if (store==null)
                 store=new FileStore(path);//new EncryptedFileStore("/home/java/projects/neuclear/cryptstore");

@@ -5,6 +5,7 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent;
 import org.neuclear.commons.crypto.signers.DefaultSigner;
 import org.neuclear.commons.crypto.signers.JCESigner;
+import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.xml.XMLException;
@@ -30,8 +31,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignedNamedCoreTest.java,v 1.1 2003/11/20 23:42:24 pelle Exp $
+$Id: SignedNamedCoreTest.java,v 1.2 2003/11/21 04:45:17 pelle Exp $
 $Log: SignedNamedCoreTest.java,v $
+Revision 1.2  2003/11/21 04:45:17  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.1  2003/11/20 23:42:24  pelle
 Getting all the tests to work in id
 Removing usage of BC in CryptoTools as it was causing issues.
@@ -45,25 +52,25 @@ writing SQL. (Yipee)
  * Date: Nov 20, 2003
  * Time: 5:26:22 PM
  */
-public class SignedNamedCoreTest extends TestCase {
+public final class SignedNamedCoreTest extends TestCase {
 
-    public void testCreateRoot() {
-        SignedNamedCore core = SignedNamedCore.createRootCore();
+    public final void testCreateRoot() {
+        final SignedNamedCore core = SignedNamedCore.createRootCore();
         assertNotNull(core);
         assertEquals(core.getName(), "neu://");
         assertNull(core.getSignatory());
     }
 
-    public void testRead() throws NeuClearException, GeneralSecurityException, XMLException, FileNotFoundException {
-        final String name = "neu://";
-        NamedObjectBuilder builder = new AuthenticationTicketBuilder(name, "neu://test", "http://slashdot.org");
-        final JCESigner signer = new DefaultSigner(new GuiDialogAgent());
+    public final void testRead() throws NeuClearException, GeneralSecurityException, XMLException, FileNotFoundException {
+        final String name = "neu://bob@test";
+        final NamedObjectBuilder builder = new AuthenticationTicketBuilder(name, "neu://test", "http://slashdot.org");
+        final JCESigner signer = new TestCaseSigner();
         builder.sign(name, signer);
         assertTrue(builder.verifySignature(signer.getPublicKey(name)));
         assertTrue(builder.verifySignature(Identity.getRootPK()));
         assertTrue(builder.verifySignature(Identity.NEUROOT.getPublicKey()));
         try {
-            SignedNamedCore core = SignedNamedCore.read(builder.getElement());
+            final SignedNamedCore core = SignedNamedCore.read(builder.getElement());
             assertEquals(core.getSignatory().getName(), name);
         } catch (InvalidNamedObject e) {
             assertTrue(e.getLocalizedMessage(), false);

@@ -30,8 +30,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: BuildAllTopLevel.java,v 1.1 2003/11/20 23:42:24 pelle Exp $
+$Id: BuildAllTopLevel.java,v 1.2 2003/11/21 04:45:13 pelle Exp $
 $Log: BuildAllTopLevel.java,v $
+Revision 1.2  2003/11/21 04:45:13  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.1  2003/11/20 23:42:24  pelle
 Getting all the tests to work in id
 Removing usage of BC in CryptoTools as it was causing issues.
@@ -45,9 +51,9 @@ writing SQL. (Yipee)
  * Date: Nov 20, 2003
  * Time: 3:26:45 PM
  */
-public class BuildAllTopLevel {
-    public static SignedNamedObject createIdentities(String name, Signer signer, PublicKeySource pubsource) throws NeuClearException, XMLException {
-        IdentityBuilder id = new IdentityBuilder(
+public final class BuildAllTopLevel {
+    public static SignedNamedObject createIdentities(final String name, final Signer signer, final PublicKeySource pubsource) throws NeuClearException, XMLException {
+        final IdentityBuilder id = new IdentityBuilder(
                 name,
                 pubsource.getPublicKey(name),
                 "http://repository.neuclear.org",
@@ -58,15 +64,17 @@ public class BuildAllTopLevel {
         return id.sign(signer);
     }
 
-    public static void main(String args[]) {
+    public static void main(final String[] args) {
         try {
-            JCESigner rootsig = new DefaultSigner(new GuiDialogAgent());
-            JCESigner testsig = new TestCaseSigner();
-            Store store = new FileStore("target/testdata/repository");
+            final JCESigner rootsig = new DefaultSigner(new GuiDialogAgent());
+            final JCESigner testsig = new TestCaseSigner();
+            final Store store = new FileStore("target/testdata/repository");
             store.receive(createIdentities("neu://", rootsig, rootsig));
             store.receive(createIdentities("neu://test", rootsig, testsig));
             store.receive(createIdentities("neu://pelle", rootsig, rootsig));
             store.receive(createIdentities("neu://verax", rootsig, rootsig));
+            store.receive(createIdentities("neu://bob@test", testsig, testsig));
+            store.receive(createIdentities("neu://alice@test", testsig, testsig));
 
         } catch (NeuClearException e) {
             e.printStackTrace();

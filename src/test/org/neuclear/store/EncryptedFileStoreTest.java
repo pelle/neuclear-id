@@ -1,6 +1,12 @@
 /*
- * $Id: EncryptedFileStoreTest.java,v 1.4 2003/11/18 15:07:37 pelle Exp $
+ * $Id: EncryptedFileStoreTest.java,v 1.5 2003/11/21 04:45:18 pelle Exp $
  * $Log: EncryptedFileStoreTest.java,v $
+ * Revision 1.5  2003/11/21 04:45:18  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.4  2003/11/18 15:07:37  pelle
  * Changes to JCE Implementation
  * Working on getting all tests working including store tests
@@ -53,14 +59,14 @@ import org.neuclear.commons.NeuClearException;
 
 import java.security.GeneralSecurityException;
 
-public class EncryptedFileStoreTest extends AbstractStoreTest {
-    public EncryptedFileStoreTest(String name) throws GeneralSecurityException, NeuClearException {
+public final class EncryptedFileStoreTest extends AbstractStoreTest {
+    public EncryptedFileStoreTest(final String name) throws GeneralSecurityException, NeuClearException {
         super(name);
     }
 
     /**
      */
-    public Store getStoreInstance() {
+    public final Store getStoreInstance() {
         return new EncryptedFileStore("target/testdata/efs");
     }
 

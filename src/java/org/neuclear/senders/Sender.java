@@ -5,8 +5,14 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:29:29 AM
- * $Id: Sender.java,v 1.11 2003/11/19 23:33:59 pelle Exp $
+ * $Id: Sender.java,v 1.12 2003/11/21 04:45:13 pelle Exp $
  * $Log: Sender.java,v $
+ * Revision 1.12  2003/11/21 04:45:13  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.11  2003/11/19 23:33:59  pelle
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -71,12 +77,12 @@ public abstract class Sender {
 
     public abstract SignedNamedObject send(String endpoint, SignedNamedObject obj) throws NeuClearException, XMLException;
 
-    public static SignedNamedObject quickSend(String endpoint, SignedNamedObject obj) throws NeuClearException {
-        int protloc = endpoint.indexOf(":");
+    public static SignedNamedObject quickSend(final String endpoint, final SignedNamedObject obj) throws NeuClearException {
+        final int protloc = endpoint.indexOf(":");
         if (protloc < 0)
             throw new NeuClearException(endpoint + "Is not in URL format");
-        String protocol = endpoint.substring(0, protloc);
-        Sender sender = getSender(protocol);
+        final String protocol = endpoint.substring(0, protloc);
+        final Sender sender = getSender(protocol);
         if (sender == null)
             throw new NeuClearException("Unsupported Send Protocol:" + endpoint.toString());
         try {
@@ -86,7 +92,7 @@ public abstract class Sender {
         }
     }
 
-    public static Sender getSender(String protocol) {
+    public static Sender getSender(final String protocol) {
         if (SENDERS == null) {
             SENDERS = new HashMap();
             SENDERS.put("soap", new SoapSender());
@@ -99,7 +105,7 @@ public abstract class Sender {
 
     private static Map SENDERS;
 
-    public static void main(String args[]) {
+    public static void main(final String[] args) {
 /*
         try {
             NameSpace pelle=(NameSpace)NamedObjectFactory.fetchNamedObject("neu://free/pelle");

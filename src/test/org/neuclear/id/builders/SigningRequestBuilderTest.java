@@ -27,8 +27,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningRequestBuilderTest.java,v 1.2 2003/11/19 23:34:00 pelle Exp $
+$Id: SigningRequestBuilderTest.java,v 1.3 2003/11/21 04:45:17 pelle Exp $
 $Log: SigningRequestBuilderTest.java,v $
+Revision 1.3  2003/11/21 04:45:17  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.2  2003/11/19 23:34:00  pelle
 Signers now can generatekeys via the generateKey() method.
 Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -49,24 +55,24 @@ There had been an issue in the canonicalizer when dealing with the embedded obje
  * Date: Nov 17, 2003
  * Time: 3:28:05 PM
  */
-public class SigningRequestBuilderTest extends AbstractSigningTest {
-    public SigningRequestBuilderTest(String string) throws NeuClearException, GeneralSecurityException {
+public final class SigningRequestBuilderTest extends AbstractSigningTest {
+    public SigningRequestBuilderTest(final String string) throws NeuClearException, GeneralSecurityException {
         super(string);
     }
 
-    public void testSignatureRequest() throws NeuClearException, XMLException {
-        AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://users.neuclear.org:8080");
-        SignatureRequestBuilder sigreq = new SignatureRequestBuilder("neu://test", "neu://bob@test", authreq, "For testing purposes");
+    public final void testSignatureRequest() throws NeuClearException, XMLException {
+        final AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://users.neuclear.org:8080");
+        final SignatureRequestBuilder sigreq = new SignatureRequestBuilder("neu://test", "neu://bob@test", authreq, "For testing purposes");
         assertEquals(sigreq.getParent().getName(), "neu://test");
         try {
-            SignatureRequest tosign = (SignatureRequest) sigreq.sign(signer);
+            final SignatureRequest tosign = (SignatureRequest) sigreq.sign(signer);
             assertTrue(sigreq.isSigned());
             assertEquals(tosign.getName(), sigreq.getName());
 
-            NamedObjectBuilder auth2 = tosign.getUnsigned();
+            final NamedObjectBuilder auth2 = tosign.getUnsigned();
             assertEquals(auth2.getParent().getName(), "neu://bob@test");
 
-            AuthenticationTicket auth = (AuthenticationTicket) auth2.sign(signer);
+            final AuthenticationTicket auth = (AuthenticationTicket) auth2.sign(signer);
             assertTrue(auth2.isSigned());
             assertEquals(auth.getName(), authreq.getName());
             assertEquals(auth.getSiteHref(), "http://users.neuclear.org:8080");

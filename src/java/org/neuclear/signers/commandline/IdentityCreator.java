@@ -1,5 +1,11 @@
-/* $Id: IdentityCreator.java,v 1.5 2003/11/11 21:18:43 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.6 2003/11/21 04:45:13 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.6  2003/11/21 04:45:13  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.5  2003/11/11 21:18:43  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -170,17 +176,17 @@ import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
-public class IdentityCreator extends CommandLineSigner {
-    public IdentityCreator(String args[]) throws Exception {
+public final class IdentityCreator extends CommandLineSigner {
+    public IdentityCreator(final String[] args) throws Exception {
         super(args);
         if (!(sig instanceof PublicKeySource))
             throw new NeuClearException("The default signer has to include public keys");
         pksource = (PublicKeySource) sig;
         identity = cmd.getOptionValue("n");
-        String cachedirpath = System.getProperty("user.home") + "/.neuclear/cache";
-        File cachedir = new File(cachedirpath);
+        final String cachedirpath = System.getProperty("user.home") + "/.neuclear/cache";
+        final File cachedir = new File(cachedirpath);
         if (!cachedir.exists())
             cachedir.mkdirs();
 
@@ -190,12 +196,12 @@ public class IdentityCreator extends CommandLineSigner {
 
     }
 
-    public NamedObjectBuilder build() throws Exception {
-        String allow = Utility.denullString(cmd.getOptionValue("w"), identity);
-        String defaultstore = Utility.denullString(cmd.getOptionValue("r"), NSResolver.NSROOTSTORE);
-        String defaultsigner = Utility.denullString(cmd.getOptionValue("i"), "http://localhost:11870/signer");
-        String defaultlogger = Utility.denullString(cmd.getOptionValue("l"), LogSender.LOGGER);
-        String defaultreceiver = cmd.getOptionValue("b");
+    public final NamedObjectBuilder build() throws Exception {
+        final String allow = Utility.denullString(cmd.getOptionValue("w"), identity);
+        final String defaultstore = Utility.denullString(cmd.getOptionValue("r"), NSResolver.NSROOTSTORE);
+        final String defaultsigner = Utility.denullString(cmd.getOptionValue("i"), "http://localhost:11870/signer");
+        final String defaultlogger = Utility.denullString(cmd.getOptionValue("l"), LogSender.LOGGER);
+        final String defaultreceiver = cmd.getOptionValue("b");
         final PublicKey newkid = pksource.getPublicKey(allow);
         if (newkid == null)
             throw new CryptoException("PublicKey not available for: " + allow);
@@ -203,9 +209,9 @@ public class IdentityCreator extends CommandLineSigner {
 
     }
 
-    public static void main(String args[]) {
+    public static void main(final String[] args) {
         try {
-            IdentityCreator signer = new IdentityCreator(args);
+            final IdentityCreator signer = new IdentityCreator(args);
             signer.execute();
         } catch (Exception e) {
             e.printStackTrace();
@@ -213,15 +219,15 @@ public class IdentityCreator extends CommandLineSigner {
         System.exit(0);
     }
 
-    protected String getExtraHelp() {
+    protected final String getExtraHelp() {
         return "[--name neu://neu/one --allow neuone]";
     }
 
-    protected boolean hasArguments() {
+    protected final boolean hasArguments() {
         return (cmd.hasOption("n") && cmd.hasOption("b"));
     }
 
-    protected void getLocalOptions(Options options) {
+    protected final void getLocalOptions(final Options options) {
         options.addOption("n", "name", true, "specify name of new Identity");
         options.addOption("w", "allow", true, "specify alias of owner of new namespace");
         options.addOption("r", "defaultrepository", true, "Identity's default Repository");

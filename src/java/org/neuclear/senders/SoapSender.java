@@ -5,8 +5,14 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:50:30 AM
- * $Id: SoapSender.java,v 1.12 2003/11/19 23:33:59 pelle Exp $
+ * $Id: SoapSender.java,v 1.13 2003/11/21 04:45:13 pelle Exp $
  * $Log: SoapSender.java,v $
+ * Revision 1.13  2003/11/21 04:45:13  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.12  2003/11/19 23:33:59  pelle
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -99,8 +105,8 @@ import org.neuclear.xml.XMLException;
 import org.neuclear.xml.soap.SOAPTools;
 
 
-public class SoapSender extends Sender {
-    public SignedNamedObject send(String endpoint, SignedNamedObject obj) throws NeuClearException, XMLException {
+public final class SoapSender extends Sender {
+    public final SignedNamedObject send(final String endpoint, final SignedNamedObject obj) throws NeuClearException, XMLException {
         return VerifyingReader.getInstance().read(SOAPTools.soapRequest(endpoint, obj.getEncoded(), "/receive"));
 
     }

@@ -12,8 +12,14 @@ import java.net.URL;
  * User: pelleb
  * Date: Feb 10, 2003
  * Time: 8:35:33 PM
- * $Id: HttpSource.java,v 1.8 2003/11/11 21:18:44 pelle Exp $
+ * $Id: HttpSource.java,v 1.9 2003/11/21 04:45:14 pelle Exp $
  * $Log: HttpSource.java,v $
+ * Revision 1.9  2003/11/21 04:45:14  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.8  2003/11/11 21:18:44  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -68,12 +74,12 @@ import java.net.URL;
  * It doesnt quite verify things correctly yet. I'm not yet sure why.
  * CommandLineSigner is simplified to make it easier to use.
  */
-public class HttpSource extends Source {
+public final class HttpSource extends Source {
 
-    protected InputStream getStream(String endpoint, String name) throws NeuClearException {
+    protected final InputStream getStream(final String endpoint, final String name) throws NeuClearException {
         try {
-            String urlstring = endpoint + NSTools.url2path(name);
-            URL url = new URL(urlstring);
+            final String urlstring = endpoint + NSTools.url2path(name);
+            final URL url = new URL(urlstring);
 
             return url.openStream();
         } catch (java.io.IOException e) {
@@ -81,10 +87,10 @@ public class HttpSource extends Source {
         }
     }
 
-    public static void main(String args[]) {
-        Source source = new HttpSource();
+    public static void main(final String[] args) {
+        final Source source = new HttpSource();
         try {
-            SignedNamedObject obj = source.fetch("http://repository.neuclear.org", "/pelle");
+            final SignedNamedObject obj = source.fetch("http://repository.neuclear.org", "/pelle");
             System.out.println("Got: " + obj.getName());
 
         } catch (NeuClearException e) {

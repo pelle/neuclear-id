@@ -1,6 +1,12 @@
 /*
- * $Id: IdentityBuilder.java,v 1.7 2003/11/11 21:18:42 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.8 2003/11/21 04:45:10 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.8  2003/11/21 04:45:10  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.7  2003/11/11 21:18:42  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -167,6 +173,7 @@ import org.dom4j.QName;
 import org.neuclear.id.Identity;
 import org.neuclear.id.NSTools;
 import org.neuclear.commons.Utility;
+import org.neuclear.commons.NeuClearException;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
@@ -184,7 +191,7 @@ public  class IdentityBuilder extends NamedObjectBuilder {
      * @param receiver   URL of default receiver for namespace
      */
 
-    public IdentityBuilder(String name, PublicKey allow, String repository, String signer, String logger, String receiver) {
+    public IdentityBuilder(final String name, final PublicKey allow, final String repository, final String signer, final String logger, final String receiver) throws NeuClearException {
         this(DocumentHelper.createQName("Identity",NSTools.NS_NEUID), name,allow,repository,signer,logger,receiver);
 
     }
@@ -197,10 +204,10 @@ public  class IdentityBuilder extends NamedObjectBuilder {
      * @param signer     URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
      * @param receiver   URL of default receiver for namespace
      */
-    protected IdentityBuilder(QName tag,String name, PublicKey allow, String repository, String signer, String logger, String receiver) {
+    protected IdentityBuilder(final QName tag,final String name, final PublicKey allow, final String repository, final String signer, final String logger, final String receiver) throws NeuClearException {
         super(name, tag);
 
-        Element root = getElement();
+        final Element root = getElement();
         // We have meaningful defaults for the following two
         root.addAttribute(DocumentHelper.createQName("repository", NSTools.NS_NEUID), repository);
         root.addAttribute(DocumentHelper.createQName("logger", NSTools.NS_NEUID), receiver);
@@ -211,32 +218,34 @@ public  class IdentityBuilder extends NamedObjectBuilder {
             root.addAttribute(DocumentHelper.createQName("receiver", NSTools.NS_NEUID), receiver);
 
         if (allow != null) {
-            QName allowName = DocumentHelper.createQName("allow", NSTools.NS_NEUID);
-            Element pub = root.addElement(allowName);
+            final QName allowName = DocumentHelper.createQName("allow", NSTools.NS_NEUID);
+            final Element pub = root.addElement(allowName);
             pub.add(XMLSecTools.createKeyInfo(allow));
         }
     }
 
-    public IdentityBuilder(String name, PublicKey allow, String repository) throws XMLSecurityException {
+    public IdentityBuilder(final String name, final PublicKey allow, final String repository) throws XMLSecurityException, NeuClearException {
         this(name, allow, repository, null, null, null);
     }
 
-    public IdentityBuilder(String name, PublicKey allow) throws XMLSecurityException {
+    public IdentityBuilder(final String name, final PublicKey allow) throws XMLSecurityException, NeuClearException {
         this(name, allow, null);
     }
 
 
-    public String getTagName() {
+    public final String getTagName() {
         return "Identity";
     }
 
-    public static void main(String args[]) {
+    public static void main(final String[] args) {
         System.out.println("Test Building NeuClear Identities");
         try {
-            NamedObjectBuilder id = new IdentityBuilder("neu://", Identity.NEUROOT.getPublicKey());
+            final NamedObjectBuilder id = new IdentityBuilder("neu://", Identity.NEUROOT.getPublicKey());
             System.out.println(new String(id.canonicalize()));
         } catch (XMLException e) {
             e.printStackTrace();
+        } catch (NeuClearException e) {
+            e.printStackTrace();  //TODO Handle exception
         }
     }
 }

@@ -1,6 +1,12 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.13 2003/11/19 23:34:00 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.14 2003/11/21 04:45:14 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
+ * Revision 1.14  2003/11/21 04:45:14  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.13  2003/11/19 23:34:00  pelle
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -174,47 +180,57 @@ package org.neuclear.store;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.commons.crypto.CryptoException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
 
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import javax.crypto.Cipher;
 import java.io.*;
 
 
 /**
  * This EncryptedFileStore stores the objects en encrypted format in a file name based on its path
  */
-public class EncryptedFileStore extends FileStore {
+public final class EncryptedFileStore extends FileStore {
 
-    public EncryptedFileStore(String base) {
+    public EncryptedFileStore(final String base) {
         super(base);
     }
 
-    protected OutputStream getOutputStream(SignedNamedObject obj) throws NeuClearException, FileNotFoundException {
-        String outputFilename = base + getFileName(obj);
+    protected final OutputStream getOutputStream(final SignedNamedObject obj) throws NeuClearException, FileNotFoundException {
+        final String outputFilename = base + getFileName(obj);
         System.out.println("Outputting to: " + outputFilename);
-        File outputFile = new File(outputFilename);
+        final File outputFile = new File(outputFilename);
         outputFile.getParentFile().mkdirs();
-        return new CipherOutputStream(new FileOutputStream(outputFile), CryptoTools.getCipher(CryptoTools.digest256(obj.getName().getBytes()), true));
+        try {
+            return new CipherOutputStream(new FileOutputStream(outputFile), CryptoTools.makePBECipher(Cipher.ENCRYPT_MODE,obj.getName().toCharArray()));
+        } catch (Exception e) {
+            throw new CryptoException(e);
+        }
     }
 
-    protected InputStream getInputStream(String name) throws FileNotFoundException, NeuClearException {
-        String inputFilename = base + getFileName(name);
+    protected final InputStream getInputStream(final String name) throws FileNotFoundException, NeuClearException {
+        final String inputFilename = base + getFileName(name);
         System.out.println("Loading from: " + inputFilename);
-        File fin = new File(inputFilename);
+        final File fin = new File(inputFilename);
         if (!fin.exists())
             throw new NeuClearException("NeuClear: " + name + " doesnt exist");
-        return new CipherInputStream(new FileInputStream(fin), CryptoTools.getCipher(CryptoTools.digest256(name.getBytes()), false));
+        try {
+            return new CipherInputStream(new FileInputStream(fin), CryptoTools.makePBECipher(Cipher.DECRYPT_MODE,name.toCharArray()));
+        } catch (Exception e) {
+            throw new CryptoException(e);
+        }
     }
 
 
-    protected String getFileName(String name) throws NeuClearException {
-        String deURLizedName = NSTools.normalizeNameURI(name);
-        byte hash[] = CryptoTools.formatAsURLSafe(CryptoTools.digest512(deURLizedName.getBytes())).getBytes();
+    protected final String getFileName(final String name) throws NeuClearException {
+        final String deURLizedName = NSTools.normalizeNameURI(name);
+        final byte[] hash = CryptoTools.formatAsURLSafe(CryptoTools.digest256(deURLizedName.getBytes())).getBytes();
         //if (true) return new String(hash);
-        int partlength = hash.length / 8;
-        byte newName[] = new byte[hash.length + 8];
+        final int partlength = hash.length / 8;
+        final byte[] newName = new byte[hash.length + 8];
         for (int i = 0; i < 8; i++) {
             newName[i * (partlength + 1)] = (byte) '/';
             System.arraycopy(hash, (i * partlength), newName, (i * (partlength + 1)) + 1, partlength);

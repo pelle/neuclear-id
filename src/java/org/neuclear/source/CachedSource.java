@@ -1,7 +1,13 @@
 /*
  *
- * $Id: CachedSource.java,v 1.12 2003/11/11 21:18:44 pelle Exp $
+ * $Id: CachedSource.java,v 1.13 2003/11/21 04:45:14 pelle Exp $
  * $Log: CachedSource.java,v $
+ * Revision 1.13  2003/11/21 04:45:14  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.12  2003/11/11 21:18:44  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -102,22 +108,22 @@ import java.io.*;
  * It can be used in front of any other Source, such as a HTTP based source to cache items locally.
  */
 public final class CachedSource extends Source {
-    public CachedSource(Source src) {
+    public CachedSource(final Source src) {
         this.src = src;
         cachedirpath = System.getProperty("user.home") + "/.neuclear/cache";
-        File cachedir = new File(cachedirpath);
+        final File cachedir = new File(cachedirpath);
         if (!cachedir.exists())
             cachedir.mkdirs();
     }
 
 
-    protected InputStream getStream(String endpoint, String name) throws NeuClearException {
-        File object = new File(cachedirpath + NSTools.url2path(name) + "/root.id");
+    protected InputStream getStream(final String endpoint, final String name) throws NeuClearException {
+        final File object = new File(cachedirpath + NSTools.url2path(name) + "/root.id");
         try {
             if (!object.exists()) {   //TODO check for freshness
                 object.getParentFile().mkdirs();
-                InputStream in = src.getStream(endpoint, name);
-                OutputStream out = new FileOutputStream(object);
+                final InputStream in = src.getStream(endpoint, name);
+                final OutputStream out = new FileOutputStream(object);
                 int character;
                 //TODO Explore more efficient ways of copying streams
                 while ((character = in.read()) != -1)

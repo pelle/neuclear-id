@@ -32,8 +32,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: IdentityBuilderTest.java,v 1.6 2003/11/19 23:34:00 pelle Exp $
+$Id: IdentityBuilderTest.java,v 1.7 2003/11/21 04:45:17 pelle Exp $
 $Log: IdentityBuilderTest.java,v $
+Revision 1.7  2003/11/21 04:45:17  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.6  2003/11/19 23:34:00  pelle
 Signers now can generatekeys via the generateKey() method.
 Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -68,15 +74,15 @@ PaymentReceiverTest works, but needs a abit more work in its environment to succ
  * Date: Nov 12, 2003
  * Time: 5:33:30 PM
  */
-public class IdentityBuilderTest extends AbstractSigningTest {
-    public IdentityBuilderTest(String string) throws GeneralSecurityException, NeuClearException, FileNotFoundException {
+public final class IdentityBuilderTest extends AbstractSigningTest {
+    public IdentityBuilderTest(final String string) throws GeneralSecurityException, NeuClearException, FileNotFoundException {
         super(string);
         rootsigner = new DefaultSigner(new GuiDialogAgent());
     }
 
-    public void createIdentities(String name) throws NeuClearException, XMLException {
+    public final void createIdentities(final String name) throws NeuClearException, XMLException {
         if (getSigner().canSignFor(name)) {
-            IdentityBuilder id = new IdentityBuilder(
+            final IdentityBuilder id = new IdentityBuilder(
                     name,
                     ((PublicKeySource) getSigner()).getPublicKey(name),
                     "http://repository.neuclear.org",
@@ -85,14 +91,14 @@ public class IdentityBuilderTest extends AbstractSigningTest {
                     "mailto:pelle@neuclear.org");
 
             final String parent = NSTools.getParentNSURI(id.getName());
-            SignedNamedObject sec = null;
+            final SignedNamedObject sec = null;
             if (getSigner().canSignFor(parent)) {
                 id.sign(getSigner());
             } else if (parent.equals("neu://")) {
                 id.sign(rootsigner);
             }
             assertNotNull(sec);
-            File file = new File(PATH + NSTools.url2path(id.getName()) + "/root.id");
+            final File file = new File(PATH + NSTools.url2path(id.getName()) + "/root.id");
             file.getParentFile().mkdirs();
             System.out.println("Wrote: " + file.getAbsolutePath());
             assertEquals(id.getName(), sec.getName());
@@ -104,7 +110,7 @@ public class IdentityBuilderTest extends AbstractSigningTest {
         }
     }
 
-    public void testBuild() throws NeuClearException, XMLException {
+    public final void testBuild() throws NeuClearException, XMLException {
 //        createIdentities("neu://test");
         createIdentities("neu://test/bux");
         createIdentities("neu://bob@test");

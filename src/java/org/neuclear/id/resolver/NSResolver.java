@@ -24,8 +24,8 @@ public final class NSResolver {
      * @param name 
      * @return 
      */
-    public final static Identity resolveIdentity(String name) throws NeuClearException, InvalidNamedObject {
-        SignedNamedObject id = resolve(name);
+    public final static Identity resolveIdentity(final String name) throws NeuClearException, InvalidNamedObject {
+        final SignedNamedObject id = resolve(name);
         if (id instanceof Identity)
             return (Identity) id;
         throw new InvalidNamedObject(name + " is not a valid Identity");
@@ -39,18 +39,18 @@ public final class NSResolver {
      * @param name 
      * @return 
      */
-    public final static SignedNamedObject resolve(String name) throws NeuClearException, InvalidNamedObject {
+    public final static SignedNamedObject resolve(final String name) throws NeuClearException, InvalidNamedObject {
         SignedNamedObject obj = NSCACHE.fetchCached(name);
         if (obj != null)
             return obj;
 
-        String parentname = NSTools.getParentNSURI(name);
+        final String parentname = NSTools.getParentNSURI(name);
         String store = NSROOTSTORE;
 
         if (parentname == null || name.equals("neu://"))
             return Identity.NEUROOT;
 
-        Identity parent = resolveIdentity(parentname);
+        final Identity parent = resolveIdentity(parentname);
         store = parent.getRepository();
         // fetches Identity from parent Identity's Default Store
         obj = (Identity) Source.getInstance().fetch(store, name);

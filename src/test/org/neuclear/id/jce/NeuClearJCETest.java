@@ -33,8 +33,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearJCETest.java,v 1.4 2003/11/20 23:42:24 pelle Exp $
+$Id: NeuClearJCETest.java,v 1.5 2003/11/21 04:45:17 pelle Exp $
 $Log: NeuClearJCETest.java,v $
+Revision 1.5  2003/11/21 04:45:17  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.4  2003/11/20 23:42:24  pelle
 Getting all the tests to work in id
 Removing usage of BC in CryptoTools as it was causing issues.
@@ -64,8 +70,8 @@ Moved the NeuClearCertificate class to be an inner class of Identity.
  * Date: Oct 1, 2003
  * Time: 11:50:58 AM
  */
-public class NeuClearJCETest extends AbstractSigningTest {
-    public NeuClearJCETest(String string) throws NeuClearException, GeneralSecurityException {
+public final class NeuClearJCETest extends AbstractSigningTest {
+    public NeuClearJCETest(final String string) throws NeuClearException, GeneralSecurityException {
         super(string);
         if (Security.getProvider("NeuClear") == null) {
             Security.addProvider(new NeuClearJCEProvider());
@@ -73,36 +79,36 @@ public class NeuClearJCETest extends AbstractSigningTest {
         }
     }
 
-    public void testProvider() {
+    public final void testProvider() {
         assertNotNull(Security.getProvider("NeuClear"));
     }
 
-    public void testCertificateFactory() throws CertificateException {
+    public final void testCertificateFactory() throws CertificateException {
         assertNotNull(CertificateFactory.getInstance("NeuClear"));
 
     }
 
-    public void testGetCertificate() throws NeuClearException, XMLException {
-        IdentityBuilder id = new IdentityBuilder("neu://bob@test", signer.getPublicKey("neu://bob@test"));
-        Identity bob = (Identity) id.sign(signer);
-        Certificate cert = bob.getCertificate();
+    public final void testGetCertificate() throws NeuClearException, XMLException {
+        final IdentityBuilder id = new IdentityBuilder("neu://bob@test", signer.getPublicKey("neu://bob@test"));
+        final Identity bob = (Identity) id.sign(signer);
+        final Certificate cert = bob.getCertificate();
         assertNotNull(cert);
         assertEquals(cert.getPublicKey(), bob.getPublicKey());
     }
 
-    public void testStoreKey() throws NeuClearException, XMLException, NoSuchProviderException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", "BC");
-        KeyStore ks = KeyStore.getInstance("jks", "SUN");
+    public final void testStoreKey() throws NeuClearException, XMLException, NoSuchProviderException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
+        final KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", "BC");
+        final KeyStore ks = KeyStore.getInstance("jks", "SUN");
         ks.load(null, null);
         kpg.initialize(512);
-        KeyPair kp = kpg.generateKeyPair();
-        JCESigner sig2 = new JCESigner(ks, new AlwaysTheSamePassphraseAgent("neuclear"));
-        IdentityBuilder id = new IdentityBuilder("neu://eve@test", kp.getPublic());
-        Identity eve = (Identity) id.sign(signer);
+        final KeyPair kp = kpg.generateKeyPair();
+        final JCESigner sig2 = new JCESigner(ks, new AlwaysTheSamePassphraseAgent("neuclear"));
+        final IdentityBuilder id = new IdentityBuilder("neu://eve@test", kp.getPublic());
+        final Identity eve = (Identity) id.sign(signer);
 
         ks.setKeyEntry("neu://eve@test", kp.getPrivate(), "neuclear".toCharArray(), eve.getCertificateChain());
 
-        AuthenticationTicketBuilder authb = new AuthenticationTicketBuilder("neu://eve@test", "neu://test", "http://users.neuclear.org:8080");
+        final AuthenticationTicketBuilder authb = new AuthenticationTicketBuilder("neu://eve@test", "neu://test", "http://users.neuclear.org:8080");
         //authb.sign(sig2);
 
     }

@@ -40,8 +40,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServlet.java,v 1.5 2003/11/18 23:35:45 pelle Exp $
+$Id: AuthenticationServlet.java,v 1.6 2003/11/21 04:45:10 pelle Exp $
 $Log: AuthenticationServlet.java,v $
+Revision 1.6  2003/11/21 04:45:10  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.5  2003/11/18 23:35:45  pelle
 Payment Web Application is getting there.
 
@@ -69,8 +75,8 @@ Created SignatureRequest and friends to send unsigned NamedObjectBuilders to int
  * Date: Nov 6, 2003
  * Time: 2:04:31 PM
  */
-public class AuthenticationServlet extends HttpServlet {
-    public void init(ServletConfig servletConfig) throws ServletException {
+public final class AuthenticationServlet extends HttpServlet {
+    public final void init(final ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
         serviceid = servletConfig.getInitParameter("serviceid");
         title = servletConfig.getInitParameter("title");
@@ -85,27 +91,27 @@ public class AuthenticationServlet extends HttpServlet {
 
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected final void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected final void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
         response.setContentType("text/html");
 
-        String siteurl = ServletTools.getAbsoluteURL(request, "/");
-        String userns = request.getParameter("identity");
+        final String siteurl = ServletTools.getAbsoluteURL(request, "/");
+        final String userns = request.getParameter("identity");
         if (Utility.isEmpty(userns)) {
             response.sendError(500, "No Identity");
             response.flushBuffer();
             return;
         }
-        Cookie usercookie = new Cookie("identity", userns);
+        final Cookie usercookie = new Cookie("identity", userns);
         //usercookie.setSecure(true);
         usercookie.setMaxAge(2592000);
         response.addCookie(usercookie);
-        PrintWriter out = response.getWriter();
+        final PrintWriter out = response.getWriter();
         out.write("\n ");
         out.write("<html>\n");
         out.write("<head>");
@@ -119,8 +125,8 @@ public class AuthenticationServlet extends HttpServlet {
         out.flush();
 
         try {
-            AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder(userns, serviceid, request.getRequestURI());
-            SignatureRequestBuilder sigreq = new SignatureRequestBuilder(serviceid, userns, authreq, "Login to Site");
+            final AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder(userns, serviceid, request.getRequestURI());
+            final SignatureRequestBuilder sigreq = new SignatureRequestBuilder(serviceid, userns, authreq, "Login to Site");
             sigreq.sign(serviceid, signer);
             request.getSession(true).setAttribute("auth", userns);
             out.write("<form action=\"");

@@ -5,6 +5,7 @@ import org.dom4j.Element;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignatureRequest;
 import org.neuclear.commons.Utility;
+import org.neuclear.commons.NeuClearException;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -24,8 +25,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestBuilder.java,v 1.2 2003/11/11 21:18:42 pelle Exp $
+$Id: SignatureRequestBuilder.java,v 1.3 2003/11/21 04:45:10 pelle Exp $
 $Log: SignatureRequestBuilder.java,v $
+Revision 1.3  2003/11/21 04:45:10  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.2  2003/11/11 21:18:42  pelle
 Further vital reshuffling.
 org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -43,10 +50,10 @@ Created SignatureRequest and friends to send unsigned NamedObjectBuilders to int
  * Date: Nov 6, 2003
  * Time: 12:45:14 PM
  */
-public class SignatureRequestBuilder extends NamedObjectBuilder {
-    public SignatureRequestBuilder(String requestor, String userid, NamedObjectBuilder unsigned, String description) {
+public final class SignatureRequestBuilder extends NamedObjectBuilder {
+    public SignatureRequestBuilder(final String requestor, final String userid, final NamedObjectBuilder unsigned, final String description) throws NeuClearException {
         super(NSTools.createUniqueNamedID(requestor, userid), SignatureRequest.SIGREQUEST_TAG);
-        Element unsignedElem = getElement().addElement(DocumentHelper.createQName("Unsigned", NSTools.NS_NEUID));
+        final Element unsignedElem = getElement().addElement(DocumentHelper.createQName("Unsigned", NSTools.NS_NEUID));
         unsignedElem.add(unsigned.getElement());
         getElement().addAttribute(DocumentHelper.createQName("userid", NSTools.NS_NEUID), userid);
         if (!Utility.isEmpty(description))
@@ -54,7 +61,7 @@ public class SignatureRequestBuilder extends NamedObjectBuilder {
 
     }
 
-    public String getTagName() {
+    public final String getTagName() {
         return SignatureRequest.SIGREQUEST_TAG;
     }
 

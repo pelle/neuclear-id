@@ -1,6 +1,12 @@
 /*
- * $Id: SigningServlet.java,v 1.14 2003/11/19 23:33:59 pelle Exp $
+ * $Id: SigningServlet.java,v 1.15 2003/11/21 04:45:14 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.15  2003/11/21 04:45:14  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.14  2003/11/19 23:33:59  pelle
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -204,7 +210,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SigningServlet extends ReceiverServlet implements PassPhraseAgent {
-    public void init(ServletConfig config) throws ServletException {
+    public final void init(final ServletConfig config) throws ServletException {
         System.out.println("NEUDIST: Initialising SigningServlet");
         super.init(config);
         context = config.getServletContext();
@@ -231,7 +237,7 @@ public class SigningServlet extends ReceiverServlet implements PassPhraseAgent {
         return signer;
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected final void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         System.out.println("NEUDIST: doPost()");
         if (request.getContentType().equals("text/xml")) {
             System.out.println("NEUDIST: call SOAP Servlet");
@@ -242,11 +248,11 @@ public class SigningServlet extends ReceiverServlet implements PassPhraseAgent {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
         response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
+        final PrintWriter out = response.getWriter();
         ServletTools.printHeader(out, request, title);
-        String b64xml = request.getParameter("base64xml");
-        String endpoint = request.getParameter("endpoint");
-        NamedObjectBuilder named;
+        final String b64xml = request.getParameter("base64xml");
+        final String endpoint = request.getParameter("endpoint");
+        final NamedObjectBuilder named;
         SignatureRequest sigreq = null;
         boolean isSigned = false;
         try {
@@ -266,7 +272,7 @@ public class SigningServlet extends ReceiverServlet implements PassPhraseAgent {
                     out.flush();
                     try {
                         context.log("SIGN: Signing with " + parent);
-                        SignedNamedObject signed = named.sign(signer);
+                        final SignedNamedObject signed = named.sign(signer);
                         isSigned = true;
                         out.println("Signed<br>");
                         out.println("<br>Verifying...");
@@ -338,13 +344,13 @@ public class SigningServlet extends ReceiverServlet implements PassPhraseAgent {
         reqMap.remove(Thread.currentThread()); //Super Important
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected final void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
 
         response.setContentType("text/html");
         System.out.println("NEUDIST: doGet()");
-        PrintWriter out = response.getWriter();
+        final PrintWriter out = response.getWriter();
         ServletTools.printHeader(out, request, title);
         out.println("<form method=\"POST\" action=\"Signer\"><textarea name=\"xml\" cols=\"80\"rows=\"30\"></textarea><br><input type=\"submit\" name=\"submit\" value=\"Confirm\"></form>");
         out.println("</body></html>");
@@ -357,13 +363,13 @@ public class SigningServlet extends ReceiverServlet implements PassPhraseAgent {
      * @param name 
      * @return 
      */
-    public char[] getPassPhrase(String name) {
+    public final char[] getPassPhrase(final String name) {
         if (reqMap == null)
             return null;
-        HttpServletRequest request = (HttpServletRequest) reqMap.get(Thread.currentThread());
+        final HttpServletRequest request = (HttpServletRequest) reqMap.get(Thread.currentThread());
         if (request == null)
             return null;
-        String passphrase = request.getParameter("passphrase");
+        final String passphrase = request.getParameter("passphrase");
         if (passphrase == null)
             return null;
         return passphrase.toCharArray();

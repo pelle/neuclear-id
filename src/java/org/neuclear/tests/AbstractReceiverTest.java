@@ -29,8 +29,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AbstractReceiverTest.java,v 1.4 2003/11/15 01:58:18 pelle Exp $
+$Id: AbstractReceiverTest.java,v 1.5 2003/11/21 04:45:16 pelle Exp $
 $Log: AbstractReceiverTest.java,v $
+Revision 1.5  2003/11/21 04:45:16  pelle
+EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+Otherwise You will Finaliate.
+Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+This should hopefully make everything more stable (and secure).
+
 Revision 1.4  2003/11/15 01:58:18  pelle
 More work all around on web applications.
 
@@ -64,7 +70,7 @@ Several problems with configuration. Trying to solve at the moment. Updated Pico
  */
 public abstract class AbstractReceiverTest extends AbstractSigningTest {
 
-    protected AbstractReceiverTest(String string) throws GeneralSecurityException, NeuClearException {
+    protected AbstractReceiverTest(final String string) throws GeneralSecurityException, NeuClearException {
         super(string);
         CryptoTools.ensureProvider();
         reader = VerifyingReader.getInstance();
@@ -106,29 +112,29 @@ public abstract class AbstractReceiverTest extends AbstractSigningTest {
     public abstract Object getPreTransactionState(SignedNamedObject obj) throws Exception;
 
 
-    public void runDirectoryTest(String path) throws Exception, IOException, FileNotFoundException, NeuClearException, XMLException {
-        File dir = new File(path);
+    public final void runDirectoryTest(final String path) throws Exception, IOException, FileNotFoundException, NeuClearException, XMLException {
+        final File dir = new File(path);
         if (!dir.exists()) {
             System.out.println("Doesnt exist");
             return;
         }
-        FilenameFilter filter;
+        final FilenameFilter filter;
         filter = new FilenameFilter() {
-            public boolean accept(File dirf, String name) {
+            public boolean accept(final File dirf, final String name) {
                 return name.endsWith(getExtension());
             }
         };
 
-        File xmlfiles[] = dir.listFiles(filter);
+        final File[] xmlfiles = dir.listFiles(filter);
         System.out.println("There are " + xmlfiles.length + " files in the directory");
         for (int i = 0; i < xmlfiles.length; i++) {
 
-            File xmlfile = xmlfiles[i];
+            final File xmlfile = xmlfiles[i];
             System.out.print("Testing file: " + xmlfile.getName() + "... ");
             try {
-                SignedNamedObject obj = reader.read(new FileInputStream(xmlfile));
+                final SignedNamedObject obj = reader.read(new FileInputStream(xmlfile));
                 System.out.println("Receiving name : " + obj.getName());
-                Object prestate = getPreTransactionState(obj);
+                final Object prestate = getPreTransactionState(obj);
                 getReceiver().receive(obj);
                 assertTrue(verifyTransaction(obj, prestate));
 

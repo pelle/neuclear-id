@@ -1,6 +1,12 @@
 /*
- * $Id: SignedNamedCore.java,v 1.1 2003/11/20 16:01:25 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.2 2003/11/21 04:45:13 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.2  2003/11/21 04:45:13  pelle
+ * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
+ * Otherwise You will Finaliate.
+ * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
+ * This should hopefully make everything more stable (and secure).
+ *
  * Revision 1.1  2003/11/20 16:01:25  pelle
  * Did a security review of the basic Verification process and needed to make changes.
  * I've introduced the SignedNamedCore which all subclasses of SignedNamedObject need to include in their constructor.
@@ -231,7 +237,7 @@ import java.io.InputStream;
  */
 public final class SignedNamedCore  {
 
-    private SignedNamedCore(String name, Identity signer, Timestamp timestamp, String encoded)  {
+    private SignedNamedCore(final String name, final Identity signer, final Timestamp timestamp, final String encoded)  {
         this.name = name;
         this.signer = signer;
         this.timestamp = timestamp;
@@ -245,13 +251,13 @@ public final class SignedNamedCore  {
      * @throws XMLException
      * @throws NeuClearException
      */
-    public final static SignedNamedCore read(Element elem) throws XMLException, NeuClearException {
-        String name = NSTools.normalizeNameURI(elem.attributeValue(getNameAttrQName()));
-        String signatoryName = NSTools.getParentNSURI(name);
+    public final static SignedNamedCore read(final Element elem) throws XMLException, NeuClearException {
+        final String name = NSTools.normalizeNameURI(elem.attributeValue(getNameAttrQName()));
+        final String signatoryName = NSTools.getParentNSURI(name);
 
-        Identity signatory = NSResolver.resolveIdentity(signatoryName);
+        final Identity signatory = NSResolver.resolveIdentity(signatoryName);
         if (XMLSecTools.verifySignature(elem, signatory.getPublicKey())) {
-            Timestamp timestamp = TimeTools.parseTimeStamp(elem.attributeValue("timestamp"));
+            final Timestamp timestamp = TimeTools.parseTimeStamp(elem.attributeValue("timestamp"));
             return new SignedNamedCore( name, signatory, timestamp,new String(XMLSecTools.canonicalize(elem)));
         } else
             throw new InvalidNamedObject(name + " isnt valid");
@@ -288,8 +294,8 @@ public final class SignedNamedCore  {
      * @return Name
      */
     public final String getLocalName() {
-        String fullName = getName();
-        int i = fullName.lastIndexOf('/');
+        final String fullName = getName();
+        final int i = fullName.lastIndexOf('/');
         return fullName.substring(i + 1);
     }
 
