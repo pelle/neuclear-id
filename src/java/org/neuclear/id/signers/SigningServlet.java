@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.8 2004/04/15 20:04:05 pelle Exp $
+ * $Id: SigningServlet.java,v 1.9 2004/04/22 18:29:34 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.9  2004/04/22 18:29:34  pelle
+ * Minor cosmetic changes
+ *
  * Revision 1.8  2004/04/15 20:04:05  pelle
  * Added license screen to Personal Signer.
  * Added Sign document menu to  Personal Signer.
@@ -351,7 +354,9 @@ public class SigningServlet extends XMLInputStreamServlet {
         response.setDateHeader("Expires", 0);
         response.setContentType("text/html");
         final PrintWriter out = response.getWriter();
-        ServletTools.printHeader(out, request, getTitle());
+        out.println("<html><head><title>");
+        out.println(getTitle());
+        out.println("</title></head><body>");
         final String endpoint = request.getParameter("endpoint");
         final Builder named = sigreq.getUnsigned();
 //        final String username = sigreq.getUserid();
@@ -423,7 +428,7 @@ public class SigningServlet extends XMLInputStreamServlet {
 
 
         }
-
+        out.println("</body></html>");
 
     }
 
@@ -433,7 +438,7 @@ public class SigningServlet extends XMLInputStreamServlet {
         final SignedNamedObject signed = named.convert(signer);
         isSigned = true;
         out.println("<li>Signed</li>");
-        out.println("<li>" + signed.getName() + " Verified</li>");
+//        out.println("<li>" + signed.getName() + " Verified</li>");
         out.flush();
 //        } catch (InvalidPassphraseException e) {
 //            out.println("<li><font color=\"red\"><b>ERROR: Wrong Passphrase</b></font></li>");
