@@ -1,6 +1,11 @@
 /*
- * $Id: Identity.java,v 1.35 2004/04/29 13:16:41 pelle Exp $
+ * $Id: Identity.java,v 1.36 2004/05/20 18:46:23 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.36  2004/05/20 18:46:23  pelle
+ * Bumped more version numbers.
+ * Made buttons in IdentityPanel toolbar display text.
+ * Changed default signer to http://127.0.0.1:11870/Signer from http://localhost:11870/Signer
+ *
  * Revision 1.35  2004/04/29 13:16:41  pelle
  * Changed Identity.receive(obj) to Identity.send(obj) it makes more sense.
  * Updated documentation.
@@ -409,7 +414,7 @@ public class Identity extends SignedNamedObject implements Principal {
     private final String original;
     private final Targets targets;
 
-    public static final String DEFAULT_SIGNER = "http://localhost:11870/Signer";
+    public static final String DEFAULT_SIGNER = "http://127.0.0.1:11870/Signer";
 
     public static final class Reader implements NamedObjectReader {
         /**
