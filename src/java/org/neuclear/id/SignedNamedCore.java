@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedCore.java,v 1.21 2004/03/03 23:26:42 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.22 2004/03/20 17:19:55 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.22  2004/03/20 17:19:55  pelle
+ * The problem with Enveloped signatures has now been fixed. It was a problem in the way transforms work. I have bandaided it, but in the future if better support for transforms need to be made, we need to rethink it a bit. Perhaps using the new crypto channel's in neuclear-commons.
+ *
  * Revision 1.21  2004/03/03 23:26:42  pelle
  * Updated various tests to use the AbstractObjectCreationTest
  *
@@ -288,10 +291,7 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.neuclear.commons.LowLevelException;
 import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.xml.xmlsec.InvalidSignatureException;
-import org.neuclear.xml.xmlsec.XMLSecTools;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
-import org.neuclear.xml.xmlsec.XMLSignature;
+import org.neuclear.xml.xmlsec.*;
 
 import java.security.PublicKey;
 import java.sql.Timestamp;
@@ -301,6 +301,7 @@ import java.sql.Timestamp;
  * All implementations of SignedNamedObject, must contain this core which implements all the basic features.
  * </p><p>
  * The SignedNamedCore has
+ *
  * @see NamedObjectReader
  * @see SignedNamedObject
  * @see org.neuclear.id.verifier.VerifyingReader
@@ -311,30 +312,34 @@ import java.sql.Timestamp;
 public final class SignedNamedCore {
     /**
      * SignedNamedCore for use in creating Identities for anonymous keys
+     *
      * @param pub
      */
-    public SignedNamedCore(final PublicKey pub){
-        this.digest=CryptoTools.encodeBase32(CryptoTools.digest(pub.getEncoded()));
-        this.name="sha1:"+digest;
-        this.timestamp=System.currentTimeMillis();
-        this.encoded=new String(pub.getEncoded());
+    public SignedNamedCore(final PublicKey pub) {
+        this.digest = CryptoTools.encodeBase32(CryptoTools.digest(pub.getEncoded()));
+        this.name = "sha1:" + digest;
+        this.timestamp = System.currentTimeMillis();
+        this.encoded = new String(pub.getEncoded());
         this.signer = null;//new Identity(this,pub);
     }
 
     /**
      * SignedNamedCore for creating SignedNamedObjects from Nymous sources
+     *
      * @param pub
      * @param encoded
      */
-    private SignedNamedCore(final PublicKey pub, final String encoded){
+    private SignedNamedCore(final PublicKey pub, final String encoded) {
         this.signer = new Identity(pub);
-        this.digest=CryptoTools.encodeBase32(CryptoTools.digest(encoded.getBytes()));
-        this.name=signer.getName()+"!"+digest;
-        this.timestamp=System.currentTimeMillis();
-        this.encoded=encoded;
+        this.digest = CryptoTools.encodeBase32(CryptoTools.digest(encoded.getBytes()));
+        this.name = signer.getName() + "!" + digest;
+        this.timestamp = System.currentTimeMillis();
+        this.encoded = encoded;
     }
+
     /**
      * SignedNamedCore for normal signed named objects
+     *
      * @param name
      * @param signer
      * @param timestamp
@@ -345,23 +350,23 @@ public final class SignedNamedCore {
         this.signer = signer;
         this.timestamp = timestamp.getTime();
         this.encoded = encoded;
-        this.digest=CryptoTools.encodeBase32(CryptoTools.digest(encoded.getBytes()));
+        this.digest = CryptoTools.encodeBase32(CryptoTools.digest(encoded.getBytes()));
     }
 
-    private SignedNamedCore()  {
-        this.name="neu://";
-        this.signer=null;//new Identity(this,Identity.getRootPK());
+    private SignedNamedCore() {
+        this.name = "neu://";
+        this.signer = null;//new Identity(this,Identity.getRootPK());
         final byte[] encoded = Identity.getRootPK().getEncoded();
-        this.digest=CryptoTools.encodeBase32(CryptoTools.digest(encoded));
-        this.timestamp=System.currentTimeMillis();
-        this.encoded=new String(encoded);
+        this.digest = CryptoTools.encodeBase32(CryptoTools.digest(encoded));
+        this.timestamp = System.currentTimeMillis();
+        this.encoded = new String(encoded);
     }
 
     /**
      * Used to read and authenticate a SignedNamedCore.
-     * 
-     * @param elem 
-     * @return 
+     *
+     * @param elem
+     * @return
      * @throws InvalidNamedObjectException
      */
     public final static SignedNamedCore read(final Element elem) throws InvalidNamedObjectException {
@@ -412,9 +417,9 @@ public final class SignedNamedCore {
 
     private static SignedNamedCore readUnnamed(final Element elem) throws XMLSecurityException, InvalidNamedObjectException {
         try {
-            final XMLSignature sig=XMLSecTools.getXMLSignature(elem);
+            final XMLSignature sig = new EnvelopedSignature(elem);
             final PublicKey pub = sig.getSignersKey();
-            return new SignedNamedCore(pub,encodeElement(elem));
+            return new SignedNamedCore(pub, encodeElement(elem));
         } catch (InvalidSignatureException e) {
             throw new InvalidNamedObjectException("Unnamed object failed Signature verification");
         }
@@ -422,7 +427,7 @@ public final class SignedNamedCore {
 
     private static String getSignatoryName(final Element elem) throws InvalidNamedObjectException {
         final String name = elem.attributeValue(getNameAttrQName());
-        if (name==null)
+        if (name == null)
             return null;
         return NSTools.normalizeNameURI(name);
     }
@@ -439,6 +444,7 @@ public final class SignedNamedCore {
     private static QName getNameAttrQName() {
         return DocumentHelper.createQName("name", NSTools.NS_NEUID);
     }
+
     private static QName createQName(String name) {
         return DocumentHelper.createQName(name, NSTools.NS_NEUID);
     }
@@ -512,14 +518,15 @@ public final class SignedNamedCore {
     }
 
     public final boolean equals(Object object) {
-        if (object==this)
+        if (object == this)
             return true;
         if (object instanceof SignedNamedCore)
             return true;
-        return encoded.equals(((SignedNamedCore)object).getEncoded());    //To change body of overriden methods use Options | File Templates.
+        return encoded.equals(((SignedNamedCore) object).getEncoded());    //To change body of overriden methods use Options | File Templates.
     }
-    static Identity createSimpleIdentity(PublicKey pub){
-        return new Identity(new SignedNamedCore(pub),pub,null,null);
+
+    static Identity createSimpleIdentity(PublicKey pub) {
+        return new Identity(new SignedNamedCore(pub), pub, null, null);
     }
 
     private final String name;
