@@ -1,6 +1,11 @@
 /*
- * $Id: SignedNamedObject.java,v 1.5 2003/10/01 19:08:31 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.6 2003/10/21 22:31:13 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.6  2003/10/21 22:31:13  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.5  2003/10/01 19:08:31  pelle
  * Changed XML Format. Now NameSpace has been modified to Identity also the
  * xml namespace prefix nsdl has been changed to neuid.
@@ -157,7 +162,7 @@
 package org.neuclear.id;
 
 import org.dom4j.Element;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 
 import java.sql.Timestamp;
 
@@ -166,7 +171,7 @@ import java.sql.Timestamp;
  */
 public class SignedNamedObject implements SignedObject, Named {
 
-    protected SignedNamedObject(String name, Identity signer, Timestamp timestamp, String digest) throws NeudistException {
+    protected SignedNamedObject(String name, Identity signer, Timestamp timestamp, String digest) throws NeuClearException {
         this.name = NSTools.normalizeNameURI(name);
         this.signer = signer;
         this.timestamp = timestamp;
@@ -192,7 +197,7 @@ public class SignedNamedObject implements SignedObject, Named {
     }
 
 
-    public Timestamp getTimeStamp() throws NeudistException {
+    public Timestamp getTimeStamp() throws NeuClearException {
         return timestamp;
 
     }
@@ -224,7 +229,7 @@ public class SignedNamedObject implements SignedObject, Named {
          * @param elem
          * @return
          */
-        public SignedNamedObject read(Element elem, String name, Identity signatory, String digest, Timestamp timestamp) throws NeudistException {
+        public SignedNamedObject read(Element elem, String name, Identity signatory, String digest, Timestamp timestamp) throws NeuClearException {
 
             return new SignedNamedObject(name, signatory, timestamp, digest);
         }

@@ -1,5 +1,10 @@
-/* $Id: CommandLineSigner.java,v 1.6 2003/10/01 19:08:31 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.7 2003/10/21 22:31:13 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.7  2003/10/21 22:31:13  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.6  2003/10/01 19:08:31  pelle
  * Changed XML Format. Now NameSpace has been modified to Identity also the
  * xml namespace prefix nsdl has been changed to neuid.
@@ -132,9 +137,10 @@ import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.LogSender;
 import org.neudist.crypto.CryptoTools;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 import org.neudist.utils.Utility;
 import org.neudist.xml.XMLTools;
+import org.neudist.xml.XMLException;
 
 import java.io.*;
 import java.security.KeyPair;
@@ -145,7 +151,7 @@ import java.security.cert.Certificate;
 
 /**
  * @author pelleb
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  **/
 public class CommandLineSigner {
 
@@ -247,7 +253,7 @@ public class CommandLineSigner {
 
     }
 
-    private static NamedObjectBuilder loadNamedObject(String sf) throws FileNotFoundException, NeudistException {
+    private static NamedObjectBuilder loadNamedObject(String sf) throws FileNotFoundException,  XMLException {
         SignedNamedObject subject;
         InputStream source = System.in;
         if (!Utility.isEmpty(sf)) {

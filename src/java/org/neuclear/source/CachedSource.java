@@ -1,7 +1,12 @@
 /*
  *
- * $Id: CachedSource.java,v 1.4 2003/10/03 23:48:51 pelle Exp $
+ * $Id: CachedSource.java,v 1.5 2003/10/21 22:31:13 pelle Exp $
  * $Log: CachedSource.java,v $
+ * Revision 1.5  2003/10/21 22:31:13  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.4  2003/10/03 23:48:51  pelle
  * Did various security related updates in the pay package with regards to immutability of fields etc.
  * PaymentReceiver should now be operational. Real testing needs to be done including in particular setting the
@@ -48,7 +53,7 @@ package org.neuclear.source;
 
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +69,7 @@ public final class CachedSource extends Source {
     }
 
 
-    public SignedNamedObject fetch(String endpoint, String name) throws NeudistException {
+    public SignedNamedObject fetch(String endpoint, String name) throws NeuClearException {
         name = NSTools.normalizeNameURI(name);
         SignedNamedObject candidate = (SignedNamedObject) cache.get(name);
         if (candidate != null)
@@ -77,7 +82,7 @@ public final class CachedSource extends Source {
 
     }
 
-    private void storeInCache(SignedNamedObject obj) throws NeudistException {
+    private void storeInCache(SignedNamedObject obj) throws NeuClearException {
         cache.put(obj.getName(), obj);
     }
 

@@ -1,6 +1,11 @@
 /*
- * $Id: Identity.java,v 1.7 2003/10/02 23:29:02 pelle Exp $
+ * $Id: Identity.java,v 1.8 2003/10/21 22:31:12 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.8  2003/10/21 22:31:12  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.7  2003/10/02 23:29:02  pelle
  * Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
  * VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
@@ -158,7 +163,7 @@
  *
  * Revision 1.2  2002/06/05 23:42:04  pelle
  * The Throw clauses of several method definitions were getting out of hand, so I have
- * added a new wrapper exception NeudistException, to keep things clean in the ledger.
+ * added a new wrapper exception NeuClearException, to keep things clean in the ledger.
  * This is used as a catchall wrapper for all Exceptions in the underlying API's such as IOExceptions,
  * XML Exceptions etc.
  * You can catch any Exception and rethrow it using Utility.rethrowException(e) as a quick way of handling
@@ -179,7 +184,8 @@ import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.Sender;
 import org.neudist.crypto.CryptoTools;
-import org.neudist.utils.NeudistException;
+import org.neudist.crypto.CryptoException;
+import org.neuclear.commons.NeuClearException;
 import org.neudist.utils.Utility;
 import org.neudist.xml.xmlsec.KeyInfo;
 import org.neudist.xml.xmlsec.XMLSecTools;
@@ -205,10 +211,10 @@ public final class Identity extends SignedNamedObject {
      * @param repository URL of Default Store for Identity. (Note. A Identity object is stored in the default repository of it's parent namespace)
      * @param signer URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
      * @param receiver URL of default receiver for namespace
-     * @throws NeudistException
+     * @throws NeuClearException
      */
 
-    Identity(String name, Identity signatory, Timestamp timestamp, String digest, String repository, String signer, String logger, String receiver, PublicKey pub) throws NeudistException {
+    Identity(String name, Identity signatory, Timestamp timestamp, String digest, String repository, String signer, String logger, String receiver, PublicKey pub) throws NeuClearException {
         super(name, signatory, timestamp, digest);
         this.repository = repository;
         this.logger = logger;
@@ -230,14 +236,14 @@ public final class Identity extends SignedNamedObject {
         return logger;
     }
 
-    public final void send(NamedObjectBuilder obj) throws NeudistException {
+    public final void send(NamedObjectBuilder obj) throws NeuClearException {
         if (!Utility.isEmpty(receiver))
             Sender.quickSend(receiver, obj);
         else
-            throw new NeudistException("Cant send object, " + getName() + " doesnt have a registered Receiver");
+            throw new NeuClearException("Cant send object, " + getName() + " doesnt have a registered Receiver");
     }
 
-    void log(NamedObjectBuilder obj) throws NeudistException {
+    void log(NamedObjectBuilder obj) throws NeuClearException {
         if (!Utility.isEmpty(logger))
             Sender.quickSend(logger, obj);
     }
@@ -267,12 +273,12 @@ public final class Identity extends SignedNamedObject {
             PublicKey rootpk = CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
             return new Identity("neu://", null, new Timestamp(0), null, NSResolver.NSROOTSTORE,
                     null, null, null, rootpk);
-        } catch (NeudistException e) {
+        } catch (NeuClearException e) {
             e.printStackTrace();
-
-            return null;
+        } catch (CryptoException e) {
+            e.printStackTrace();
         }
-
+        return null;
     }
 
     public static final Identity NEUROOT = createRootIdentity();
@@ -340,7 +346,7 @@ public final class Identity extends SignedNamedObject {
          * @param elem
          * @return
          */
-        public SignedNamedObject read(Element elem, String name, Identity signatory, String digest, Timestamp timestamp) throws NeudistException {
+        public SignedNamedObject read(Element elem, String name, Identity signatory, String digest, Timestamp timestamp) throws XMLSecurityException, NeuClearException {
             String repository = elem.attributeValue(DocumentHelper.createQName("store", NSTools.NS_NEUID));
             String signer = elem.attributeValue(DocumentHelper.createQName("signer", NSTools.NS_NEUID));
             String logger = elem.attributeValue(DocumentHelper.createQName("logger", NSTools.NS_NEUID));

@@ -7,8 +7,9 @@ import org.neuclear.id.*;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.time.TimeTools;
 import org.neudist.crypto.CryptoTools;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 import org.neudist.xml.XMLTools;
+import org.neudist.xml.XMLException;
 import org.neudist.xml.xmlsec.XMLSecTools;
 
 import java.io.InputStream;
@@ -35,8 +36,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.3 2003/10/01 19:08:31 pelle Exp $
+$Id: VerifyingReader.java,v 1.4 2003/10/21 22:31:12 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.4  2003/10/21 22:31:12  pelle
+Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+Obviously had to perform many changes throughout the code to support these changes.
+
 Revision 1.3  2003/10/01 19:08:31  pelle
 Changed XML Format. Now NameSpace has been modified to Identity also the
 xml namespace prefix nsdl has been changed to neuid.
@@ -79,9 +85,9 @@ public class VerifyingReader {
      * Verify signature with parent Identity
      * @param is
      * @return
-     * @throws NeudistException
+     * @throws NeuClearException
      */
-    public SignedNamedObject read(InputStream is) throws NeudistException {
+    public SignedNamedObject read(InputStream is) throws XMLException, NeuClearException {
         Element elem = XMLTools.loadDocument(is).getRootElement();
         String name = NSTools.normalizeNameURI(elem.attributeValue(getNameAttrQName()));
         String signatoryName = NSTools.getParentNSURI(name);

@@ -1,7 +1,8 @@
 package org.neuclear.id;
 
 import org.dom4j.Element;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
+import org.neudist.xml.xmlsec.XMLSecurityException;
 
 import java.sql.Timestamp;
 
@@ -23,8 +24,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NamedObjectReader.java,v 1.1 2003/09/24 23:56:48 pelle Exp $
+$Id: NamedObjectReader.java,v 1.2 2003/10/21 22:31:13 pelle Exp $
 $Log: NamedObjectReader.java,v $
+Revision 1.2  2003/10/21 22:31:13  pelle
+Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+Obviously had to perform many changes throughout the code to support these changes.
+
 Revision 1.1  2003/09/24 23:56:48  pelle
 Refactoring nearly done. New model for creating signed objects.
 With view for supporting the xmlpull api shortly for performance reasons.
@@ -49,5 +55,5 @@ public interface NamedObjectReader {
      * @param elem
      * @return
      */
-    public SignedNamedObject read(Element elem,String name,Identity signatory,String digest,Timestamp timestamp) throws NeudistException;
+    public SignedNamedObject read(Element elem,String name,Identity signatory,String digest,Timestamp timestamp) throws NeuClearException, XMLSecurityException;
 }

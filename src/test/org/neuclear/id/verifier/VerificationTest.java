@@ -5,7 +5,8 @@ import org.dom4j.DocumentException;
 import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.SignedNamedObject;
 import org.neudist.crypto.CryptoTools;
-import org.neudist.utils.NeudistException;
+import org.neudist.xml.XMLException;
+import org.neuclear.commons.NeuClearException;
 
 import java.io.*;
 
@@ -27,8 +28,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerificationTest.java,v 1.3 2003/10/02 23:29:03 pelle Exp $
+$Id: VerificationTest.java,v 1.4 2003/10/21 22:31:14 pelle Exp $
 $Log: VerificationTest.java,v $
+Revision 1.4  2003/10/21 22:31:14  pelle
+Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+Obviously had to perform many changes throughout the code to support these changes.
+
 Revision 1.3  2003/10/02 23:29:03  pelle
 Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
 VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
@@ -57,15 +63,15 @@ public class VerificationTest extends TestCase {
         reader = VerifyingReader.getInstance();
     }
 
-    public void testSimple() throws IOException, DocumentException, NeudistException {
+    public void testSimple() throws IOException, DocumentException, NeuClearException, XMLException {
         runDirectoryTest("src/testdata/simple", true);
     }
 
-    public void testFakes() throws IOException, DocumentException, NeudistException {
+    public void testFakes() throws IOException, DocumentException, NeuClearException, XMLException {
         runDirectoryTest("src/testdata/fakes", false);
     }
 
-    public void runDirectoryTest(String path, boolean wantValid) throws DocumentException, IOException, FileNotFoundException, NeudistException {
+    public void runDirectoryTest(String path, boolean wantValid) throws DocumentException, IOException, FileNotFoundException, NeuClearException, XMLException {
         File dir = new File(path);
         if (!dir.exists()) {
             System.out.println("Doesnt exist");

@@ -1,6 +1,11 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.6 2003/09/26 23:53:10 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.7 2003/10/21 22:31:14 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
+ * Revision 1.7  2003/10/21 22:31:14  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.6  2003/09/26 23:53:10  pelle
  * Changes mainly in receiver and related fun.
  * First real neuclear stuff in the payment package. Added TransferContract and PaymentReceiver.
@@ -121,7 +126,7 @@
  *
  * Revision 1.2  2002/06/05 23:42:05  pelle
  * The Throw clauses of several method definitions were getting out of hand, so I have
- * added a new wrapper exception NeudistException, to keep things clean in the ledger.
+ * added a new wrapper exception NeuClearException, to keep things clean in the ledger.
  * This is used as a catchall wrapper for all Exceptions in the underlying API's such as IOExceptions,
  * XML Exceptions etc.
  * You can catch any Exception and rethrow it using Utility.rethrowException(e) as a quick way of handling
@@ -151,7 +156,7 @@ public class EncryptedFileStore extends FileStore {
     }
 /*
 
-    protected void rawStore(SignedNamedObject obj) throws IOException, NeudistException {
+    protected void rawStore(SignedNamedObject obj) throws IOException, NeuClearException {
         String outputFilename = base + getFileName(obj);
         System.out.println("Outputting to: " + outputFilename);
         File outputFile = new File(outputFilename);
@@ -166,7 +171,7 @@ public class EncryptedFileStore extends FileStore {
         os.close();
     }
 
-    protected SignedNamedObject fetch(String name) throws NeudistException {
+    protected SignedNamedObject fetch(String name) throws NeuClearException {
         String deURLizedName = NSTools.normalizeNameURI(name);
         String inputFilename = base + getFileName(deURLizedName);
         System.out.println("Loading from: " + inputFilename);
@@ -199,7 +204,7 @@ public class EncryptedFileStore extends FileStore {
         return ns;
     }
 
-    protected static String getFileName(String name) throws NeudistException {
+    protected static String getFileName(String name) throws NeuClearException {
         String deURLizedName = NSTools.normalizeNameURI(name);
         byte hash[] = CryptoTools.formatAsURLSafe(CryptoTools.digest512(deURLizedName.getBytes())).getBytes();
         //if (true) return new String(hash);
@@ -219,7 +224,7 @@ public class EncryptedFileStore extends FileStore {
         return new String(newName);
     }
 
-    protected static String getFileName(SignedNamedObject obj) throws NeudistException {
+    protected static String getFileName(SignedNamedObject obj) throws NeuClearException {
         return getFileName(obj.getName());
     }
 

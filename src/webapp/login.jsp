@@ -7,7 +7,7 @@
                 org.neudist.utils.ServletTools,
                 org.neuclear.id.Identity,
 
-                org.neudist.utils.NeudistException"%>
+                org.neuclear.commons.NeuClearException"%>
 <%
     response.setHeader("Pragma","no-cache");
     response.setDateHeader("Expires",0);
@@ -36,7 +36,7 @@
   */      // For this simple example we will fetch the object from the store later on.
 //        auth.addTarget(new TargetReference(auth,ServletTools.getAbsoluteURL(request,"/Store"),"store"));
         request.getSession(true).setAttribute("nsauth",auth.getPayload().getName());
-    } catch (NeudistException e) {
+    } catch (NeuClearException e) {
         %>
 <html><head><title>Error: <%=e.getMessage()%></title></head><body>
 <h4>Problem:</h4>

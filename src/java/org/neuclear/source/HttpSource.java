@@ -4,7 +4,8 @@ import org.dom4j.io.SAXReader;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.verifier.VerifyingReader;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
+import org.neudist.xml.XMLException;
 
 import java.net.URL;
 
@@ -13,8 +14,13 @@ import java.net.URL;
  * User: pelleb
  * Date: Feb 10, 2003
  * Time: 8:35:33 PM
- * $Id: HttpSource.java,v 1.4 2003/09/26 23:53:10 pelle Exp $
+ * $Id: HttpSource.java,v 1.5 2003/10/21 22:31:13 pelle Exp $
  * $Log: HttpSource.java,v $
+ * Revision 1.5  2003/10/21 22:31:13  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.4  2003/09/26 23:53:10  pelle
  * Changes mainly in receiver and related fun.
  * First real neuclear stuff in the payment package. Added TransferContract and PaymentReceiver.
@@ -57,14 +63,16 @@ public class HttpSource extends Source {
         reader = new SAXReader();
     }
 
-    public SignedNamedObject fetch(String endpoint, String name) throws NeudistException {
+    public SignedNamedObject fetch(String endpoint, String name) throws NeuClearException {
         try {
             String urlstring = endpoint + NSTools.url2path(name);
             URL url = new URL(urlstring);
 
             return VerifyingReader.getInstance().read(url.openStream());
         } catch (java.io.IOException e) {
-            throw new NeudistException(e);
+            throw new NeuClearException(e);
+        } catch (XMLException e) {
+            throw new NeuClearException(e);
         }
     }
 
@@ -74,7 +82,7 @@ public class HttpSource extends Source {
             SignedNamedObject obj = source.fetch("http://repository.neuclear.org", "/pelle");
             System.out.println("Got: " + obj.getName());
 
-        } catch (NeudistException e) {
+        } catch (NeuClearException e) {
             e.printStackTrace();  //To change body of catch statement use Options | File Templates.
         }
     }

@@ -1,6 +1,11 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.6 2003/10/21 22:31:13 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.6  2003/10/21 22:31:13  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.5  2003/09/26 00:22:07  pelle
  * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
  *
@@ -119,7 +124,7 @@ import org.neuclear.id.NSTools;
 import org.neuclear.id.Identity;
 import org.neudist.crypto.signerstores.SignerStore;
 import org.neudist.crypto.signerstores.SimpleSignerStore;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -132,7 +137,7 @@ import java.security.interfaces.RSAPrivateKey;
 public class DemoSigningServlet extends SigningServlet {
 /*
 
-    private void buildTree() throws GeneralSecurityException, NeudistException, IOException {
+    private void buildTree() throws GeneralSecurityException, NeuClearException, IOException {
         System.out.println("NEUDIST: Creating Identity Tree");
         kpg = KeyPairGenerator.getInstance("RSA");
         kpg.initialize(2048, new SecureRandom("Cartagena".getBytes()));
@@ -149,7 +154,7 @@ public class DemoSigningServlet extends SigningServlet {
         return (RSAPrivateKey) ks.getKey("neu://test", "neuclear".toCharArray());
     }
 
-    private void createNS(String name, String newPassword, PrivateKey signer) throws IOException, NeudistException, GeneralSecurityException {
+    private void createNS(String name, String newPassword, PrivateKey signer) throws IOException, NeuClearException, GeneralSecurityException {
         name = NSTools.normalizeNameURI(name);
         System.out.println("NEUDIST: Generating key and Identity for: " + name);
         KeyPair kp = kpg.generateKeyPair();
@@ -178,12 +183,12 @@ public class DemoSigningServlet extends SigningServlet {
             e.printStackTrace(System.out);
         } catch (IOException e) {
             e.printStackTrace(System.out);
-        } catch (NeudistException e) {
+        } catch (NeuClearException e) {
             e.printStackTrace(System.out);
         }
     }
 
-    protected static SignerStore getKeyStore(File keyStoreFile, Object kspassword) throws GeneralSecurityException, IOException, NeudistException {
+    protected static SignerStore getKeyStore(File keyStoreFile, Object kspassword) throws GeneralSecurityException, IOException, NeuClearException {
         return new SimpleSignerStore(keyStoreFile);
     }
 

@@ -1,6 +1,11 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.5 2003/10/02 23:29:03 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.6 2003/10/21 22:31:15 pelle Exp $
   $Log: AbstractStoreTest.java,v $
+  Revision 1.6  2003/10/21 22:31:15  pelle
+  Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+  Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+  Obviously had to perform many changes throughout the code to support these changes.
+
   Revision 1.5  2003/10/02 23:29:03  pelle
   Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
   VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
@@ -106,7 +111,8 @@ package org.neuclear.store;
 import junit.framework.TestCase;
 import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.builders.IdentityBuilder;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
+import org.neudist.xml.xmlsec.XMLSecurityException;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -147,7 +153,7 @@ public abstract class AbstractStoreTest extends TestCase {
     }
 
 
-    public void testStore() throws NeudistException, InvalidIdentityException {
+    public void testStore() throws NeuClearException, InvalidIdentityException, XMLSecurityException {
         System.out.println("\nTesting " + this.getClass().getName());
         System.out.println("Storing " + rootName);
         store.receive(new IdentityBuilder(rootName, root.getPrivate(), root.getPublic()));

@@ -1,6 +1,11 @@
 /*
- * $Id: TimeTools.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
+ * $Id: TimeTools.java,v 1.3 2003/10/21 22:31:14 pelle Exp $
  * $Log: TimeTools.java,v $
+ * Revision 1.3  2003/10/21 22:31:14  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.2  2003/09/22 19:24:02  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -33,7 +38,7 @@
 */
 package org.neuclear.time;
 
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -85,11 +90,11 @@ public class TimeTools {
         return new Timestamp(date.getTime());
     }
 
-    public static Timestamp parseTimeStamp(String ts) throws NeudistException {
+    public static Timestamp parseTimeStamp(String ts) throws NeuClearException {
         try {
             return convertDateToTimestamp(getDateFormatter().parse(ts));
         } catch (ParseException e) {
-            throw new NeudistException(e);
+            throw new NeuClearException(e);
         }
 
     }

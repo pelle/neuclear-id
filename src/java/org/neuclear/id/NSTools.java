@@ -1,6 +1,11 @@
 /*
- * $Id: NSTools.java,v 1.6 2003/10/01 19:08:31 pelle Exp $
+ * $Id: NSTools.java,v 1.7 2003/10/21 22:31:13 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.7  2003/10/21 22:31:13  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.6  2003/10/01 19:08:31  pelle
  * Changed XML Format. Now NameSpace has been modified to Identity also the
  * xml namespace prefix nsdl has been changed to neuid.
@@ -113,7 +118,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Namespace;
 import org.neuclear.id.resolver.NSResolver;
 import org.neudist.crypto.CryptoTools;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 import org.neudist.utils.Utility;
 
 import java.util.Random;
@@ -126,11 +131,11 @@ public final class NSTools {
      * Takes a valid NEU Name and Creates a URI
      * @param name Valid NEU Name
      * @return Valid URI
-     * @throws NeudistException If name isn't a valid NEU Name
+     * @throws NeuClearException If name isn't a valid NEU Name
      */
-    public static String normalizeNameURI(String name) throws NeudistException {
+    public static String normalizeNameURI(String name) throws NeuClearException {
         if (!isValidName(name))
-            throw new NeudistException("Name: '" + name + "' is not valid");
+            throw new NeuClearException("Name: '" + name + "' is not valid");
         if (!name.startsWith("neu://"))
             return "neu:/" + name;
         return name;
@@ -145,7 +150,7 @@ public final class NSTools {
      * @param name to test
      * @return boolean
      */
-    public static boolean isValidName(String name) throws NeudistException {
+    public static boolean isValidName(String name) throws NeuClearException {
         try {
             if (Utility.isEmpty(name))
                 return false;
@@ -162,9 +167,9 @@ public final class NSTools {
      * Returns the URI of the parent Identity for a given NEU Name
      * @param name a valid NEU Name
      * @return Parent URI or null if name is the root
-     * @throws NeudistException if name is invalid
+     * @throws NeuClearException if name is invalid
      */
-    public static String getParentNSURI(String name) throws NeudistException {
+    public static String getParentNSURI(String name) throws NeuClearException {
         String uri = normalizeNameURI(name);
         int slash = uri.lastIndexOf('/');
         if (uri.equals("neu://") || (slash < 5))
@@ -226,7 +231,7 @@ public final class NSTools {
 //            obj=NamedObjectFactory.fetchNamedObject("neu://free/trix");
 //            System.out.println("Got: "+obj.getName());
             //System.out.println(obj.getElement().asXML());
-        } catch (NeudistException e) {
+        } catch (NeuClearException e) {
             e.printStackTrace();  //To change body of catch statement use Options | File Templates.
         }
     }

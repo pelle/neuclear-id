@@ -6,8 +6,9 @@ import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.time.TimeTools;
 import org.neudist.crypto.Base64;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 import org.neudist.utils.Utility;
+import org.neudist.xml.xmlsec.XMLSecurityException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,8 +23,13 @@ import java.sql.Timestamp;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 1:23:05 PM
- * $Id: LogSender.java,v 1.7 2003/09/29 23:17:32 pelle Exp $
+ * $Id: LogSender.java,v 1.8 2003/10/21 22:31:13 pelle Exp $
  * $Log: LogSender.java,v $
+ * Revision 1.8  2003/10/21 22:31:13  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.7  2003/09/29 23:17:32  pelle
  * Changes to the senders. Now the senders only work with NamedObjectBuilders
  * which are the only NamedObject representations that contain full XML.
@@ -73,7 +79,7 @@ import java.sql.Timestamp;
  *
  */
 public class LogSender extends Sender {
-    public void send(String endpoint, NamedObjectBuilder obj) throws NeudistException {
+    public void send(String endpoint, NamedObjectBuilder obj) throws NeuClearException {
         try {
             String digest = URLEncoder.encode(Base64.encode(obj.getDigest()), "UTF-8");
             String name = URLEncoder.encode(obj.getName(), "UTF-8");
@@ -84,10 +90,12 @@ public class LogSender extends Sender {
 //            String line=reader.readLine();
 //            if (!line.substring(0,2).equals("OK")) // TODO We need to be able to sense if there is a real error
 //                System.err.println("Error logging: "+line);
-            //throw new NeudistException("Object wasn't logged");
+            //throw new NeuClearException("Object wasn't logged");
         } catch (MalformedURLException e) {
             Utility.rethrowException(e);
         } catch (IOException e) {
+            Utility.rethrowException(e);
+        } catch (XMLSecurityException e) {
             Utility.rethrowException(e);
         }
 
@@ -100,13 +108,13 @@ public class LogSender extends Sender {
             logObject("neu://free/pelle");
             logObject("neu://pelle");
             System.out.println("Object neu://free/pelle was logged at: " + getTimeStamp(NSResolver.resolveIdentity("neu://free/pelle")));
-        } catch (NeudistException e) {
+        } catch (NeuClearException e) {
             e.printStackTrace();  //To change body of catch statement use Options | File Templates.
         }
     }
 */
 
-    public static Timestamp getTimeStamp(String endpoint, byte rdigest[]) throws NeudistException {
+    public static Timestamp getTimeStamp(String endpoint, byte rdigest[]) throws NeuClearException {
         try {
             String digest = Base64.encode(rdigest);
 //            System.out.println(digest);
@@ -130,13 +138,13 @@ public class LogSender extends Sender {
         return null;
     }
 
-    public static Timestamp getTimeStamp(SignedNamedObject obj) throws NeudistException {
+    public static Timestamp getTimeStamp(SignedNamedObject obj) throws NeuClearException {
         return getTimeStamp(Utility.denullString(obj.getSignatory().getLogger(), LOGGER), obj.getDigest().getBytes());
 
     }
 
 /*
-    private static void logObject(String name) throws NeudistException {
+    private static void logObject(String name) throws NeuClearException {
         System.out.print("Fetching...");
         SignedNamedObject obj = NSResolver.resolveIdentity(name);
         System.out.println("Got " + obj.getName());

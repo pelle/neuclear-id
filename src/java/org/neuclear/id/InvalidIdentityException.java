@@ -1,6 +1,11 @@
 /*
- * $Id: InvalidIdentityException.java,v 1.2 2003/09/24 23:56:48 pelle Exp $
+ * $Id: InvalidIdentityException.java,v 1.3 2003/10/21 22:31:13 pelle Exp $
  * $Log: InvalidIdentityException.java,v $
+ * Revision 1.3  2003/10/21 22:31:13  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.2  2003/09/24 23:56:48  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.
@@ -71,9 +76,9 @@
  */
 package org.neuclear.id;
 
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 
-public class InvalidIdentityException extends NeudistException {
+public class InvalidIdentityException extends NeuClearException {
     public InvalidIdentityException(String msg) {
         super(msg);
     }

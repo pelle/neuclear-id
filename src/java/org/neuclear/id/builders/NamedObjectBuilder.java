@@ -1,6 +1,11 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.4 2003/10/02 23:29:03 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.5 2003/10/21 22:31:12 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.5  2003/10/21 22:31:12  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.4  2003/10/02 23:29:03  pelle
  * Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
  * VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
@@ -139,7 +144,7 @@ import org.neuclear.id.Named;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.Sender;
 import org.neuclear.time.TimeTools;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 import org.neudist.utils.Utility;
 import org.neudist.xml.AbstractElementProxy;
 import org.neudist.xml.XMLException;
@@ -202,7 +207,7 @@ public class NamedObjectBuilder extends SignedElement implements Named {
     public String getName() {
         try {
             return NSTools.normalizeNameURI(getElement().attributeValue(getNameAttrQName()));
-        } catch (NeudistException e) {
+        } catch (NeuClearException e) {
             return "Unknown";
         }
     }
@@ -267,7 +272,7 @@ public class NamedObjectBuilder extends SignedElement implements Named {
     protected void postSign() throws XMLSecurityException {
         try {
             log();
-        } catch (NeudistException e) {
+        } catch (NeuClearException e) {
             XMLSecTools.rethrowException(e);
         }
     }
@@ -277,7 +282,7 @@ public class NamedObjectBuilder extends SignedElement implements Named {
      * This can only be done if the object isn't signed.
      * @param target object
      */
-    public void addTarget(TargetReference target) throws NeudistException {
+    public void addTarget(TargetReference target) throws NeuClearException {
         if (target == null)
             return;
         QName targetsQN = DocumentHelper.createQName("Targets", NSTools.NS_NEUID);
@@ -300,14 +305,14 @@ public class NamedObjectBuilder extends SignedElement implements Named {
      * Lists the targets within an object
      * @return Iterator of targets
      */
-    public Iterator listTargets() throws NeudistException {
+    public Iterator listTargets() throws NeuClearException {
         return targetList().iterator();
     }
 
     /**
      *   Sends copy of object to all targets within
      */
-    public void sendObject() throws NeudistException {
+    public void sendObject() throws NeuClearException {
         System.out.println("NEUDIST: Sending Object " + getName());
 
         if (this.isSigned()) {
@@ -322,12 +327,12 @@ public class NamedObjectBuilder extends SignedElement implements Named {
 
     }
 
-    public Timestamp getTimeStamp() throws NeudistException {
+    public Timestamp getTimeStamp() throws NeuClearException {
         String timeString = getElement().attributeValue(DocumentHelper.createQName("timestamp", NSTools.NS_NEUID));
         if (isSigned() && !Utility.isEmpty(timeString)) {
             try {
                 return TimeTools.parseTimeStamp(timeString);
-            } catch (NeudistException e) {
+            } catch (NeuClearException e) {
                 return null;
             }
         }
@@ -337,13 +342,13 @@ public class NamedObjectBuilder extends SignedElement implements Named {
 
     }
 
-    public final void log() throws NeudistException {
+    public final void log() throws NeuClearException {
         Identity ns = getParent();
         if (ns != null && ns.getLogger() != null)
             Sender.quickSend(ns.getLogger(), this);
     }
 
-    public Identity getParent() throws NeudistException {
+    public Identity getParent() throws NeuClearException {
         return NSResolver.resolveIdentity(NSTools.getParentNSURI(getName()));
     }
 

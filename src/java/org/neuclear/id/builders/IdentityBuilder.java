@@ -1,6 +1,11 @@
 /*
- * $Id: IdentityBuilder.java,v 1.3 2003/10/02 23:29:03 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.4 2003/10/21 22:31:12 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.4  2003/10/21 22:31:12  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.3  2003/10/02 23:29:03  pelle
  * Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
  * VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
@@ -125,7 +130,7 @@
  *
  * Revision 1.2  2002/06/05 23:42:04  pelle
  * The Throw clauses of several method definitions were getting out of hand, so I have
- * added a new wrapper exception NeudistException, to keep things clean in the ledger.
+ * added a new wrapper exception NeuClearException, to keep things clean in the ledger.
  * This is used as a catchall wrapper for all Exceptions in the underlying API's such as IOExceptions,
  * XML Exceptions etc.
  * You can catch any Exception and rethrow it using Utility.rethrowException(e) as a quick way of handling
@@ -145,9 +150,11 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.neuclear.id.Identity;
 import org.neuclear.id.NSTools;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 import org.neudist.utils.Utility;
 import org.neudist.xml.xmlsec.XMLSecTools;
+import org.neudist.xml.xmlsec.XMLSecurityException;
+import org.neudist.xml.XMLException;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -163,9 +170,8 @@ public final class IdentityBuilder extends NamedObjectBuilder {
      * @param repository URL of Default Store for NameSpace. (Note. A NameSpace object is stored in the default repository of it's parent namespace)
      * @param signer URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
      * @param receiver URL of default receiver for namespace
-     * @throws NeudistException
      */
-    public IdentityBuilder(String name, PublicKey allow, String repository, String signer, String logger, String receiver) throws NeudistException {
+    public IdentityBuilder(String name, PublicKey allow, String repository, String signer, String logger, String receiver)  {
         super(name, "Identity");
 
         Element root = getElement();
@@ -185,15 +191,15 @@ public final class IdentityBuilder extends NamedObjectBuilder {
         }
     }
 
-    public IdentityBuilder(String name, PublicKey allow, String repository) throws NeudistException {
+    public IdentityBuilder(String name, PublicKey allow, String repository) throws XMLSecurityException {
         this(name, allow, repository, null, null, null);
     }
 
-    public IdentityBuilder(String name, PublicKey allow) throws NeudistException {
+    public IdentityBuilder(String name, PublicKey allow) throws XMLSecurityException {
         this(name, allow, null);
     }
 
-    public IdentityBuilder(String name, PrivateKey signer, PublicKey allow) throws NeudistException {
+    public IdentityBuilder(String name, PrivateKey signer, PublicKey allow) throws XMLSecurityException {
         this(name, allow);
         sign(signer);
     }
@@ -207,7 +213,7 @@ public final class IdentityBuilder extends NamedObjectBuilder {
         try {
             NamedObjectBuilder id = new IdentityBuilder("neu://", Identity.NEUROOT.getPublicKey());
             System.out.println(new String(id.canonicalize()));
-        } catch (NeudistException e) {
+        } catch (XMLException e) {
             e.printStackTrace();
         }
     }

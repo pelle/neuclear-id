@@ -5,7 +5,7 @@ import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.cache.NSCache;
 import org.neuclear.source.Source;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 
 /**
  * Secure Identity resolver
@@ -23,7 +23,7 @@ public final class NSResolver {
      * @param name
      * @return
      */
-    public final static Identity resolveIdentity(String name) throws NeudistException, InvalidIdentityException {
+    public final static Identity resolveIdentity(String name) throws NeuClearException, InvalidIdentityException {
         Identity ns = NSCACHE.fetchCached(name);
         if (ns != null)
             return ns;
@@ -37,7 +37,7 @@ public final class NSResolver {
         // fetches Identity from parent Identity's Default Store
         ns = (Identity) Source.getInstance().fetch(store, name);
         if (ns == null)
-            throw new NeudistException("Identity: " + name + " was not resolved");
+            throw new NeuClearException("Identity: " + name + " was not resolved");
         NSCACHE.cache(ns);
         return ns; //This may not be null
     }

@@ -1,6 +1,11 @@
 /*
- * $Id: SigningServlet.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
+ * $Id: SigningServlet.java,v 1.6 2003/10/21 22:31:13 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.6  2003/10/21 22:31:13  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.5  2003/09/26 00:22:07  pelle
  * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
  *
@@ -143,7 +148,7 @@ import org.neudist.crypto.signerstores.InvalidPassphraseException;
 import org.neudist.crypto.signerstores.JCESignerStore;
 import org.neudist.crypto.signerstores.NonExistingSignerException;
 import org.neudist.crypto.signerstores.SignerStore;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 import org.neudist.utils.ServletTools;
 import org.neudist.utils.Utility;
 import org.neudist.xml.soap.SOAPException;
@@ -193,14 +198,14 @@ public class SigningServlet extends ReceiverServlet {
             e.printStackTrace(System.out);
         } catch (IOException e) {
             e.printStackTrace(System.out);
-        } catch (NeudistException e) {
+        } catch (NeuClearException e) {
             e.printStackTrace(System.out);
         }
 
 
     }
 
-    protected static SignerStore getKeyStore(File keyStoreFile, String kspassword) throws GeneralSecurityException, IOException, NeudistException {
+    protected static SignerStore getKeyStore(File keyStoreFile, String kspassword) throws GeneralSecurityException, IOException, NeuClearException {
         return new JCESignerStore(keyStoreFile, kspassword.toCharArray());
     }
 
@@ -291,7 +296,7 @@ public class SigningServlet extends ReceiverServlet {
             out.println("<br><font color=\"red\"><pre>");
             e.printStackTrace(out);
             out.println("</pre></font>");
-        } catch (NeudistException e) {
+        } catch (NeuClearException e) {
             out.println("<br><font color=\"red\"><pre>");
             e.printStackTrace(out);
             out.println("</pre></font>");
@@ -324,12 +329,12 @@ public class SigningServlet extends ReceiverServlet {
             throw new SOAPException(e);
         } catch (NonExistingSignerException e) {
             throw new SOAPException(e);
-        } catch (NeudistException e) {
+        } catch (NeuClearException e) {
             throw new SOAPException(e);
         }
     }
 
-    protected static void signObject(SignedNamedObject obj, char passphrase[]) throws NeudistException, InvalidIdentityException, InvalidPassphraseException, NonExistingSignerException {
+    protected static void signObject(SignedNamedObject obj, char passphrase[]) throws NeuClearException, InvalidIdentityException, InvalidPassphraseException, NonExistingSignerException {
         if (!obj.isSigned()) {
             try {
                 String parentName = NSTools.getParentNSURI(obj.getName());

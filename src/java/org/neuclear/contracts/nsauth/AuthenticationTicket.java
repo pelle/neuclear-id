@@ -13,7 +13,7 @@ import org.dom4j.Namespace;
 import org.neuclear.id.Identity;
 import org.neuclear.id.SignedNamedObject;
 import org.neudist.crypto.CryptoTools;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -39,9 +39,9 @@ public class AuthenticationTicket extends SignedNamedObject {
  * @param requester
  * @param validto
  * @param siteurl
- * @throws NeudistException
+ * @throws NeuClearException
  */
-    private AuthenticationTicket(String name, Identity signatory,Timestamp timestamp,String digest, String requester, Timestamp validto, String siteurl) throws NeudistException {
+    private AuthenticationTicket(String name, Identity signatory,Timestamp timestamp,String digest, String requester, Timestamp validto, String siteurl) throws NeuClearException {
         super(name, signatory, timestamp, digest);
         this.validTo=validto;
         this.siteurl=siteurl;
@@ -50,7 +50,7 @@ public class AuthenticationTicket extends SignedNamedObject {
     }
 
 /*
-    public static SignatureRequest createAuthenticationRequest(String user, String requester, long validity, String siteurl, String targeturl, PrivateKey signer) throws NeudistException {
+    public static SignatureRequest createAuthenticationRequest(String user, String requester, long validity, String siteurl, String targeturl, PrivateKey signer) throws NeuClearException {
         AuthenticationTicket ticket = new AuthenticationTicket(user, requester, validity, siteurl);
         return SignatureRequest.createRequest(requester, targeturl, ticket, signer);
 
@@ -92,9 +92,9 @@ public class AuthenticationTicket extends SignedNamedObject {
     /**
      * Get the end time of the validity of the ticket
      * @return Timestamp object containing the end time of the ticket
-     * @throws NeudistException
+     * @throws NeuClearException
      */
-    public Timestamp getValidTo() throws NeudistException {
+    public Timestamp getValidTo() throws NeuClearException {
         return validTo;
     }
 
@@ -118,7 +118,7 @@ public class AuthenticationTicket extends SignedNamedObject {
         explanation.addProperty("Site",getSiteHref(),"The Site that You are Authenticating to");
         try {
             explanation.addProperty("ValidTo",Utility.formatTimeStamp(getValidTo()),"How long is this ticket valid to");
-        } catch (NeudistException e) {
+        } catch (NeuClearException e) {
             explanation.addProperty("ValidTo","Unspecified or Unreadable","How long is this ticket valid to. Warning, this is valid for ever. Do you really want that?");
         }
 

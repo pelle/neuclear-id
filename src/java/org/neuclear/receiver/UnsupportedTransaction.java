@@ -1,7 +1,7 @@
 package org.neuclear.receiver;
 
 import org.neuclear.id.SignedNamedObject;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -21,8 +21,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: UnsupportedTransaction.java,v 1.1 2003/09/26 23:53:10 pelle Exp $
+$Id: UnsupportedTransaction.java,v 1.2 2003/10/21 22:31:13 pelle Exp $
 $Log: UnsupportedTransaction.java,v $
+Revision 1.2  2003/10/21 22:31:13  pelle
+Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+Obviously had to perform many changes throughout the code to support these changes.
+
 Revision 1.1  2003/09/26 23:53:10  pelle
 Changes mainly in receiver and related fun.
 First real neuclear stuff in the payment package. Added TransferContract and PaymentReceiver.
@@ -35,7 +40,7 @@ First real neuclear stuff in the payment package. Added TransferContract and Pay
  * Date: Sep 26, 2003
  * Time: 1:48:58 PM
  */
-public class UnsupportedTransaction extends NeudistException {
+public class UnsupportedTransaction extends NeuClearException {
     /**
      *
      * @param obj

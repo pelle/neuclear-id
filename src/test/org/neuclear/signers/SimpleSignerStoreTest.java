@@ -1,5 +1,10 @@
-/* $Id: SimpleSignerStoreTest.java,v 1.2 2003/09/22 19:24:03 pelle Exp $
+/* $Id: SimpleSignerStoreTest.java,v 1.3 2003/10/21 22:31:15 pelle Exp $
  * $Log: SimpleSignerStoreTest.java,v $
+ * Revision 1.3  2003/10/21 22:31:15  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.2  2003/09/22 19:24:03  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -54,7 +59,7 @@ package org.neuclear.signers;
 
 import junit.framework.TestCase;
 import org.neudist.crypto.signerstores.SimpleSignerStore;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,22 +68,22 @@ import java.security.*;
 
 /**
  * @author pelleb
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  **/
 public class SimpleSignerStoreTest extends TestCase {
-    public SimpleSignerStoreTest(String name) throws GeneralSecurityException, NeudistException {
+    public SimpleSignerStoreTest(String name) throws GeneralSecurityException, NeuClearException {
         super(name);
         setUp();
     }
 
     /**
      */
-    public static SimpleSignerStore getSignerStoreInstance() throws NeudistException, GeneralSecurityException {
+    public static SimpleSignerStore getSignerStoreInstance() throws NeuClearException, GeneralSecurityException {
 
         return new SimpleSignerStore(new File("target/tests/keystores"));
     }
 
-    protected void setUp() throws NeudistException, GeneralSecurityException {
+    protected void setUp() throws NeuClearException, GeneralSecurityException {
         store = getSignerStoreInstance();
         generateKeys();
     }
@@ -99,7 +104,7 @@ public class SimpleSignerStoreTest extends TestCase {
         store = null;
     }
 
-    public void testAddKey() throws NeudistException, GeneralSecurityException, IOException {
+    public void testAddKey() throws NeuClearException, GeneralSecurityException, IOException {
         boolean success = false;
         try {
             store.addKey("root", "root".toCharArray(), root.getPrivate());
@@ -112,7 +117,7 @@ public class SimpleSignerStoreTest extends TestCase {
         assertTrue("Managed to add a key", success);
     }
 
-    public void testGetKey() throws NeudistException, GeneralSecurityException, IOException {
+    public void testGetKey() throws NeuClearException, GeneralSecurityException, IOException {
         boolean success = false;
         PrivateKey key = null;
         try {
@@ -135,8 +140,8 @@ public class SimpleSignerStoreTest extends TestCase {
             test.setUp();
             test.testGetKey();
         } catch (Exception e) {
-//            if (e instanceof NeudistException) {
-//                ((NeudistException)e).getParcel().printStackTrace();
+//            if (e instanceof NeuClearException) {
+//                ((NeuClearException)e).getParcel().printStackTrace();
 //            } else
             e.printStackTrace();
 

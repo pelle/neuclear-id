@@ -1,6 +1,11 @@
 /*
- * $Id: ReceiverServlet.java,v 1.4 2003/09/26 00:22:07 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.5 2003/10/21 22:31:13 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.5  2003/10/21 22:31:13  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.4  2003/09/26 00:22:07  pelle
  * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
  *
@@ -67,8 +72,9 @@ package org.neuclear.receiver;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.neuclear.id.verifier.VerifyingReader;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 import org.neudist.xml.soap.XMLInputStreamServlet;
+import org.neudist.xml.XMLException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -85,7 +91,9 @@ public abstract class ReceiverServlet extends XMLInputStreamServlet {
     protected void handleInputStream(InputStream is, HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             receiver.receive(VerifyingReader.getInstance().read(is));
-        } catch (NeudistException e) {
+        } catch (NeuClearException e) {
+            e.printStackTrace();
+        } catch (XMLException e) {
             e.printStackTrace();
         }
 

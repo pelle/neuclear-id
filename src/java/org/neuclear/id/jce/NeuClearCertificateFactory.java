@@ -2,7 +2,8 @@ package org.neuclear.id.jce;
 
 import org.neuclear.id.Identity;
 import org.neuclear.id.verifier.VerifyingReader;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
+import org.neudist.xml.XMLException;
 
 import java.security.cert.*;
 import java.io.InputStream;
@@ -29,8 +30,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearCertificateFactory.java,v 1.2 2003/10/01 17:05:37 pelle Exp $
+$Id: NeuClearCertificateFactory.java,v 1.3 2003/10/21 22:31:12 pelle Exp $
 $Log: NeuClearCertificateFactory.java,v $
+Revision 1.3  2003/10/21 22:31:12  pelle
+Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+Obviously had to perform many changes throughout the code to support these changes.
+
 Revision 1.2  2003/10/01 17:05:37  pelle
 Moved the NeuClearCertificate class to be an inner class of Identity.
 
@@ -57,7 +63,9 @@ public class NeuClearCertificateFactory extends CertificateFactorySpi {
         try {
             Identity id=(Identity) VerifyingReader.getInstance().read(inputStream);
             return id.getCertificate();
-        } catch (NeudistException e) {
+        } catch (XMLException e) {
+            throw new CertificateException("NeuClear: Problem reading Certificate:"+e.getMessage());
+        } catch (NeuClearException e) {
             throw new CertificateException("NeuClear: Problem reading Certificate:"+e.getMessage());
         }
     }

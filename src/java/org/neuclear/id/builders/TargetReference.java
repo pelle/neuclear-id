@@ -1,6 +1,11 @@
 /*
- * $Id: TargetReference.java,v 1.2 2003/10/01 19:08:30 pelle Exp $
+ * $Id: TargetReference.java,v 1.3 2003/10/21 22:31:12 pelle Exp $
  * $Log: TargetReference.java,v $
+ * Revision 1.3  2003/10/21 22:31:12  pelle
+ * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+ * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+ * Obviously had to perform many changes throughout the code to support these changes.
+ *
  * Revision 1.2  2003/10/01 19:08:30  pelle
  * Changed XML Format. Now NameSpace has been modified to Identity also the
  * xml namespace prefix nsdl has been changed to neuid.
@@ -48,15 +53,15 @@ import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.neuclear.id.NSTools;
 import org.neuclear.senders.Sender;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 import org.neudist.utils.Utility;
 import org.neudist.xml.AbstractElementProxy;
 
 public class TargetReference extends AbstractElementProxy {
-    public TargetReference(NamedObjectBuilder obj, Element elem) throws NeudistException {
+    public TargetReference(NamedObjectBuilder obj, Element elem) throws NeuClearException {
         super(elem);
         if (!elem.getName().equals(TAG_NAME))
-            throw new NeudistException("Element is not a <Target/> Element");
+            throw new NeuClearException("Element is not a <Target/> Element");
         owner = obj;
     }
 
@@ -87,7 +92,7 @@ public class TargetReference extends AbstractElementProxy {
         return NSTools.NS_NEUID;
     }
 
-    public void send() throws NeudistException {
+    public void send() throws NeuClearException {
         Sender.quickSend(getHref(), owner);
     }
 

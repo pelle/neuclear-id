@@ -1,6 +1,11 @@
 /*
-  $Id: NSToolsTest.java,v 1.4 2003/09/29 23:17:32 pelle Exp $
+  $Id: NSToolsTest.java,v 1.5 2003/10/21 22:31:14 pelle Exp $
   $Log: NSToolsTest.java,v $
+  Revision 1.5  2003/10/21 22:31:14  pelle
+  Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
+  Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
+  Obviously had to perform many changes throughout the code to support these changes.
+
   Revision 1.4  2003/09/29 23:17:32  pelle
   Changes to the senders. Now the senders only work with NamedObjectBuilders
   which are the only NamedObject representations that contain full XML.
@@ -74,7 +79,7 @@ package org.neuclear.id;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.neudist.utils.NeudistException;
+import org.neuclear.commons.NeuClearException;
 
 
 /**
@@ -87,15 +92,15 @@ public class NSToolsTest extends TestCase {
         super(name);
     }
 
-    private static void assertValidName(String name) throws NeudistException {
+    private static void assertValidName(String name) throws NeuClearException {
         assertTrue("Should be valid='" + name + "'", NSTools.isValidName(name));
     }
 
-    private static void assertInvalidName(String name) throws NeudistException {
+    private static void assertInvalidName(String name) throws NeuClearException {
         assertTrue("Should be invalid='" + name + "'", !NSTools.isValidName(name));
     }
 
-    public void testValidName() throws NeudistException {
+    public void testValidName() throws NeuClearException {
         assertValidName("/");
         assertValidName("neu://");
         assertValidName("/help");
@@ -109,12 +114,12 @@ public class NSToolsTest extends TestCase {
         assertInvalidName("/help/abcd_efg.-232Avc/");
     }
 
-    public static void testNormalize() throws NeudistException {
+    public static void testNormalize() throws NeuClearException {
         assertEquals("neu://hello", NSTools.normalizeNameURI("/hello"));
         assertEquals("neu://hello", NSTools.normalizeNameURI("neu://hello"));
     }
 
-    public static void testFindParent() throws NeudistException {
+    public static void testFindParent() throws NeuClearException {
         assertEquals("neu://hello", NSTools.getParentNSURI("neu://hello/one"));
         assertEquals("neu://hello", NSTools.getParentNSURI("/hello/one"));
         assertEquals("neu://", NSTools.getParentNSURI("neu://hello"));
