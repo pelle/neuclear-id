@@ -1,6 +1,12 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.20 2003/12/19 18:03:34 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.21 2003/12/20 00:21:19 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.21  2003/12/20 00:21:19  pelle
+ * overwrote the standard Object.toString(), hashCode() and equals() methods for SignedNamedObject/Core
+ * fixed cactus tests
+ * Added TransferRequestServlet
+ * Added cactus tests to pay
+ *
  * Revision 1.20  2003/12/19 18:03:34  pelle
  * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
  * - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -234,7 +240,7 @@ import java.text.ParseException;
 /**
  * This simple wrapper takes most of the contents of a NamedObject and puts it into a Serializable form that can be signed.
  */
-public class NamedObjectBuilder extends SignedElement implements Named, Cloneable {
+public class NamedObjectBuilder extends SignedElement implements  Cloneable {
     protected NamedObjectBuilder(final String name, final String tagName, final String prefix, final String nsURI) throws InvalidNamedObjectException {
         super(tagName, prefix, nsURI);
         createDocument();

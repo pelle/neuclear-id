@@ -1,6 +1,12 @@
 /*
- * $Id: SignedNamedCore.java,v 1.7 2003/12/19 18:03:34 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.8 2003/12/20 00:21:19 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.8  2003/12/20 00:21:19  pelle
+ * overwrote the standard Object.toString(), hashCode() and equals() methods for SignedNamedObject/Core
+ * fixed cactus tests
+ * Added TransferRequestServlet
+ * Added cactus tests to pay
+ *
  * Revision 1.7  2003/12/19 18:03:34  pelle
  * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
  * - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -376,6 +382,22 @@ public final class SignedNamedCore {
 
     public final byte[] getDigest() {
         return CryptoTools.digest(encoded.getBytes());
+    }
+
+    public final int hashCode() {
+        return encoded.hashCode();
+    }
+
+    public final String toString() {
+        return name;    //To change body of overriden methods use Options | File Templates.
+    }
+
+    public final boolean equals(Object object) {
+        if (object==this)
+            return true;
+        if (object instanceof SignedNamedCore)
+            return true;
+        return encoded.equals(((SignedNamedCore)object).getEncoded());    //To change body of overriden methods use Options | File Templates.
     }
 
     private final String name;

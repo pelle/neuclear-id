@@ -41,8 +41,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.1 2003/12/17 23:53:50 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.2 2003/12/20 00:21:19 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.2  2003/12/20 00:21:19  pelle
+overwrote the standard Object.toString(), hashCode() and equals() methods for SignedNamedObject/Core
+fixed cactus tests
+Added TransferRequestServlet
+Added cactus tests to pay
+
 Revision 1.1  2003/12/17 23:53:50  pelle
 Added SignatureRequestServlet which is abstract and can be used for building SignatureRequests for various applications.
 
@@ -99,7 +105,7 @@ public abstract class SignatureRequestServlet extends HttpServlet {
         out.write("\n ");
         out.write("<html>\n");
         out.write("<head>");
-        out.write("<title>\n");
+        out.write("<title>");
         out.write(title);
         out.write("</title>");
         out.write("</head>\n");

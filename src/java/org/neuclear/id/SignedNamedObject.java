@@ -1,6 +1,12 @@
 /*
- * $Id: SignedNamedObject.java,v 1.14 2003/12/19 18:03:34 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.15 2003/12/20 00:21:19 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.15  2003/12/20 00:21:19  pelle
+ * overwrote the standard Object.toString(), hashCode() and equals() methods for SignedNamedObject/Core
+ * fixed cactus tests
+ * Added TransferRequestServlet
+ * Added cactus tests to pay
+ *
  * Revision 1.14  2003/12/19 18:03:34  pelle
  * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
  * - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -243,7 +249,7 @@ import java.sql.Timestamp;
  * @see org.neuclear.senders.Sender
  * @see org.neuclear.commons.crypto.signers.Signer
  */
-public class SignedNamedObject implements SignedObject, Named {
+public class SignedNamedObject implements SignedObject {
 
     protected SignedNamedObject(final SignedNamedCore core)  {
         this.core = core;
@@ -326,6 +332,23 @@ public class SignedNamedObject implements SignedObject, Named {
     public final static QName createNEUIDQName(String name){
         return DocumentHelper.createQName(name, NSTools.NS_NEUID);
     }
+
+    public final int hashCode() {
+        return getClass().hashCode()+core.hashCode();
+    }
+
+    public String toString() {
+        return core.toString();
+    }
+
+    public final boolean equals(Object object) {
+        if (object==this)
+            return true;
+        if (object.getClass()==getClass())
+            return true;
+        return getEncoded().equals(((SignedNamedObject)object).getEncoded());
+    }
+
     private final SignedNamedCore core;
 
     final public static class Reader implements NamedObjectReader {
