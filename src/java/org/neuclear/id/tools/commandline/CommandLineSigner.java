@@ -1,5 +1,10 @@
-/* $Id: CommandLineSigner.java,v 1.7 2003/12/22 22:15:26 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.8 2004/01/19 23:49:44 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.8  2004/01/19 23:49:44  pelle
+ * Unit testing uncovered further issues with Base32
+ * NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
+ * Well on the way towards full "green" on Junit.
+ *
  * Revision 1.7  2003/12/22 22:15:26  pelle
  * Last minute cleanups and documentation prior to release 0.8.1
  *
@@ -207,38 +212,32 @@ package org.neuclear.id.tools.commandline;
 
 import org.apache.commons.cli.*;
 import org.dom4j.Document;
+import org.neuclear.commons.LowLevelException;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
-import org.neuclear.commons.LowLevelException;
 import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.crypto.passphraseagents.ConsoleAgent;
-import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
-import org.neuclear.commons.crypto.passphraseagents.InteractiveAgent;
 import org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent;
+import org.neuclear.commons.crypto.passphraseagents.InteractiveAgent;
+import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
 import org.neuclear.commons.crypto.signers.DefaultSigner;
-import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
 import org.neuclear.commons.crypto.signers.NonExistingSignerException;
+import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.Identity;
-import org.neuclear.id.NSTools;
 import org.neuclear.id.InvalidNamedObjectException;
-import org.neuclear.id.NameResolutionException;
+import org.neuclear.id.NSTools;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
 
 import java.io.*;
-import java.security.GeneralSecurityException;
-import java.net.URLClassLoader;
-import java.net.URL;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 /**
  * @author pelleb
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class CommandLineSigner {
     private final String EXECUTABLE ;
@@ -341,7 +340,7 @@ public class CommandLineSigner {
         try {
             if (!sig.canSignFor(alias)) {
                 if (!Utility.isEmpty(of))
-                    of = subject.getLocalName() + ".xml";
+                    of =  "signthis.xml";
                 System.out.println("Key with alias: " + alias + " doesnt exist in our keystore. \nSaving unsigned Identity as: " + of);
             } else if(!subject.isSigned()) {
                 System.out.println("Signing by " + alias + " ...");

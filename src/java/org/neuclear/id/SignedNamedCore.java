@@ -1,6 +1,11 @@
 /*
- * $Id: SignedNamedCore.java,v 1.16 2004/01/19 17:54:59 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.17 2004/01/19 23:49:45 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.17  2004/01/19 23:49:45  pelle
+ * Unit testing uncovered further issues with Base32
+ * NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
+ * Well on the way towards full "green" on Junit.
+ *
  * Revision 1.16  2004/01/19 17:54:59  pelle
  * Updated the NeuClear ID naming scheme to support various levels of semantics
  *
@@ -270,14 +275,13 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.neuclear.commons.LowLevelException;
 import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.commons.crypto.CryptoException;
-import org.neuclear.commons.time.TimeTools;
-import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.xml.xmlsec.*;
+import org.neuclear.xml.xmlsec.InvalidSignatureException;
+import org.neuclear.xml.xmlsec.XMLSecTools;
+import org.neuclear.xml.xmlsec.XMLSecurityException;
+import org.neuclear.xml.xmlsec.XMLSignature;
 
 import java.security.PublicKey;
 import java.sql.Timestamp;
-import java.text.ParseException;
 
 /**
  * <p>The SignedNamedCore is a non extendible core object used when building SignedNamedObjects.
@@ -299,7 +303,7 @@ public final class SignedNamedCore {
      */
     public SignedNamedCore(final PublicKey pub){
         this.digest=CryptoTools.encodeBase32(CryptoTools.digest(pub.getEncoded()));
-        this.name="neu:sha1://"+digest;
+        this.name="sha1://"+digest;
         this.timestamp=System.currentTimeMillis();
         this.encoded=new String(pub.getEncoded());
         this.signer = null;//new Identity(this,pub);

@@ -1,7 +1,7 @@
 package org.neuclear.id;
 
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.id.builders.Builder;
 import org.neuclear.id.builders.SignedMessageBuilder;
 import org.neuclear.tests.AbstractObjectCreationTest;
 
@@ -27,7 +27,7 @@ public class SignedMessageTest extends AbstractObjectCreationTest {
         assertNotNull(msg.getMessage());
     }
 
-    protected NamedObjectBuilder createBuilder() throws NeuClearException {
-        return new SignedMessageBuilder(getBob(),"neu://alice@test","Test","Hello there");
+    protected Builder createBuilder() throws NeuClearException {
+        return new SignedMessageBuilder("neu://alice@test","Test","Hello there");
     }
 }

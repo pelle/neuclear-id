@@ -40,8 +40,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningServletTest.java,v 1.3 2003/12/20 00:21:19 pelle Exp $
+$Id: SigningServletTest.java,v 1.4 2004/01/19 23:49:45 pelle Exp $
 $Log: SigningServletTest.java,v $
+Revision 1.4  2004/01/19 23:49:45  pelle
+Unit testing uncovered further issues with Base32
+NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
+Well on the way towards full "green" on Junit.
+
 Revision 1.3  2003/12/20 00:21:19  pelle
 overwrote the standard Object.toString(), hashCode() and equals() methods for SignedNamedObject/Core
 fixed cactus tests
@@ -89,8 +94,8 @@ public class SigningServletTest extends ServletTestCase {
     public void beginSign(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException {
 
         AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://localhost");
-        SignatureRequestBuilder sigreq = new SignatureRequestBuilder("neu://test", "neu://bob@test", authreq, "test");
-        SignedNamedObject signed = sigreq.sign(signer);
+        SignatureRequestBuilder sigreq = new SignatureRequestBuilder("neu://bob@test", authreq, "test");
+        SignedNamedObject signed = sigreq.convert("neu://test",signer);
         theRequest.setContentType("application/x-www-form-urlencoded");
         String b64 = Base64.encode(signed.getEncoded().getBytes());
         theRequest.addParameter("neuclear-request", b64, "POST");
@@ -129,8 +134,8 @@ public class SigningServletTest extends ServletTestCase {
     public void beginSignatureRequest(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException {
 
         AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://localhost");
-        SignatureRequestBuilder sigreq = new SignatureRequestBuilder("neu://test", "neu://bob@test", authreq, "test");
-        SignedNamedObject signed = sigreq.sign(signer);
+        SignatureRequestBuilder sigreq = new SignatureRequestBuilder( "neu://bob@test", authreq, "test");
+        SignedNamedObject signed = sigreq.convert("neu://test",signer);
         theRequest.setContentType("application/x-www-form-urlencoded");
         String b64 = Base64.encode(signed.getEncoded().getBytes());
         theRequest.addParameter("neuclear-request", b64, "POST");

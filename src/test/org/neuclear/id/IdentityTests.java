@@ -6,8 +6,8 @@ import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.CryptoException;
 import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.id.builders.Builder;
 import org.neuclear.id.builders.IdentityBuilder;
-import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.tests.AbstractObjectCreationTest;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
@@ -46,7 +46,7 @@ public class IdentityTests extends AbstractObjectCreationTest {
         assertNotNull(id.getPublicKey());
     }
 
-    protected NamedObjectBuilder createBuilder() throws NeuClearException {
+    protected Builder createBuilder() throws NeuClearException {
         return new IdentityBuilder(NAME,getSigner().getPublicKey(NAME),REPOSITORY,SIGNER,LOGGER,RECEIVER);
     }
 
@@ -55,7 +55,7 @@ public class IdentityTests extends AbstractObjectCreationTest {
         Identity id=new Identity(kp.getPublic());
         assertNotNull(id);
         assertNotNull(id.getName());
-        assertEquals("neu:sha1://",id.getName().substring(0,11));
+        assertEquals("sha1:",id.getName().substring(0,5));
         assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(kp.getPublic().getEncoded())),id.getName().substring(11));
         assertEquals(kp.getPublic(),id.getPublicKey());
 
@@ -68,7 +68,7 @@ public class IdentityTests extends AbstractObjectCreationTest {
         assertEquals(kp.getPublic(),sig.getSignersKey());
         SignedNamedObject obj=VerifyingReader.getInstance().read(elem);
         System.out.println("Name: "+obj.getName());
-        assertEquals("neu:sha1://",obj.getName().substring(0,11));
+        assertEquals("sha1:",obj.getName().substring(0,5));
         assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(kp.getPublic().getEncoded())),obj.getName().substring(11,43));
         assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(obj.getEncoded().getBytes())),obj.getName().substring(obj.getName().length()-32));
 
@@ -76,7 +76,7 @@ public class IdentityTests extends AbstractObjectCreationTest {
         Identity id=obj.getSignatory();
         assertNotNull(id);
         assertNotNull(id.getName());
-        assertEquals("neu:sha1://",id.getName().substring(0,11));
+        assertEquals("sha1:",id.getName().substring(0,5));
         assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(kp.getPublic().getEncoded())),id.getName().substring(11));
         assertEquals(kp.getPublic(),id.getPublicKey());
 

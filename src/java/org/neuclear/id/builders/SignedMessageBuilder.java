@@ -1,10 +1,7 @@
 package org.neuclear.id.builders;
 
-import org.dom4j.Namespace;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedMessage;
-import org.neuclear.id.Identity;
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,11 +10,11 @@ import org.neuclear.id.Identity;
  * Time: 11:54:36 PM
  * To change this template use Options | File Templates.
  */
-public class SignedMessageBuilder extends NamedObjectBuilder{
-    public SignedMessageBuilder(Identity signer, String recipient, String subject, String message) throws NeuClearException {
-        super(NSTools.createUniqueTransactionID(signer.getName(), recipient), SignedMessage.TAG_NAME);
-        createAttribute("recipient",recipient);
-        addElement("subject").setText(subject);
-        addElement("message").setText(message);
+public class SignedMessageBuilder extends Builder{
+    public SignedMessageBuilder(String recipient, String subject, String message) throws NeuClearException {
+        super(createNEUIDQName(SignedMessage.TAG_NAME));
+        addElement("Recipient").setText(recipient);
+        addElement("Subject").setText(subject);
+        addElement("Message").setText(message);
     }
 }

@@ -1,6 +1,11 @@
 /*
-  $Id: NSToolsTest.java,v 1.18 2004/01/19 17:55:00 pelle Exp $
+  $Id: NSToolsTest.java,v 1.19 2004/01/19 23:49:45 pelle Exp $
   $Log: NSToolsTest.java,v $
+  Revision 1.19  2004/01/19 23:49:45  pelle
+  Unit testing uncovered further issues with Base32
+  NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
+  Well on the way towards full "green" on Junit.
+
   Revision 1.18  2004/01/19 17:55:00  pelle
   Updated the NeuClear ID naming scheme to support various levels of semantics
 
@@ -181,11 +186,8 @@ public final class NSToolsTest extends TestCase {
         assertValidName("neu://pelle@neuclear.org");
         assertValidName("neu://pelle@neuclear.org/abcdefg232Avc");
 
-        assertValidName("neu://help!aasfdasdf3_.-243");
 
-        assertValidName("neu://pelle@help!aasfdasdf3_.-243");
 
-        assertValidName("neu://pelle@neuclear.org!aasfdasdf3_.-243");
         assertValidName("sha1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
         assertInvalidName("neu:/");
@@ -194,6 +196,9 @@ public final class NSToolsTest extends TestCase {
         assertInvalidName("neu://@test");
         assertInvalidName("neu://test/pelle@help");
         assertInvalidName("neu://test/pelle@help/abcdefg232Avc");
+        assertInvalidName("neu://help!aasfdasdf3_.-243");
+        assertInvalidName("neu://pelle@help!aasfdasdf3_.-243");
+        assertInvalidName("neu://pelle@neuclear.org!aasfdasdf3_.-243");
 
         assertInvalidName("neu://hel-_.p*34)");
         assertInvalidName("neu://help/ab-c_d.efg232Avc");
@@ -213,9 +218,9 @@ public final class NSToolsTest extends TestCase {
     }
 
     public final void testValidTransaction() throws NeuClearException {
-        assertValidTransaction("sha1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!7777774l77777oab7777775a7777777t");
-        assertValidTransaction("pet:bill!7777774l77777oab7777775a7777777t");
-        assertValidTransaction("neu://heybob!7777774l77777oab7777775a7777777t");
+        assertValidTransaction("sha1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!7777774377777oab7777775a7777777t");
+        assertValidTransaction("pet:bill!7777774277777oab7777775a7777777t");
+        assertValidTransaction("neu://heybob!7777774277777oab7777775a7777777t");
         assertInvalidTransaction("sha1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!shoes");
         assertInvalidTransaction("pet:bill!7777774l77777oab7777775a7777777t3");
         assertInvalidTransaction("neu://heybob!7777774l77777oab7777775a77771t");
@@ -233,8 +238,8 @@ public final class NSToolsTest extends TestCase {
         assertEquals("neu://one@hello", NSTools.getSignatoryURI("neu://one@hello/test"));
         assertEquals("neu://hello", NSTools.getSignatoryURI("neu://hello/one"));
         assertEquals("neu://", NSTools.getSignatoryURI("neu://hello"));
-        assertEquals("neu://one@hello", NSTools.getSignatoryURI("neu://one@hello!test"));
-        assertEquals("neu://hello", NSTools.getSignatoryURI("neu://hello!one"));
+        assertEquals("neu://one@hello", NSTools.getSignatoryURI("neu://one@hello!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
+        assertEquals("neu://hello", NSTools.getSignatoryURI("neu://hello!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
         assertEquals("neu://", NSTools.getSignatoryURI("neu://"));
 
     }
@@ -245,13 +250,9 @@ public final class NSToolsTest extends TestCase {
         assertEquals("/test/@pelle", NSTools.name2path("neu://pelle@test"));
         assertEquals("/test/@pelle/one", NSTools.name2path("neu://pelle@test/one"));
         assertEquals("/test/@pelle/one/two", NSTools.name2path("neu://pelle@test/one/two"));
-    }
-
-    public static void testGenerateIDs() {
-        assertTrue(NSTools.isValidName(NSTools.createUniqueTransactionID("neu://bob@test", "neu://neuclear.org")));
-        assertTrue(NSTools.isValidName(NSTools.createUniqueTransactionID("neu://bob@test/one", "neu://neuclear.org")));
-        assertTrue(NSTools.isValidName(NSTools.createUniqueTransactionID("neu://neuclear.org", "neu://bob@neuclear.org")));
-        assertTrue(NSTools.isValidName(NSTools.createUniqueTransactionID("neu://bob@test.org", "neu://neuclear.org/test")));
+//        assertEquals("/heybob/7777774377777oab7777775a7777777t", NSTools.name2path("neu://heybob!7777774377777oab7777775a7777777t"));
+        assertEquals("/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/7777774377777oab7777775a7777777t", NSTools.name2path("sha1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!7777774377777oab7777775a7777777t"));
+        assertEquals("/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", NSTools.name2path("sha1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
     }
 
     public static void testIsHttpScheme() {
@@ -261,15 +262,6 @@ public final class NSToolsTest extends TestCase {
         assertNull(NSTools.isHttpScheme("neu://test@neuclear.org/test"));
         assertNull(NSTools.isHttpScheme("neu://test@neuclear.org"));
         assertNull(NSTools.isHttpScheme("neu://neuclear.org!sdfsdfdsf"));
-
-    }
-
-    public static void testGetLocal() throws NeuClearException {
-        assertEquals("test", NSTools.getLocalName("neu://test"));
-        assertEquals("test", NSTools.getLocalName("neu://test@no"));
-        assertEquals("test", NSTools.getLocalName("neu://no/test"));
-        assertEquals("test", NSTools.getLocalName("neu://no!test"));
-        assertEquals("test", NSTools.getLocalName("neu://no@no!test"));
     }
 
     public static void testIsNamedObject() throws NeuClearException, XMLSecurityException {

@@ -1,6 +1,11 @@
 /*
- * $Id: NSTools.java,v 1.27 2004/01/19 17:54:59 pelle Exp $
+ * $Id: NSTools.java,v 1.28 2004/01/19 23:49:44 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.28  2004/01/19 23:49:44  pelle
+ * Unit testing uncovered further issues with Base32
+ * NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
+ * Well on the way towards full "green" on Junit.
+ *
  * Revision 1.27  2004/01/19 17:54:59  pelle
  * Updated the NeuClear ID naming scheme to support various levels of semantics
  *
@@ -204,13 +209,8 @@
  */
 package org.neuclear.id;
 
-import org.bouncycastle.crypto.Digest;
-import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.dom4j.*;
-import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
-import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
 
 import java.util.regex.Matcher;
@@ -276,13 +276,20 @@ public final class NSTools {
     public static boolean isValidName(final String name) {
         if (Utility.isEmpty(name))
             return false;
-        final Matcher matcher = VALID.matcher(name);
+        final Matcher matcher = REVALID.matcher(name);
         return (matcher.matches());
     }
+    public static boolean isValidId(final String name) {
+        if (Utility.isEmpty(name))
+            return false;
+        final Matcher matcher = REVALID_ID.matcher(name);
+        return (matcher.matches());
+    }
+
     public static boolean isValidTransactionName(final String name) {
         if (Utility.isEmpty(name))
             return false;
-        final Matcher matcher = VALID.matcher(name);
+        final Matcher matcher = REVALID_X.matcher(name);
         return (matcher.matches());
     }
 
@@ -315,81 +322,6 @@ public final class NSTools {
     }
 
     /**
-     * Returns the last part of a NEU URI.
-     * 
-     * @param uri a valid NEU Name
-     * @return Parent URI or null if name is the root
-     * @throws InvalidNamedObjectException if name is invalid
-     */
-    public static String getLocalName(final String uri) throws InvalidNamedObjectException {
-        if (!isValidName(uri))
-            throw new InvalidNamedObjectException("Invalid Neu ID: " + uri);
-        final int bang = uri.indexOf('!');
-
-        // We hava a Transaction ID. We always return its signer
-        if (bang > -1)
-            return uri.substring(bang + 1);
-
-        final int slash = uri.lastIndexOf('/');
-        final int at = uri.indexOf('@');
-        // We have a User ID
-        if (slash < at)
-            return uri.substring(slash + 1, at);
-        // We have a top level
-        if (uri.charAt(slash - 1) == '/')
-            return uri.substring(slash + 1);
-        //Regular
-        return uri.substring(slash + 1);
-    }
-
-    /**
-     * Creates a Globally Unique ID using the following algorithm:
-     * <ol><li>Take given Identity URI</li>
-     * <li>Appends Timestamp in ms</li>
-     * <li>Appends large random number</li>
-     * <li>Appends base36 SHA1 of Requesting Identity URI</li>
-     * </ol>
-     * Note if there is no Requesting Identity. Place any kind of seed in this parameter
-     * 
-     * @param signer        N
-     * @param requester     
-     * @param isTransaction is the new Id supposed to be a transaction id?
-     * @return 
-     */
-    public static String createUniqueNamedID(final String signer, final String requester, final boolean isTransaction) {
-        final Digest dig = new SHA1Digest();
-        final StringBuffer buffy = new StringBuffer(signer);
-        buffy.append((isTransaction ? '!' : '/'));
-        buffy.append(System.currentTimeMillis());
-        buffy.append(CryptoTools.createRandomID());
-        final byte[] output = new byte[dig.getDigestSize()];
-        final byte reqbytes[] = requester.getBytes();
-        dig.update(reqbytes, 0, reqbytes.length);
-        //TODO Add some more stuff like IP addresses etc to digest
-        dig.doFinal(output, 0);
-
-        buffy.append(CryptoTools.encodeBase32(output));
-        return buffy.toString();
-    }
-
-    /**
-     * Creates a Globally Unique Transaction ID using the following algorithm:
-     * <ol><li>Take given Identity URI</li>
-     * <li>Appends Timestamp in ms</li>
-     * <li>Appends large random number</li>
-     * <li>Appends base36 SHA1 of Requesting Identity URI</li>
-     * </ol>
-     * Note if there is no Requesting Identity. Place any kind of seed in this parameter
-     * 
-     * @param signer    N
-     * @param requester 
-     * @return 
-     */
-    public static String createUniqueTransactionID(final String signer, final String requester) {
-        return createUniqueNamedID(signer, requester, true);
-    }
-
-    /**
      * Convers a NEU Name URI into a path suitable for a filesystem or for inclusion as part of a web url.
      * Essentially it strips the prefixes of the URI. If the URI is of the format <tt>neu://bob@test</tt> it returns it as
      * /test/@bob as bob is essentially below test in the hierarchy.
@@ -402,10 +334,19 @@ public final class NSTools {
         if (!Utility.isEmpty(name)) {
             final Matcher matcher = STRIP_URI_ARROBA.matcher(name);
             if (matcher.matches()) {
-                return "/" + Utility.denullString(matcher.group(3)) + (matcher.group(1) != null ? ("/@" + matcher.group(2)) : "") + Utility.denullString(matcher.group(4));
+//                regexDebug(matcher);
+                if (Utility.isEmpty(matcher.group(8)))
+                    return "/" + Utility.denullString(matcher.group(5)) + (matcher.group(3) != null ? ("/@" + matcher.group(4)) : "") + Utility.denullString(matcher.group(6));
+                return "/"+matcher.group(9)+((!Utility.isEmpty(matcher.group(11)))?"/"+matcher.group(11):"");
             }
         }
         throw new InvalidNamedObjectException("Invalid NEU ID: " + name);
+    }
+
+    private static void regexDebug(final Matcher matcher) {
+        for (int i=0;i<=matcher.groupCount();i++){
+            System.out.println("$"+i+"="+matcher.group(i));
+        }
     }
 
     /**
@@ -464,24 +405,26 @@ public final class NSTools {
     public static final String NEUID_PREFIX = "id";
     public static final Namespace NS_NEUID = DocumentHelper.createNamespace(NEUID_PREFIX, NEUID_URI);
 
-    private static final String SCHEME_PREFIX = "([\\w]{1,6}:)?";
+//    private static final String SCHEME_PREFIX = "([\\w]{1,6}:)?";
     private static final String VALID_TOKEN = "[\\w][\\w.-]*";
     private static final String VALID_USER_TOKEN = "(([\\w][\\w.-]*)@)?";
     private static final String VALID_TOP_TOKEN = VALID_USER_TOKEN + "[\\w]([\\w.-]*[\\w])?";
     private static final String VALID_SUB_TOKEN = "(\\/[\\w][\\w-]*)*";
     private static final String SHA1="[a-zA-Z2-7]{32}";
-    private static final String VALID_TRAN_TOKEN = "!"+SHA1+"$";
+    private static final String VALID_TRAN_TOKEN = "!"+SHA1;
     private static final String VALID_SHA1ID="^sha1:"+SHA1;
 
-    private static final String VALID_PETNAME="pet:"+VALID_TOKEN+VALID_TRAN_TOKEN;
+    private static final String VALID_PETNAME="pet:"+VALID_TOKEN;
     private static final String VALID_NEU_ID = "neu:\\/\\/(" + VALID_TOP_TOKEN + VALID_SUB_TOKEN+")?";
     private static final String VALID_ID="^"+VALID_SHA1ID+"|"+VALID_NEU_ID+"|"+VALID_PETNAME+"$";
+    private static final String VALID_NAME="^(("+VALID_SHA1ID+")|("+VALID_NEU_ID+")|("+VALID_PETNAME+"))("+VALID_TRAN_TOKEN+")?$";
 
-    private static final String VALID_XACT="^"+VALID_SHA1ID+"|"+VALID_NEU_ID+"|"+VALID_PETNAME+VALID_TRAN_TOKEN+"$";
-    private static final Pattern VALID = Pattern.compile(VALID_ID);
-    private static final Pattern VALIDX = Pattern.compile(VALID_XACT);
+    private static final String VALID_XACT="^(("+VALID_SHA1ID+")|("+VALID_NEU_ID+")|("+VALID_PETNAME+"))("+VALID_TRAN_TOKEN+")$";
+    private static final Pattern REVALID = Pattern.compile(VALID_NAME);
+    private static final Pattern REVALID_ID = Pattern.compile(VALID_ID);
+    private static final Pattern REVALID_X = Pattern.compile(VALID_XACT);
 
-    private static final String STRIP_URI_ARROBA_EX = "neu://((" + VALID_TOKEN + ")@)?(" + VALID_TOKEN + ")?(" + VALID_SUB_TOKEN + VALID_TRAN_TOKEN + ")$";
+    private static final String STRIP_URI_ARROBA_EX = "^((neu://((" + VALID_TOKEN + ")@)?(" + VALID_TOKEN + ")?(" + VALID_SUB_TOKEN +"))|(sha1:("+SHA1+")))(!("+SHA1+"))?$";
 
     private static final Pattern STRIP_URI_ARROBA = Pattern.compile(STRIP_URI_ARROBA_EX);
 }

@@ -1,27 +1,27 @@
 package org.neuclear.signers.servlet;
 
-import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
-import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.crypto.signers.ServletSignerFactory;
+import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.Identity;
-import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.id.builders.SignatureRequestBuilder;
 import org.neuclear.id.builders.Builder;
+import org.neuclear.id.builders.SignatureRequestBuilder;
+import org.neuclear.id.resolver.NSResolver;
+import org.neuclear.xml.XMLException;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
-import org.neuclear.xml.XMLException;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import java.security.GeneralSecurityException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.GeneralSecurityException;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -41,8 +41,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.4 2004/01/12 22:39:26 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.5 2004/01/19 23:49:45 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.5  2004/01/19 23:49:45  pelle
+Unit testing uncovered further issues with Base32
+NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
+Well on the way towards full "green" on Junit.
+
 Revision 1.4  2004/01/12 22:39:26  pelle
 Completed all the builders and contracts.
 Added a new abstract Value class to contain either an amount or a list of serial numbers.
@@ -125,7 +130,7 @@ public abstract class SignatureRequestServlet extends HttpServlet {
         try {
             final Identity user = getUserNS(request);
             final Builder namedreq = createBuilder(request);
-            final SignatureRequestBuilder sigreq = new SignatureRequestBuilder(serviceid, user.getName(), namedreq, "Login to Site");
+            final SignatureRequestBuilder sigreq = new SignatureRequestBuilder(user.getName(), namedreq, "Login to Site");
             sigreq.sign(serviceid, signer);
             out.write("<form action=\"");
             out.print(user.getSigner());

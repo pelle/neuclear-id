@@ -27,8 +27,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningRequestBuilderTest.java,v 1.8 2004/01/13 23:38:26 pelle Exp $
+$Id: SigningRequestBuilderTest.java,v 1.9 2004/01/19 23:49:45 pelle Exp $
 $Log: SigningRequestBuilderTest.java,v $
+Revision 1.9  2004/01/19 23:49:45  pelle
+Unit testing uncovered further issues with Base32
+NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
+Well on the way towards full "green" on Junit.
+
 Revision 1.8  2004/01/13 23:38:26  pelle
 Refactoring parts of the core of XMLSignature. There shouldnt be any real API changes.
 
@@ -83,12 +88,11 @@ public final class SigningRequestBuilderTest extends AbstractSigningTest {
 
     public final void testSignatureRequest() throws NeuClearException, XMLException {
         final AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://users.neuclear.org:8080");
-        final SignatureRequestBuilder sigreq = new SignatureRequestBuilder("neu://test", "neu://bob@test", authreq, "For testing purposes");
+        final SignatureRequestBuilder sigreq = new SignatureRequestBuilder( "neu://bob@test", authreq, "For testing purposes");
 //        assertEquals(sigreq.getSignatory().getName(), "neu://test");
         try {
-            final SignatureRequest tosign = (SignatureRequest) sigreq.sign(signer);
+            final SignatureRequest tosign = (SignatureRequest) sigreq.convert("neu://test",signer);
             assertTrue(sigreq.isSigned());
-            assertEquals(tosign.getName(), sigreq.getName());
 
             final Builder auth2 = tosign.getUnsigned();
 //            assertEquals(auth2.getSignatory().getName(), "neu://bob@test");

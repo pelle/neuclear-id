@@ -1,6 +1,11 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.25 2004/01/19 17:55:00 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.26 2004/01/19 23:49:44 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.26  2004/01/19 23:49:44  pelle
+ * Unit testing uncovered further issues with Base32
+ * NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
+ * Well on the way towards full "green" on Junit.
+ *
  * Revision 1.25  2004/01/19 17:55:00  pelle
  * Updated the NeuClear ID naming scheme to support various levels of semantics
  *
@@ -235,7 +240,9 @@
  */
 package org.neuclear.id.builders;
 
-import org.dom4j.*;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.QName;
 import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
 import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.Signer;
@@ -247,26 +254,6 @@ import org.neuclear.xml.xmlsec.XMLSecurityException;
  * This simple wrapper takes most of the contents of a NamedObject and puts it into a Serializable form that can be signed.
  */
 public class NamedObjectBuilder extends Builder implements  Cloneable {
-/*
-    protected NamedObjectBuilder(final String name, final String tagName, final String prefix, final String nsURI) throws InvalidNamedObjectException {
-        super(tagName, prefix, nsURI);
-        createDocument();
-        setName(name);
-    }
-*/
-
-/*
-    protected NamedObjectBuilder(final String name, final String tagName, final Namespace ns) throws InvalidNamedObjectException {
-        super(tagName, ns);
-        createDocument();
-        setName(name);
-    }
-*/
-
-    protected NamedObjectBuilder(final String name, final String tagName) throws InvalidNamedObjectException {
-        super(tagName, NSTools.NS_NEUID);
-        setName(name);
-    }
 
     protected NamedObjectBuilder(final String name, final QName qname) throws InvalidNamedObjectException {
         super(qname);
@@ -309,14 +296,6 @@ public class NamedObjectBuilder extends Builder implements  Cloneable {
 
     }
 
-    /**
-     * The Name of an object within it's parent NameSpace
-     * 
-     * @return Parent Name
-     */
-    public final String getLocalName() throws InvalidNamedObjectException {
-        return NSTools.getLocalName(getName());
-    }
 
     private void setName(final String name) throws InvalidNamedObjectException {
         getElement().addAttribute(getNameAttrQName(), NSTools.normalizeNameURI(name));
@@ -325,25 +304,6 @@ public class NamedObjectBuilder extends Builder implements  Cloneable {
     private static QName getNameAttrQName() {
         return createNEUIDQName("name");
 
-    }
-
-    /**
-     * Helper method to create and add an attribute to this element within the NEUID namespace
-     * 
-     * @param name 
-     */
-    protected final void createNEUIDAttribute(String name, String value) {
-        getElement().addAttribute(createNEUIDQName(name), value);
-    }
-
-    /**
-     * Helper method to create a QName within the NEUID namespace
-     * 
-     * @param name 
-     * @return 
-     */
-    protected static QName createNEUIDQName(String name) {
-        return DocumentHelper.createQName(name, NSTools.NS_NEUID);
     }
 
 

@@ -1,11 +1,10 @@
 package org.neuclear.tests;
 
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.xml.XMLException;
-import org.neuclear.id.builders.NamedObjectBuilder;
-import org.neuclear.id.builders.SignedMessageBuilder;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.builders.Builder;
+import org.neuclear.xml.XMLException;
 
 import java.security.GeneralSecurityException;
 
@@ -22,15 +21,15 @@ public abstract class AbstractObjectCreationTest extends AbstractSigningTest {
     }
 
     public void testCreateObject() throws NeuClearException, XMLException {
-        NamedObjectBuilder builder=createBuilder();
+        Builder builder=createBuilder();
         assertNotNull(builder);
         assertTrue(NSTools.isNamedObject(builder.getElement()));
-        SignedNamedObject obj=builder.sign(getSigner());
+        SignedNamedObject obj=builder.convert("neu://test",getSigner());
         assertNotNull(obj);
         verifyObject(obj);
     }
 
     protected abstract void verifyObject(SignedNamedObject obj);
 
-    protected abstract NamedObjectBuilder createBuilder() throws NeuClearException;
+    protected abstract Builder createBuilder() throws NeuClearException;
 }

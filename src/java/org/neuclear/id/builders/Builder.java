@@ -1,17 +1,17 @@
 package org.neuclear.id.builders;
 
+import org.dom4j.*;
+import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
+import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.time.TimeTools;
+import org.neuclear.id.InvalidNamedObjectException;
+import org.neuclear.id.NSTools;
+import org.neuclear.id.NameResolutionException;
+import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.xmlsec.SignedElement;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
-import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.InvalidNamedObjectException;
-import org.neuclear.id.NameResolutionException;
-import org.neuclear.id.NSTools;
-import org.neuclear.id.verifier.VerifyingReader;
-import org.neuclear.commons.time.TimeTools;
-import org.neuclear.commons.crypto.signers.Signer;
-import org.neuclear.commons.crypto.signers.NonExistingSignerException;
-import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
-import org.dom4j.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -34,11 +34,6 @@ public class Builder extends SignedElement {
     public Builder(final Element elem) throws XMLSecurityException {
         super(elem);
         createDocument();    }
-
-    public Builder(final String name, final String prefix, final String nsURI) {
-        super(name, prefix, nsURI);
-        createDocument();
-    }
 
     final public SignedNamedObject convert() throws InvalidNamedObjectException, NameResolutionException{
 
@@ -78,5 +73,24 @@ public class Builder extends SignedElement {
             throw new InvalidNamedObjectException("User Cancelled Signing",e);
         }
         return convert();
+    }
+
+    /**
+     * Helper method to create and add an attribute to this element within the NEUID namespace
+     *
+     * @param name
+     */
+    protected final void createNEUIDAttribute(String name, String value) {
+        getElement().addAttribute(createNEUIDQName(name), value);
+    }
+
+    /**
+     * Helper method to create a QName within the NEUID namespace
+     *
+     * @param name
+     * @return
+     */
+    protected static QName createNEUIDQName(String name) {
+        return DocumentHelper.createQName(name, NSTools.NS_NEUID);
     }
 }
