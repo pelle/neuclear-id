@@ -1,6 +1,9 @@
 /*
- * $Id: NSTools.java,v 1.25 2004/01/07 23:12:20 pelle Exp $
+ * $Id: NSTools.java,v 1.26 2004/01/09 16:34:40 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.26  2004/01/09 16:34:40  pelle
+ * changed use of base36 encoding to base32 to ensure compatibility with other schemes.
+ *
  * Revision 1.25  2004/01/07 23:12:20  pelle
  * XMLSig now has various added features:
  * -  KeyInfo supports X509v3 (untested)
@@ -356,7 +359,7 @@ public final class NSTools {
         //TODO Add some more stuff like IP addresses etc to digest
         dig.doFinal(output, 0);
 
-        buffy.append(CryptoTools.formatAsBase36(output));
+        buffy.append(CryptoTools.encodeBase32(output));
         return buffy.toString();
     }
 

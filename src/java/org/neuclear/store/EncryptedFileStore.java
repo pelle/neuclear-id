@@ -1,6 +1,9 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.18 2003/12/19 18:03:35 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.19 2004/01/09 16:34:40 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
+ * Revision 1.19  2004/01/09 16:34:40  pelle
+ * changed use of base36 encoding to base32 to ensure compatibility with other schemes.
+ *
  * Revision 1.18  2003/12/19 18:03:35  pelle
  * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
  * - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -253,7 +256,7 @@ public final class EncryptedFileStore extends FileStore {
 
     protected final String getFileName(final String name) throws InvalidNamedObjectException  {
         final String deURLizedName = NSTools.normalizeNameURI(name);
-        final byte[] hash = CryptoTools.formatAsBase36(CryptoTools.digest256(deURLizedName.getBytes())).getBytes();
+        final byte[] hash = CryptoTools.encodeBase32(CryptoTools.digest256(deURLizedName.getBytes())).getBytes();
         //if (true) return new String(hash);
         final int partlength = hash.length / 8;
         final byte[] newName = new byte[hash.length + 8];

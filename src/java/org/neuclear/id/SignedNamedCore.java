@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedCore.java,v 1.9 2004/01/08 23:39:06 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.10 2004/01/09 16:34:40 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.10  2004/01/09 16:34:40  pelle
+ * changed use of base36 encoding to base32 to ensure compatibility with other schemes.
+ *
  * Revision 1.9  2004/01/08 23:39:06  pelle
  * XMLSignature can now give you the Signing key and the id of the signer.
  * SignedElement can now self verify using embedded public keys as well as KeyName's
@@ -277,7 +280,7 @@ public final class SignedNamedCore {
      * @param pub
      */
     private SignedNamedCore(final PublicKey pub){
-        this.digest=CryptoTools.formatAsBase36(CryptoTools.digest(pub.getEncoded()));
+        this.digest=CryptoTools.encodeBase32(CryptoTools.digest(pub.getEncoded()));
         this.name="neu:sha1:"+digest;
         this.timestamp=System.currentTimeMillis();
         this.encoded=new String(pub.getEncoded());
@@ -291,7 +294,7 @@ public final class SignedNamedCore {
      */
     private SignedNamedCore(final PublicKey pub, final String encoded){
         this.signer = new Identity(new SignedNamedCore(pub),pub);
-        this.digest=CryptoTools.formatAsBase36(CryptoTools.digest(encoded.getBytes()));
+        this.digest=CryptoTools.encodeBase32(CryptoTools.digest(encoded.getBytes()));
         this.name=signer.getName()+"!"+digest;
         this.timestamp=System.currentTimeMillis();
         this.encoded=encoded;
@@ -308,14 +311,14 @@ public final class SignedNamedCore {
         this.signer = signer;
         this.timestamp = timestamp.getTime();
         this.encoded = encoded;
-        this.digest=CryptoTools.formatAsBase36(CryptoTools.digest(encoded.getBytes()));
+        this.digest=CryptoTools.encodeBase32(CryptoTools.digest(encoded.getBytes()));
     }
 
     private SignedNamedCore()  {
         this.name="neu://";
         this.signer=null;//new Identity(this,Identity.getRootPK());
         final byte[] encoded = Identity.getRootPK().getEncoded();
-        this.digest=CryptoTools.formatAsBase36(CryptoTools.digest(encoded));
+        this.digest=CryptoTools.encodeBase32(CryptoTools.digest(encoded));
         this.timestamp=System.currentTimeMillis();
         this.encoded=new String(encoded);
     }
