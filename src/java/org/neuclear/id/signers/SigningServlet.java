@@ -1,6 +1,10 @@
 /*
- * $Id: SigningServlet.java,v 1.15 2004/06/03 18:50:08 pelle Exp $
+ * $Id: SigningServlet.java,v 1.16 2004/06/13 19:28:39 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.16  2004/06/13 19:28:39  pelle
+ * Fixed NPE in SigningServlet
+ * Added neuclear-id taglibrary with a <id:login/> tag for displaying the NeuClear login button.
+ *
  * Revision 1.15  2004/06/03 18:50:08  pelle
  * Added support for Account Page on your own page
  *
@@ -315,6 +319,7 @@
  */
 package org.neuclear.id.signers;
 
+import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
@@ -455,7 +460,8 @@ public class SigningServlet extends XMLInputStreamServlet {
             String asset = named.getElement().element("Asset").getTextTrim();
             String recipient = named.getElement().element("Recipient").getTextTrim();
             String amount = named.getElement().element("Amount").getTextTrim();
-            String comment = named.getElement().element("Comment").getTextTrim();
+            final Element comelem = named.getElement().element("Comment");
+            String comment = comelem != null ? comelem.getTextTrim() : "";
             out.println("<h3>Transfer Order</h3>");
             out.println("<p>The site: <b>" + referrer + "</b><br/> is requesting that you transfer <b>" +
                     amount + "</b><br/> units of the asset <b><a href=\"" + asset +

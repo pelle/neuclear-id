@@ -1,0 +1,57 @@
+<script language="JavaScript1.1">
+    <!--
+
+    var neuclear_personal="http://127.0.0.1:11870/Sign";
+
+    function setCookie(name, value, expire) {
+       document.cookie = name + "=" + escape(value)
+       + ((expire == null) ? "" : ("; expires=" + expire.toGMTString()))
+    }
+
+    function getCookie(Name) {
+       var search = Name + "="
+       if (document.cookie.length > 0) { // if there are any cookies
+          offset = document.cookie.indexOf(search)
+          if (offset != -1) { // if cookie exists
+             offset += search.length
+             // set index of beginning of value
+             end = document.cookie.indexOf(";", offset)
+             // set index of end of cookie value
+             if (end == -1)
+                end = document.cookie.length
+             return unescape(document.cookie.substring(offset, end))
+          }
+       }
+    }
+
+    var neuclear_signer=getCookie("neuclear.signer");
+    if (!neuclear_signer) {
+        neuclear_signer=neuclear_personal;
+    }
+    function goToServer(){
+        setCookie("neuclear.signer",neuclear_signer);
+        if (traderIsRunning()) {
+            return true;
+        } else {
+            if (ask("Your Personal Trader is not running. Do you wish to start it?")){
+                window.open("http://dist.neuclear.org/app/neuclear-signer.jnlp");
+            }
+            return false;
+        }
+    }
+    function reloadStatus(){
+        var status=document.getElementById("loginbutton");
+        status.src="http://127.0.0.1:11870/login.png";
+        return status;
+    }
+    function traderIsRunning(){
+        var status=reloadStatus();
+        return  (status.src=="http://127.0.0.1:11870/login.png");
+    }
+    -->
+</script>
+<a href="Authorize" onclick="return goToServer()">
+    <img id="loginbutton" src="http://127.0.0.1:11870/login.png" border="0" onmouseover="reloadStatus();this.style.background=#00f"
+        onmouseoff="this.style.background=none" onclick="goToServer()"
+        onerror="this.src='images/neuclear_start.png'"/>
+</a>

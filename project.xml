@@ -3,7 +3,7 @@
 
     <name>NeuClear Identity Framework</name>
     <id>neuclear-id</id>
-    <currentVersion>1.0-beta12</currentVersion>
+    <currentVersion>1.0-beta13</currentVersion>
     <inceptionYear>2002</inceptionYear>
     <package>org.neuclear</package>
     <logo>/images/logo.gif</logo>
@@ -178,7 +178,13 @@
                 <jnlp.jar>true</jnlp.jar>
             </properties>
         </dependency>
-
+        <dependency>
+            <groupId>maven-taglib</groupId>
+            <artifactId>maven-taglib-plugin</artifactId>
+            <version>1.1</version>
+            <type>plugin</type>
+            <url>http://maven-taglib.sourceforge.net</url>
+        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src/java</sourceDirectory>
@@ -213,7 +219,9 @@
                 </excludes>
             </resource>
         </resources>
-
     </build>
+    <reports>
+        <report>taglib</report>
+    </reports>
 </project>
 
