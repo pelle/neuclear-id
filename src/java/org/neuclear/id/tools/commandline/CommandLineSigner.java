@@ -1,5 +1,9 @@
-/* $Id: CommandLineSigner.java,v 1.10 2004/02/19 15:30:21 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.11 2004/02/19 19:38:13 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.11  2004/02/19 19:38:13  pelle
+ * At times IntelliJ IDEA can cause some real hassle. On my last checkin it optimized away all of the dom4j and command line imports.
+ * We'll now, Ive added them all back.
+ *
  * Revision 1.10  2004/02/19 15:30:21  pelle
  * Various cleanups and corrections
  *
@@ -236,12 +240,13 @@ import org.neuclear.id.builders.Builder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
+import org.apache.commons.cli.*;
 
 import java.io.*;
 
 /**
  * @author pelleb
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class CommandLineSigner {
     private final String executable;
