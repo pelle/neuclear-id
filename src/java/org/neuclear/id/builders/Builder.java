@@ -56,7 +56,7 @@ public class Builder extends SignedElement {
         try {
             final Element elem = (Element) getElement().clone();
             DocumentHelper.createDocument(elem);
-            return new NamedObjectBuilder(elem);
+            return new Builder(elem);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -68,7 +68,7 @@ public class Builder extends SignedElement {
         } catch (XMLSecurityException e) {
             throw new InvalidNamedObjectException("Problem in XML Sig",e);
         } catch (NonExistingSignerException e) {
-            throw new InvalidNamedObjectException("Can not Sign",e);
+            throw new InvalidNamedObjectException("Can not Sign with "+name,e);
         } catch (UserCancellationException e) {
             throw new InvalidNamedObjectException("User Cancelled Signing",e);
         }

@@ -1,5 +1,8 @@
-/* $Id: IdentityCreator.java,v 1.6 2003/12/19 18:03:34 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.7 2004/01/20 20:28:24 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.7  2004/01/20 20:28:24  pelle
+ * Fixed final issues highlighted by unit tests. Really just a bunch of smaller stuff.
+ *
  * Revision 1.6  2003/12/19 18:03:34  pelle
  * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
  * - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -207,17 +210,15 @@
  */
 package org.neuclear.id.tools.commandline;
 
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionGroup;
-import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
-import org.neuclear.commons.crypto.CryptoException;
 import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.PublicKeySource;
-import org.neuclear.id.NSTools;
 import org.neuclear.id.InvalidNamedObjectException;
+import org.neuclear.id.NSTools;
 import org.neuclear.id.builders.IdentityBuilder;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.senders.LogSender;
@@ -226,7 +227,7 @@ import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public final class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(final String[] args) throws UserCancellationException, ParseException, InvalidNamedObjectException {
@@ -284,6 +285,8 @@ public final class IdentityCreator extends CommandLineSigner {
         } catch (InvalidNamedObjectException e) {
             System.err.println("The name: "+e.getName()+" is not valid. ");
             System.exit(1);
+        } catch (NonExistingSignerException e) {
+            e.printStackTrace();
         }
         return null;
     }
