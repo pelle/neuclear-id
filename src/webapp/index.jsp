@@ -1,10 +1,10 @@
-<%@ page import="org.neuclear.utils.Utility,
+<%@ page import="org.neudist.utils.Utility,
                  com.opensymphony.util.TextUtils,
                  org.neuclear.receiver.ReceiverServlet,
                  org.neuclear.id.NamedObject,
                  org.neuclear.contracts.nsauth.AuthenticationTicket,
                  org.neuclear.id.NSTools,
-                 org.neuclear.utils.ServletTools,
+                 org.neudist.utils.ServletTools,
                  org.neuclear.id.NamedObjectFactory"%>
  <%
     response.setHeader("Pragma","no-cache");

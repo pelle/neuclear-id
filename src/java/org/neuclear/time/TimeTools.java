@@ -1,8 +1,18 @@
 /*
- * $Id: TimeTools.java,v 1.1 2003/09/19 14:41:15 pelle Exp $
+ * $Id: TimeTools.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
  * $Log: TimeTools.java,v $
- * Revision 1.1  2003/09/19 14:41:15  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:02  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:41:15  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.3  2003/02/10 22:30:22  pelle
  * Got rid of even further dependencies. In Particular OSCore
@@ -22,7 +32,8 @@
 
 */
 package org.neuclear.time;
-import org.neuclear.utils.NeudistException;
+
+import org.neudist.utils.NeudistException;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -40,8 +51,7 @@ import java.util.TimeZone;
 public class TimeTools {
 
 
-    public static java.util.Date addDaysToDate(java.util.Date d, int iDays)
-    {
+    public static java.util.Date addDaysToDate(java.util.Date d, int iDays) {
         //create Calendar
         Calendar cal = Calendar.getInstance();
         cal.setTime(d);
@@ -53,8 +63,7 @@ public class TimeTools {
         return cal.getTime();
     }
 
-    public static java.util.Date addMonthsToDate(java.util.Date d, int iMonths)
-    {
+    public static java.util.Date addMonthsToDate(java.util.Date d, int iMonths) {
         //create Calendar
         Calendar cal = Calendar.getInstance();
         cal.setTime(d);
@@ -72,11 +81,11 @@ public class TimeTools {
 
     public static Timestamp convertDateToTimestamp(Date date) {
         if (date instanceof Timestamp)
-            return (Timestamp)date;
+            return (Timestamp) date;
         return new Timestamp(date.getTime());
     }
 
-    public static Timestamp parseTimeStamp(String ts) throws NeudistException{
+    public static Timestamp parseTimeStamp(String ts) throws NeudistException {
         try {
             return convertDateToTimestamp(getDateFormatter().parse(ts));
         } catch (ParseException e) {
@@ -98,7 +107,8 @@ public class TimeTools {
      * the 25th day of December in the year 2002 at 2 pm 32 min 12 secs 333 mills -5 hours from GMT
      */
     private static final String ISO_EXPANDED_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss,SSSzzz";
-    private static final SimpleDateFormat DF=new SimpleDateFormat(ISO_EXPANDED_DATE_TIME_FORMAT);
+    private static final SimpleDateFormat DF = new SimpleDateFormat(ISO_EXPANDED_DATE_TIME_FORMAT);
+
     {
         DF.setTimeZone(TimeZone.getTimeZone("GMT"));
     }

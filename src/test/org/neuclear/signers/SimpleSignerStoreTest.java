@@ -1,7 +1,17 @@
-/* $Id: SimpleSignerStoreTest.java,v 1.1 2003/09/19 14:42:03 pelle Exp $
+/* $Id: SimpleSignerStoreTest.java,v 1.2 2003/09/22 19:24:03 pelle Exp $
  * $Log: SimpleSignerStoreTest.java,v $
- * Revision 1.1  2003/09/19 14:42:03  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:03  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:42:03  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.4  2003/02/18 00:06:15  pelle
  * Moved the SignerStore's into xml-sig
@@ -43,8 +53,8 @@
 package org.neuclear.signers;
 
 import junit.framework.TestCase;
-import org.neuclear.utils.NeudistException;
-import org.neuclear.crypto.signerstores.SimpleSignerStore;
+import org.neudist.crypto.signerstores.SimpleSignerStore;
+import org.neudist.utils.NeudistException;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,83 +63,87 @@ import java.security.*;
 
 /**
  * @author pelleb
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  **/
-public class SimpleSignerStoreTest extends TestCase  {
-    public SimpleSignerStoreTest(String name) throws GeneralSecurityException,NeudistException {
-		super(name);
+public class SimpleSignerStoreTest extends TestCase {
+    public SimpleSignerStoreTest(String name) throws GeneralSecurityException, NeudistException {
+        super(name);
         setUp();
     }
+
     /**
      */
-    public static  SimpleSignerStore getSignerStoreInstance() throws NeudistException, GeneralSecurityException{
+    public static SimpleSignerStore getSignerStoreInstance() throws NeudistException, GeneralSecurityException {
 
         return new SimpleSignerStore(new File("target/tests/keystores"));
     }
 
-    protected void setUp() throws NeudistException,GeneralSecurityException{
-        store=getSignerStoreInstance();
+    protected void setUp() throws NeudistException, GeneralSecurityException {
+        store = getSignerStoreInstance();
         generateKeys();
     }
-    protected static synchronized void generateKeys() throws GeneralSecurityException {
-        if (kg==null) {
-            System.out.println("Generating Test Keys");
-            kg=KeyPairGenerator.getInstance("RSA");
 
-            kg.initialize(1048,new SecureRandom("Bear it all with NeuDist".getBytes()));
-     //       kp=kg.generateKeyPair();
-            root=kg.generateKeyPair();
-            bob=kg.generateKeyPair();
+    protected static synchronized void generateKeys() throws GeneralSecurityException {
+        if (kg == null) {
+            System.out.println("Generating Test Keys");
+            kg = KeyPairGenerator.getInstance("RSA");
+
+            kg.initialize(1048, new SecureRandom("Bear it all with NeuDist".getBytes()));
+            //       kp=kg.generateKeyPair();
+            root = kg.generateKeyPair();
+            bob = kg.generateKeyPair();
         }
     }
 
     protected void tearDown() {
-        store=null;
-        }
+        store = null;
+    }
 
-     public void testAddKey() throws NeudistException,GeneralSecurityException,IOException {
-         boolean success=false;
-         try {
-             store.addKey("root","root".toCharArray(),root.getPrivate());
-             success=true;
-         } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-         } catch (IOException e) {
-             e.printStackTrace();
-         }
-         assertTrue("Managed to add a key",success);
-     }
-    public void testGetKey() throws NeudistException,GeneralSecurityException,IOException {
-         boolean success=false;
-         PrivateKey key=null;
-         try {
-             store.addKey("bob","bob".toCharArray(),bob.getPrivate());
-             key=store.getKey("bob","bob".toCharArray());
-             success=true;
-         } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-         } catch (IOException e) {
-             e.printStackTrace();
-         }
-         assertTrue("Managed to add and Fetch a  key",success);
-         assertNotNull("Key wasn't null",key);
-         assertEquals("Gotten Key was the same as Stored Key",bob.getPrivate(),key);
-     }
-    public static void main (String[] args) {
+    public void testAddKey() throws NeudistException, GeneralSecurityException, IOException {
+        boolean success = false;
         try {
-            SimpleSignerStoreTest test=new SimpleSignerStoreTest("SimpleSignerStoreTest");
+            store.addKey("root", "root".toCharArray(), root.getPrivate());
+            success = true;
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assertTrue("Managed to add a key", success);
+    }
+
+    public void testGetKey() throws NeudistException, GeneralSecurityException, IOException {
+        boolean success = false;
+        PrivateKey key = null;
+        try {
+            store.addKey("bob", "bob".toCharArray(), bob.getPrivate());
+            key = store.getKey("bob", "bob".toCharArray());
+            success = true;
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assertTrue("Managed to add and Fetch a  key", success);
+        assertNotNull("Key wasn't null", key);
+        assertEquals("Gotten Key was the same as Stored Key", bob.getPrivate(), key);
+    }
+
+    public static void main(String[] args) {
+        try {
+            SimpleSignerStoreTest test = new SimpleSignerStoreTest("SimpleSignerStoreTest");
             test.setUp();
             test.testGetKey();
         } catch (Exception e) {
 //            if (e instanceof NeudistException) {
 //                ((NeudistException)e).getParcel().printStackTrace();
 //            } else
-                e.printStackTrace();
+            e.printStackTrace();
 
         }
 
 //		junit.textui.TestRunner.run (suite());
-	}
+    }
 
     private SimpleSignerStore store;
     private static KeyPairGenerator kg;

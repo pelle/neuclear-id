@@ -11,14 +11,14 @@ package org.neuclear.contracts.nsauth;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
-import org.neuclear.crypto.CryptoTools;
 import org.neuclear.id.NameSpace;
 import org.neuclear.id.NamedObject;
 import org.neuclear.id.NamedObjectFactory;
 import org.neuclear.id.signrequest.SignatureRequest;
 import org.neuclear.time.TimeTools;
-import org.neuclear.utils.NeudistException;
-import org.neuclear.utils.Utility;
+import org.neudist.crypto.CryptoTools;
+import org.neudist.utils.NeudistException;
+import org.neudist.utils.Utility;
 
 import java.security.PrivateKey;
 import java.sql.Timestamp;
@@ -43,18 +43,18 @@ public class AuthenticationTicket extends NamedObject {
      * @param validity The validity of the ticket in Milliseconds
      * @param siteurl URL for interactive signing service to send user to after signing.
      */
-    private AuthenticationTicket(String user,String requester,long validity,String siteurl) throws NeudistException {
-        super(createUniqueTicketName(user,requester),AuthenticationTicket.TAG_NAME,AuthenticationTicket.NS_NSAUTH);
+    private AuthenticationTicket(String user, String requester, long validity, String siteurl) throws NeudistException {
+        super(createUniqueTicketName(user, requester), AuthenticationTicket.TAG_NAME, AuthenticationTicket.NS_NSAUTH);
 
-        NamedObject userns=NamedObjectFactory.fetchNamedObject(user);
+        NamedObject userns = NamedObjectFactory.fetchNamedObject(user);
 
-        if (userns==null||(!(userns instanceof NameSpace))||(Utility.isEmpty(((NameSpace)userns).getSigner())))
-            throw new NeudistException("The provided namespace: "+user+" doesnt exist or doesnt allow interactive signing");
-        Element root=getElement();
-        if (validity>=0)
-            root.addAttribute(DocumentHelper.createQName("validto",NS_NSAUTH),TimeTools.formatTimeStamp(new Timestamp(new Date().getTime()+validity)));
+        if (userns == null || (!(userns instanceof NameSpace)) || (Utility.isEmpty(((NameSpace) userns).getSigner())))
+            throw new NeudistException("The provided namespace: " + user + " doesnt exist or doesnt allow interactive signing");
+        Element root = getElement();
+        if (validity >= 0)
+            root.addAttribute(DocumentHelper.createQName("validto", NS_NSAUTH), TimeTools.formatTimeStamp(new Timestamp(new Date().getTime() + validity)));
         if (!Utility.isEmpty(siteurl))
-            root.addAttribute(DocumentHelper.createQName("href",NS_NSAUTH),siteurl);
+            root.addAttribute(DocumentHelper.createQName("href", NS_NSAUTH), siteurl);
     }
 
     /**
@@ -66,33 +66,34 @@ public class AuthenticationTicket extends NamedObject {
         super(elem);
     }
 
-    public static SignatureRequest createAuthenticationRequest(String user, String requester,long validity, String siteurl, String targeturl,PrivateKey signer) throws NeudistException {
-        AuthenticationTicket ticket=new AuthenticationTicket(user,requester,validity,siteurl);
-        return SignatureRequest.createRequest(requester,targeturl,ticket,signer);
+    public static SignatureRequest createAuthenticationRequest(String user, String requester, long validity, String siteurl, String targeturl, PrivateKey signer) throws NeudistException {
+        AuthenticationTicket ticket = new AuthenticationTicket(user, requester, validity, siteurl);
+        return SignatureRequest.createRequest(requester, targeturl, ticket, signer);
 
     }
+
     /**
      * This is just used to create a unique ticket for use by the ticket
      * @param userNameSpace
      * @param reqNameSpace
      * @return
      */
-    private static String createUniqueTicketName(String userNameSpace,String reqNameSpace) {
+    private static String createUniqueTicketName(String userNameSpace, String reqNameSpace) {
         // Yeah, yeah there are better ways to do this
-        String ms=new Long(new Date().getTime()).toString();
-        byte ticketsrc[]=new byte[ms.length()+reqNameSpace.length()];
-        System.arraycopy(ms.getBytes(),0,ticketsrc,0,ms.length());
-        System.arraycopy(reqNameSpace.getBytes(),0,ticketsrc,ms.length(),reqNameSpace.length());
-        String ticket=CryptoTools.formatAsURLSafe(CryptoTools.digest256(ticketsrc));
+        String ms = new Long(new Date().getTime()).toString();
+        byte ticketsrc[] = new byte[ms.length() + reqNameSpace.length()];
+        System.arraycopy(ms.getBytes(), 0, ticketsrc, 0, ms.length());
+        System.arraycopy(reqNameSpace.getBytes(), 0, ticketsrc, ms.length(), reqNameSpace.length());
+        String ticket = CryptoTools.formatAsURLSafe(CryptoTools.digest256(ticketsrc));
         //Lets reuse ticketsrc for memory reasons
-        int offset=ms.length()+1;
+        int offset = ms.length() + 1;
         if (reqNameSpace.startsWith("neu://"))
-            offset+=5;
+            offset += 5;
 
 
-        for (int i=offset;i<ticketsrc.length;i++) {
-            if (ticketsrc[i]==(byte)'/')
-                ticketsrc[i]=(byte)'.';
+        for (int i = offset; i < ticketsrc.length; i++) {
+            if (ticketsrc[i] == (byte) '/')
+                ticketsrc[i] = (byte) '.';
         }
 /*
         byte ticketName[]=new byte[userNameSpace.length()+33]; // Create new Name byte array to hold userNameSpace a '/' and the generated ticket (size 32)
@@ -100,7 +101,7 @@ public class AuthenticationTicket extends NamedObject {
         ticketName[userNameSpace.length()]=(byte)'/';
         System.arraycopy(ticket,0,ticketName,userNameSpace.length()+1,ticket.length);
 */
-        return userNameSpace+'/'+new String(ticketsrc,offset,ticketsrc.length-offset)+'.'+ticket;
+        return userNameSpace + '/' + new String(ticketsrc, offset, ticketsrc.length - offset) + '.' + ticket;
     }
 
     /**
@@ -109,19 +110,21 @@ public class AuthenticationTicket extends NamedObject {
      * @throws NeudistException
      */
     public Timestamp getValidTo() throws NeudistException {
-        String ts=getElement().attributeValue(DocumentHelper.createQName("validto",NS_NSAUTH));
+        String ts = getElement().attributeValue(DocumentHelper.createQName("validto", NS_NSAUTH));
         return TimeTools.parseTimeStamp(ts);
     }
+
     /**
      * The Site URL of the site requesting authentication.
      * @return the URL or null if unavailable.
      */
     public String getSiteHref() {
-        return getElement().attributeValue(DocumentHelper.createQName("href",NS_NSAUTH));
+        return getElement().attributeValue(DocumentHelper.createQName("href", NS_NSAUTH));
     }
+
     public String getTagName() {
-         return TAG_NAME;
-     }
+        return TAG_NAME;
+    }
 
     /**
      * @return the XML NameSpace object
@@ -145,7 +148,7 @@ public class AuthenticationTicket extends NamedObject {
     }
 */
 
-    private  static final String TAG_NAME="AuthenticationTicket";
-    public static final String URI_NSAUTH="http://neuclear.org/neu/nsauth";
-    public static final Namespace NS_NSAUTH=DocumentHelper.createNamespace("nsauth",URI_NSAUTH);
+    private static final String TAG_NAME = "AuthenticationTicket";
+    public static final String URI_NSAUTH = "http://neuclear.org/neu/nsauth";
+    public static final Namespace NS_NSAUTH = DocumentHelper.createNamespace("nsauth", URI_NSAUTH);
 }

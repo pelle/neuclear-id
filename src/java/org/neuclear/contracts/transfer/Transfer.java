@@ -1,8 +1,18 @@
 /*
- * $Id: Transfer.java,v 1.1 2003/09/19 14:41:42 pelle Exp $
+ * $Id: Transfer.java,v 1.2 2003/09/22 19:24:01 pelle Exp $
  * $Log: Transfer.java,v $
- * Revision 1.1  2003/09/19 14:41:42  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:01  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:41:42  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.7  2003/02/14 21:10:32  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
@@ -29,21 +39,21 @@ package org.neuclear.contracts.transfer;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
-import org.neuclear.crypto.CryptoTools;
 import org.neuclear.id.NamedObject;
 import org.neuclear.id.NamedObjectFactory;
-import org.neuclear.utils.NeudistException;
+import org.neudist.crypto.CryptoTools;
+import org.neudist.utils.NeudistException;
 
 import java.util.Date;
 
-public class Transfer extends NamedObject{
+public class Transfer extends NamedObject {
 
-    public Transfer(String userNameSpace,String recipient,String assetType,double amount) {//TODO Add validity fields
-        super(createUniqueTransferName(userNameSpace,recipient), DocumentHelper.createQName(TAG_NAME,NS_NSASSET));
-        Element root=getElement();
-        root.addElement(DocumentHelper.createQName("Recipient",NS_NSASSET)).addText(recipient);
-        root.addElement(DocumentHelper.createQName("AssetType",NS_NSASSET)).addText(assetType);
-        root.addElement(DocumentHelper.createQName("Amount",NS_NSASSET)).addText(Double.toString(amount));
+    public Transfer(String userNameSpace, String recipient, String assetType, double amount) {//TODO Add validity fields
+        super(createUniqueTransferName(userNameSpace, recipient), DocumentHelper.createQName(TAG_NAME, NS_NSASSET));
+        Element root = getElement();
+        root.addElement(DocumentHelper.createQName("Recipient", NS_NSASSET)).addText(recipient);
+        root.addElement(DocumentHelper.createQName("AssetType", NS_NSASSET)).addText(assetType);
+        root.addElement(DocumentHelper.createQName("Amount", NS_NSASSET)).addText(Double.toString(amount));
 
 
     }
@@ -52,22 +62,22 @@ public class Transfer extends NamedObject{
         super(elem);
     }
 
-    private static String createUniqueTransferName(String userNameSpace,String reqNameSpace) {
+    private static String createUniqueTransferName(String userNameSpace, String reqNameSpace) {
         // Yeah, yeah there are better ways to do this
-        String ms=new Long(new Date().getTime()).toString();
-        byte ticketsrc[]=new byte[ms.length()+reqNameSpace.length()];
-        System.arraycopy(ms.getBytes(),0,ticketsrc,0,ms.length());
-        System.arraycopy(reqNameSpace.getBytes(),0,ticketsrc,ms.length(),reqNameSpace.length());
-        String ticket=CryptoTools.formatAsURLSafe(CryptoTools.digest256(ticketsrc));
+        String ms = new Long(new Date().getTime()).toString();
+        byte ticketsrc[] = new byte[ms.length() + reqNameSpace.length()];
+        System.arraycopy(ms.getBytes(), 0, ticketsrc, 0, ms.length());
+        System.arraycopy(reqNameSpace.getBytes(), 0, ticketsrc, ms.length(), reqNameSpace.length());
+        String ticket = CryptoTools.formatAsURLSafe(CryptoTools.digest256(ticketsrc));
         //Lets reuse ticketsrc for memory reasons
-        int offset=ms.length()+1;
+        int offset = ms.length() + 1;
         if (reqNameSpace.startsWith("neu://"))
-            offset+=5;
+            offset += 5;
 
 
-        for (int i=offset;i<ticketsrc.length;i++) {
-            if (ticketsrc[i]==(byte)'/')
-                ticketsrc[i]=(byte)'.';
+        for (int i = offset; i < ticketsrc.length; i++) {
+            if (ticketsrc[i] == (byte) '/')
+                ticketsrc[i] = (byte) '.';
         }
 /*
         byte ticketName[]=new byte[userNameSpace.length()+33]; // Create new Name byte array to hold userNameSpace a '/' and the generated ticket (size 32)
@@ -75,32 +85,35 @@ public class Transfer extends NamedObject{
         ticketName[userNameSpace.length()]=(byte)'/';
         System.arraycopy(ticket,0,ticketName,userNameSpace.length()+1,ticket.length);
 */
-        return userNameSpace+'/'+new String(ticketsrc,offset,ticketsrc.length-offset)+'.'+ticket;
+        return userNameSpace + '/' + new String(ticketsrc, offset, ticketsrc.length - offset) + '.' + ticket;
     }
-    public String getTagName() {
-          return TAG_NAME;
-      }
 
-     /**
-      * @return the XML NameSpace object
-      */
-     public Namespace getNS() {
-         return NS_NSASSET;
-     }
-    public String getAssetType() {
-        return getElement().attributeValue(DocumentHelper.createQName("AssetType",NS_NSASSET));
+    public String getTagName() {
+        return TAG_NAME;
     }
+
+    /**
+     * @return the XML NameSpace object
+     */
+    public Namespace getNS() {
+        return NS_NSASSET;
+    }
+
+    public String getAssetType() {
+        return getElement().attributeValue(DocumentHelper.createQName("AssetType", NS_NSASSET));
+    }
+
     /**
      * Perform this Transfer
      * @throws NeudistException
      */
-    public void performTransfer() throws NeudistException{
-        Asset asset=(Asset)NamedObjectFactory.fetchNamedObject(getAssetType());
+    public void performTransfer() throws NeudistException {
+        Asset asset = (Asset) NamedObjectFactory.fetchNamedObject(getAssetType());
         asset.receive(this);
     }
 
-    private  static final String TAG_NAME="TransferRequest";
-     public static final String URI_NSASSET="http://neuclear.org/neu/nsasset";
-     public static final Namespace NS_NSASSET=DocumentHelper.createNamespace("nsasset",URI_NSASSET);
+    private static final String TAG_NAME = "TransferRequest";
+    public static final String URI_NSASSET = "http://neuclear.org/neu/nsasset";
+    public static final Namespace NS_NSASSET = DocumentHelper.createNamespace("nsasset", URI_NSASSET);
 
 }

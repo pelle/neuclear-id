@@ -1,8 +1,18 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.1 2003/09/19 14:42:03 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.2 2003/09/22 19:24:03 pelle Exp $
   $Log: AbstractStoreTest.java,v $
-  Revision 1.1  2003/09/19 14:42:03  pelle
-  Initial revision
+  Revision 1.2  2003/09/22 19:24:03  pelle
+  More fixes throughout to problems caused by renaming.
+
+  Revision 1.1.1.1  2003/09/19 14:42:03  pelle
+  First import into the neuclear project. This was originally under the SF neudist
+  project. This marks a general major refactoring and renaming ahead.
+
+  The new name for this code is NeuClear Identity and has the general package header of
+  org.neuclear.id
+  There are other areas within the current code which will be split out into other subprojects later on.
+  In particularly the signers will be completely seperated out as well as the contract types.
+
 
   Revision 1.1  2003/02/10 22:30:24  pelle
   Got rid of even further dependencies. In Particular OSCore
@@ -73,9 +83,10 @@
 */
 
 package org.neuclear.store;
+
 import junit.framework.TestCase;
 import org.neuclear.id.InvalidNameSpaceException;
-import org.neuclear.utils.NeudistException;
+import org.neudist.utils.NeudistException;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -86,40 +97,42 @@ import java.security.SecureRandom;
 /**
  * @author Pelle Braendgaard
  */
-public abstract class AbstractStoreTest extends TestCase  {
+public abstract class AbstractStoreTest extends TestCase {
     public AbstractStoreTest(String name) throws GeneralSecurityException {
-		super(name);
+        super(name);
         setUp();
     }
+
     /**
      */
     public abstract Store getStoreInstance();
 
-    protected void setUp() throws GeneralSecurityException{
-        store=getStoreInstance();
+    protected void setUp() throws GeneralSecurityException {
+        store = getStoreInstance();
         generateKeys();
     }
-    protected static synchronized void generateKeys() throws GeneralSecurityException {
-        if (kg==null) {
-            System.out.println("Generating Test Keys");
-            kg=KeyPairGenerator.getInstance("RSA");
 
-            kg.initialize(2048,new SecureRandom("Bear it all with NeuDist".getBytes()));
-     //       kp=kg.generateKeyPair();
-            root=kg.generateKeyPair();
-            bob=kg.generateKeyPair();
-            alice=kg.generateKeyPair();
-            eve=kg.generateKeyPair();
+    protected static synchronized void generateKeys() throws GeneralSecurityException {
+        if (kg == null) {
+            System.out.println("Generating Test Keys");
+            kg = KeyPairGenerator.getInstance("RSA");
+
+            kg.initialize(2048, new SecureRandom("Bear it all with NeuDist".getBytes()));
+            //       kp=kg.generateKeyPair();
+            root = kg.generateKeyPair();
+            bob = kg.generateKeyPair();
+            alice = kg.generateKeyPair();
+            eve = kg.generateKeyPair();
         }
     }
 
     protected void tearDown() {
-        store=null;
-        }
+        store = null;
+    }
 
 
-        public void testStore() throws NeudistException,InvalidNameSpaceException {
-                System.out.println("\nTesting "+this.getClass().getName());
+    public void testStore() throws NeudistException, InvalidNameSpaceException {
+        System.out.println("\nTesting " + this.getClass().getName());
 //                System.out.println("Storing "+rootName);
 //                store.receive(new NameSpace(rootName,root,root.getPublic()));
 //                System.out.println("Storing "+bobName);
@@ -142,16 +155,16 @@ public abstract class AbstractStoreTest extends TestCase  {
 //                System.out.println("Fetching "+eveName);
 //                NamedObject nobj4=store.fetch(eveName);
 //                assertEquals(NSTools.normalizeNameURI(eveName),nobj4.getName());
-        }
+    }
 
 //    KeyPair root;
 //    PrivateKey aliceSigner;
 //    PrivateKey bobSigner;
     Store store;
-    protected static final String rootName="/";
-    protected static final String bobName="/bob";
-    protected static final String bobAliceName="/bob/alice";
-    protected static final String eveName="/eve";
+    protected static final String rootName = "/";
+    protected static final String bobName = "/bob";
+    protected static final String bobAliceName = "/bob/alice";
+    protected static final String eveName = "/eve";
 
     protected static KeyPairGenerator kg;
     protected static KeyPair root;

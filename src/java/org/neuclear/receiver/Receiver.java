@@ -1,14 +1,25 @@
 package org.neuclear.receiver;
+
 /**
  * Created by IntelliJ IDEA.
  * User: pelleb
  * Date: Oct 10, 2002
  * Time: 11:24:59 PM
  * To change this template use Options | File Templates.
- * $Id: Receiver.java,v 1.1 2003/09/19 14:41:49 pelle Exp $
+ * $Id: Receiver.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
  * $Log: Receiver.java,v $
- * Revision 1.1  2003/09/19 14:41:49  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:02  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:41:49  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.3  2003/02/18 14:57:19  pelle
  * Finished Cleaning up Receivers and Stores.
@@ -19,7 +30,8 @@ package org.neuclear.receiver;
 
 import org.neuclear.id.InvalidNameSpaceException;
 import org.neuclear.id.NamedObject;
-import org.neuclear.utils.NeudistException;
+import org.neudist.utils.NeudistException;
+
 /**
  * <p>The Receiver interface is the base interface for almost all applications based on the NeuDist Framework.
  * You simply implement this to process the different types of NamedObjects.</p>

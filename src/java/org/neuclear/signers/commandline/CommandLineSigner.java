@@ -1,7 +1,17 @@
-/* $Id: CommandLineSigner.java,v 1.1 2003/09/19 14:41:31 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
  * $Log: CommandLineSigner.java,v $
- * Revision 1.1  2003/09/19 14:41:31  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:02  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:41:31  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.13  2003/02/18 14:57:21  pelle
  * Finished Cleaning up Receivers and Stores.
@@ -93,16 +103,16 @@ package org.neuclear.signers.commandline;
 
 import org.apache.commons.cli.*;
 import org.dom4j.Document;
-import org.neuclear.crypto.CryptoTools;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.NameSpace;
 import org.neuclear.id.NamedObject;
 import org.neuclear.id.NamedObjectFactory;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.LogSender;
-import org.neuclear.utils.NeudistException;
-import org.neuclear.utils.Utility;
-import org.neuclear.xml.XMLTools;
+import org.neudist.crypto.CryptoTools;
+import org.neudist.utils.NeudistException;
+import org.neudist.utils.Utility;
+import org.neudist.xml.XMLTools;
 
 import java.io.*;
 import java.security.KeyPair;
@@ -113,115 +123,115 @@ import java.security.cert.Certificate;
 
 /**
  * @author pelleb
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  **/
 public class CommandLineSigner {
 
-    public static void main(String args[]){
-         CryptoTools.ensureProvider();
-         String keystore=System.getProperty("user.home")+"/.keystore";
+    public static void main(String args[]) {
+        CryptoTools.ensureProvider();
+        String keystore = System.getProperty("user.home") + "/.keystore";
 
         try {
-         //System.setProperty("org.apache.commons.cli.parser","org.apache.commons.cli.PosixParser");
-         Options options=createOptions();
-         CommandLineParser clparser=CommandLineParserFactory.newParser();
+            //System.setProperty("org.apache.commons.cli.parser","org.apache.commons.cli.PosixParser");
+            Options options = createOptions();
+            CommandLineParser clparser = CommandLineParserFactory.newParser();
 
-         CommandLine cmd = clparser.parse(options,args);
-         boolean doSign=(cmd.hasOption("a"));
-         boolean doCreate=(cmd.hasOption("n")&&cmd.hasOption("b"));
-         if (
-                 !(doSign ||
-                 doCreate)
-         ) {
-             HelpFormatter help=new HelpFormatter();
-             help.printHelp("java org.neuclear.signer.commandline.CommandLineSigner --keystorepassword kspassword [--alias alias --password password] [--name neu://neu/one --allow neuone]",options);
-             System.exit(1);
-         }
-         String ksf=cmd.getOptionValue("s");
-         String kstype=cmd.getOptionValue("t");
-         String kspassword=cmd.getOptionValue("j");
-         String sf=cmd.getOptionValue("i");
-         String password=Utility.denullString(cmd.getOptionValue("p"),kspassword); // If we dont specify a password it defaults to ks password
-         String namespace=cmd.getOptionValue("n");
-         String alias=Utility.denullString(cmd.getOptionValue("a"),NSTools.getParentNSURI(namespace));
-         String allow=Utility.denullString(cmd.getOptionValue("w"),namespace);
+            CommandLine cmd = clparser.parse(options, args);
+            boolean doSign = (cmd.hasOption("a"));
+            boolean doCreate = (cmd.hasOption("n") && cmd.hasOption("b"));
+            if (
+                    !(doSign ||
+                    doCreate)
+            ) {
+                HelpFormatter help = new HelpFormatter();
+                help.printHelp("java org.neuclear.signer.commandline.CommandLineSigner --keystorepassword kspassword [--alias alias --password password] [--name neu://neu/one --allow neuone]", options);
+                System.exit(1);
+            }
+            String ksf = cmd.getOptionValue("s");
+            String kstype = cmd.getOptionValue("t");
+            String kspassword = cmd.getOptionValue("j");
+            String sf = cmd.getOptionValue("i");
+            String password = Utility.denullString(cmd.getOptionValue("p"), kspassword); // If we dont specify a password it defaults to ks password
+            String namespace = cmd.getOptionValue("n");
+            String alias = Utility.denullString(cmd.getOptionValue("a"), NSTools.getParentNSURI(namespace));
+            String allow = Utility.denullString(cmd.getOptionValue("w"), namespace);
 
-         String of=Utility.denullString(cmd.getOptionValue("o"),"."+NSTools.url2path(namespace)+"/root.id");
-         doSign=!Utility.isEmpty(alias);
+            String of = Utility.denullString(cmd.getOptionValue("o"), "." + NSTools.url2path(namespace) + "/root.id");
+            doSign = !Utility.isEmpty(alias);
 
-         String defaultstore=Utility.denullString(cmd.getOptionValue("r"),NSResolver.NSROOTSTORE);
-         String defaultsigner=Utility.denullString(cmd.getOptionValue("i"),"http://localhost:11870/signer");
-         String defaultlogger=Utility.denullString(cmd.getOptionValue("l"),LogSender.LOGGER);
-         String defaultreceiver=cmd.getOptionValue("b");
+            String defaultstore = Utility.denullString(cmd.getOptionValue("r"), NSResolver.NSROOTSTORE);
+            String defaultsigner = Utility.denullString(cmd.getOptionValue("i"), "http://localhost:11870/signer");
+            String defaultlogger = Utility.denullString(cmd.getOptionValue("l"), LogSender.LOGGER);
+            String defaultreceiver = cmd.getOptionValue("b");
 
 
-         File keystoreFile=new File(Utility.denullString(ksf,keystore));
+            File keystoreFile = new File(Utility.denullString(ksf, keystore));
 
-         KeyStore ks=KeyStore.getInstance(Utility.denullString(kstype,KeyStore.getDefaultType()));
-         ks.load(new FileInputStream(keystoreFile),Utility.denullString(kspassword).toCharArray());
-         KeyPair kp=CryptoTools.getKeyPair(ks,alias,password.toCharArray());
+            KeyStore ks = KeyStore.getInstance(Utility.denullString(kstype, KeyStore.getDefaultType()));
+            ks.load(new FileInputStream(keystoreFile), Utility.denullString(kspassword).toCharArray());
+            KeyPair kp = CryptoTools.getKeyPair(ks, alias, password.toCharArray());
 
-         if (doSign) {
-                 if (kp==null) {
-                     System.err.println("Key with alias: "+alias+" doesnt exist");
-                     System.exit(1);
-                 }
-         }
-         NamedObject subject;
-         if (!doCreate) {
-             subject = loadNamedObject(sf);
-         } else {
-             PublicKey newkid;
-             if (!Utility.isEmpty(allow)) {
-                 Certificate cert=ks.getCertificate(allow);
-                 if (cert==null){
-                     System.err.println("PublicKey: "+allow+" doesnt exist in key store");
-                     System.exit(1);
-                 }
-                 newkid=cert.getPublicKey();
-             } else
-                 newkid=ks.getCertificate(alias).getPublicKey(); //Self Sign
-             subject=new NameSpace(namespace,newkid,defaultstore,defaultsigner,defaultlogger,defaultreceiver);
+            if (doSign) {
+                if (kp == null) {
+                    System.err.println("Key with alias: " + alias + " doesnt exist");
+                    System.exit(1);
+                }
+            }
+            NamedObject subject;
+            if (!doCreate) {
+                subject = loadNamedObject(sf);
+            } else {
+                PublicKey newkid;
+                if (!Utility.isEmpty(allow)) {
+                    Certificate cert = ks.getCertificate(allow);
+                    if (cert == null) {
+                        System.err.println("PublicKey: " + allow + " doesnt exist in key store");
+                        System.exit(1);
+                    }
+                    newkid = cert.getPublicKey();
+                } else
+                    newkid = ks.getCertificate(alias).getPublicKey(); //Self Sign
+                subject = new NameSpace(namespace, newkid, defaultstore, defaultsigner, defaultlogger, defaultreceiver);
 
-         }
+            }
 
-         if (doSign){
-             PrivateKey key=kp.getPrivate();
+            if (doSign) {
+                PrivateKey key = kp.getPrivate();
 
-             System.err.println("Signing by "+alias+" ...");
-             subject.sign(key);
-             System.err.print("Verifying...");
-             if (subject.verifySignature(kp.getPublic()))
-                 System.err.println("ok");
-             else
-                 System.err.println("FAIL");
-         }
+                System.err.println("Signing by " + alias + " ...");
+                subject.sign(key);
+                System.err.print("Verifying...");
+                if (subject.verifySignature(kp.getPublic()))
+                    System.err.println("ok");
+                else
+                    System.err.println("FAIL");
+            }
 
-         OutputStream dest=System.out;
-         if (!Utility.isEmpty(of)) {
-             File outFile=new File(of);
-             if (outFile.getParentFile()!=null)
-                 outFile.getParentFile().mkdirs();
-             dest=new FileOutputStream(of);
-             System.err.println("Outputting to: "+of);
-         }
-         XMLTools.writeFile(dest,subject.getElement());
+            OutputStream dest = System.out;
+            if (!Utility.isEmpty(of)) {
+                File outFile = new File(of);
+                if (outFile.getParentFile() != null)
+                    outFile.getParentFile().mkdirs();
+                dest = new FileOutputStream(of);
+                System.err.println("Outputting to: " + of);
+            }
+            XMLTools.writeFile(dest, subject.getElement());
 
-         } catch (Exception e) {
-             System.err.println(e.getMessage());
-             e.printStackTrace(System.err);
-         }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace(System.err);
+        }
 
-     }
+    }
 
     private static NamedObject loadNamedObject(String sf) throws FileNotFoundException, NeudistException {
         NamedObject subject;
-        InputStream source=System.in;
+        InputStream source = System.in;
         if (!Utility.isEmpty(sf)) {
-            source=new FileInputStream(sf);
+            source = new FileInputStream(sf);
         }
-        Document doc=XMLTools.loadDocument(source);
-        subject=NamedObjectFactory.createNamedObject(doc);
+        Document doc = XMLTools.loadDocument(source);
+        subject = NamedObjectFactory.createNamedObject(doc);
         return subject;
     }
 
@@ -230,20 +240,19 @@ public class CommandLineSigner {
         Options options = new Options();
 
         // add t option
-        options.addOption("s","keystore", true , "specify KeyStore");
-        options.addOption("t","keystoretype", true , "specify KeyStore Type");
-        options.addOption("j","keystorepassword", true , "specify KeyStore Password");
-        options.addOption("a","alias", true , "specify Key Alias in KeyStore");
-        options.addOption("p","password", true , "specify Alias Password");
-        options.addOption("i","inputfile", true , "specify Input File");
-        options.addOption("o", "outputfile",true , "specify Output File");
-        options.addOption("n","name", true , "specify name of new object");
-        options.addOption("w","allow", true , "specify alias of owner of new namespace");
-        options.addOption("r","defaultrepository", true , "NameSpace's default Repository");
-        options.addOption("i","defaultsigner", true , "NameSpace's default Interactive Signer");
-        options.addOption("l","defaultlogger", true , "NameSpace's default Logging Service");
-        options.addOption("b","defaultreceiver", true , "NameSpace's default Receiver");
-
+        options.addOption("s", "keystore", true, "specify KeyStore");
+        options.addOption("t", "keystoretype", true, "specify KeyStore Type");
+        options.addOption("j", "keystorepassword", true, "specify KeyStore Password");
+        options.addOption("a", "alias", true, "specify Key Alias in KeyStore");
+        options.addOption("p", "password", true, "specify Alias Password");
+        options.addOption("i", "inputfile", true, "specify Input File");
+        options.addOption("o", "outputfile", true, "specify Output File");
+        options.addOption("n", "name", true, "specify name of new object");
+        options.addOption("w", "allow", true, "specify alias of owner of new namespace");
+        options.addOption("r", "defaultrepository", true, "NameSpace's default Repository");
+        options.addOption("i", "defaultsigner", true, "NameSpace's default Interactive Signer");
+        options.addOption("l", "defaultlogger", true, "NameSpace's default Logging Service");
+        options.addOption("b", "defaultreceiver", true, "NameSpace's default Receiver");
 
 
         return options;

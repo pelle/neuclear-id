@@ -1,8 +1,18 @@
 /*
- * $Id: ReceiverServlet.java,v 1.1 2003/09/19 14:41:49 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
  * $Log: ReceiverServlet.java,v $
- * Revision 1.1  2003/09/19 14:41:49  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:02  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:41:49  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.8  2003/02/18 14:57:20  pelle
  * Finished Cleaning up Receivers and Stores.
@@ -46,23 +56,23 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.neuclear.id.NamedObject;
 import org.neuclear.id.NamedObjectFactory;
-import org.neuclear.utils.NeudistException;
-import org.neuclear.xml.soap.SOAPException;
-import org.neuclear.xml.soap.SOAPServlet;
+import org.neudist.utils.NeudistException;
+import org.neudist.xml.soap.SOAPException;
+import org.neudist.xml.soap.SOAPServlet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
 public abstract class ReceiverServlet extends SOAPServlet {
-     public void init(ServletConfig config) throws ServletException {
-         super.init(config);
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
     }
 
-     protected Element handleSOAPRequest(Element request, String soapAction) throws SOAPException {
+    protected Element handleSOAPRequest(Element request, String soapAction) throws SOAPException {
         try {
-            System.out.println("NEUDIST: Got Storage Request "+soapAction);
+            System.out.println("NEUDIST: Got Storage Request " + soapAction);
             System.out.println(request.asXML());
-            NamedObject named=NamedObjectFactory.createNamedObject(request);
+            NamedObject named = NamedObjectFactory.createNamedObject(request);
             receiver.receive(named);
             return OK;
         } catch (NeudistException e) {
@@ -70,8 +80,9 @@ public abstract class ReceiverServlet extends SOAPServlet {
             throw new SOAPException(e);
         }
     }
+
     protected void setReceiver(Receiver receiver) {
-        this.receiver=receiver;
+        this.receiver = receiver;
     }
 
     protected Receiver getReceiver() {
@@ -79,7 +90,8 @@ public abstract class ReceiverServlet extends SOAPServlet {
     }
 
     private Receiver receiver;
-    private static final Element OK=DocumentHelper.createElement("Status");
+    private static final Element OK = DocumentHelper.createElement("Status");
+
     {
         OK.setText("OK");
     }

@@ -1,8 +1,18 @@
 /*
- * $Id: FileStore.java,v 1.1 2003/09/19 14:41:19 pelle Exp $
+ * $Id: FileStore.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
  * $Log: FileStore.java,v $
- * Revision 1.1  2003/09/19 14:41:19  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:02  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:41:19  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.8  2003/02/18 14:57:34  pelle
  * Finished Cleaning up Receivers and Stores.
@@ -92,50 +102,53 @@
 package org.neuclear.store;
 
 //import org.neuclear.id.NSDLObject;
+
 import org.dom4j.Document;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.NamedObject;
 import org.neuclear.id.NamedObjectFactory;
-import org.neuclear.utils.NeudistException;
-import org.neuclear.xml.XMLTools;
+import org.neudist.utils.NeudistException;
+import org.neudist.xml.XMLTools;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 /**
  * We need both a simple FileStore and an encrypted one. The encrypted one stores each object using a filename generated through
  * a Hashing system of some sort. The files themselves are encrypted using perhaps their name and a store specific code. The filetimes would also be set to a
  * uniform time, so if the operator was sopeanad(Spelling) i
  *
  */
-public class FileStore extends Store  {
+public class FileStore extends Store {
     public FileStore(String base) {
-        this.base=base;
+        this.base = base;
     }
-    protected void rawStore(NamedObject obj) throws IOException,NeudistException {
-        String outputFilename=base+getFileName(obj);
-        System.out.println("Outputting to: "+outputFilename);
-        File outputFile=new File(outputFilename);
+
+    protected void rawStore(NamedObject obj) throws IOException, NeudistException {
+        String outputFilename = base + getFileName(obj);
+        System.out.println("Outputting to: " + outputFilename);
+        File outputFile = new File(outputFilename);
         outputFile.getParentFile().mkdirs();
-        XMLTools.writeFile(outputFile,obj.getElement());
-      }
+        XMLTools.writeFile(outputFile, obj.getElement());
+    }
 
 //    public void store(Document doc) throws InvalidNameSpaceException,IOException {
 //        store(new NSDLObject(doc));
 //    }
 
-    protected NamedObject fetch(String name)  throws NeudistException {
-        String inputFilename=base+getFileName(NSTools.normalizeNameURI(name));
-        System.out.println("Loading from: "+inputFilename);
-        File fin=new File(inputFilename);
+    protected NamedObject fetch(String name) throws NeudistException {
+        String inputFilename = base + getFileName(NSTools.normalizeNameURI(name));
+        System.out.println("Loading from: " + inputFilename);
+        File fin = new File(inputFilename);
         if (!fin.exists())
             return null;
 
-        NamedObject ns=null;
+        NamedObject ns = null;
         try {
-            Document doc=XMLTools.loadDocument(new FileInputStream(fin));
-            ns=NamedObjectFactory.createNamedObject(doc);
+            Document doc = XMLTools.loadDocument(new FileInputStream(fin));
+            ns = NamedObjectFactory.createNamedObject(doc);
 //           System.out.println("NEUDIST: Fetched NamedObject tag:"+rootName.getName()+" URI:"+rootName.getNamespaceURI());
 //        } catch (ParserConfigurationException e) {
 //            Utility.rethrowException(e);
@@ -148,15 +161,16 @@ public class FileStore extends Store  {
     }
 
 
-    protected static String getFileName(String name) throws NeudistException{
+    protected static String getFileName(String name) throws NeudistException {
         if (name.startsWith("neu://"))
-            name=name.substring(5);
-        if (name.equals("/")||name.equals(""))
+            name = name.substring(5);
+        if (name.equals("/") || name.equals(""))
             return "/root.id";
         else
-            return name+".id";
+            return name + ".id";
     }
-    protected static String getFileName(NamedObject obj) throws NeudistException{
+
+    protected static String getFileName(NamedObject obj) throws NeudistException {
         return getFileName(obj.getName());
 //        if (! (obj instanceof NameSpace))
 //            return obj.getName();

@@ -1,8 +1,18 @@
 /*
- * $Id: NamedObjectFactory.java,v 1.1 2003/09/19 14:40:53 pelle Exp $
+ * $Id: NamedObjectFactory.java,v 1.2 2003/09/22 19:24:01 pelle Exp $
  * $Log: NamedObjectFactory.java,v $
- * Revision 1.1  2003/09/19 14:40:53  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:01  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:40:53  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.9  2003/02/14 21:10:30  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
@@ -110,7 +120,7 @@ import org.neuclear.contracts.nsauth.AuthenticationTicket;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.id.verifier.NSVerifier;
 import org.neuclear.source.Source;
-import org.neuclear.utils.NeudistException;
+import org.neudist.utils.NeudistException;
 
 public class NamedObjectFactory {
 
@@ -132,27 +142,27 @@ public class NamedObjectFactory {
      * @throws NeudistException
      */
     public static NamedObject createNamedObject(Element elem) throws NeudistException {
-        QName rootName=elem.getQName();
-        if (rootName.getName().equals("NameSpace")&&rootName.getNamespaceURI().equals(NamedObject.NSDL_NAMESPACE))
+        QName rootName = elem.getQName();
+        if (rootName.getName().equals("NameSpace") && rootName.getNamespaceURI().equals(NamedObject.NSDL_NAMESPACE))
             return new NameSpace(elem);
-        else if(rootName.getName().equals("AuthenticationTicket")&&rootName.getNamespaceURI().equals(AuthenticationTicket.URI_NSAUTH))
+        else if (rootName.getName().equals("AuthenticationTicket") && rootName.getNamespaceURI().equals(AuthenticationTicket.URI_NSAUTH))
             return new AuthenticationTicket(elem);
         else
             return new GenericNamedObject(elem);
 
     }
 
-    public static NamedObject fetchNamedObject(String name) throws NeudistException{
-        String parentName=NSTools.getParentNSURI(name);
+    public static NamedObject fetchNamedObject(String name) throws NeudistException {
+        String parentName = NSTools.getParentNSURI(name);
         if (!parentName.equals("neu://")) {
-           NameSpace parent=NSResolver.resolveNameSpace(parentName);
-           if (parent==null)
+            NameSpace parent = NSResolver.resolveNameSpace(parentName);
+            if (parent == null)
                 return null;
 
         }
-        NamedObject nobj= Source.getInstance().fetch(NSResolver.NSROOTSTORE,name);
+        NamedObject nobj = Source.getInstance().fetch(NSResolver.NSROOTSTORE, name);
         if (!NSVerifier.isNameValid(nobj))
-            throw new InvalidNameSpaceException(nobj.getName()+" is not valid");
+            throw new InvalidNameSpaceException(nobj.getName() + " is not valid");
         return nobj;
     }
 }

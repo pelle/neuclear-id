@@ -1,8 +1,18 @@
 /*
- * $Id: SigningServlet.java,v 1.1 2003/09/19 14:41:40 pelle Exp $
+ * $Id: SigningServlet.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
  * $Log: SigningServlet.java,v $
- * Revision 1.1  2003/09/19 14:41:40  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:02  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:41:40  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.17  2003/02/18 14:57:29  pelle
  * Finished Cleaning up Receivers and Stores.
@@ -114,16 +124,16 @@ import org.neuclear.id.NSTools;
 import org.neuclear.id.NamedObject;
 import org.neuclear.id.signrequest.SignatureRequest;
 import org.neuclear.receiver.ReceiverServlet;
-import org.neuclear.signers.InvalidPassphraseException;
-import org.neuclear.signers.JCESignerStore;
-import org.neuclear.signers.NonExistingSignerException;
-import org.neuclear.signers.SignerStore;
-import org.neuclear.utils.NeudistException;
-import org.neuclear.utils.ServletTools;
-import org.neuclear.utils.Utility;
-import org.neuclear.xml.soap.SOAPException;
-import org.neuclear.xml.xmlsec.XMLSecTools;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
+import org.neudist.crypto.signerstores.InvalidPassphraseException;
+import org.neudist.crypto.signerstores.JCESignerStore;
+import org.neudist.crypto.signerstores.NonExistingSignerException;
+import org.neudist.crypto.signerstores.SignerStore;
+import org.neudist.utils.NeudistException;
+import org.neudist.utils.ServletTools;
+import org.neudist.utils.Utility;
+import org.neudist.xml.soap.SOAPException;
+import org.neudist.xml.xmlsec.XMLSecTools;
+import org.neudist.xml.xmlsec.XMLSecurityException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -137,24 +147,24 @@ import java.security.GeneralSecurityException;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 
-public class SigningServlet  extends ReceiverServlet {
-   public void init(ServletConfig config) throws ServletException {
-       System.out.println("NEUDIST: Initialising SigningServlet");
-       super.init(config);
-       context=config.getServletContext();
-       try {
-           System.out.println("NEUDIST: Initialising SigningServlet");
-           title=Utility.denullString(config.getInitParameter("title").toString(),"NeuDist Signing Service");
-           File keyStoreFile=new File(config.getServletContext().getRealPath(Utility.denullString(config.getInitParameter("keystore"),System.getProperty("user.home")+"/.neuclear/signers.ks")));
-           System.out.println("NEUDIST: Using KeyStore: "+keyStoreFile.getAbsolutePath());
+public class SigningServlet extends ReceiverServlet {
+    public void init(ServletConfig config) throws ServletException {
+        System.out.println("NEUDIST: Initialising SigningServlet");
+        super.init(config);
+        context = config.getServletContext();
+        try {
+            System.out.println("NEUDIST: Initialising SigningServlet");
+            title = Utility.denullString(config.getInitParameter("title").toString(), "NeuDist Signing Service");
+            File keyStoreFile = new File(config.getServletContext().getRealPath(Utility.denullString(config.getInitParameter("keystore"), System.getProperty("user.home") + "/.neuclear/signers.ks")));
+            System.out.println("NEUDIST: Using KeyStore: " + keyStoreFile.getAbsolutePath());
 //           ks=KeyStore.getInstance("JKS");
 //           char password[]=Utility.denullString(config.getInitParameter("keystore.passphrase"),"SuperDuper").toCharArray();
 //           if (!keyStoreFile.exists()) {
 //               System.out.println("NEUDIST: Creating KeyStore ");
 //               ks.load(null,password);
-           if (ks==null) {
-               ks=getKeyStore(keyStoreFile,config.getInitParameter("keystore.password"));
-           }
+            if (ks == null) {
+                ks = getKeyStore(keyStoreFile, config.getInitParameter("keystore.password"));
+            }
 //               if (keyStoreFile.getParent()!=null)
 //                    keyStoreFile.getParentFile().mkdirs();
 //               ks.store(new FileOutputStream(keyStoreFile),password);
@@ -162,20 +172,20 @@ public class SigningServlet  extends ReceiverServlet {
 //               System.out.println("NEUDIST: Loading KeyStore: ");
 //               ks.load(new FileInputStream(keyStoreFile),password);
 //           }
-           System.out.println("NEUDIST: Finished SigningServlet Init ");
+            System.out.println("NEUDIST: Finished SigningServlet Init ");
 
-       } catch (GeneralSecurityException e) {
-          e.printStackTrace(System.out);
-       } catch (IOException e) {
-           e.printStackTrace(System.out);
-       } catch (NeudistException e) {
-           e.printStackTrace(System.out);
-       }
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace(System.out);
+        } catch (IOException e) {
+            e.printStackTrace(System.out);
+        } catch (NeudistException e) {
+            e.printStackTrace(System.out);
+        }
 
 
-   }
+    }
 
-    protected static SignerStore getKeyStore(File keyStoreFile,String kspassword) throws GeneralSecurityException,IOException,NeudistException{
+    protected static SignerStore getKeyStore(File keyStoreFile, String kspassword) throws GeneralSecurityException, IOException, NeudistException {
         return new JCESignerStore(keyStoreFile, kspassword.toCharArray());
     }
 
@@ -183,50 +193,51 @@ public class SigningServlet  extends ReceiverServlet {
     protected static final SignerStore getKeyStore() {
         return ks;
     }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("NEUDIST: doPost()");
-        if (request.getContentType().equals("text/xml")){
+        if (request.getContentType().equals("text/xml")) {
             System.out.println("NEUDIST: call SOAP Servlet");
             super.doPost(request, response);
             return;
         }
-        response.setHeader("Pragma","no-cache");
-        response.setDateHeader("Expires",0);
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
         response.setContentType("text/html");
-        PrintWriter out=response.getWriter();
-        ServletTools.printHeader(out,request,title);
-        String b64xml=request.getParameter("base64xml");
-        String xml=request.getParameter("xml");
-        String endpoint=request.getParameter("endpoint");
-        String passphrase=request.getParameter("passphrase");
+        PrintWriter out = response.getWriter();
+        ServletTools.printHeader(out, request, title);
+        String b64xml = request.getParameter("base64xml");
+        String xml = request.getParameter("xml");
+        String endpoint = request.getParameter("endpoint");
+        String passphrase = request.getParameter("passphrase");
         SignatureRequest sigreq;
         NamedObject named;
-        boolean isSigned=false;
-        Element elem=null;
+        boolean isSigned = false;
+        Element elem = null;
         try {
             if (!Utility.isEmpty(xml)) {
-               elem=DocumentHelper.parseText(xml).getRootElement();
-           } else if (!Utility.isEmpty(b64xml)) {
-               elem=XMLSecTools.decodeElementBase64(b64xml);
-           }
-            sigreq=new SignatureRequest(elem);
-            named=sigreq.getPayload();
-            if (!Utility.isEmpty(passphrase)&&!Utility.isEmpty(request.getParameter("sign"))) {
+                elem = DocumentHelper.parseText(xml).getRootElement();
+            } else if (!Utility.isEmpty(b64xml)) {
+                elem = XMLSecTools.decodeElementBase64(b64xml);
+            }
+            sigreq = new SignatureRequest(elem);
+            named = sigreq.getPayload();
+            if (!Utility.isEmpty(passphrase) && !Utility.isEmpty(request.getParameter("sign"))) {
                 out.println("Signing ...");
                 out.flush();
                 try {
-                    signObject(named,passphrase.toCharArray());
-                    isSigned=true;
+                    signObject(named, passphrase.toCharArray());
+                    isSigned = true;
                     out.println("<br>Done<br>");
                 } catch (InvalidNameSpaceException e) {
                     out.println("<br><font color=\"red\"><b>ERROR: Invalid NameSpace</b></font><br>");
-                    isSigned=false;
+                    isSigned = false;
                 } catch (InvalidPassphraseException e) {
                     out.println("<br><font color=\"red\"><b>ERROR: Wrong Passphrase</b></font><br>");
-                    isSigned=false;
+                    isSigned = false;
                 } catch (NonExistingSignerException e) {
                     out.println("<br><font color=\"red\"><b>ERROR: We Aren't Able to Sign for that NameSpace</b></font><br>");
-                    isSigned=false;
+                    isSigned = false;
                 }
 
             }
@@ -239,21 +250,21 @@ public class SigningServlet  extends ReceiverServlet {
 //            ExplanationWriter explwriter=new ExplanationWriter(out);
 //            explwriter.write(((Explainable)named).explain());
             out.print("<pre>");
-            StringWriter sw=new StringWriter();
+            StringWriter sw = new StringWriter();
             OutputFormat format = OutputFormat.createPrettyPrint();
-            XMLWriter    writer = new XMLWriter( sw, format );
-            writer.write( elem );
+            XMLWriter writer = new XMLWriter(sw, format);
+            writer.write(elem);
             out.write(sw.toString());
             out.println("</pre></td></tr></table>");
-            if(!isSigned) {
-               out.println("<table bgcolor=\"#D0FFD0\"><tr><td bgcolor=\"#026A32\"><h4 style=\"color: white\">Do you wish to sign this?</h4></td></tr>");
+            if (!isSigned) {
+                out.println("<table bgcolor=\"#D0FFD0\"><tr><td bgcolor=\"#026A32\"><h4 style=\"color: white\">Do you wish to sign this?</h4></td></tr>");
                 out.println("<tr><td><form action=\"Signer\" method=\"POST\"><input name=\"base64xml\" value=\"");
                 out.println(XMLSecTools.encodeElementBase64(elem));
                 out.println("\" type=\"hidden\">\n <input name=\"endpoint\" value=\"");
                 out.println(endpoint);
                 out.println("\" type=\"hidden\"/>\nPassphrase: <input name=\"passphrase\" type=\"password\" size=\"40\">");
-               out.println(" <input type=\"submit\" name=\"sign\" value=\"Sign\"></form></td></tr></table>");
-            }  else if (!Utility.isEmpty(endpoint)) {
+                out.println(" <input type=\"submit\" name=\"sign\" value=\"Sign\"></form></td></tr></table>");
+            } else if (!Utility.isEmpty(endpoint)) {
                 out.println("<h3><a href=\"");
                 out.println(endpoint);
                 out.println("\">Click here to return to ");
@@ -263,24 +274,24 @@ public class SigningServlet  extends ReceiverServlet {
             }
         } catch (DocumentException e) {
             out.println("<br><font color=\"red\"><pre>");
-             e.printStackTrace(out);
-             out.println("</pre></font>");
+            e.printStackTrace(out);
+            out.println("</pre></font>");
         } catch (NeudistException e) {
             out.println("<br><font color=\"red\"><pre>");
-             e.printStackTrace(out);
-             out.println("</pre></font>");
-         }
+            e.printStackTrace(out);
+            out.println("</pre></font>");
+        }
         out.println("<p align\"left\"><img src=\"images/neubia40x40.png\"><br><a href=\"http://www.neubia.com\"><i>&copy; 2002 Antilles Software Ventures SA</i></a></body></html>");
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setHeader("Pragma","no-cache");
-        response.setDateHeader("Expires",0);
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
 
         response.setContentType("text/html");
-         System.out.println("NEUDIST: doGet()");
-        PrintWriter out=response.getWriter();
-        ServletTools.printHeader(out,request,title);
+        System.out.println("NEUDIST: doGet()");
+        PrintWriter out = response.getWriter();
+        ServletTools.printHeader(out, request, title);
         out.println("<form method=\"POST\" action=\"Signer\"><textarea name=\"xml\" cols=\"80\"rows=\"30\"></textarea><br><input type=\"submit\" name=\"submit\" value=\"Confirm\"></form>");
         out.println("</body></html>");
 
@@ -288,26 +299,26 @@ public class SigningServlet  extends ReceiverServlet {
 
     public Element receiveNamedObject(NamedObject obj, String soapAction) throws SOAPException {
         try {
-            signObject(obj,"hello".toCharArray());// TODO How do we get the passphrase here? Popup request?
+            signObject(obj, "hello".toCharArray());// TODO How do we get the passphrase here? Popup request?
             return obj.getElement();
         } catch (InvalidNameSpaceException e) {
-              throw new SOAPException(e);
-         } catch (InvalidPassphraseException e) {
-             throw new SOAPException(e);
-         } catch (NonExistingSignerException e) {
+            throw new SOAPException(e);
+        } catch (InvalidPassphraseException e) {
+            throw new SOAPException(e);
+        } catch (NonExistingSignerException e) {
             throw new SOAPException(e);
         } catch (NeudistException e) {
             throw new SOAPException(e);
         }
     }
 
-    protected static void signObject(NamedObject obj, char passphrase[]) throws NeudistException, InvalidNameSpaceException, InvalidPassphraseException,NonExistingSignerException {
+    protected static void signObject(NamedObject obj, char passphrase[]) throws NeudistException, InvalidNameSpaceException, InvalidPassphraseException, NonExistingSignerException {
         if (!obj.isSigned()) {
             try {
-                String parentName=NSTools.getParentNSURI(obj.getName());
-                PrivateKey pk=ks.getKey(parentName,passphrase);
-                if (pk==null)
-                    throw new NonExistingSignerException("Signing Service doesn't contain Signing keys for: "+parentName);
+                String parentName = NSTools.getParentNSURI(obj.getName());
+                PrivateKey pk = ks.getKey(parentName, passphrase);
+                if (pk == null)
+                    throw new NonExistingSignerException("Signing Service doesn't contain Signing keys for: " + parentName);
                 obj.sign(pk);
 //                obj.store();
                 obj.sendObject();
@@ -320,6 +331,7 @@ public class SigningServlet  extends ReceiverServlet {
 
 
     }
+
     protected javax.servlet.ServletContext context;
     private static SignerStore ks;
     private KeyPairGenerator kpg;

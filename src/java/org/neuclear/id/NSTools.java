@@ -1,8 +1,18 @@
 /*
- * $Id: NSTools.java,v 1.1 2003/09/19 14:40:58 pelle Exp $
+ * $Id: NSTools.java,v 1.2 2003/09/22 19:24:01 pelle Exp $
  * $Log: NSTools.java,v $
- * Revision 1.1  2003/09/19 14:40:58  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:01  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:40:58  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.11  2003/02/14 21:10:28  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
@@ -77,14 +87,15 @@ package org.neuclear.id;
 
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
-import org.neuclear.crypto.CryptoTools;
-import org.neuclear.utils.NeudistException;
-import org.neuclear.utils.Utility;
+import org.neudist.crypto.CryptoTools;
+import org.neudist.utils.NeudistException;
+import org.neudist.utils.Utility;
 
 import java.util.Random;
 
 public final class NSTools {
-    private NSTools(){};
+    private NSTools() {
+    };
 
     /**
      * Takes a valid NEU Name and Creates a URI
@@ -92,13 +103,14 @@ public final class NSTools {
      * @return Valid URI
      * @throws NeudistException If name isn't a valid NEU Name
      */
-    public static String normalizeNameURI(String name) throws NeudistException{
-         if (!isValidName(name))
-            throw new NeudistException("Name: '"+name+"' is not valid");
-         if (!name.startsWith("neu://"))
-            return "neu:/"+name;
-         return name;
+    public static String normalizeNameURI(String name) throws NeudistException {
+        if (!isValidName(name))
+            throw new NeudistException("Name: '" + name + "' is not valid");
+        if (!name.startsWith("neu://"))
+            return "neu:/" + name;
+        return name;
     }
+
     /**
      * Name must follow the follwing rules:<br>
      * Available Characters: <pre>a..zA..Z0..9_/.-</pre>      <br>
@@ -112,8 +124,8 @@ public final class NSTools {
         try {
             if (Utility.isEmpty(name))
                 return false;
-            RE re=new RE("^(neu:\\/)?((\\/)|(\\/[a-zA-Z0-9_\\-\\.]+)*)$");
-            return(re.match(name));
+            RE re = new RE("^(neu:\\/)?((\\/)|(\\/[a-zA-Z0-9_\\-\\.]+)*)$");
+            return (re.match(name));
         } catch (RESyntaxException e) {
             e.printStackTrace();
             Utility.rethrowException(e);
@@ -128,31 +140,31 @@ public final class NSTools {
      * @throws NeudistException if name is invalid
      */
     public static String getParentNSURI(String name) throws NeudistException {
-        String uri=normalizeNameURI(name);
-        int slash=uri.lastIndexOf('/');
-        if (uri.equals("neu://")||(slash<5))
+        String uri = normalizeNameURI(name);
+        int slash = uri.lastIndexOf('/');
+        if (uri.equals("neu://") || (slash < 5))
             return "neu://";
-        if (slash==5)
-            return uri.substring(0,slash+1);
-        return uri.substring(0,slash);
+        if (slash == 5)
+            return uri.substring(0, slash + 1);
+        return uri.substring(0, slash);
     }
 
-    public static String createUniqueNamedID(String nameSpace,String reqNameSpace) {
+    public static String createUniqueNamedID(String nameSpace, String reqNameSpace) {
         // Yeah, yeah there are better ways to do this
-        String ms=new Long(System.currentTimeMillis()+new Random().nextLong()).toString(); //TODO seed the Random number generator
-        byte ticketsrc[]=new byte[ms.length()+reqNameSpace.length()];
-        System.arraycopy(ms.getBytes(),0,ticketsrc,0,ms.length());
-        System.arraycopy(reqNameSpace.getBytes(),0,ticketsrc,ms.length(),reqNameSpace.length());
-        String ticket=CryptoTools.formatAsURLSafe(CryptoTools.digest256(ticketsrc));
+        String ms = new Long(System.currentTimeMillis() + new Random().nextLong()).toString(); //TODO seed the Random number generator
+        byte ticketsrc[] = new byte[ms.length() + reqNameSpace.length()];
+        System.arraycopy(ms.getBytes(), 0, ticketsrc, 0, ms.length());
+        System.arraycopy(reqNameSpace.getBytes(), 0, ticketsrc, ms.length(), reqNameSpace.length());
+        String ticket = CryptoTools.formatAsURLSafe(CryptoTools.digest256(ticketsrc));
         //Lets reuse ticketsrc for memory reasons
-        int offset=ms.length()+1;
+        int offset = ms.length() + 1;
         if (reqNameSpace.startsWith("neu://"))
-            offset+=5;
+            offset += 5;
 
 
-        for (int i=offset;i<ticketsrc.length;i++) {
-            if (ticketsrc[i]==(byte)'/')
-                ticketsrc[i]=(byte)'.';
+        for (int i = offset; i < ticketsrc.length; i++) {
+            if (ticketsrc[i] == (byte) '/')
+                ticketsrc[i] = (byte) '.';
         }
 /*
         byte ticketName[]=new byte[userNameSpace.length()+33]; // Create new Name byte array to hold userNameSpace a '/' and the generated ticket (size 32)
@@ -160,31 +172,32 @@ public final class NSTools {
         ticketName[userNameSpace.length()]=(byte)'/';
         System.arraycopy(ticket,0,ticketName,userNameSpace.length()+1,ticket.length);
 */
-        return nameSpace+'/'+new String(ticketsrc,offset,ticketsrc.length-offset)+'.'+ticket;
+        return nameSpace + '/' + new String(ticketsrc, offset, ticketsrc.length - offset) + '.' + ticket;
     }
 
     public static String url2path(String name) {
-        if (!Utility.isEmpty(name)){
-            int loc=name.indexOf("://");
-            if (loc>=0)
-                return name.substring(loc+2); //leave in one '/'
-            else if (name.substring(0,1).equals("/"))
+        if (!Utility.isEmpty(name)) {
+            int loc = name.indexOf("://");
+            if (loc >= 0)
+                return name.substring(loc + 2); //leave in one '/'
+            else if (name.substring(0, 1).equals("/"))
                 return name;
             else
-                return "/"+name;
+                return "/" + name;
         }
         return "/";
     }
-    public static void main(String args[]){
+
+    public static void main(String args[]) {
         try {
-            NamedObject obj=NamedObjectFactory.fetchNamedObject("neu://free/pelle");
-            System.out.println("Got: "+obj.getName());
-            obj=NamedObjectFactory.fetchNamedObject("neu://pelle");
-            System.out.println("Got: "+obj.getName());
-            obj=NamedObjectFactory.fetchNamedObject("neu://free");
-            System.out.println("Got: "+obj.getName());
-            obj=NamedObjectFactory.fetchNamedObject("neu://free/pelle");
-            System.out.println("Got: "+obj.getName());
+            NamedObject obj = NamedObjectFactory.fetchNamedObject("neu://free/pelle");
+            System.out.println("Got: " + obj.getName());
+            obj = NamedObjectFactory.fetchNamedObject("neu://pelle");
+            System.out.println("Got: " + obj.getName());
+            obj = NamedObjectFactory.fetchNamedObject("neu://free");
+            System.out.println("Got: " + obj.getName());
+            obj = NamedObjectFactory.fetchNamedObject("neu://free/pelle");
+            System.out.println("Got: " + obj.getName());
 //            obj=NamedObjectFactory.fetchNamedObject("neu://free/trix");
 //            System.out.println("Got: "+obj.getName());
             //System.out.println(obj.getElement().asXML());

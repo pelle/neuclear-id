@@ -1,8 +1,18 @@
 /*
- * $Id: NamedObject.java,v 1.1 2003/09/19 14:41:03 pelle Exp $
+ * $Id: NamedObject.java,v 1.2 2003/09/22 19:24:01 pelle Exp $
  * $Log: NamedObject.java,v $
- * Revision 1.1  2003/09/19 14:41:03  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:01  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:41:03  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.13  2003/02/18 14:57:19  pelle
  * Finished Cleaning up Receivers and Stores.
@@ -121,40 +131,42 @@ import org.dom4j.*;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.id.targets.TargetReference;
 import org.neuclear.time.TimeTools;
-import org.neuclear.utils.NeudistException;
-import org.neuclear.utils.Utility;
-import org.neuclear.xml.AbstractElementProxy;
-import org.neuclear.xml.XMLException;
-import org.neuclear.xml.xmlsec.SignedElement;
-import org.neuclear.xml.xmlsec.XMLSecTools;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
+import org.neudist.utils.NeudistException;
+import org.neudist.utils.Utility;
+import org.neudist.xml.AbstractElementProxy;
+import org.neudist.xml.XMLException;
+import org.neudist.xml.xmlsec.SignedElement;
+import org.neudist.xml.xmlsec.XMLSecTools;
+import org.neudist.xml.xmlsec.XMLSecurityException;
 
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 /**
  * This simple wrapper takes most of the contents of a NamedObject and puts it into a Serializable form that can be signed.
  */
 public abstract class NamedObject extends SignedElement {
-    protected NamedObject(String name,String tagName, String prefix, String nsURI) {
+    protected NamedObject(String name, String tagName, String prefix, String nsURI) {
         super(tagName, prefix, nsURI);
         createDocument();
         setName(name);
     }
 
-    protected NamedObject(String name,String tagName, Namespace ns) {
+    protected NamedObject(String name, String tagName, Namespace ns) {
         super(tagName, ns);
         createDocument();
         setName(name);
     }
-    protected NamedObject(String name,String tagName) {
-        super(tagName,NamedObject.NS_NSDL);
+
+    protected NamedObject(String name, String tagName) {
+        super(tagName, NamedObject.NS_NSDL);
         createDocument();
         setName(name);
     }
 
-    protected NamedObject(String name,QName qname) {
+    protected NamedObject(String name, QName qname) {
         super(qname);
         createDocument();
         setName(name);
@@ -163,17 +175,17 @@ public abstract class NamedObject extends SignedElement {
     protected NamedObject(Element elem) throws NeudistException {
         super(elem);
         createDocument();
-        String name=getName();
+        String name = getName();
         processTargetElements();
         if (Utility.isEmpty(name))
-            throw new NeudistException("Element: "+elem.getQualifiedName()+" doesnt contain a valid name attribute");
+            throw new NeudistException("Element: " + elem.getQualifiedName() + " doesnt contain a valid name attribute");
     }
 
     /**
      * The full name (URI) of an object
      * @return String containing the fully qualified URI of an object
      */
-    public String getName() throws NeudistException{
+    public String getName() throws NeudistException {
         return NSTools.normalizeNameURI(getElement().attributeValue(getNameAttrQName()));
     }
 
@@ -181,26 +193,28 @@ public abstract class NamedObject extends SignedElement {
      * The Name of an object within it's parent NameSpace
      * @return Parent Name
      */
-    public String getLocalName()  throws NeudistException{
-        String fullName=getName();
-        int i=fullName.lastIndexOf('/');
-        return fullName.substring(i+1);
+    public String getLocalName() throws NeudistException {
+        String fullName = getName();
+        int i = fullName.lastIndexOf('/');
+        return fullName.substring(i + 1);
     }
 
     private void setName(String name) {
-        getElement().addAttribute(getNameAttrQName(),name);
+        getElement().addAttribute(getNameAttrQName(), name);
     }
 
     private static QName getNameAttrQName() {
-        return DocumentHelper.createQName("name",NamedObject.NS_NSDL);
+        return DocumentHelper.createQName("name", NamedObject.NS_NSDL);
 
     }
+
     private void createDocument() {
-        Element elem=getElement();
-        if(elem.getDocument()==null) {
-            Document doc=DocumentHelper.createDocument(elem);
+        Element elem = getElement();
+        if (elem.getDocument() == null) {
+            Document doc = DocumentHelper.createDocument(elem);
         }
     }
+
     /**
      * @return the URI of the object. In this case the same as getName();
      */
@@ -237,22 +251,23 @@ public abstract class NamedObject extends SignedElement {
         }
         super.addElement(child);
     }
+
     protected void addElement(NamedObject child) throws XMLException {
-        addElement((AbstractElementProxy)child);
+        addElement((AbstractElementProxy) child);
     }
 
     protected void isModifiable() throws NeudistException {
         if (isSigned())
-            throw new NeudistException("NamedObject: "+getName()+" is signed and cant be modified");
+            throw new NeudistException("NamedObject: " + getName() + " is signed and cant be modified");
     }
 
     /**
      * Sign NamedObject using given PrivateKey. This also adds a timestamp to the root element prior to signing
      */
-    protected final void preSign() throws XMLSecurityException{
+    protected final void preSign() throws XMLSecurityException {
         // We need to timestamp it before we sign it
-         getElement().addAttribute(DocumentHelper.createQName("timestamp",NamedObject.NS_NSDL),TimeTools.createTimeStamp());
-     }
+        getElement().addAttribute(DocumentHelper.createQName("timestamp", NamedObject.NS_NSDL), TimeTools.createTimeStamp());
+    }
 
     /**
      * This is called after signing to handle any post signing tasks such as logging
@@ -273,41 +288,43 @@ public abstract class NamedObject extends SignedElement {
      */
     public void addTarget(TargetReference target) throws NeudistException {
         isModifiable();
-        if (target==null)
+        if (target == null)
             return;
-        QName targetsQN=DocumentHelper.createQName("Targets",NamedObject.NS_NSDL);
-        Element targetsElem=getElement().element(targetsQN);
-        if (targetsElem==null){
-            targetsElem=DocumentHelper.createElement(targetsQN);
+        QName targetsQN = DocumentHelper.createQName("Targets", NamedObject.NS_NSDL);
+        Element targetsElem = getElement().element(targetsQN);
+        if (targetsElem == null) {
+            targetsElem = DocumentHelper.createElement(targetsQN);
             getElement().add(targetsElem);
         }
-         targetsElem.add(target.getElement());
-         targetList().add(target);
+        targetsElem.add(target.getElement());
+        targetList().add(target);
     }
+
     /**
-       */
-      private void processTargetElements() throws NeudistException {
-          //System.out.println("NEUDIST: registering targets for "+getName());
-          QName targetsQN=DocumentHelper.createQName("Targets",NamedObject.NS_NSDL);
+     */
+    private void processTargetElements() throws NeudistException {
+        //System.out.println("NEUDIST: registering targets for "+getName());
+        QName targetsQN = DocumentHelper.createQName("Targets", NamedObject.NS_NSDL);
 
-          Element targetsElem=getElement().element(targetsQN);
-          if (targetsElem!=null){
-              Iterator iter=targetsElem.elementIterator(DocumentHelper.createQName("TargetReference",NamedObject.NS_NSDL));
-              while (iter.hasNext()) {
-                  Element o = (Element) iter.next();
-                  TargetReference target=new TargetReference(this,o);
-                  System.out.println("NEUDIST: Registring target: "+target.getHref());
-                  targetList().add(target);
+        Element targetsElem = getElement().element(targetsQN);
+        if (targetsElem != null) {
+            Iterator iter = targetsElem.elementIterator(DocumentHelper.createQName("TargetReference", NamedObject.NS_NSDL));
+            while (iter.hasNext()) {
+                Element o = (Element) iter.next();
+                TargetReference target = new TargetReference(this, o);
+                System.out.println("NEUDIST: Registring target: " + target.getHref());
+                targetList().add(target);
 
-              }
-          }
-      }
+            }
+        }
+    }
 
     private synchronized List targetList() {
-        if (targets==null)
-            targets=new LinkedList();
+        if (targets == null)
+            targets = new LinkedList();
         return targets;
     }
+
     /**
      * Lists the targets within an object
      * @return Iterator of targets
@@ -319,15 +336,15 @@ public abstract class NamedObject extends SignedElement {
     /**
      *   Sends copy of object to all targets within
      */
-    public void sendObject() throws NeudistException{
-        System.out.println("NEUDIST: Sending Object "+getName());
+    public void sendObject() throws NeudistException {
+        System.out.println("NEUDIST: Sending Object " + getName());
 
         if (this.isSigned()) {
-            Iterator iter=listTargets();
-            while(iter.hasNext()) {
-                TargetReference tg=((TargetReference)iter.next());
+            Iterator iter = listTargets();
+            while (iter.hasNext()) {
+                TargetReference tg = ((TargetReference) iter.next());
                 tg.send();
-                System.out.println("NEUDIST: Sent to "+tg.getHref());
+                System.out.println("NEUDIST: Sent to " + tg.getHref());
             }
 
         }
@@ -335,8 +352,8 @@ public abstract class NamedObject extends SignedElement {
     }
 
     public Timestamp getTimeStamp() throws NeudistException {
-        String timeString=getElement().attributeValue(DocumentHelper.createQName("timestamp",NamedObject.NS_NSDL));
-        if (isSigned()&&!Utility.isEmpty(timeString)){
+        String timeString = getElement().attributeValue(DocumentHelper.createQName("timestamp", NamedObject.NS_NSDL));
+        if (isSigned() && !Utility.isEmpty(timeString)) {
             try {
                 return TimeTools.parseTimeStamp(timeString);
             } catch (NeudistException e) {
@@ -348,21 +365,22 @@ public abstract class NamedObject extends SignedElement {
         return null;
 
     }
+
     public final void log() throws NeudistException {
         NameSpace ns = getParent();
         ns.log(this);
     }
 
     public NameSpace getParent() throws NeudistException {
-        NameSpace ns=NSResolver.resolveNameSpace(NSTools.getParentNSURI(getName()));
+        NameSpace ns = NSResolver.resolveNameSpace(NSTools.getParentNSURI(getName()));
         return ns;
     }
 
     private List targets;
 
-    public static final String NSDL_NAMESPACE="http://neuclear.org/neu/nsdl";
-     public static final Namespace NS_NSDL=DocumentHelper.createNamespace("nsdl",NamedObject.NSDL_NAMESPACE);
+    public static final String NSDL_NAMESPACE = "http://neuclear.org/neu/nsdl";
+    public static final Namespace NS_NSDL = DocumentHelper.createNamespace("nsdl", NamedObject.NSDL_NAMESPACE);
 
-     public static final String NSDL_PREFIX="nsdl:";
+    public static final String NSDL_PREFIX = "nsdl:";
 
 }

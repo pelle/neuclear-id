@@ -1,8 +1,18 @@
 /*
- * $Id: Asset.java,v 1.1 2003/09/19 14:41:40 pelle Exp $
+ * $Id: Asset.java,v 1.2 2003/09/22 19:24:01 pelle Exp $
  * $Log: Asset.java,v $
- * Revision 1.1  2003/09/19 14:41:40  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:01  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:41:40  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.6  2003/02/14 21:10:32  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
@@ -47,16 +57,16 @@ import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.neuclear.id.NamedObject;
 import org.neuclear.receiver.Receiver;
-import org.neuclear.utils.NeudistException;
+import org.neudist.utils.NeudistException;
 
 public class Asset extends NamedObject implements Receiver {
 
-    public Asset(String name,String service, String interactive,String description) {//TODO Add validity fields
-        super(name, TAG_NAME,NS_NSASSET);
-        Element root=getElement();
-        root.addElement(DocumentHelper.createQName("Description",NS_NSASSET)).addText(description);
-        root.addAttribute(DocumentHelper.createQName("service",NS_NSASSET),service);
-        root.addAttribute(DocumentHelper.createQName("interactive",NS_NSASSET),interactive);
+    public Asset(String name, String service, String interactive, String description) {//TODO Add validity fields
+        super(name, TAG_NAME, NS_NSASSET);
+        Element root = getElement();
+        root.addElement(DocumentHelper.createQName("Description", NS_NSASSET)).addText(description);
+        root.addAttribute(DocumentHelper.createQName("service", NS_NSASSET), service);
+        root.addAttribute(DocumentHelper.createQName("interactive", NS_NSASSET), interactive);
 
 
     }
@@ -66,29 +76,30 @@ public class Asset extends NamedObject implements Receiver {
     }
 
     public String getTagName() {
-          return TAG_NAME;
-      }
+        return TAG_NAME;
+    }
 
-     /**
-      * @return the XML NameSpace object
-      */
-     public Namespace getNS() {
-         return NS_NSASSET;
-     }
-     public String getInteractiveURL() {
-         return getElement().attributeValue(DocumentHelper.createQName("interactive",NS_NSASSET));
-     }
+    /**
+     * @return the XML NameSpace object
+     */
+    public Namespace getNS() {
+        return NS_NSASSET;
+    }
+
+    public String getInteractiveURL() {
+        return getElement().attributeValue(DocumentHelper.createQName("interactive", NS_NSASSET));
+    }
 
     public String getServiceURL() {
-        return getElement().attributeValue(DocumentHelper.createQName("service",NS_NSASSET));
+        return getElement().attributeValue(DocumentHelper.createQName("service", NS_NSASSET));
     }
 
     public void receive(NamedObject obj) throws NeudistException {
 //        SOAPStore.storeDirect(getServiceURL(),obj);
     }
 
-    private  static final String TAG_NAME="Asset";
-     public static final String URI_NSASSET="http://neuclear.org/neu/nsasset";
-     public static final Namespace NS_NSASSET=DocumentHelper.createNamespace("nsasset",URI_NSASSET);
+    private static final String TAG_NAME = "Asset";
+    public static final String URI_NSASSET = "http://neuclear.org/neu/nsasset";
+    public static final Namespace NS_NSASSET = DocumentHelper.createNamespace("nsasset", URI_NSASSET);
 
 }

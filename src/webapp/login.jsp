@@ -1,13 +1,13 @@
-<%@page import="org.neuclear.utils.Utility,
+<%@page import="org.neudist.utils.Utility,
                  com.opensymphony.util.TextUtils,
                  org.neuclear.contracts.nsauth.AuthenticationTicket,
                  java.util.Date,
-                 org.neuclear.xml.xmlsec.XMLSecTools,
+                 org.neudist.xml.xmlsec.XMLSecTools,
                 org.neuclear.id.targets.TargetReference,
-                org.neuclear.utils.ServletTools,
+                org.neudist.utils.ServletTools,
                 org.neuclear.id.NameSpace,
                 org.neuclear.id.NamedObjectFactory,
-                org.neuclear.utils.NeudistException,
+                org.neudist.utils.NeudistException,
                 org.neuclear.id.signrequest.SignatureRequest"%>
 <%
     response.setHeader("Pragma","no-cache");

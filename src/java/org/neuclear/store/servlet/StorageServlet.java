@@ -11,7 +11,7 @@ package org.neuclear.store.servlet;
 import org.neuclear.receiver.ReceiverServlet;
 import org.neuclear.store.FileStore;
 import org.neuclear.store.Store;
-import org.neuclear.utils.Utility;
+import org.neudist.utils.Utility;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -20,9 +20,9 @@ public class StorageServlet extends ReceiverServlet {
     public void init(ServletConfig config) throws ServletException {
         System.out.println("NEUDIST: Initialising StorageServlet");
         super.init(config);
-        String storePath=config.getServletContext().getRealPath(Utility.denullString(config.getInitParameter("basedir"),"/WEB-INF/store"));
-        System.out.println("NEUDIST: Setting up store at: "+storePath);
-        store=new FileStore(storePath);
+        String storePath = config.getServletContext().getRealPath(Utility.denullString(config.getInitParameter("basedir"), "/WEB-INF/store"));
+        System.out.println("NEUDIST: Setting up store at: " + storePath);
+        store = new FileStore(storePath);
         setReceiver(store);
     }
 
@@ -30,6 +30,7 @@ public class StorageServlet extends ReceiverServlet {
     private Store getStore() {
         return store;
     }
+
     private Store store;
 
 }

@@ -4,7 +4,8 @@ import com.waterken.adt.NoSuchElement;
 import com.waterken.adt.cache.Cache;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.NameSpace;
-import org.neuclear.utils.NeudistException;
+import org.neudist.utils.NeudistException;
+
 /**
  * The Idea of the NSCache is to have a quick cache of verified public NameSpaces. This is not stored, but is created from scratch
  * everytime the application starts.<p>
@@ -13,31 +14,33 @@ import org.neuclear.utils.NeudistException;
  */
 public final class NSCache {
     private NSCache() {
-        spaces=new Cache();
+        spaces = new Cache();
     }
 
     public static final NSCache make() {
         return new NSCache();
     }
+
     /**
-      * Attempts to get a verified PublicKey for the given name from the cache
-      * @param name Fully Normalised name
-      * @return a valid NameSpace object if found otherwise null
-      */
-     public NameSpace fetchCached(String name) {
+     * Attempts to get a verified PublicKey for the given name from the cache
+     * @param name Fully Normalised name
+     * @return a valid NameSpace object if found otherwise null
+     */
+    public NameSpace fetchCached(String name) {
         try { // I dont like the way it forces me to catch this. I need to rewrite it.
-            return (NameSpace)spaces.fetch(name);
+            return (NameSpace) spaces.fetch(name);
         } catch (NoSuchElement noSuchElement) {
             return null;
         }
     }
 
-    public void cache(NameSpace ns) throws NeudistException{
+    public void cache(NameSpace ns) throws NeudistException {
         // Only store if it's parent is already here
-        String parentName=NSTools.getParentNSURI(ns.getName());
-        if ((fetchCached(parentName)!=null)||(parentName.equals("neu://"))){
-            spaces.put(ns.getName(),ns);
+        String parentName = NSTools.getParentNSURI(ns.getName());
+        if ((fetchCached(parentName) != null) || (parentName.equals("neu://"))) {
+            spaces.put(ns.getName(), ns);
         }
     }
+
     private final Cache spaces;
 }

@@ -1,8 +1,18 @@
 /*
- * $Id: Store.java,v 1.1 2003/09/19 14:41:16 pelle Exp $
+ * $Id: Store.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
  * $Log: Store.java,v $
- * Revision 1.1  2003/09/19 14:41:16  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:02  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:41:16  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.7  2003/02/18 14:57:35  pelle
  * Finished Cleaning up Receivers and Stores.
@@ -107,7 +117,7 @@ import org.neuclear.id.InvalidNameSpaceException;
 import org.neuclear.id.NamedObject;
 import org.neuclear.id.verifier.NSVerifier;
 import org.neuclear.receiver.Receiver;
-import org.neuclear.utils.NeudistException;
+import org.neudist.utils.NeudistException;
 
 import java.io.IOException;
 
@@ -118,7 +128,7 @@ abstract public class Store implements Receiver {
     /**
      *  This handles the NameSpace checking on the object.
      */
-    public final void receive(NamedObject obj) throws  InvalidNameSpaceException, NeudistException {
+    public final void receive(NamedObject obj) throws InvalidNameSpaceException, NeudistException {
         try {
             // Dont allow overwrites
             //TODO: Implement versioning
@@ -126,9 +136,9 @@ abstract public class Store implements Receiver {
 //                throw new InvalidNameSpaceException("The name: "+obj.getName()+" already exists");
 
             if (!NSVerifier.isNameValid(obj))
-                throw new InvalidNameSpaceException("The name: "+obj.getName()+" is not allowed");
+                throw new InvalidNameSpaceException("The name: " + obj.getName() + " is not allowed");
             rawStore(obj);
-            if (next!=null)
+            if (next != null)
                 next.receive(obj);
 
         } catch (IOException e) {
@@ -146,7 +156,7 @@ abstract public class Store implements Receiver {
     /**
      * Override this for each specific Store type
      */
-    protected void rawStore(NamedObject obj) throws IOException,NeudistException {
+    protected void rawStore(NamedObject obj) throws IOException, NeudistException {
         ;
     }
 

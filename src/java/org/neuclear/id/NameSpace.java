@@ -1,8 +1,18 @@
 /*
- * $Id: NameSpace.java,v 1.1 2003/09/19 14:41:08 pelle Exp $
+ * $Id: NameSpace.java,v 1.2 2003/09/22 19:24:01 pelle Exp $
  * $Log: NameSpace.java,v $
- * Revision 1.1  2003/09/19 14:41:08  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:01  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:41:08  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.11  2003/02/18 14:57:18  pelle
  * Finished Cleaning up Receivers and Stores.
@@ -134,61 +144,62 @@ import org.dom4j.QName;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.LogSender;
 import org.neuclear.senders.Sender;
-import org.neuclear.utils.NeudistException;
-import org.neuclear.utils.Utility;
-import org.neuclear.xml.xmlsec.KeyInfo;
-import org.neuclear.xml.xmlsec.XMLSecTools;
+import org.neudist.utils.NeudistException;
+import org.neudist.utils.Utility;
+import org.neudist.xml.xmlsec.KeyInfo;
+import org.neudist.xml.xmlsec.XMLSecTools;
 
 import java.security.PublicKey;
 import java.util.Iterator;
 import java.util.List;
 
-public final class  NameSpace extends NamedObject {
+public final class NameSpace extends NamedObject {
 
 
-        /**
-         * This constructor should be used by subclasses of NameSpace. It creates a Standard NameSpace document, but doesn't sign it.
-         * The signing should be done as the last step of the constructor of the subclass.
-         * @param name The Name of NameSpace
-         * @param allow PublicKey allowed to sign in here
-         * @param repository URL of Default Store for NameSpace. (Note. A NameSpace object is stored in the default repository of it's parent namespace)
-         * @param signer URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
-         * @param receiver URL of default receiver for namespace
-         * @throws NeudistException
-         */
-       public NameSpace(String name,PublicKey allow,String repository,String signer,String logger,String receiver) throws NeudistException {
-                super(name,"NameSpace");
+    /**
+     * This constructor should be used by subclasses of NameSpace. It creates a Standard NameSpace document, but doesn't sign it.
+     * The signing should be done as the last step of the constructor of the subclass.
+     * @param name The Name of NameSpace
+     * @param allow PublicKey allowed to sign in here
+     * @param repository URL of Default Store for NameSpace. (Note. A NameSpace object is stored in the default repository of it's parent namespace)
+     * @param signer URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
+     * @param receiver URL of default receiver for namespace
+     * @throws NeudistException
+     */
+    public NameSpace(String name, PublicKey allow, String repository, String signer, String logger, String receiver) throws NeudistException {
+        super(name, "NameSpace");
 
-                Element root=getElement();
-                // We have meaningful defaults for the following two
-                this.repository=Utility.denullString(repository,NSResolver.NSROOTSTORE);
-                this.logger=Utility.denullString(repository,LogSender.LOGGER);
+        Element root = getElement();
+        // We have meaningful defaults for the following two
+        this.repository = Utility.denullString(repository, NSResolver.NSROOTSTORE);
+        this.logger = Utility.denullString(repository, LogSender.LOGGER);
 
-                this.signer=signer;
-                this.receiver=receiver;
-                root.addAttribute(DocumentHelper.createQName("repository",NamedObject.NS_NSDL),this.repository);
-                root.addAttribute(DocumentHelper.createQName("logger",NamedObject.NS_NSDL),receiver);
-                if (!Utility.isEmpty(signer))
-                    root.addAttribute(DocumentHelper.createQName("signer",NamedObject.NS_NSDL),signer);
+        this.signer = signer;
+        this.receiver = receiver;
+        root.addAttribute(DocumentHelper.createQName("repository", NamedObject.NS_NSDL), this.repository);
+        root.addAttribute(DocumentHelper.createQName("logger", NamedObject.NS_NSDL), receiver);
+        if (!Utility.isEmpty(signer))
+            root.addAttribute(DocumentHelper.createQName("signer", NamedObject.NS_NSDL), signer);
 
-                if (!Utility.isEmpty(receiver))
-                    root.addAttribute(DocumentHelper.createQName("receiver",NamedObject.NS_NSDL),receiver);
+        if (!Utility.isEmpty(receiver))
+            root.addAttribute(DocumentHelper.createQName("receiver", NamedObject.NS_NSDL), receiver);
 
-                if (allow!=null) {
-                    QName allowName=DocumentHelper.createQName("allow",NamedObject.NS_NSDL);
-                    Element pub=root.addElement(allowName);
-                    pubs=new PublicKey[1];
-                    pubs[0]=allow;
-                    pub.add(XMLSecTools.createKeyInfo(allow));
-                }
+        if (allow != null) {
+            QName allowName = DocumentHelper.createQName("allow", NamedObject.NS_NSDL);
+            Element pub = root.addElement(allowName);
+            pubs = new PublicKey[1];
+            pubs[0] = allow;
+            pub.add(XMLSecTools.createKeyInfo(allow));
         }
-
-    public NameSpace(String name,PublicKey allow,String repository) throws NeudistException {
-            this(name,allow,repository,null,null,null);
     }
-    public NameSpace(String name,PublicKey allow) throws NeudistException {
-             this(name,allow,null);
-     }
+
+    public NameSpace(String name, PublicKey allow, String repository) throws NeudistException {
+        this(name, allow, repository, null, null, null);
+    }
+
+    public NameSpace(String name, PublicKey allow) throws NeudistException {
+        this(name, allow, null);
+    }
 
     /**
      * This constructor should be used by subclasses of NameSpace. It creates a Standard NameSpace document, but doesn't sign it.
@@ -206,19 +217,19 @@ public final class  NameSpace extends NamedObject {
     public NameSpace(Element nsElem) throws NeudistException/*,KeyResolverException*/ {
         super(nsElem);
         try {
-            Element ns =getElement();
-            repository=ns.attributeValue(DocumentHelper.createQName("store",NamedObject.NS_NSDL));
-            signer=ns.attributeValue(DocumentHelper.createQName("signer",NamedObject.NS_NSDL));
-            logger=ns.attributeValue(DocumentHelper.createQName("logger",NamedObject.NS_NSDL));
-            receiver=ns.attributeValue(DocumentHelper.createQName("receiver",NamedObject.NS_NSDL));
+            Element ns = getElement();
+            repository = ns.attributeValue(DocumentHelper.createQName("store", NamedObject.NS_NSDL));
+            signer = ns.attributeValue(DocumentHelper.createQName("signer", NamedObject.NS_NSDL));
+            logger = ns.attributeValue(DocumentHelper.createQName("logger", NamedObject.NS_NSDL));
+            receiver = ns.attributeValue(DocumentHelper.createQName("receiver", NamedObject.NS_NSDL));
 
-            Element allowElement=ns.element(DocumentHelper.createQName("allow",NamedObject.NS_NSDL));
-            List keys=allowElement.elements(XMLSecTools.createQName("KeyInfo"));
-            pubs=new PublicKey[keys.size()];
-            int i=0;
-            for (Iterator iter=keys.iterator();iter.hasNext();i++) {
-                KeyInfo ki=new KeyInfo((Element)iter.next());
-                pubs[i]=ki.getPublicKey();
+            Element allowElement = ns.element(DocumentHelper.createQName("allow", NamedObject.NS_NSDL));
+            List keys = allowElement.elements(XMLSecTools.createQName("KeyInfo"));
+            pubs = new PublicKey[keys.size()];
+            int i = 0;
+            for (Iterator iter = keys.iterator(); iter.hasNext(); i++) {
+                KeyInfo ki = new KeyInfo((Element) iter.next());
+                pubs[i] = ki.getPublicKey();
             }
         } catch (Exception e) {
             Utility.rethrowException(e);
@@ -230,12 +241,13 @@ public final class  NameSpace extends NamedObject {
      * @return the first allowed public key
      */
     public PublicKey getAllowed() {
-        if (pubs!=null&&pubs.length>0)
+        if (pubs != null && pubs.length > 0)
             return pubs[0];
         else
             return null;
     }
-    public boolean postAllowed(NamedObject obj) throws NeudistException{
+
+    public boolean postAllowed(NamedObject obj) throws NeudistException {
         try {
             for (int i = 0; i < pubs.length; i++) {
                 if (obj.verifySignature(pubs[i]))
@@ -261,18 +273,20 @@ public final class  NameSpace extends NamedObject {
 
     public final void send(NamedObject obj) throws NeudistException {
         if (!Utility.isEmpty(receiver))
-            Sender.quickSend(receiver,obj);
+            Sender.quickSend(receiver, obj);
         else
-            throw new NeudistException("Cant send object, "+getName()+" doesnt have a registered Receiver");
+            throw new NeudistException("Cant send object, " + getName() + " doesnt have a registered Receiver");
     }
 
     void log(NamedObject obj) throws NeudistException {
         if (!Utility.isEmpty(logger))
-            Sender.quickSend(logger,obj);
+            Sender.quickSend(logger, obj);
     }
+
     public String getTagName() {
         return "NameSpace";
     }
+
     private String repository;
     private String signer;
     private String logger;

@@ -1,8 +1,18 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.1 2003/09/19 14:41:22 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
- * Revision 1.1  2003/09/19 14:41:22  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:02  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:41:22  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.9  2003/02/18 14:57:33  pelle
  * Finished Cleaning up Receivers and Stores.
@@ -108,60 +118,63 @@ package org.neuclear.store;
 
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
-import org.neuclear.crypto.CryptoTools;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.NamedObject;
 import org.neuclear.id.NamedObjectFactory;
-import org.neuclear.utils.NeudistException;
-import org.neuclear.utils.Utility;
-import org.neuclear.xml.xmlsec.XMLSecTools;
+import org.neudist.crypto.CryptoTools;
+import org.neudist.utils.NeudistException;
+import org.neudist.utils.Utility;
+import org.neudist.xml.xmlsec.XMLSecTools;
 
 import java.io.*;
+
 /**
  * We need both a simple FileStore and an encrypted one. The encrypted one stores each object using a filename generated through
  * a Hashing system of some sort. The files themselves are encrypted using perhaps their name and a store specific code. The filetimes would also be set to a
  * uniform time, so if the operator was sopeanad(Spelling) i
  *
  */
-public class EncryptedFileStore extends FileStore  {
+public class EncryptedFileStore extends FileStore {
     public EncryptedFileStore(String base) {
         super(base);
     }
-    protected void rawStore(NamedObject obj) throws IOException,NeudistException {
-        String outputFilename=base+getFileName(obj);
-        System.out.println("Outputting to: "+outputFilename);
-        File outputFile=new File(outputFilename);
+
+    protected void rawStore(NamedObject obj) throws IOException, NeudistException {
+        String outputFilename = base + getFileName(obj);
+        System.out.println("Outputting to: " + outputFilename);
+        File outputFile = new File(outputFilename);
         outputFile.getParentFile().mkdirs();
 
         // Quick and dirty encryption for now.
 //        String xmlData=obj.getElement().asXML();
-        byte encrypted[]=CryptoTools.encrypt(obj.getName(),XMLSecTools.getElementBytes(obj.getElement()));
+        byte encrypted[] = CryptoTools.encrypt(obj.getName(), XMLSecTools.getElementBytes(obj.getElement()));
 
-        BufferedOutputStream os=new BufferedOutputStream(new FileOutputStream(outputFile));
+        BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(outputFile));
         os.write(encrypted);
         os.close();
-      }
-    protected NamedObject fetch(String name)  throws NeudistException {
-        String deURLizedName=NSTools.normalizeNameURI(name);
-        String inputFilename=base+getFileName(deURLizedName);
-        System.out.println("Loading from: "+inputFilename);
-        File fin=new File(inputFilename);
+    }
+
+    protected NamedObject fetch(String name) throws NeudistException {
+        String deURLizedName = NSTools.normalizeNameURI(name);
+        String inputFilename = base + getFileName(deURLizedName);
+        System.out.println("Loading from: " + inputFilename);
+        File fin = new File(inputFilename);
         if (!fin.exists())
             return null;
 
-        NamedObject ns=null;
+        NamedObject ns = null;
         try {
-            byte input[]=new byte[(int)fin.length()];
-            FileInputStream fis=new FileInputStream(fin);
-            fis.read(input,0,input.length);
-            byte clear[]=CryptoTools.decrypt(deURLizedName.getBytes(),input);
-            int last=clear.length;
-            for (last=clear.length;clear[last-1]!=(byte)'>';last--);
-            String clearString=new String(clear,0,last);
+            byte input[] = new byte[(int) fin.length()];
+            FileInputStream fis = new FileInputStream(fin);
+            fis.read(input, 0, input.length);
+            byte clear[] = CryptoTools.decrypt(deURLizedName.getBytes(), input);
+            int last = clear.length;
+            for (last = clear.length; clear[last - 1] != (byte) '>'; last--) ;
+            String clearString = new String(clear, 0, last);
 //            System.out.print("Read: ");
 //            System.out.println(clearString);
-            org.dom4j.Document doc=DocumentHelper.parseText(clearString);
-            ns=NamedObjectFactory.createNamedObject(doc);
+            org.dom4j.Document doc = DocumentHelper.parseText(clearString);
+            ns = NamedObjectFactory.createNamedObject(doc);
 //            Utility.rethrowException(e);
         } catch (IOException e) {
             Utility.rethrowException(e);
@@ -174,25 +187,26 @@ public class EncryptedFileStore extends FileStore  {
         return ns;
     }
 
-    protected static String getFileName(String name) throws NeudistException{
-        String deURLizedName=NSTools.normalizeNameURI(name);
-        byte hash[]=CryptoTools.formatAsURLSafe(CryptoTools.digest512(deURLizedName.getBytes())).getBytes();
-       //if (true) return new String(hash);
-        int partlength=hash.length/8;
-        byte newName[]=new byte[hash.length+8];
-        for (int i=0;i<8;i++) {
-            newName[i*(partlength+1)]=(byte)'/';
-            System.arraycopy(hash,(i*partlength),newName,(i*(partlength+1))+1,partlength);
+    protected static String getFileName(String name) throws NeudistException {
+        String deURLizedName = NSTools.normalizeNameURI(name);
+        byte hash[] = CryptoTools.formatAsURLSafe(CryptoTools.digest512(deURLizedName.getBytes())).getBytes();
+        //if (true) return new String(hash);
+        int partlength = hash.length / 8;
+        byte newName[] = new byte[hash.length + 8];
+        for (int i = 0; i < 8; i++) {
+            newName[i * (partlength + 1)] = (byte) '/';
+            System.arraycopy(hash, (i * partlength), newName, (i * (partlength + 1)) + 1, partlength);
         }
         try {
-            if (hash.length%8!=0)
-                System.arraycopy(hash,8*partlength,newName,(8*(partlength+1)),hash.length%8);
+            if (hash.length % 8 != 0)
+                System.arraycopy(hash, 8 * partlength, newName, (8 * (partlength + 1)), hash.length % 8);
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.err.println("hash.length="+hash.length+", newName.length="+newName.length+", partlength="+partlength);
-            System.err.println("System.arraycopy(hash,"+9*partlength+",newName,"+(9*(partlength+1))+","+hash.length%8+");");
+            System.err.println("hash.length=" + hash.length + ", newName.length=" + newName.length + ", partlength=" + partlength);
+            System.err.println("System.arraycopy(hash," + 9 * partlength + ",newName," + (9 * (partlength + 1)) + "," + hash.length % 8 + ");");
         }
         return new String(newName);
     }
+
     protected static String getFileName(NamedObject obj) throws NeudistException {
         return getFileName(obj.getName());
     }

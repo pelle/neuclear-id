@@ -11,11 +11,11 @@ package org.neuclear.id.signrequest;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
-import org.neuclear.crypto.CryptoTools;
 import org.neuclear.id.NamedObject;
 import org.neuclear.id.NamedObjectFactory;
-import org.neuclear.utils.NeudistException;
-import org.neuclear.utils.Utility;
+import org.neudist.crypto.CryptoTools;
+import org.neudist.utils.NeudistException;
+import org.neudist.utils.Utility;
 
 import java.security.PrivateKey;
 import java.util.Date;
@@ -38,13 +38,13 @@ public class SignatureRequest extends NamedObject {
      * @param target URL for interactive signing service to send user to after signing.
      * @param payload the NamedObject to request signing
      */
-    private SignatureRequest(String reqNameSpace,String target,NamedObject payload) throws NeudistException {
-        super(createUniqueTicketName(reqNameSpace,payload.getName()), SignatureRequest.TAG_NAME,SignatureRequest.NS_NSSIGREQ);
+    private SignatureRequest(String reqNameSpace, String target, NamedObject payload) throws NeudistException {
+        super(createUniqueTicketName(reqNameSpace, payload.getName()), SignatureRequest.TAG_NAME, SignatureRequest.NS_NSSIGREQ);
         addElement(payload);
-        this.payload=payload;
-        Element root=getElement();
+        this.payload = payload;
+        Element root = getElement();
         if (!Utility.isEmpty(target))
-            root.addAttribute(DocumentHelper.createQName("target",NS_NSSIGREQ),target);
+            root.addAttribute(DocumentHelper.createQName("target", NS_NSSIGREQ), target);
     }
 
     /**
@@ -54,38 +54,39 @@ public class SignatureRequest extends NamedObject {
      */
     public SignatureRequest(Element elem) throws NeudistException {
         super(elem);
-        Element payloadElement=(Element)elem.elements().get(0);
-        if (payloadElement!=null)
-               payload=NamedObjectFactory.createNamedObject(payloadElement);
+        Element payloadElement = (Element) elem.elements().get(0);
+        if (payloadElement != null)
+            payload = NamedObjectFactory.createNamedObject(payloadElement);
     }
 
-    public static SignatureRequest createRequest(String requester,String targeturl,NamedObject payload,PrivateKey signer) throws NeudistException {
-        SignatureRequest req=new SignatureRequest(requester,targeturl,payload);
+    public static SignatureRequest createRequest(String requester, String targeturl, NamedObject payload, PrivateKey signer) throws NeudistException {
+        SignatureRequest req = new SignatureRequest(requester, targeturl, payload);
         req.sign(signer);
         return req;
     }
+
     /**
      * This is just used to create a unique ticket for use by the ticket
      * @param targetNameSpace
      * @param reqNameSpace
      * @return
      */
-    private static String createUniqueTicketName(String targetNameSpace,String reqNameSpace) {
+    private static String createUniqueTicketName(String targetNameSpace, String reqNameSpace) {
         // Yeah, yeah there are better ways to do this
-        String ms=new Long(new Date().getTime()).toString();
-        byte ticketsrc[]=new byte[ms.length()+reqNameSpace.length()];
-        System.arraycopy(ms.getBytes(),0,ticketsrc,0,ms.length());
-        System.arraycopy(reqNameSpace.getBytes(),0,ticketsrc,ms.length(),reqNameSpace.length());
-        String ticket=CryptoTools.formatAsURLSafe(CryptoTools.digest256(ticketsrc));
+        String ms = new Long(new Date().getTime()).toString();
+        byte ticketsrc[] = new byte[ms.length() + reqNameSpace.length()];
+        System.arraycopy(ms.getBytes(), 0, ticketsrc, 0, ms.length());
+        System.arraycopy(reqNameSpace.getBytes(), 0, ticketsrc, ms.length(), reqNameSpace.length());
+        String ticket = CryptoTools.formatAsURLSafe(CryptoTools.digest256(ticketsrc));
         //Lets reuse ticketsrc for memory reasons
-        int offset=ms.length()+1;
+        int offset = ms.length() + 1;
         if (reqNameSpace.startsWith("neu://"))
-            offset+=5;
+            offset += 5;
 
 
-        for (int i=offset;i<ticketsrc.length;i++) {
-            if (ticketsrc[i]==(byte)'/')
-                ticketsrc[i]=(byte)'.';
+        for (int i = offset; i < ticketsrc.length; i++) {
+            if (ticketsrc[i] == (byte) '/')
+                ticketsrc[i] = (byte) '.';
         }
 /*
         byte ticketName[]=new byte[userNameSpace.length()+33]; // Create new Name byte array to hold userNameSpace a '/' and the generated ticket (size 32)
@@ -93,7 +94,7 @@ public class SignatureRequest extends NamedObject {
         ticketName[userNameSpace.length()]=(byte)'/';
         System.arraycopy(ticket,0,ticketName,userNameSpace.length()+1,ticket.length);
 */
-        return targetNameSpace+'/'+new String(ticketsrc,offset,ticketsrc.length-offset)+'.'+ticket;
+        return targetNameSpace + '/' + new String(ticketsrc, offset, ticketsrc.length - offset) + '.' + ticket;
     }
 
     /**
@@ -101,11 +102,12 @@ public class SignatureRequest extends NamedObject {
      * @return the URL or null if unavailable.
      */
     public String getSiteHref() {
-        return getElement().attributeValue(DocumentHelper.createQName("href",NS_NSSIGREQ));
+        return getElement().attributeValue(DocumentHelper.createQName("href", NS_NSSIGREQ));
     }
+
     public String getTagName() {
-         return TAG_NAME;
-     }
+        return TAG_NAME;
+    }
 
     /**
      * @return the XML NameSpace object
@@ -117,10 +119,11 @@ public class SignatureRequest extends NamedObject {
     public NamedObject getPayload() {
         return payload;
     }
+
     private NamedObject payload;
 
-    private  static final String TAG_NAME="SignatureRequest";
-    public static final String URI_NSSIGREQ="http://neuclear.org/neu/nssigrequest";
-    public static final Namespace NS_NSSIGREQ=DocumentHelper.createNamespace("nsauth",URI_NSSIGREQ);
+    private static final String TAG_NAME = "SignatureRequest";
+    public static final String URI_NSSIGREQ = "http://neuclear.org/neu/nssigrequest";
+    public static final Namespace NS_NSSIGREQ = DocumentHelper.createNamespace("nsauth", URI_NSSIGREQ);
 
 }

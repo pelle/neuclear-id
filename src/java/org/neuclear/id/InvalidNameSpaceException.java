@@ -1,8 +1,18 @@
 /*
- * $Id: InvalidNameSpaceException.java,v 1.1 2003/09/19 14:40:55 pelle Exp $
+ * $Id: InvalidNameSpaceException.java,v 1.2 2003/09/22 19:24:01 pelle Exp $
  * $Log: InvalidNameSpaceException.java,v $
- * Revision 1.1  2003/09/19 14:40:55  pelle
- * Initial revision
+ * Revision 1.2  2003/09/22 19:24:01  pelle
+ * More fixes throughout to problems caused by renaming.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:40:55  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.3  2003/02/14 21:10:26  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
@@ -48,7 +58,7 @@
  */
 package org.neuclear.id;
 
-import org.neuclear.utils.NeudistException;
+import org.neudist.utils.NeudistException;
 
 public class InvalidNameSpaceException extends NeudistException {
     public InvalidNameSpaceException(String msg) {
