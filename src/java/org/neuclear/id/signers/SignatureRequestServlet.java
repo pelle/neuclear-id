@@ -41,8 +41,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.8 2004/06/11 22:40:29 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.9 2004/06/19 21:16:31 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.9  2004/06/19 21:16:31  pelle
+Changes to javascript in SignatureRequestServlet
+
 Revision 1.8  2004/06/11 22:40:29  pelle
 readded a timestamp to the Builder. This is given when signed. It shouldn't really be trusted. It just gives an indication to the signer, when he signed it.
 The SignatureRequestServlet had some problems with using selected neuclear-signer.
@@ -131,7 +134,7 @@ public abstract class SignatureRequestServlet extends HttpServlet {
         return ServletSignerFactory.getInstance().createSigner(config);
     }
 
-    protected final void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    protected void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
         response.setContentType("text/html");
@@ -217,7 +220,7 @@ public abstract class SignatureRequestServlet extends HttpServlet {
             out.write("</form>\n");
             out.write("<script language=\"javascript\">\n");
             out.write("<!--\n");
-            out.write(" document.forms[0].submit();\n-->\n");
+            out.write(" document.getElementById(\"sigrequest\").submit();\n-->\n");
             out.write("</script>\n");
 
         } catch (NeuClearException e) {
