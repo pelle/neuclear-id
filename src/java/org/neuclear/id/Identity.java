@@ -1,6 +1,9 @@
 /*
- * $Id: Identity.java,v 1.14 2003/11/10 19:28:01 pelle Exp $
+ * $Id: Identity.java,v 1.15 2003/11/10 21:08:49 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.15  2003/11/10 21:08:49  pelle
+ * More JavaDoc
+ *
  * Revision 1.14  2003/11/10 19:28:01  pelle
  * Mainly documentation.
  *
@@ -237,6 +240,22 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.sql.Timestamp;
 
+/**
+ * The Identity class is one of the most important concepts in <a href="http://neuclear.org">NeuClear</a>.
+ * This is a representation of an online identity. An online identity is defined as a entity online which can
+ * perform transactions with other identities. Thus an Identity doesnt have to be a real person or even a legal entitity.
+ * <p>
+ * Each Identity is known by its unique name which follows a hierarchical model somewhat similar to DNS.
+ * Examples of valid names are: <ul>
+ * <li>neu://test/bux
+ * <li>neu://bob
+ * <li>neu://bob@test
+ * </ul>
+ * <p>
+ * Each identity has got a PublicKey which identifies contracts signed by it. <p>
+ * New Identities are created using the IdentityBuilder class and signed by its parent Signatory.
+ * @see org.neuclear.id.builders.IdentityBuilder
+ */
 public class Identity extends SignedNamedObject {
     private static final String NSROOTPKMOD = "pu/UOt9AKPt9txz/1TyYseL0vMUZXDxpz3PboE3X7J6r1UbfC9b45eO9SlD1wP52nCkVd5qL0fMOQV4lxP0KiL0DwCPid99YCXEn8BU4hEKLV3gD930ieFDtRhgDk7tcFzAqd6ilhVr3NENSjLRmlXK30qPmLRnDqhmx+UC7hLikhT6eJjDBatiYK4ESr2R5x/udIaJTSsenVA2zs1h2FcKXYExxJrPQBm0AXxguVlhqy+ImSjFQUEH9WOpr3zGLtXtcgawxtdapS8nwxbY38JR0HPloOWkFTC6XyurKr7TcDSrzgAUmJRy52pUvsqFRFcHxljL+Flv5iQS8TciKBQ==";
     //private static final String NSROOTPKMOD = "AKbv1DrfQCj7fbcc/9U8mLHi9LzFGVw8ac9z26BN1+yeq9VG3wvW+OXjvUpQ9cD+dpwpFXeai9Hz DkFeJcT9Coi9A8Aj4nffWAlxJ/AVOIRCi1d4A/d9InhQ7UYYA5O7XBcwKneopYVa9zRDUoy0ZpVy t9Kj5i0Zw6oZsflAu4S4pIU+niYwwWrYmCuBEq9kecf7nSGiU0rHp1QNs7NYdhXCl2BMcSaz0AZt AF8YLlZYasviJkoxUFBB/Vjqa98xi7V7XIGsMbXWqUvJ8MW2N/CUdBz5aDlpBUwul8rqyq+03A0q 84AFJiUcudqVL7KhURXB8ZYy/hZb+YkEvE3IigU=";

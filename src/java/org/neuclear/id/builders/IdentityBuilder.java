@@ -1,6 +1,9 @@
 /*
- * $Id: IdentityBuilder.java,v 1.5 2003/10/29 21:16:27 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.6 2003/11/10 21:08:49 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.6  2003/11/10 21:08:49  pelle
+ * More JavaDoc
+ *
  * Revision 1.5  2003/10/29 21:16:27  pelle
  * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
  * To use it you pass a byte array and an alias. The sign method then returns the signature.
@@ -164,21 +167,32 @@ import org.neudist.xml.xmlsec.XMLSecurityException;
 
 import java.security.PublicKey;
 
-public final class IdentityBuilder extends NamedObjectBuilder {
-
+public  class IdentityBuilder extends NamedObjectBuilder {
 
     /**
-     * This constructor should be used by subclasses of NameSpace. It creates a Standard NameSpace document, but doesn't sign it.
-     * The signing should be done as the last step of the constructor of the subclass.
-     * 
-     * @param name       The Name of NameSpace
+     * It creates a Standard Identity document, but doesn't sign it.
+     * @param name       The Name of Identity
      * @param allow      PublicKey allowed to sign in here
      * @param repository URL of Default Store for NameSpace. (Note. A NameSpace object is stored in the default repository of it's parent namespace)
      * @param signer     URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
      * @param receiver   URL of default receiver for namespace
      */
+
     public IdentityBuilder(String name, PublicKey allow, String repository, String signer, String logger, String receiver) {
-        super(name, "Identity");
+        this(DocumentHelper.createQName("Identity",NSTools.NS_NEUID), name,allow,repository,signer,logger,receiver);
+
+    }
+    /**
+     * This constructor should be used by subclasses of Identity. It creates a Standard Identity document, but doesn't sign it.
+     * @param tag        The Tag used by this sub class
+     * @param name       The Name of Identity
+     * @param allow      PublicKey allowed to sign in here
+     * @param repository URL of Default Store for NameSpace. (Note. A NameSpace object is stored in the default repository of it's parent namespace)
+     * @param signer     URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
+     * @param receiver   URL of default receiver for namespace
+     */
+    protected IdentityBuilder(QName tag,String name, PublicKey allow, String repository, String signer, String logger, String receiver) {
+        super(name, tag);
 
         Element root = getElement();
         // We have meaningful defaults for the following two

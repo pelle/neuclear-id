@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedObject.java,v 1.7 2003/10/25 00:39:54 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.8 2003/11/10 21:08:49 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.8  2003/11/10 21:08:49  pelle
+ * More JavaDoc
+ *
  * Revision 1.7  2003/10/25 00:39:54  pelle
  * Fixed SmtpSender it now sends the messages.
  * Refactored CommandLineSigner. Now it simply signs files read from command line. However new class IdentityCreator
@@ -173,7 +176,25 @@ import org.neuclear.commons.NeuClearException;
 import java.sql.Timestamp;
 
 /**
- * Major changes made. SignedNamedObject is now always a verified object.
+ * The SignedNamedObject is a <i>secure</i> object normally encapsulating a Digitally signed contract of some
+ * sort.<p>
+ * Instances of SignedNamedObject and its sub classes are never instantiated directly by client code.
+ * Instead it is created by its Reader inner class. This Reader implements NamedObjectReader and is called by
+ * VerifyingReader.<p>
+ * In most cases a user will load NamedObject through one of two methods:
+ * <ul><li>NSResolver for permanent contracts stored on the internet, such as Identity Certificates</li>
+ * <li>The other way they are often received are as return values when sending your own objects to WebServices.</l>
+ * </ul>
+ * To actually create and sign your own object use the NamedObjectBuilder or its subclasses. Each subclass of
+ * SignedNamedObject should have a corresponding subclass of NamedObjectBuilder.<p>
+ * These NamedObjectBuilder objects should be signed using your Signer, before being sent on to a web service.
+ *
+ * @see NamedObjectReader
+ * @see org.neuclear.id.builders.NamedObjectBuilder
+ * @see org.neuclear.id.verifier.VerifyingReader
+ * @see org.neuclear.id.resolver.NSResolver
+ * @see org.neuclear.senders.Sender
+ * @see org.neudist.crypto.Signer
  */
 public class SignedNamedObject implements SignedObject, Named {
 
@@ -195,8 +216,12 @@ public class SignedNamedObject implements SignedObject, Named {
 
     /**
      * The Name of an object within it's parent Identity
-     * 
-     * @return Parent Name
+     *  <p>
+     * eg.:<pre>
+     * getName() = "neu://test/hello"
+     * getLocalName() = "hello":
+     * </pre>
+     * @return  Name
      */
     public String getLocalName() {
         String fullName = getName();
@@ -205,13 +230,18 @@ public class SignedNamedObject implements SignedObject, Named {
     }
 
 
+    /**
+     * The time the object was signed
+     * @return
+     */
     public Timestamp getTimeStamp() {
         return timestamp;
 
     }
 
     /**
-     * The Signatory of the current document
+     * The Signatory of the current document. If the objects name is <tt>"neu://bob/abc"</tt>, then the signer
+     * would be the Identity object <tt>"neu://bob/"</tt>
      * 
      * @return 
      */
@@ -220,7 +250,7 @@ public class SignedNamedObject implements SignedObject, Named {
     }
 
     /**
-     * The SHA1 Digest of the full XML encoded document
+     * The SHA1 Digest of the original xml signed document
      * 
      * @return 
      */
