@@ -1,6 +1,10 @@
 /*
- * $Id: IdentityBuilder.java,v 1.27 2004/04/28 00:24:05 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.28 2004/05/26 19:28:54 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.28  2004/05/26 19:28:54  pelle
+ * Updated IdentityBuilder to change the html title
+ * Changed the way url's are displayed.
+ *
  * Revision 1.27  2004/04/28 00:24:05  pelle
  * Fixed the strange verification error
  * Added bunch of new unit tests to support this.
@@ -289,7 +293,7 @@ public class IdentityBuilder extends Builder {
         if (receiver != null)
             addTarget(receiver, "receiver");
         if (name != null) {
-            head.addElement("title").setText(name);
+            head.addElement("title").setText("NeuClear Account Page for " + name);
             final Element nameelement = body.addElement("h1");
             nameelement.setText(name);
             nameelement.addAttribute("id", "nickname");
