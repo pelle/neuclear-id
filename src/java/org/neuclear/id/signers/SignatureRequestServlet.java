@@ -41,8 +41,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.4 2004/04/30 15:13:32 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.5 2004/05/24 18:32:30 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.5  2004/05/24 18:32:30  pelle
+Changed asset id in ledger to be asset.getSignatory().getName().
+Made SigningRequestServlet and SigningServlet a bit clearer.
+
 Revision 1.4  2004/04/30 15:13:32  pelle
 Added RESTTools for creating normal POST requests as handled by XMLInputStreamServlet
 Fixed bug in SignatureRequestServlet with regards to autosubmition to Mozilla based browsers such as FireFox.
@@ -88,7 +92,7 @@ Added SignatureRequestServlet which is abstract and can be used for building Sig
  * Time: 5:54:15 PM
  */
 public abstract class SignatureRequestServlet extends HttpServlet {
-    public final void init(final ServletConfig servletConfig) throws ServletException {
+    public void init(final ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
         serviceid = ServletTools.getInitParam("serviceid", servletConfig);
         title = ServletTools.getInitParam("title", servletConfig);
@@ -117,7 +121,7 @@ public abstract class SignatureRequestServlet extends HttpServlet {
         return ServletSignerFactory.getInstance().createSigner(config);
     }
 
-    protected final void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    protected final void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
         response.setContentType("text/html");
@@ -138,8 +142,27 @@ public abstract class SignatureRequestServlet extends HttpServlet {
         out.write("</title>");
         out.write("</head>\n");
         out.write("<body>\n");
-        out.write("<h3>contacting signing service...");
-        out.write("</h3>\n");
+        out.write("<table border=2><tr><th  colspan=\"4\" style=\"background-color:blue;color:white\">Processing: ");
+        out.write(getRequestType());
+        out.write("</th></tr><tr><td id=\"prepare\" width=\"150\">");
+        out.write("1. Preparing ");
+        out.write(getRequestType());
+        out.write("</td>");
+        out.write("<td id=\"send\" width=\"150\">");
+        out.write("2. Sending to NeuClear Personal Trader</td>");
+        out.write("<td id=\"signing\" width=\"150\">");
+        out.write("3. Sign ");
+        out.write(getRequestType());
+        out.write("</td>");
+        out.write("<td id=\"returning\" width=\"150\">");
+        out.write("4. return to:<br/>");
+        out.write(siteurl);
+        out.write("</td>");
+        out.write("</tr></table>");
+        out.write("<script language=\"javascript\">\n");
+        out.write("<!--\n   prepare.style.backgroundColor=\"#FFF0F0\";\n-->\n");
+        out.write("</script>\n");
+
         out.flush();
 
         try {
@@ -168,7 +191,9 @@ public abstract class SignatureRequestServlet extends HttpServlet {
 //            out.write("<input type=\"submit\">");
             out.write("</form>\n");
             out.write("<script language=\"javascript\">\n");
-            out.write("<!--\n   document.forms[0].submit();\n-->\n");
+            out.write("<!--\n  prepare.style.backgroundColor=\"#F0F0FF\";\n");
+            out.write(" send.style.backgroundColor=\"#FFF0F0\";\n");
+            out.write(" document.forms[0].submit();\n-->\n");
             out.write("</script>\n");
 
         } catch (NeuClearException e) {
@@ -190,6 +215,8 @@ public abstract class SignatureRequestServlet extends HttpServlet {
     }
 
     protected abstract Builder createBuilder(HttpServletRequest request) throws NeuClearException;
+
+    protected abstract String getRequestType();
 
     private Signer signer;
     private String serviceid;

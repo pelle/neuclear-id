@@ -25,8 +25,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServlet.java,v 1.4 2004/04/23 23:34:02 pelle Exp $
+$Id: AuthenticationServlet.java,v 1.5 2004/05/24 18:32:30 pelle Exp $
 $Log: AuthenticationServlet.java,v $
+Revision 1.5  2004/05/24 18:32:30  pelle
+Changed asset id in ledger to be asset.getSignatory().getName().
+Made SigningRequestServlet and SigningServlet a bit clearer.
+
 Revision 1.4  2004/04/23 23:34:02  pelle
 Major update. Added an original url and nickname to Identity and friends.
 
@@ -116,6 +120,10 @@ public class AuthenticationServlet extends SignatureRequestServlet {
         final String userns = request.getParameter("signer");
         request.getSession(true).setAttribute("auth", userns);
         return new AuthenticationTicketBuilder(request.getRequestURL().toString());
+    }
+
+    protected String getRequestType() {
+        return "Authentication Request";
     }
 
 }

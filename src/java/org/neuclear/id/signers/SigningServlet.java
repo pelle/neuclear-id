@@ -1,6 +1,10 @@
 /*
- * $Id: SigningServlet.java,v 1.12 2004/05/16 00:04:10 pelle Exp $
+ * $Id: SigningServlet.java,v 1.13 2004/05/24 18:32:30 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.13  2004/05/24 18:32:30  pelle
+ * Changed asset id in ledger to be asset.getSignatory().getName().
+ * Made SigningRequestServlet and SigningServlet a bit clearer.
+ *
  * Revision 1.12  2004/05/16 00:04:10  pelle
  * Added SigningServer which encapsulates all the web serving functionality.
  * Added IdentityPanel which contains an IdentityTree of Identities.
@@ -401,27 +405,33 @@ public class SigningServlet extends XMLInputStreamServlet {
                 "\t\tpadding-bottom: 25px;\n" +
                 "\t}\n#content {margin-left:20;margin-right:20;background:#F0F0FF;}\n" +
                 "\t#log {background: #008;font-size:14px;font-weight:bolder;color:white;}" +
-                "</style></head><body><div id=\"banner\">NeuClear Personal Signer</div>");
+                "</style></head><body><div id=\"banner\">NeuClear Personal Trader</div>");
         final String endpoint = request.getParameter("endpoint");
         final Builder named = sigreq.getUnsigned();
 //        final String username = sigreq.getUserid();
         boolean isSigned = false;
-//        if (!signer.canSignFor(username)) {
-//            out.println("<h3>Can not Sign for:");
-//            out.println(username);
-//            out.println("</h3>");
-//        }
-//        out.println("<table bgcolor=\"#708070\"><tr><td><h4 style=\"color: white\">");
-//        out.println("</h4>");
-//        out.println("<b>Requesting Site:</b><br/>");
+        final String objecttype = getRequestType(named);
         final String referrer = request.getHeader("Referer");
-//        Matcher sitematcher = siteextract.matcher(referrer);
-//        if (sitematcher.matches()) {
-//            out.println(sitematcher.group(1) + sitematcher.group(3) + "<br/>");
-//        } else {
-//            out.println("<h4 style=\"color='red'\">The site requesting a signature a strange url. We recommend Cancelling the signature!!</h4>");
+        out.write("<table border=2><tr><th  colspan=\"4\" style=\"background-color:blue;color:white\">Processing: ");
+        out.write(objecttype);
+        out.write("</th></tr><tr><td id=\"prepare\" width=\"150\" style=\"background-color:#F0F0FF\">");
+        out.write("1. Preparing ");
+        out.write(objecttype);
+        out.write("</td>");
+        out.write("<td id=\"send\" width=\"150\" style=\"background-color:#F0F0FF\">");
+        out.write("2. Sending to NeuClear Personal Trader</td>");
+        out.write("<td id=\"signing\" width=\"150\"  style=\"background-color:#FFF0F0\">");
+        out.write("3. Sign ");
+        out.write(objecttype);
+        out.write("</td>");
+        out.write("<td id=\"returning\" width=\"150\">");
+        out.write("4. return to site: <br/>");
+        out.write(referrer);
+        out.write("</td>");
+        out.write("</tr></table>");
 
-//        }
+        out.flush();
+
         out.println("<b>Requesting Site:</b><br/>");
         out.println(referrer);
 //        out.println("</td></tr><tr><td style=\"background:lightgrey;color:black\"><tt>");
@@ -508,11 +518,25 @@ public class SigningServlet extends XMLInputStreamServlet {
 
     }
 
+    private String getRequestType(Builder named) {
+        if (named.getElement().getName().equals("AuthenticationTicket"))
+            return "Authentication Request";
+        if (named.getElement().getName().equals("TransferOrder"))
+            return "Transfer Order";
+
+        return named.getElement().getName();
+    }
+
     private boolean sign(final Builder named, final PrintWriter out) throws NeuClearException, XMLException {
         boolean isSigned;
         context.log("SIGN: Signing with ");
         final SignedNamedObject signed = named.convert(signer);
         isSigned = true;
+        out.write("<script language=\"javascript\">\n");
+        out.write("<!--\n   signing.style.backgroundColor=\"#F0F0FF\";\n" +
+                "returning.style.backgroundColor=\"#FFF0F0\";-->\n");
+        out.write("</script>\n");
+
         out.println("<li>Signed</li>");
 //        out.println("<li>" + signed.getName() + " Verified</li>");
         out.flush();
