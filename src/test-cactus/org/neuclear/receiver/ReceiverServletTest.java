@@ -8,11 +8,15 @@ import org.neuclear.commons.crypto.signers.JCESigner;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.xml.XMLException;
+import org.neuclear.xml.soap.SOAPTools;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.security.GeneralSecurityException;
+import java.net.HttpURLConnection;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -32,8 +36,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: ReceiverServletTest.java,v 1.3 2003/12/11 23:57:30 pelle Exp $
+$Id: ReceiverServletTest.java,v 1.4 2003/12/12 12:32:54 pelle Exp $
 $Log: ReceiverServletTest.java,v $
+Revision 1.4  2003/12/12 12:32:54  pelle
+Working on getting the SOAPServletTest working under cactus
+
 Revision 1.3  2003/12/11 23:57:30  pelle
 Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
 Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -52,13 +59,20 @@ More Cactus unit testing going on.
  * Time: 5:08:05 PM
  */
 public class ReceiverServletTest extends ServletTestCase {
+    public ReceiverServletTest(String string) throws GeneralSecurityException, NeuClearException {
+        super(string);
+        signer = new TestCaseSigner();
+    }
 
     public void beginReceiveBase64(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException {
-        JCESigner signer = new TestCaseSigner();
+
         AuthenticationTicketBuilder builder = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://localhost");
         AuthenticationTicket ticket = (AuthenticationTicket) builder.sign(signer);
+        theRequest.setContentType("application/x-www-form-urlencoded");
         String b64 = XMLSecTools.encodeElementBase64(builder.getElement());
         theRequest.addParameter("neuclear-request", b64, WebRequest.POST_METHOD);
+        theRequest.setURL("http://users.neuclear.org", "/test", "/Receiver",
+                null, null);
     }
 
     public void testReceiveBase64() throws ServletException, IOException {
@@ -71,6 +85,28 @@ public class ReceiverServletTest extends ServletTestCase {
         assertEquals(receiver.getLastReceived().getSignatory().getName(), "neu://bob@test");
 
     }
+   public void beginReceiveSOAP(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException, IOException {
 
+        AuthenticationTicketBuilder builder = new AuthenticationTicketBuilder("neu://alice@test", "neu://test", "http://localhost");
+        AuthenticationTicket ticket = (AuthenticationTicket) builder.sign(signer);
+        theRequest.setContentType("text/xml");
+        theRequest.addHeader("SOAPAction:","/Receive");
+        theRequest.setURL("http://users.neuclear.org", "/test", "/Service",
+                null, null);
+       ByteArrayOutputStream bos=new ByteArrayOutputStream();
+       SOAPTools.createSoapRequestString(bos,ticket.getEncoded());
+       theRequest.setUserData(new ByteArrayInputStream(bos.toByteArray()));
+     }
 
+    public void testReceiveSOAP() throws ServletException, IOException {
+        ReceiverServlet servlet = new ReceiverServlet();
+        MockReceiver receiver = new MockReceiver();
+        servlet.setReceiver(receiver);
+        servlet.init(config);
+        servlet.service(request, response);
+        assertNotNull(receiver.getLastReceived());
+        assertEquals(receiver.getLastReceived().getSignatory().getName(), "neu://alice@test");
+
+    }
+    JCESigner signer;
 }

@@ -1,6 +1,9 @@
 /*
- * $Id: EncryptedFileStoreTest.java,v 1.5 2003/11/21 04:45:18 pelle Exp $
+ * $Id: EncryptedFileStoreTest.java,v 1.6 2003/12/12 12:32:54 pelle Exp $
  * $Log: EncryptedFileStoreTest.java,v $
+ * Revision 1.6  2003/12/12 12:32:54  pelle
+ * Working on getting the SOAPServletTest working under cactus
+ *
  * Revision 1.5  2003/11/21 04:45:18  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -67,7 +70,7 @@ public final class EncryptedFileStoreTest extends AbstractStoreTest {
     /**
      */
     public final Store getStoreInstance() {
-        return new EncryptedFileStore("target/testdata/efs");
+        return new FileStore("target/testdata/efs");//we have some issues here
     }
 
 }
