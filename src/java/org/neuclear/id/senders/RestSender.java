@@ -5,8 +5,13 @@ package org.neuclear.id.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:50:30 AM
- * $Id: RestSender.java,v 1.1 2004/04/30 15:13:31 pelle Exp $
+ * $Id: RestSender.java,v 1.2 2004/05/21 19:24:28 pelle Exp $
  * $Log: RestSender.java,v $
+ * Revision 1.2  2004/05/21 19:24:28  pelle
+ * Changed name of Neuclear Personal Signer to NeuClear Personal Trader
+ * More changes from Personality to Account
+ * Moved hibernates.properties out from the jar file and to the test directory and where ever it gets used, to avoid conflicts between multiple files.
+ *
  * Revision 1.1  2004/04/30 15:13:31  pelle
  * Added RESTTools for creating normal POST requests as handled by XMLInputStreamServlet
  * Fixed bug in SignatureRequestServlet with regards to autosubmition to Mozilla based browsers such as FireFox.
@@ -132,7 +137,9 @@ package org.neuclear.id.senders;
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+import org.dom4j.DocumentException;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.XMLException;
@@ -141,7 +148,14 @@ import org.neuclear.xml.soap.RESTTools;
 
 public final class RestSender extends Sender {
     public final SignedNamedObject send(final String endpoint, final SignedNamedObject obj) throws NeuClearException, XMLException {
-        return VerifyingReader.getInstance().read(RESTTools.restRequest(endpoint, obj.getEncoded()));
+        try {
+            return VerifyingReader.getInstance().read(RESTTools.restRequest(endpoint, obj.getEncoded()));
+        } catch (InvalidNamedObjectException e) {
+            if (e.getCause() instanceof DocumentException) {
+                throw new NeuClearException("Server Error");
+            }
+            throw e;
+        }
 
     }
 }

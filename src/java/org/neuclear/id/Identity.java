@@ -1,6 +1,11 @@
 /*
- * $Id: Identity.java,v 1.36 2004/05/20 18:46:23 pelle Exp $
+ * $Id: Identity.java,v 1.37 2004/05/21 19:24:28 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.37  2004/05/21 19:24:28  pelle
+ * Changed name of Neuclear Personal Signer to NeuClear Personal Trader
+ * More changes from Personality to Account
+ * Moved hibernates.properties out from the jar file and to the test directory and where ever it gets used, to avoid conflicts between multiple files.
+ *
  * Revision 1.36  2004/05/20 18:46:23  pelle
  * Bumped more version numbers.
  * Made buttons in IdentityPanel toolbar display text.
@@ -368,7 +373,7 @@ import java.security.Principal;
  * 
  * @see org.neuclear.id.builders.IdentityBuilder
  */
-public class Identity extends SignedNamedObject implements Principal {
+public class Identity extends SignedNamedObject implements Principal, HTMLBased {
     protected Identity(final SignedNamedCore core, final String nickname, final String original, Targets targets) {
         super(core);
         this.targets = (targets != null) ? targets : Targets.EMPTY;
@@ -408,6 +413,10 @@ public class Identity extends SignedNamedObject implements Principal {
         final Attribute origattr = ((Attribute) elem.selectSingleNode("//html/head/link[starts-with(@rel,'original')]/@href"));
         final String original = (origattr != null) ? origattr.getValue() : "";
         return original;
+    }
+
+    public String toString() {
+        return nickname + " (" + original + ")";
     }
 
     private final String nickname;

@@ -1,7 +1,6 @@
 package org.neuclear.id.builders;
 
-import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.SignedMessage;
+import org.dom4j.Element;
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,9 +10,26 @@ import org.neuclear.id.SignedMessage;
  * To change this template use Options | File Templates.
  */
 public class SignedMessageBuilder extends Builder {
-    public SignedMessageBuilder(String subject, String message) throws NeuClearException {
-        super(createNEUIDQName(SignedMessage.TAG_NAME));
-        addElement("Subject").setText(subject);
-        addElement("Message").setText(message);
+    public SignedMessageBuilder(String subject) {
+        super("html");
+        head = getElement().addElement("head");
+        body = getElement().addElement("body");
+        Element meta = head.addElement("meta");
+        meta.addAttribute("name", "neu:type");
+        meta.addAttribute("content", "message");
+        head.addElement("title").setText(subject);
+        body.addElement("h1").setText(subject);
     }
+
+    public SignedMessageBuilder(String subject, String message) {
+        this(subject);
+        body.addElement("p").setText(message);
+    }
+
+    public Element getBody() {
+        return body;
+    }
+
+    private Element head;
+    private Element body;
 }

@@ -9,19 +9,24 @@ import org.dom4j.Element;
  * Time: 11:48:34 PM
  * To change this template use Options | File Templates.
  */
-public class SignedMessage extends SignedNamedObject {
-    private SignedMessage(SignedNamedCore core, String subject, String message) {
+public class SignedMessage extends SignedNamedObject implements HTMLBased {
+    private SignedMessage(SignedNamedCore core, String subject) {
         super(core);
         this.subject = subject;
-        this.message = message;
     }
 
     public String getSubject() {
         return subject;
     }
 
-    public String getMessage() {
-        return message;
+    protected static String extractSubject(final Element elem, final SignedNamedCore core) {
+        final Element namelement = ((Element) elem.selectSingleNode("//html/head/title"));
+        final String name = (namelement != null) ? namelement.getTextTrim() : core.getName();
+        return name;
+    }
+
+    public String toString() {
+        return getSubject();
     }
 
     public final static class Reader implements NamedObjectReader {
@@ -32,15 +37,12 @@ public class SignedMessage extends SignedNamedObject {
          * @return
          */
         public final SignedNamedObject read(final SignedNamedCore core, final Element elem) {
-            final String subject = elem.element("Subject").getText();
-            final String message = elem.element("Message").getText();
-            return new SignedMessage(core, subject, message);
+            final String subject = extractSubject(elem, core);
+            return new SignedMessage(core, subject);
         }
 
     }
 
     private final String subject;
-    private final String message;
 
-    public static final String TAG_NAME = "SignedMessage";
 }

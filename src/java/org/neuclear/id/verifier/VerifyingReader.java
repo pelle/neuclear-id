@@ -30,8 +30,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.25 2004/04/19 18:44:17 pelle Exp $
+$Id: VerifyingReader.java,v 1.26 2004/05/21 19:24:28 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.26  2004/05/21 19:24:28  pelle
+Changed name of Neuclear Personal Signer to NeuClear Personal Trader
+More changes from Personality to Account
+Moved hibernates.properties out from the jar file and to the test directory and where ever it gets used, to avoid conflicts between multiple files.
+
 Revision 1.25  2004/04/19 18:44:17  pelle
 Stores a cache on disk
 
@@ -183,7 +188,7 @@ public final class VerifyingReader {
         readers.put("asset", new Identity.Reader());
         readers.put(AuthenticationTicket.TAG_NAME, new AuthenticationTicket.Reader());
         readers.put(SignatureRequest.SIGREQUEST_TAG, new SignatureRequest.Reader());
-        readers.put(SignedMessage.TAG_NAME, new SignedMessage.Reader());
+        readers.put("message", new SignedMessage.Reader());
         defaultReader = new SignedNamedDocument.Reader();
     }
 

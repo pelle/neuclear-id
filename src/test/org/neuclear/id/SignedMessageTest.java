@@ -23,7 +23,6 @@ public class SignedMessageTest extends AbstractObjectCreationTest {
         assertTrue(obj instanceof SignedMessage);
         SignedMessage msg = (SignedMessage) obj;
         assertNotNull(msg.getSubject());
-        assertNotNull(msg.getMessage());
     }
 
     protected Class getRequiredClass() {
