@@ -1,6 +1,9 @@
 /*
- * $Id: FileStore.java,v 1.12 2003/11/18 19:23:58 pelle Exp $
+ * $Id: FileStore.java,v 1.13 2003/11/18 23:35:46 pelle Exp $
  * $Log: FileStore.java,v $
+ * Revision 1.13  2003/11/18 23:35:46  pelle
+ * Payment Web Application is getting there.
+ *
  * Revision 1.12  2003/11/18 19:23:58  pelle
  * Missed this in latest checkin
  *
@@ -158,8 +161,6 @@ import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.XMLException;
-import org.neuclear.xml.XMLTools;
-import org.neuclear.xml.xmlsec.XMLSecTools;
 
 import java.io.*;
 
@@ -184,7 +185,7 @@ public class FileStore extends Store {
         System.out.println("Outputting to: " + outputFilename);
         File outputFile = new File(outputFilename);
         outputFile.getParentFile().mkdirs();
-        OutputStream out=new FileOutputStream(outputFile);
+        OutputStream out = new FileOutputStream(outputFile);
         return out;
     }
 
@@ -204,19 +205,19 @@ public class FileStore extends Store {
         return null;
     }
 
-    protected FileInputStream getInputStream(String name) throws FileNotFoundException, NeuClearException {
+    protected InputStream getInputStream(String name) throws FileNotFoundException, NeuClearException {
         String inputFilename = base + getFileName(name);
         System.out.println("Loading from: " + inputFilename);
         File fin = new File(inputFilename);
         if (!fin.exists())
-            throw new NeuClearException("NeuClear: "+name+" doesnt exist");
+            throw new NeuClearException("NeuClear: " + name + " doesnt exist");
 
         return new FileInputStream(fin);
     }
 
 
     protected String getFileName(String name) throws NeuClearException {
-        return NSTools.url2path(name)+"/root.id";
+        return NSTools.url2path(name) + "/root.id";
     }
 
     protected String getFileName(NamedObjectBuilder obj) throws NeuClearException {

@@ -1,9 +1,9 @@
-<neuid:Identity xmlns:neuid="http://neuclear.org/neu/neuid" neuid:name="neu://test" neuid:repository="http://repository.neuclear.org" neuid:logger="mailto:pelle@neuclear.org" neuid:signer="http://users.neuclear.org:8080/Signer" neuid:receiver="mailto:pelle@neuclear.org" neuid:timestamp="2003-11-14T12:11:56,956EST"><neuid:allow><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:KeyValue><ds:RSAKeyValue><ds:Modulus>
+<neuid:Identity xmlns:neuid="http://neuclear.org/neu/neuid" neuid:name="neu://test" neuid:repository="http://repository.neuclear.org" neuid:logger="mailto:pelle@neuclear.org" neuid:signer="http://users.neuclear.org:8080/Signer" neuid:receiver="mailto:pelle@neuclear.org" neuid:timestamp="2003-11-18T12:52:44,299EST"><neuid:allow><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:KeyValue><ds:RSAKeyValue><ds:Modulus>
 8oBM0bU6t/RUQHHI1Q8H6IUf/Pp4ZUF9tUTCNphkG7S4PmpvhxhdJhldrATeNkEPrqUuUqFL1yubLLj2r6uSTw==
 </ds:Modulus><ds:Exponent>
 AQAB
 </ds:Exponent></ds:RSAKeyValue></ds:KeyValue></ds:KeyInfo></neuid:allow><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><ds:Reference URI=""><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>
-b4aH2Vgxl6sYsMypZA4OZPajZic=
+DvILFjXY5ulDwjx8AZmDBpZ1IVo=
 </ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>
-GQwTH6nB9SfVEnlbqMX7mAD8P7Y65/qovwlz+3sJGOj9gQfPhCv6zm6HGfwjWI7kxxmQkIwAsWec6oCo5vaBJYmXR8eDUVGG2prolw92JoxpO13okBneZEOFgY538g087TCUpopoR35kgYdTnQVew34dbWxVcrCg0OfRVdrCHJT4xvFfqg85C25CNltwlA9CMIuqYNkPmGk/cN9JJBNjw7FDMQrUvsOLHiO+6q5D0rC2fOb4yyv92UmbdhpMns7KY2U4zvgiOoF7mdXaDPxh7kMI+UToO3mneKjHFFwm/T062WZ0xtLeGuDO7SQD1k9O3z1+WeX3+uMoJWCtU/LVcQ==
+MwqySLbBdXZggQX4y/4qUquMQmBee+3GRWoXEJP7Kl5VdtOZlk30LISi1ACHEp33vuBeYtXYrlqqZKs0FAzapcGWvghahNZUrPMJbV8VmvlgCe60AU98JkGv1sA636lTYE+QXHkgDK9PS2waeRnrtd5R/5UcFDzjZ6+KyNxI1ju/zLrEvE0BygrOS2h3mdGAvaTAg5P9Wqp93XnF8mwO/SD1RCUDsS0kX2Sma/dUbTdUNCUIxPXzFe0cR+QzKFoOkgqBj9vaS8JPsUPtJbvr5p6kFdrXuI78KjAw15fGdpbmQS8bFITAO0mrkGHlwyAQdoMs8lYrQZdZpEq6rwO25g==
 </ds:SignatureValue></ds:Signature></neuid:Identity>

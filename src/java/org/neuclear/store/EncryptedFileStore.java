@@ -1,6 +1,9 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.11 2003/11/18 19:23:58 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.12 2003/11/18 23:35:45 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
+ * Revision 1.12  2003/11/18 23:35:45  pelle
+ * Payment Web Application is getting there.
+ *
  * Revision 1.11  2003/11/18 19:23:58  pelle
  * Missed this in latest checkin
  *
@@ -160,17 +163,14 @@
  */
 package org.neuclear.store;
 
-import org.neuclear.id.builders.NamedObjectBuilder;
-import org.neuclear.id.NSTools;
-import org.neuclear.id.SignedNamedObject;
-import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.id.NSTools;
+import org.neuclear.id.builders.NamedObjectBuilder;
 
+import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import java.io.*;
-import java.security.NoSuchAlgorithmException;
 
 
 /**
@@ -187,31 +187,20 @@ public class EncryptedFileStore extends FileStore {
         System.out.println("Outputting to: " + outputFilename);
         File outputFile = new File(outputFilename);
         outputFile.getParentFile().mkdirs();
-        try {
-            Cipher cipher = Cipher.getInstance("AES");
-            //TODO Initialise cipher with key
-            return new CipherOutputStream(new FileOutputStream(outputFile),cipher);
-
-
-        } catch (NoSuchAlgorithmException e) {
-            throw new NeuClearException(e);
-        } catch (NoSuchPaddingException e) {
-            throw new NeuClearException(e);
-        }
-
+        return new CipherOutputStream(new FileOutputStream(outputFile), CryptoTools.getCipher(CryptoTools.digest256(obj.getName().getBytes()), true));
     }
-    protected FileInputStream getInputStream(String name) throws FileNotFoundException, NeuClearException {
+
+    protected InputStream getInputStream(String name) throws FileNotFoundException, NeuClearException {
         String inputFilename = base + getFileName(name);
         System.out.println("Loading from: " + inputFilename);
         File fin = new File(inputFilename);
         if (!fin.exists())
-            throw new NeuClearException("NeuClear: "+name+" doesnt exist");
-        //TODO add CipherInputStream
-        return new FileInputStream(fin);
+            throw new NeuClearException("NeuClear: " + name + " doesnt exist");
+        return new CipherInputStream(new FileInputStream(fin), CryptoTools.getCipher(CryptoTools.digest256(name.getBytes()), false));
     }
 
 
-     protected String getFileName(String name) throws NeuClearException {
+    protected String getFileName(String name) throws NeuClearException {
         String deURLizedName = NSTools.normalizeNameURI(name);
         byte hash[] = CryptoTools.formatAsURLSafe(CryptoTools.digest512(deURLizedName.getBytes())).getBytes();
         //if (true) return new String(hash);

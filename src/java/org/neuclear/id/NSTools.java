@@ -1,6 +1,9 @@
 /*
- * $Id: NSTools.java,v 1.13 2003/11/11 21:18:43 pelle Exp $
+ * $Id: NSTools.java,v 1.14 2003/11/18 23:35:45 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.14  2003/11/18 23:35:45  pelle
+ * Payment Web Application is getting there.
+ *
  * Revision 1.13  2003/11/11 21:18:43  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -142,8 +145,8 @@ package org.neuclear.id;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Namespace;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.Utility;
+import org.neuclear.commons.crypto.CryptoTools;
 
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -162,7 +165,7 @@ public final class NSTools {
      */
     public static String normalizeNameURI(String name) throws NeuClearException {
         if (!isValidName(name))
-            throw new NeuClearException("Name: '" + name + "' is not valid");
+            throw new InvalidNamedObject("Name: '" + name + "' is not valid");
         if (!name.startsWith("neu://"))
             return "neu:/" + name;
         return name;

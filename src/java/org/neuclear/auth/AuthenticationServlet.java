@@ -40,8 +40,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServlet.java,v 1.4 2003/11/15 01:58:16 pelle Exp $
+$Id: AuthenticationServlet.java,v 1.5 2003/11/18 23:35:45 pelle Exp $
 $Log: AuthenticationServlet.java,v $
+Revision 1.5  2003/11/18 23:35:45  pelle
+Payment Web Application is getting there.
+
 Revision 1.4  2003/11/15 01:58:16  pelle
 More work all around on web applications.
 
@@ -117,7 +120,7 @@ public class AuthenticationServlet extends HttpServlet {
 
         try {
             AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder(userns, serviceid, request.getRequestURI());
-            SignatureRequestBuilder sigreq = new SignatureRequestBuilder("neu://test", userns, authreq, "Login to Site");
+            SignatureRequestBuilder sigreq = new SignatureRequestBuilder(serviceid, userns, authreq, "Login to Site");
             sigreq.sign(serviceid, signer);
             request.getSession(true).setAttribute("auth", userns);
             out.write("<form action=\"");

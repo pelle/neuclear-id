@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.12 2003/11/18 00:01:55 pelle Exp $
+ * $Id: SigningServlet.java,v 1.13 2003/11/18 23:35:45 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.13  2003/11/18 23:35:45  pelle
+ * Payment Web Application is getting there.
+ *
  * Revision 1.12  2003/11/18 00:01:55  pelle
  * The sample signing web application for logging in and out is now working.
  * There had been an issue in the canonicalizer when dealing with the embedded object of the SignatureRequest object.
@@ -165,6 +168,7 @@ package org.neuclear.signers.servlet;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.Base64;
+import org.neuclear.commons.crypto.passphraseagents.PassPhraseAgent;
 import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
 import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.Signer;
@@ -187,17 +191,20 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
+import java.util.Map;
 
-public class SigningServlet extends ReceiverServlet {
+public class SigningServlet extends ReceiverServlet implements PassPhraseAgent {
     public void init(ServletConfig config) throws ServletException {
         System.out.println("NEUDIST: Initialising SigningServlet");
         super.init(config);
         context = config.getServletContext();
+        reqMap = new HashMap();
         try {
             System.out.println("NEUDIST: Initialising SigningServlet");
             title = Utility.denullString(config.getInitParameter("title").toString(), "NeuClear Signing Service");
             if (signer == null) {
-                signer = new TestCaseSigner();
+                signer = new TestCaseSigner(this);
             }
             System.out.println("NEUDIST: Finished SigningServlet Init ");
 
@@ -222,6 +229,7 @@ public class SigningServlet extends ReceiverServlet {
             super.doPost(request, response);
             return;
         }
+        reqMap.put(Thread.currentThread(), request);
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
         response.setContentType("text/html");
@@ -304,10 +312,10 @@ public class SigningServlet extends ReceiverServlet {
 //                    context.log("Signing Servlet: ");
                     out.print(XMLSecTools.encodeElementBase64(named));
                     out.println("\" type=\"hidden\"/>");
-                    out.write("<input type=\"submit\">");
+//                    out.write("<input type=\"submit\">");
                     out.write("</form>\n");
                     out.write("<script language=\"javascript\">\n");
-//                    out.write("<!--\n   document.forms[0].submit();\n-->\n");
+                    out.write("<!--\n   document.forms[0].submit();\n-->\n");
                     out.write("</script>\n");
 
 
@@ -319,6 +327,7 @@ public class SigningServlet extends ReceiverServlet {
             out.println("</pre></font>");
         }
         out.println("<p align\"left\"><img src=\"images/neubia40x40.png\"><br><a href=\"http://www.neubia.com\"><i>&copy; 2002 Antilles Software Ventures SA</i></a></body></html>");
+        reqMap.remove(Thread.currentThread()); //Super Important
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -332,6 +341,24 @@ public class SigningServlet extends ReceiverServlet {
         out.println("<form method=\"POST\" action=\"Signer\"><textarea name=\"xml\" cols=\"80\"rows=\"30\"></textarea><br><input type=\"submit\" name=\"submit\" value=\"Confirm\"></form>");
         out.println("</body></html>");
 
+    }
+
+    /**
+     * Retrieve the PassPhrase for a given name/alias
+     * 
+     * @param name 
+     * @return 
+     */
+    public char[] getPassPhrase(String name) {
+        if (reqMap == null)
+            return null;
+        HttpServletRequest request = (HttpServletRequest) reqMap.get(Thread.currentThread());
+        if (request == null)
+            return null;
+        String passphrase = request.getParameter("passphrase");
+        if (passphrase == null)
+            return null;
+        return passphrase.toCharArray();
     }
 
 /*
@@ -375,4 +402,5 @@ public class SigningServlet extends ReceiverServlet {
     private static Signer signer;
     private String id;
     private String title;
+    private Map reqMap;
 }
