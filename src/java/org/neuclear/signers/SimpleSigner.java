@@ -1,6 +1,11 @@
 /*
- * $Id: SimpleSigner.java,v 1.1 2003/10/29 21:16:28 pelle Exp $
+ * $Id: SimpleSigner.java,v 1.2 2003/10/29 23:17:53 pelle Exp $
  * $Log: SimpleSigner.java,v $
+ * Revision 1.2  2003/10/29 23:17:53  pelle
+ * Updated some javadocs
+ * Added a neuclear specific maven repository at:
+ * http://neuclear.org/maven/ and updated the properties files to reflect that.
+ *
  * Revision 1.1  2003/10/29 21:16:28  pelle
  * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
  * To use it you pass a byte array and an alias. The sign method then returns the signature.
@@ -179,6 +184,15 @@ public class SimpleSigner implements Signer {
         s.flush();
 
     }
+
+    /**
+     * Signs the data with the privatekey of the given name
+     * 
+     * @param name Alias of private key to be used within KeyStore
+     * @param data Data to be signed
+     * @return The signature
+     * @throws InvalidPassphraseException if the passphrase doesn't match
+     */
 
     public byte[] sign(String name, byte data[]) throws CryptoException {
 

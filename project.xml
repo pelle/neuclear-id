@@ -5,7 +5,7 @@
   <id>neuclear-id</id>
   <currentVersion>0.7-SNAPSHOT</currentVersion>
   <inceptionYear>2002</inceptionYear>
-  <package>org.neuclear.id</package>
+  <package>org.neuclear</package>
   <logo>/images/logo.gif</logo>
   <shortDescription>NeuClear Identity Framework</shortDescription>
 	<organization>
