@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedCore.java,v 1.14 2004/01/16 23:42:09 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.15 2004/01/18 21:20:29 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.15  2004/01/18 21:20:29  pelle
+ * Created Base32 encoder that now fully complies with Tyler's spec.
+ *
  * Revision 1.14  2004/01/16 23:42:09  pelle
  * Added Base32 class. The Base32 encoding used wasnt following the standards.
  * Added user creatable Identity for Public Keys
