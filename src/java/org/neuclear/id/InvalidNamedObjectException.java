@@ -1,6 +1,9 @@
 /*
- * $Id: InvalidNamedObjectException.java,v 1.1 2003/12/11 23:57:29 pelle Exp $
+ * $Id: InvalidNamedObjectException.java,v 1.2 2003/12/19 00:31:30 pelle Exp $
  * $Log: InvalidNamedObjectException.java,v $
+ * Revision 1.2  2003/12/19 00:31:30  pelle
+ * Lots of usability changes through out all the passphrase agents and end user tools.
+ *
  * Revision 1.1  2003/12/11 23:57:29  pelle
  * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
  * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -105,8 +108,13 @@ package org.neuclear.id;
 import org.neuclear.commons.NeuClearException;
 
 public final class InvalidNamedObjectException extends NeuClearException {
-    public InvalidNamedObjectException(final String msg) {
-        super(msg);
+    public InvalidNamedObjectException(final String name) {
+        super(name+" is an invalid Identity");
+         this.name=name;
     }
 
+    public String getName() {
+        return name;
+    }
+    private final String name;
 }

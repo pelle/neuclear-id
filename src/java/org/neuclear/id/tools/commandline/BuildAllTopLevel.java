@@ -30,8 +30,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: BuildAllTopLevel.java,v 1.2 2003/12/12 21:13:16 pelle Exp $
+$Id: BuildAllTopLevel.java,v 1.3 2003/12/19 00:31:30 pelle Exp $
 $Log: BuildAllTopLevel.java,v $
+Revision 1.3  2003/12/19 00:31:30  pelle
+Lots of usability changes through out all the passphrase agents and end user tools.
+
 Revision 1.2  2003/12/12 21:13:16  pelle
 I have now done manual testing of the SigningServlet et al and am happy releasing it to 0.8
 
@@ -92,13 +95,7 @@ public final class BuildAllTopLevel {
             store.receive(createIdentities("neu://bob@test", testsig, testsig));
             store.receive(createIdentities("neu://alice@test", testsig, testsig));
 
-        } catch (NeuClearException e) {
-            e.printStackTrace();
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (XMLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

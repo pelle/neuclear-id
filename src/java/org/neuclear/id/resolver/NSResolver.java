@@ -1,10 +1,7 @@
 package org.neuclear.id.resolver;
 
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.Identity;
-import org.neuclear.id.InvalidNamedObjectException;
-import org.neuclear.id.NSTools;
-import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.*;
 import org.neuclear.id.cache.NSCache;
 import org.neuclear.source.Source;
 
@@ -31,11 +28,11 @@ public final class NSResolver {
      * @param name 
      * @return 
      */
-    public final static Identity resolveIdentity(final String name) throws NeuClearException, InvalidNamedObjectException {
+    public final static Identity resolveIdentity(final String name) throws NameResolutionException, NeuClearException,InvalidNamedObjectException {
         final SignedNamedObject id = resolve(name);
         if (id instanceof Identity)
             return (Identity) id;
-        throw new InvalidNamedObjectException(name + " is not a valid Identity");
+        throw new InvalidNamedObjectException(name);
     }
 
     /**
@@ -46,7 +43,7 @@ public final class NSResolver {
      * @param name 
      * @return 
      */
-    public final static SignedNamedObject resolve(final String name) throws NeuClearException, InvalidNamedObjectException {
+    public final static SignedNamedObject resolve(final String name) throws NameResolutionException,NeuClearException, InvalidNamedObjectException {
         SignedNamedObject obj = NSCACHE.fetchCached(name);
         if (obj != null)
             return obj;
@@ -63,7 +60,7 @@ public final class NSResolver {
         }
         obj = Source.getInstance().fetch(store, name);
         if (obj == null)
-            throw new NeuClearException("Identity: " + name + " was not resolved");
+            throw new NameResolutionException(name);
         NSCACHE.cache(obj);
         return obj; //This may not be null
     }

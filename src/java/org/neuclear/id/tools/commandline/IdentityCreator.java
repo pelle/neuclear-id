@@ -1,5 +1,8 @@
-/* $Id: IdentityCreator.java,v 1.4 2003/12/18 17:40:19 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.5 2003/12/19 00:31:30 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.5  2003/12/19 00:31:30  pelle
+ * Lots of usability changes through out all the passphrase agents and end user tools.
+ *
  * Revision 1.4  2003/12/18 17:40:19  pelle
  * You can now create keys that get stored with a X509 certificate in the keystore. These can be saved as well.
  * IdentityCreator has been modified to allow creation of keys.
@@ -197,11 +200,14 @@
 package org.neuclear.id.tools.commandline;
 
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.CryptoException;
+import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
 import org.neuclear.commons.crypto.signers.PublicKeySource;
 import org.neuclear.id.NSTools;
+import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.builders.IdentityBuilder;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.senders.LogSender;
@@ -210,13 +216,15 @@ import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public final class IdentityCreator extends CommandLineSigner {
-    public IdentityCreator(final String[] args) throws Exception {
+    public IdentityCreator(final String[] args) throws UserCancellationException, ParseException, InvalidNamedObjectException {
         super(args);
-        if (!(sig instanceof PublicKeySource))
-            throw new NeuClearException("The default signer has to include public keys");
+        if (!(sig instanceof PublicKeySource)) {
+            System.err.println("The default signer has to include public keys");
+            System.exit(1);
+        }
         pksource = (PublicKeySource) sig;
         identity = cmd.getOptionValue("n");
         //final String cachedirpath = System.getProperty("user.home") + "/.neuclear/cache";
@@ -242,27 +250,26 @@ public final class IdentityCreator extends CommandLineSigner {
             store = NSTools.isHttpScheme(NSTools.getSignatoryURI(identity));
         }
         alias = (isTopLevel) ? identity : NSTools.getSignatoryURI(identity);
-        final String allow = Utility.denullString(cmd.getOptionValue("w"), identity);
-        final String defaultstore = Utility.denullString(cmd.getOptionValue("r"), store);
+       final String defaultstore = Utility.denullString(cmd.getOptionValue("r"), store);
         final String defaultsigner = Utility.denullString(cmd.getOptionValue("s"), "http://localhost:11870/Signer");
         final String defaultlogger = Utility.denullString(cmd.getOptionValue("l"), LogSender.LOGGER);
         final String defaultreceiver = cmd.getOptionValue("b");
-        if (!sig.canSignFor(allow)){
+        if (!sig.canSignFor(identity)){
             System.out.println("You do not currently have a key matching this name. Do you with to create one?");
             if (!Utility.getAffirmative(true)) {
                 System.out.println("OK, Bye");
                 System.exit(0);
             }
-            System.out.print("Generating Keys for "+allow+"... ");
-            PublicKey pub=sig.generateKey(allow);
+            System.out.println("Generating Keys for "+identity+"... ");
+            PublicKey pub=sig.generateKey(identity);
             System.out.println("DONE");
             System.out.println("STORING Keys");
             sig.save();
 
         }
-        final PublicKey newkid = pksource.getPublicKey(allow);
+        final PublicKey newkid = pksource.getPublicKey(identity);
         if (newkid == null)
-            throw new CryptoException("PublicKey not available for: " + allow);
+            throw new CryptoException("PublicKey not available for: " + identity);
         return new IdentityBuilder(identity, newkid, defaultstore, defaultsigner, defaultlogger, defaultreceiver);
     }
 
@@ -270,14 +277,16 @@ public final class IdentityCreator extends CommandLineSigner {
         try {
             final IdentityCreator signer = new IdentityCreator(args);
             signer.execute();
+        } catch (UserCancellationException e){
+            System.out.println("Bye");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.exit(0);
+//        System.exit(0);
     }
 
     protected final String getExtraHelp() {
-        return " --name neu://neu/one --receiver mailto:joblogs@somedomain.com [--allow neuone --repository http://repository.neuclear.org -signer http://localhost:11870/Signer -logger http://logger.neuclear.org ]";
+        return " --name neu://neu/one --receiver mailto:joblogs@somedomain.com";
     }
 
     protected final boolean hasArguments() {
@@ -285,12 +294,11 @@ public final class IdentityCreator extends CommandLineSigner {
     }
 
     protected final void getLocalOptions(final Options options) {
-        options.addOption("n", "name", true, "specify name of new Identity");
-        options.addOption("w", "allow", true, "specify alias in keystore of public key of new Identity");
-        options.addOption("r", "repository", true, "Identity's default Repository");
-        options.addOption("s", "signer", true, "Identity's default Interactive Signer");
-        options.addOption("l", "logger", true, "Identity's default Logging Service");
-        options.addOption("b", "receiver", true, "Identity's default Receiver");
+        options.addOption("n", "name", true, "specify name of new Identity \n[ --name neu://bob@yourdomain.com ]");
+        options.addOption("r", "repository", true, "Identity's default Repository \n[ --repository http://repository.neuclear.org ] ");
+        options.addOption("s", "signer", true, "Identity's default Interactive Signer \n[ --signer http://localhost:11870 ]");
+        options.addOption("l", "logger", true, "Identity's default Logging Service \n[ --logger http://logger.neuclear.org ]");
+        options.addOption("b", "receiver", true, "Identity's default Receiver \n[ --receiver mailto:bob@yourdomain.com ]");
     }
 
 

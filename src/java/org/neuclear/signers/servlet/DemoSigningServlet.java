@@ -1,12 +1,15 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.16 2003/12/16 23:17:06 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.17 2003/12/19 00:31:31 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.17  2003/12/19 00:31:31  pelle
+ * Lots of usability changes through out all the passphrase agents and end user tools.
+ *
  * Revision 1.16  2003/12/16 23:17:06  pelle
  * Work done on the SigningServlet. The two phase web model is now only an option.
  * Allowing much quicker signing, using the GuiDialogueAgent.
  * The screen has also been cleaned up and displays the xml to be signed.
  * The GuiDialogueAgent now optionally remembers passphrases and has a checkbox to support this.
- * The PassPhraseAgent's now have a UserCancelsException, which allows the agent to tell the application if the user specifically
+ * The PassPhraseAgent's now have a UserCancellationException, which allows the agent to tell the application if the user specifically
  * cancels the signing process.
  *
  * Revision 1.15  2003/12/15 14:38:30  pelle

@@ -39,8 +39,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearJCETest.java,v 1.9 2003/12/18 17:40:19 pelle Exp $
+$Id: NeuClearJCETest.java,v 1.10 2003/12/19 00:31:31 pelle Exp $
 $Log: NeuClearJCETest.java,v $
+Revision 1.10  2003/12/19 00:31:31  pelle
+Lots of usability changes through out all the passphrase agents and end user tools.
+
 Revision 1.9  2003/12/18 17:40:19  pelle
 You can now create keys that get stored with a X509 certificate in the keystore. These can be saved as well.
 IdentityCreator has been modified to allow creation of keys.
@@ -198,6 +201,7 @@ public final class NeuClearJCETest extends AbstractSigningTest {
         assertTrue(signer.canSignFor(IVAN));
         assertNotNull(signer.getPublicKey(IVAN));
         assertEquals(pub,signer.getPublicKey(IVAN));
+        id.sign(signer);
         try {
             final Identity ivan = (Identity) id.convert();
             assertNotNull(ivan);

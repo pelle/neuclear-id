@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.25 2003/12/16 23:44:10 pelle Exp $
+ * $Id: SigningServlet.java,v 1.26 2003/12/19 00:31:31 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.26  2003/12/19 00:31:31  pelle
+ * Lots of usability changes through out all the passphrase agents and end user tools.
+ *
  * Revision 1.25  2003/12/16 23:44:10  pelle
  * End of work day clean up
  *
@@ -9,7 +12,7 @@
  * Allowing much quicker signing, using the GuiDialogueAgent.
  * The screen has also been cleaned up and displays the xml to be signed.
  * The GuiDialogueAgent now optionally remembers passphrases and has a checkbox to support this.
- * The PassPhraseAgent's now have a UserCancelsException, which allows the agent to tell the application if the user specifically
+ * The PassPhraseAgent's now have a UserCancellationException, which allows the agent to tell the application if the user specifically
  * cancels the signing process.
  *
  * Revision 1.23  2003/12/15 23:33:05  pelle
@@ -243,7 +246,7 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.Base64;
 import org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent;
-import org.neuclear.commons.crypto.passphraseagents.UserCancelsException;
+import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
 import org.neuclear.commons.crypto.signers.*;
 import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.InvalidNamedObjectException;
@@ -349,7 +352,7 @@ public class SigningServlet extends XMLInputStreamServlet {
 //                System.out.println("<br><font color=\"red\"><b>ERROR: Invalid Identity</b></font><br>");
                 out.println("<li><font color=\"red\"><b>ERROR: Invalid Identity</b></font></li>");
                 isSigned = false;
-            } catch (UserCancelsException e) {
+            } catch (UserCancellationException e) {
 //                System.out.println("<br><font color=\"red\"><b>ERROR: User Cancellation</b></font><br>");
                 out.println("<li><font color=\"red\"><b>You Cancelled</b></font></li>");
                 out.println("<li onclick=\"history.back(2)\"><b>Click to Go back</b></li>");

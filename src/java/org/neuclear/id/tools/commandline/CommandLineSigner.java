@@ -1,5 +1,8 @@
-/* $Id: CommandLineSigner.java,v 1.4 2003/12/18 17:40:19 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.5 2003/12/19 00:31:30 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.5  2003/12/19 00:31:30  pelle
+ * Lots of usability changes through out all the passphrase agents and end user tools.
+ *
  * Revision 1.4  2003/12/18 17:40:19  pelle
  * You can now create keys that get stored with a X509 certificate in the keystore. These can be saved as well.
  * IdentityCreator has been modified to allow creation of keys.
@@ -196,12 +199,18 @@ import org.dom4j.Document;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.commons.crypto.passphraseagents.CommandLineAgent;
+import org.neuclear.commons.crypto.passphraseagents.ConsoleAgent;
+import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
+import org.neuclear.commons.crypto.passphraseagents.InteractiveAgent;
+import org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent;
 import org.neuclear.commons.crypto.signers.DefaultSigner;
 import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
 import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.Identity;
 import org.neuclear.id.NSTools;
+import org.neuclear.id.InvalidNamedObjectException;
+import org.neuclear.id.NameResolutionException;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.xml.XMLException;
@@ -209,19 +218,23 @@ import org.neuclear.xml.XMLTools;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
+import java.net.URLClassLoader;
+import java.net.URL;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * @author pelleb
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class CommandLineSigner {
-    public CommandLineSigner(final String[] args) throws ParseException, FileNotFoundException, GeneralSecurityException, NeuClearException {
+    private final String EXECUTABLE ;
+
+    public CommandLineSigner(final String[] args) throws ParseException, UserCancellationException {
         CryptoTools.ensureProvider();
-
+        EXECUTABLE=Utility.getExecutable(getClass());
         options = createOptions();
-        final CommandLineParser clparser = CommandLineParserFactory.newParser();
-
-        cmd = clparser.parse(options, args);
+        cmd=parseOptions(args);
         checkArguments();
         if (cmd.hasOption('v')) {
             String name = cmd.getOptionValue('v');
@@ -244,7 +257,8 @@ public class CommandLineSigner {
             System.exit(0);
         }
 //        agent=(PassPhraseAgent)Configuration.getComponent(PassPhraseAgent.class,"neuclear-id");
-        sig = new DefaultSigner(new CommandLineAgent());
+        final InteractiveAgent agent = cmd.hasOption('g')?(InteractiveAgent)new GuiDialogAgent():new ConsoleAgent();
+        sig = createSigner(agent);
         alias = cmd.getOptionValue("a");
         of = cmd.getOptionValue("o");
         if (Utility.isEmpty(of) && cmd.hasOption('i')) {
@@ -252,23 +266,52 @@ public class CommandLineSigner {
         }
     }
 
+    private final CommandLine parseOptions(final String[] args) throws ParseException {
+        final CommandLineParser clparser = CommandLineParserFactory.newParser();
+        try {
+            return clparser.parse(options, args);
+        } catch (UnrecognizedOptionException e) {
+            System.out.println(e.getLocalizedMessage());
+            printHelp();
+            System.exit(1);
+        }
+        return null;
+    }
+
+    private DefaultSigner createSigner(final InteractiveAgent agent) throws UserCancellationException {
+        try {
+            return new DefaultSigner(agent);
+        } catch (InvalidPassphraseException e) {
+            return createSigner(agent);
+        }
+    }
+
     public static void main(final String[] args) {
         try {
+            System.out.println();
             final CommandLineSigner signer = new CommandLineSigner(args);
             signer.execute();
+        } catch (UserCancellationException e){
+            System.out.println("Bye");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public final void checkArguments() {
-        if (!hasArguments()) {
-            final HelpFormatter help = new HelpFormatter();
-            help.printHelp("java " +
-                    this.getClass().getName() +
-                    getExtraHelp() + " [--outputfile signed/test.id] ", options);
+        if (!hasArguments()||cmd.hasOption('h')) {
+            printHelp();
             System.exit(1);
         }
+    }
+
+    private void printHelp() {
+        final HelpFormatter help = new HelpFormatter();
+
+        help.printHelp("\n"+EXECUTABLE +getExtraHelp()+
+                "  [--outputfile signed/test.id] \n" +
+                EXECUTABLE+" --verify neu://neuclear.org\n" +
+                EXECUTABLE+" --inputfile joe@yourdomain.xml \n" , options);
     }
 
     protected String getExtraHelp() {
@@ -287,9 +330,9 @@ public class CommandLineSigner {
             if (!sig.canSignFor(alias)) {
                 if (!Utility.isEmpty(of))
                     of = subject.getLocalName() + ".xml";
-                System.err.println("Key with alias: " + alias + " doesnt exist in our keystore. \nSaving unsigned Identity as: " + of);
+                System.out.println("Key with alias: " + alias + " doesnt exist in our keystore. \nSaving unsigned Identity as: " + of);
             } else if(!subject.isSigned()) {
-                System.err.println("Signing by " + alias + " ...");
+                System.out.println("Signing by " + alias + " ...");
                 subject.sign(alias, sig);
             }
 
@@ -299,10 +342,30 @@ public class CommandLineSigner {
                 if (outFile.getParentFile() != null)
                     outFile.getParentFile().mkdirs();
                 dest = new FileOutputStream(of);
-                System.err.println("Outputting to: " + of);
+                System.out.println("Outputting to: " + of);
             }
             XMLTools.writeFile(dest, subject.getElement());
             System.out.println();
+            System.out.println("You now need to copy the file: "+of+ " to your webserver so it is visible at the following location:\n" +
+                    NSTools.getRepositoryURL(alias)+NSTools.name2path(subject.getName())+"root.id");
+
+            System.out.println("\nOnce this is done you will be able to verify your new Identity like this:");
+            System.out.println(EXECUTABLE+" -v "+subject.getName());
+/*  We need to be able to send an unsigned object before I can enable this
+            if (!sig.canSignFor(alias)) {
+                System.out.println("Do you wish to send the contract to the signer of "+alias+"?");
+                if (Utility.getAffirmative(true)){
+                    try {
+                        Identity id=NSResolver.resolveIdentity(alias);
+                        id.receive(subject);
+                    } catch (NameResolutionException e) {
+                        System.err.println(e.getLocalizedMessage());
+                    } catch (InvalidNamedObjectException e) {
+                        System.err.println(e.getLocalizedMessage());
+                    }
+                }
+            }
+*/
         } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace(System.err);
@@ -360,16 +423,11 @@ public class CommandLineSigner {
         // create Options object
         final Options options = new Options();
 
-        // add t option
-//        options.addOption("s", "keystore", true, "specify KeyStore");
-//        options.addOption("t", "keystoretype", true, "specify KeyStore Type");
-//        options.addOption("j", "keystorepassword", true, "specify KeyStore Password");
-//        options.addOption("a", "alias", true, "specify Key Alias in KeyStore");
-//        options.addOption("p", "password", true, "specify Alias Password");
-        options.addOption("o", "outputfile", true, "specify Output File");
-        options.addOption("i", "inputfile", true, "specify Input File");
-        options.addOption("v", "verify", true, "Specify NEU ID to verify");
-
+        options.addOption("o", "outputfile", true, "specify output file \n[ --outputfile bob.id ]");
+        options.addOption("i", "inputfile", true, "specify Input File \n[ --inputfile bob.xml ]");
+        options.addOption("v", "verify", true, "Specify NEU ID to verify \n[ --verify neu://bob@yourdomain.com ]");
+        options.addOption("h","help",false,"Help");
+        options.addOption("g","gui",false,"Use GUI Passphrase Dialog");
         getLocalOptions(options);
 
 
@@ -381,9 +439,7 @@ public class CommandLineSigner {
 
     protected final CommandLine cmd;
     protected final Options options;
-    public final static String keystore = System.getProperty("user.home") + "/.keystore";
     protected final Signer sig;
-//    protected final PassPhraseAgent agent;
     protected String alias;
     protected String of;
 

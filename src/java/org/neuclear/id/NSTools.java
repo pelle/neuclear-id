@@ -1,6 +1,9 @@
 /*
- * $Id: NSTools.java,v 1.22 2003/12/16 23:44:10 pelle Exp $
+ * $Id: NSTools.java,v 1.23 2003/12/19 00:31:30 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.23  2003/12/19 00:31:30  pelle
+ * Lots of usability changes through out all the passphrase agents and end user tools.
+ *
  * Revision 1.22  2003/12/16 23:44:10  pelle
  * End of work day clean up
  *
@@ -187,6 +190,7 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.id.resolver.NSResolver;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -260,11 +264,11 @@ public final class NSTools {
      * 
      * @param uri a valid NEU Name
      * @return Parent URI or null if name is the root
-     * @throws NeuClearException if name is invalid
+     * @throws InvalidNamedObjectException if name is invalid
      */
-    public static String getSignatoryURI(final String uri) throws NeuClearException {
+    public static String getSignatoryURI(final String uri) throws InvalidNamedObjectException {
         if (!isValidName(uri))
-            throw new InvalidNamedObjectException("Invalid Neu ID: " + uri);
+            throw new InvalidNamedObjectException(uri);
         final int bang = uri.indexOf('!');
 
         // We hava a Transaction ID. We always return its signer
@@ -413,6 +417,19 @@ public final class NSTools {
             return false;
         return !Utility.isEmpty(elem.attributeValue(DocumentHelper.createQName("name", NS_NEUID)));
     }
+
+    public static String getRepositoryURL(String alias) throws InvalidNamedObjectException {
+        String url=isHttpScheme(alias);
+        if (url==null){
+            try {
+                return NSResolver.resolveIdentity(alias).getRepository();
+            } catch (Exception e) {
+                return getRepositoryURL(getSignatoryURI(alias));
+            }
+        }
+        return url;
+    }
+
     private static final String HTTP_SCHEME_EX = "^neu:(neuid:)?\\/\\/(([\\w-]+\\.)+[\\w-]+)$";
     private static final Pattern HTTP_SCHEME = Pattern.compile(HTTP_SCHEME_EX);
 
