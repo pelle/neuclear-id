@@ -5,8 +5,15 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:52:38 AM
- * $Id: SmtpSender.java,v 1.8 2003/10/25 00:39:54 pelle Exp $
+ * $Id: SmtpSender.java,v 1.9 2003/11/06 23:48:59 pelle Exp $
  * $Log: SmtpSender.java,v $
+ * Revision 1.9  2003/11/06 23:48:59  pelle
+ * Major Refactoring of PaymentProcessor.
+ * Factored out AssetController to be new abstract parent class together with most of its support classes.
+ * Created (Half way) RemoteAssetController, which can perform transactions on external AssetControllers via NeuClear.
+ * Created the first attempt at the ExchangeAgent. This will need use of the RemoteAssetController.
+ * SOAPTools was changed to return a stream. This is required by the VerifyingReader in NeuClear.
+ *
  * Revision 1.8  2003/10/25 00:39:54  pelle
  * Fixed SmtpSender it now sends the messages.
  * Refactored CommandLineSigner. Now it simply signs files read from command line. However new class IdentityCreator
@@ -60,6 +67,7 @@ package org.neuclear.senders;
  */
 
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neudist.utils.Utility;
 import org.neudist.xml.XMLException;
@@ -73,7 +81,7 @@ import java.util.Date;
 import java.util.Properties;
 
 public class SmtpSender extends Sender {
-    public void send(String endpoint, NamedObjectBuilder obj) throws NeuClearException {
+    public SignedNamedObject send(String endpoint, NamedObjectBuilder obj) throws NeuClearException {
         Properties props = System.getProperties();
         if (endpoint.startsWith("mailto:"))
             endpoint = endpoint.substring(7);
@@ -122,6 +130,6 @@ public class SmtpSender extends Sender {
             Utility.rethrowException(e);
         }
 
-
+        return null;// We never receive a response
     }
 }

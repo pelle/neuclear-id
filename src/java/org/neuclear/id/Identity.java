@@ -1,6 +1,13 @@
 /*
- * $Id: Identity.java,v 1.10 2003/10/29 21:16:27 pelle Exp $
+ * $Id: Identity.java,v 1.11 2003/11/06 23:48:59 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.11  2003/11/06 23:48:59  pelle
+ * Major Refactoring of PaymentProcessor.
+ * Factored out AssetController to be new abstract parent class together with most of its support classes.
+ * Created (Half way) RemoteAssetController, which can perform transactions on external AssetControllers via NeuClear.
+ * Created the first attempt at the ExchangeAgent. This will need use of the RemoteAssetController.
+ * SOAPTools was changed to return a stream. This is required by the VerifyingReader in NeuClear.
+ *
  * Revision 1.10  2003/10/29 21:16:27  pelle
  * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
  * To use it you pass a byte array and an alias. The sign method then returns the signature.
@@ -210,7 +217,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.sql.Timestamp;
 
-public final class Identity extends SignedNamedObject {
+public class Identity extends SignedNamedObject {
     private static final String NSROOTPKMOD = "pu/UOt9AKPt9txz/1TyYseL0vMUZXDxpz3PboE3X7J6r1UbfC9b45eO9SlD1wP52nCkVd5qL0fMOQV4lxP0KiL0DwCPid99YCXEn8BU4hEKLV3gD930ieFDtRhgDk7tcFzAqd6ilhVr3NENSjLRmlXK30qPmLRnDqhmx+UC7hLikhT6eJjDBatiYK4ESr2R5x/udIaJTSsenVA2zs1h2FcKXYExxJrPQBm0AXxguVlhqy+ImSjFQUEH9WOpr3zGLtXtcgawxtdapS8nwxbY38JR0HPloOWkFTC6XyurKr7TcDSrzgAUmJRy52pUvsqFRFcHxljL+Flv5iQS8TciKBQ==";
     //private static final String NSROOTPKMOD = "AKbv1DrfQCj7fbcc/9U8mLHi9LzFGVw8ac9z26BN1+yeq9VG3wvW+OXjvUpQ9cD+dpwpFXeai9Hz DkFeJcT9Coi9A8Aj4nffWAlxJ/AVOIRCi1d4A/d9InhQ7UYYA5O7XBcwKneopYVa9zRDUoy0ZpVy t9Kj5i0Zw6oZsflAu4S4pIU+niYwwWrYmCuBEq9kecf7nSGiU0rHp1QNs7NYdhXCl2BMcSaz0AZt AF8YLlZYasviJkoxUFBB/Vjqa98xi7V7XIGsMbXWqUvJ8MW2N/CUdBz5aDlpBUwul8rqyq+03A0q 84AFJiUcudqVL7KhURXB8ZYy/hZb+YkEvE3IigU=";
     private static final String NSROOTPKEXP = "AQAB";
@@ -227,7 +234,7 @@ public final class Identity extends SignedNamedObject {
      * @throws NeuClearException 
      */
 
-    Identity(String name, Identity signatory, Timestamp timestamp, String digest, String repository, String signer, String logger, String receiver, PublicKey pub) throws NeuClearException {
+    protected Identity(String name, Identity signatory, Timestamp timestamp, String digest, String repository, String signer, String logger, String receiver, PublicKey pub) throws NeuClearException {
         super(name, signatory, timestamp, digest);
         this.repository = repository;
         this.logger = logger;
@@ -355,7 +362,7 @@ public final class Identity extends SignedNamedObject {
     }
 
     //TODO I dont like this being public
-    public final static class Reader implements NamedObjectReader {
+    public static class Reader implements NamedObjectReader {
         /**
          * Read object from Element and fill in its details
          * 

@@ -5,8 +5,15 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:50:30 AM
- * $Id: SoapSender.java,v 1.7 2003/10/21 22:31:13 pelle Exp $
+ * $Id: SoapSender.java,v 1.8 2003/11/06 23:48:59 pelle Exp $
  * $Log: SoapSender.java,v $
+ * Revision 1.8  2003/11/06 23:48:59  pelle
+ * Major Refactoring of PaymentProcessor.
+ * Factored out AssetController to be new abstract parent class together with most of its support classes.
+ * Created (Half way) RemoteAssetController, which can perform transactions on external AssetControllers via NeuClear.
+ * Created the first attempt at the ExchangeAgent. This will need use of the RemoteAssetController.
+ * SOAPTools was changed to return a stream. This is required by the VerifyingReader in NeuClear.
+ *
  * Revision 1.7  2003/10/21 22:31:13  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
  * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -53,15 +60,17 @@ package org.neuclear.senders;
  *
  */
 
-import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.Named;
-import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.id.verifier.VerifyingReader;
+import org.neudist.xml.XMLException;
 import org.neudist.xml.soap.SOAPTools;
 
 
 public class SoapSender extends Sender {
-    public void send(String endpoint, NamedObjectBuilder obj) throws NeuClearException {
-        SOAPTools.soapRequest(endpoint, obj.getElement(), "/receive");
+    public SignedNamedObject send(String endpoint, NamedObjectBuilder obj) throws NeuClearException, XMLException {
+        return VerifyingReader.getInstance().read(SOAPTools.soapRequest(endpoint, obj.getElement(), "/receive"));
+
     }
 }

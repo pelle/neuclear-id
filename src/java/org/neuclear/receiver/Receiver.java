@@ -6,8 +6,15 @@ package org.neuclear.receiver;
  * Date: Oct 10, 2002
  * Time: 11:24:59 PM
  * To change this template use Options | File Templates.
- * $Id: Receiver.java,v 1.6 2003/10/03 23:48:51 pelle Exp $
+ * $Id: Receiver.java,v 1.7 2003/11/06 23:48:59 pelle Exp $
  * $Log: Receiver.java,v $
+ * Revision 1.7  2003/11/06 23:48:59  pelle
+ * Major Refactoring of PaymentProcessor.
+ * Factored out AssetController to be new abstract parent class together with most of its support classes.
+ * Created (Half way) RemoteAssetController, which can perform transactions on external AssetControllers via NeuClear.
+ * Created the first attempt at the ExchangeAgent. This will need use of the RemoteAssetController.
+ * SOAPTools was changed to return a stream. This is required by the VerifyingReader in NeuClear.
+ *
  * Revision 1.6  2003/10/03 23:48:51  pelle
  * Did various security related updates in the pay package with regards to immutability of fields etc.
  * PaymentReceiver should now be operational. Real testing needs to be done including in particular setting the
@@ -15,7 +22,7 @@ package org.neuclear.receiver;
  * A new class TransferGlobals contains usefull settings for making life easier in the other contract based classes.
  * TransferContract the signed contract is functional and has a matching TransferRequestBuilder class for programmatically creating
  * TransferRequests for signing.
- * TransferReceiptBuilder has been created for use by Payment processors. It is used in the PaymentReceiver.
+ * TransferReceiptBuilder has been created for use by Transfer processors. It is used in the PaymentReceiver.
  *
  * Revision 1.5  2003/09/26 23:53:10  pelle
  * Changes mainly in receiver and related fun.
@@ -66,8 +73,9 @@ public interface Receiver {
      * Add your main transaction processing logic within this method.
      * Remember you must check the validity of the SignedNamedObject here. Until you do so
      * you can not trust it.
-     * @param obj
-     * @throws UnsupportedTransaction
+     * 
+     * @param obj 
+     * @throws UnsupportedTransaction 
      */
     org.neudist.xml.ElementProxy receive(SignedNamedObject obj) throws UnsupportedTransaction;
 }

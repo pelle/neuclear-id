@@ -1,7 +1,14 @@
 /*
  *
- * $Id: CachedSource.java,v 1.7 2003/11/05 23:40:21 pelle Exp $
+ * $Id: CachedSource.java,v 1.8 2003/11/06 23:49:00 pelle Exp $
  * $Log: CachedSource.java,v $
+ * Revision 1.8  2003/11/06 23:49:00  pelle
+ * Major Refactoring of PaymentProcessor.
+ * Factored out AssetController to be new abstract parent class together with most of its support classes.
+ * Created (Half way) RemoteAssetController, which can perform transactions on external AssetControllers via NeuClear.
+ * Created the first attempt at the ExchangeAgent. This will need use of the RemoteAssetController.
+ * SOAPTools was changed to return a stream. This is required by the VerifyingReader in NeuClear.
+ *
  * Revision 1.7  2003/11/05 23:40:21  pelle
  * A few minor fixes to make all the unit tests work
  * Also the start of getting SigningServlet and friends back working.
@@ -22,7 +29,7 @@
  * A new class TransferGlobals contains usefull settings for making life easier in the other contract based classes.
  * TransferContract the signed contract is functional and has a matching TransferRequestBuilder class for programmatically creating
  * TransferRequests for signing.
- * TransferReceiptBuilder has been created for use by Payment processors. It is used in the PaymentReceiver.
+ * TransferReceiptBuilder has been created for use by Transfer processors. It is used in the PaymentReceiver.
  *
  * Revision 1.3  2003/09/24 23:56:49  pelle
  * Refactoring nearly done. New model for creating signed objects.
