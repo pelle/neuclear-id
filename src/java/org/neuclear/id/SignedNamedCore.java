@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedCore.java,v 1.23 2004/04/01 23:19:49 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.24 2004/04/15 15:33:40 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.24  2004/04/15 15:33:40  pelle
+ * Made the SignedNamedCore and SignedNamedObject unserializable for security reasons.
+ *
  * Revision 1.23  2004/04/01 23:19:49  pelle
  * Split Identity into Signatory and Identity class.
  * Identity remains a signed named object and will in the future just be used for self declared information.
@@ -296,6 +299,8 @@ import org.neuclear.commons.LowLevelException;
 import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.xml.xmlsec.*;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.security.PublicKey;
 import java.sql.Timestamp;
 
@@ -449,6 +454,10 @@ public final class SignedNamedCore {
         return encoded.equals(((SignedNamedCore) object).getEncoded());    //To change body of overriden methods use Options | File Templates.
     }
 
+    // Disable Serialization
+    private final void writeObject(ObjectInputStream in) throws IOException {
+        throw new IOException("object can not be serialized");
+    }
 
     private final String name;
     private final Signatory signer;

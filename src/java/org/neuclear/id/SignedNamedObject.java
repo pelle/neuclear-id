@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedObject.java,v 1.20 2004/04/01 23:19:49 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.21 2004/04/15 15:33:40 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.21  2004/04/15 15:33:40  pelle
+ * Made the SignedNamedCore and SignedNamedObject unserializable for security reasons.
+ *
  * Revision 1.20  2004/04/01 23:19:49  pelle
  * Split Identity into Signatory and Identity class.
  * Identity remains a signed named object and will in the future just be used for self declared information.
@@ -251,6 +254,8 @@ package org.neuclear.id;
 import org.dom4j.DocumentHelper;
 import org.dom4j.QName;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.Timestamp;
 
 /**
@@ -343,5 +348,10 @@ public class SignedNamedObject {
     }
 
     private final SignedNamedCore core;
+
+    // Disable Serialization
+    private final void writeObject(ObjectInputStream in) throws IOException {
+        throw new IOException("object can not be serialized");
+    }
 
 }
