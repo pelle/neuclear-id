@@ -17,7 +17,7 @@ import org.neuclear.source.SourceException;
  * </code>
  */
 public final class NSResolver {
-    private static final NSCache NSCACHE = NSCache.make();
+    private static final NSCache NSCACHE = new NSCache();
 
     public static final String NSROOTSTORE = "http://repository.neuclear.org";
 

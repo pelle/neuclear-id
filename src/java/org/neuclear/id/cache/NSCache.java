@@ -1,12 +1,14 @@
 package org.neuclear.id.cache;
 
-import com.waterken.adt.NoSuchElement;
-import com.waterken.adt.cache.Cache;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.Identity;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.InvalidNamedObjectException;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.lang.ref.WeakReference;
 
 /**
  * The Idea of the NSCache is to have a quick cache of verified public NameSpaces. This is not stored, but is created from scratch
@@ -15,13 +17,11 @@ import org.neuclear.id.InvalidNamedObjectException;
  * This should help with both security and memory usage.
  */
 public final class NSCache {
-    private NSCache() {
-        spaces = new Cache();
+    public NSCache() {
+        spaces = new HashMap();
     }
 
-    public static final NSCache make() {
-        return new NSCache();
-    }
+
 
     /**
      * Attempts to get a verified PublicKey for the given name from the cache
@@ -30,11 +30,10 @@ public final class NSCache {
      * @return a valid Identity object if found otherwise null
      */
     public SignedNamedObject fetchCached(final String name) {
-        try { // I dont like the way it forces me to catch this. I need to rewrite it.
-            return (Identity) spaces.fetch(name);
-        } catch (NoSuchElement noSuchElement) {
+        final WeakReference ref = (WeakReference) spaces.get(name);
+        if (ref==null)
             return null;
-        }
+        return (SignedNamedObject) ref.get();
     }
 
     public void cache(final SignedNamedObject ns)  {
@@ -42,12 +41,12 @@ public final class NSCache {
         try {
             final String parentName = NSTools.getSignatoryURI(ns.getName());
             if ((fetchCached(parentName) != null) || (parentName.equals("neu://")||NSTools.isHttpScheme(ns.getName())!=null)) {
-                spaces.put(ns.getName(), ns);
+                spaces.put(ns.getName(),new WeakReference(ns));
             }
         } catch (InvalidNamedObjectException e) {
             ;// If we have an issue here we will silently ignore it.
         }
     }
 
-    private final Cache spaces;
+    private final Map spaces;
 }
