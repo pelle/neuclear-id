@@ -1,6 +1,10 @@
 /*
-  $Id: NSToolsTest.java,v 1.19 2004/01/19 23:49:45 pelle Exp $
+  $Id: NSToolsTest.java,v 1.20 2004/02/18 00:14:36 pelle Exp $
   $Log: NSToolsTest.java,v $
+  Revision 1.20  2004/02/18 00:14:36  pelle
+  Many, many clean ups. I've readded Targets in a new method.
+  Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+
   Revision 1.19  2004/01/19 23:49:45  pelle
   Unit testing uncovered further issues with Base32
   NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
@@ -141,11 +145,8 @@
 package org.neuclear.id;
 
 import junit.framework.TestCase;
-import org.dom4j.DocumentHelper;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.id.builders.IdentityBuilder;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 
 /**
@@ -264,14 +265,5 @@ public final class NSToolsTest extends TestCase {
         assertNull(NSTools.isHttpScheme("neu://neuclear.org!sdfsdfdsf"));
     }
 
-    public static void testIsNamedObject() throws NeuClearException, XMLSecurityException {
-//        AuthenticationTicketBuilder builder = new AuthenticationTicketBuilder("neu://test", "neu://neuclear.org", "http://neuclear.org");
-//        assertTrue(NSTools.isNamedObject(builder.getElement()));
-//        assertTrue(NSTools.isNamedObject(new SignatureRequestBuilder("neu://neuclear.org", "neu://bob@test", builder, "Test").getElement()));
-        assertTrue(NSTools.isNamedObject(new IdentityBuilder("neu://test", Identity.getRootPK()).getElement()));
-        assertFalse(NSTools.isNamedObject(DocumentHelper.createElement("test")));
-        assertFalse(NSTools.isNamedObject(null));
 
-
-    }
 }

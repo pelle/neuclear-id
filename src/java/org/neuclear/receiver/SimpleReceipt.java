@@ -1,11 +1,7 @@
 package org.neuclear.receiver;
 
-import org.neuclear.xml.AbstractElementProxy;
-import org.neuclear.id.builders.NamedObjectBuilder;
-import org.neuclear.id.builders.Builder;
-import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.NSTools;
-import org.dom4j.Namespace;
+import org.neuclear.id.builders.Builder;
 
 /**
  * A receipt for returning simple status from a Receiver.

@@ -1,6 +1,10 @@
 /*
- * $Id: SignedNamedObject.java,v 1.17 2004/01/10 00:03:21 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.18 2004/02/18 00:14:32 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.18  2004/02/18 00:14:32  pelle
+ * Many, many clean ups. I've readded Targets in a new method.
+ * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+ *
  * Revision 1.17  2004/01/10 00:03:21  pelle
  * Implemented new Schema for Transfer*
  * Working on it for Exchange*, so far all Receipts are implemented.
@@ -257,7 +261,6 @@ import java.sql.Timestamp;
  * These NamedObjectBuilder objects should be signed using your Signer, before being sent on to a web service.
  * 
  * @see NamedObjectReader
- * @see org.neuclear.id.builders.NamedObjectBuilder
  * @see org.neuclear.id.verifier.VerifyingReader
  * @see org.neuclear.id.resolver.NSResolver
  * @see org.neuclear.senders.Sender
@@ -362,7 +365,6 @@ public class SignedNamedObject {
             return true;
         return getEncoded().equals(((SignedNamedObject)object).getEncoded());
     }
-
     private final SignedNamedCore core;
 
 }

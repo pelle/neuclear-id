@@ -1,0 +1,7 @@
+<Identity>
+    <Repository>
+        http://talk.org/repository
+    </Repository>
+    <Target href="mailto:pelle@neuclear.org" type="inbox"/>
+    <Allow></Allow>
+</Identity>

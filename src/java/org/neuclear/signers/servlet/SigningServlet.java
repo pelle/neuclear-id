@@ -1,6 +1,10 @@
 /*
- * $Id: SigningServlet.java,v 1.28 2004/01/13 15:11:35 pelle Exp $
+ * $Id: SigningServlet.java,v 1.29 2004/02/18 00:14:33 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.29  2004/02/18 00:14:33  pelle
+ * Many, many clean ups. I've readded Targets in a new method.
+ * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+ *
  * Revision 1.28  2004/01/13 15:11:35  pelle
  * Now builds.
  * Now need to do unit tests
@@ -256,16 +260,14 @@ package org.neuclear.signers.servlet;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
-import org.neuclear.commons.crypto.Base64;
-import org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent;
 import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
-import org.neuclear.commons.crypto.signers.*;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
+import org.neuclear.commons.crypto.signers.ServletSignerFactory;
+import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.InvalidNamedObjectException;
-import org.neuclear.id.NSTools;
 import org.neuclear.id.SignatureRequest;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.builders.Builder;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.XMLException;
@@ -279,7 +281,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.io.FileNotFoundException;
 import java.security.GeneralSecurityException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

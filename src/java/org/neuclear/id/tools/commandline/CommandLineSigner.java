@@ -1,5 +1,9 @@
-/* $Id: CommandLineSigner.java,v 1.8 2004/01/19 23:49:44 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.9 2004/02/18 00:14:31 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.9  2004/02/18 00:14:31  pelle
+ * Many, many clean ups. I've readded Targets in a new method.
+ * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+ *
  * Revision 1.8  2004/01/19 23:49:44  pelle
  * Unit testing uncovered further issues with Base32
  * NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
@@ -226,9 +230,7 @@ import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.Identity;
-import org.neuclear.id.InvalidNamedObjectException;
-import org.neuclear.id.NSTools;
-import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.id.builders.Builder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
@@ -237,7 +239,7 @@ import java.io.*;
 
 /**
  * @author pelleb
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class CommandLineSigner {
     private final String EXECUTABLE ;
@@ -257,7 +259,6 @@ public class CommandLineSigner {
                     System.out.println("Signed Object: " + id.getName() + " is verified");
                     System.out.println("was signed at: " + TimeTools.formatTimeStamp(id.getTimeStamp()));
                     System.out.println("Is of type: " + id.getClass().getName());
-                    System.out.println("repository: " + id.getRepository());
                     System.out.println("signer: " + id.getSigner());
                 } else {
                     System.out.println("Couldnt Resolve or Verify the object.");
@@ -335,7 +336,7 @@ public class CommandLineSigner {
     }
 
     public final void execute() throws UserCancellationException {
-            final NamedObjectBuilder subject = build();
+            final Builder subject = build();
 
         try {
             if (!sig.canSignFor(alias)) {
@@ -357,11 +358,10 @@ public class CommandLineSigner {
             }
             XMLTools.writeFile(dest, subject.getElement());
             System.out.println();
-            System.out.println("You now need to copy the file: "+of+ " to your webserver so it is visible at the following location:\n" +
-                    NSTools.getRepositoryURL(alias)+NSTools.name2path(subject.getName())+"/root.id");
+            System.out.println("You now need to copy the file: "+of+ " to your webserver so it is visible at a given location");
 
-            System.out.println("\nOnce this is done you will be able to verify your new Identity like this:");
-            System.out.println(EXECUTABLE+" -v "+subject.getName());
+//            System.out.println("\nOnce this is done you will be able to verify your new Identity like this:");
+//            System.out.println(EXECUTABLE+" -v "+subject.getName());
 /*  We need to be able to send an unsigned object before I can enable this
             if (!sig.canSignFor(alias)) {
                 System.out.println("Do you wish to send the contract to the signer of "+alias+"?");
@@ -377,8 +377,6 @@ public class CommandLineSigner {
                 }
             }
 */
-        } catch (InvalidNamedObjectException e) {
-            throw new LowLevelException(e);
         } catch (NonExistingSignerException e) {
             throw new LowLevelException(e);
         } catch (FileNotFoundException e) {
@@ -391,9 +389,9 @@ public class CommandLineSigner {
 
     }
 
-    protected NamedObjectBuilder build() throws UserCancellationException {
+    protected Builder build() throws UserCancellationException {
         final String sf = cmd.getOptionValue("i");
-        NamedObjectBuilder subject=null;
+        Builder subject=null;
         try {
             InputStream source = System.in;
             if (!Utility.isEmpty(sf)) {
@@ -404,11 +402,8 @@ public class CommandLineSigner {
                 }
             }
             final Document doc = XMLTools.loadDocument(source);
-            subject = new NamedObjectBuilder(doc);
+            subject = new Builder(doc.getRootElement());
 
-            if (Utility.isEmpty(alias)) {
-                alias = Utility.denullString(NSTools.isHttpScheme(subject.getName()), NSTools.getSignatoryURI(subject.getName()));
-            }
             if (!sig.canSignFor(alias)) {
                 System.err.println("You can not sign as " + alias + " with your current keystore.");
                 System.exit(1);
@@ -416,7 +411,6 @@ public class CommandLineSigner {
 
             System.out.println("You are about to sign the following Contract. Please make sure that is what you want.");
             System.out.println("Type: " + subject.getElement().getName());
-            System.out.println("Proposed Name: " + subject.getName());
             System.out.println("Raw XML:\n===================");
             System.out.println(subject.asXML());
             System.out.print("===================\nAre you shure you wish to sign this? (y/N) ");
@@ -427,9 +421,6 @@ public class CommandLineSigner {
             }
 
             return subject;
-        } catch (InvalidNamedObjectException e) {
-                System.err.println("The name: "+e.getName()+" is not valid. \nplease check the xml attribute \"neuid:name\" in the xml element: "+ subject.getElement().getQualifiedName()+" in your input file: "+sf);
-                System.exit(1);
         } catch (FileNotFoundException e) {
             System.err.println("Couldnt find file: " + sf);
             System.exit(1);

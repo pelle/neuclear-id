@@ -20,8 +20,12 @@ import java.text.ParseException;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 1:23:05 PM
- * $Id: LogSender.java,v 1.15 2004/01/10 00:03:21 pelle Exp $
+ * $Id: LogSender.java,v 1.16 2004/02/18 00:14:33 pelle Exp $
  * $Log: LogSender.java,v $
+ * Revision 1.16  2004/02/18 00:14:33  pelle
+ * Many, many clean ups. I've readded Targets in a new method.
+ * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+ *
  * Revision 1.15  2004/01/10 00:03:21  pelle
  * Implemented new Schema for Transfer*
  * Working on it for Exchange*, so far all Receipts are implemented.
@@ -181,10 +185,12 @@ public final class LogSender extends Sender {
         return null;
     }
 
+/*
     public static Timestamp getTimeStamp(final SignedNamedObject obj) throws NeuClearException {
         return getTimeStamp(Utility.denullString(obj.getSignatory().getLogger(), LOGGER), obj.getEncoded().getBytes());
 
     }
+*/
 
 /*
     private static void logObject(String name) throws NeuClearException {

@@ -37,8 +37,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearJCETest.java,v 1.13 2004/01/20 20:28:24 pelle Exp $
+$Id: NeuClearJCETest.java,v 1.14 2004/02/18 00:14:35 pelle Exp $
 $Log: NeuClearJCETest.java,v $
+Revision 1.14  2004/02/18 00:14:35  pelle
+Many, many clean ups. I've readded Targets in a new method.
+Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+
 Revision 1.13  2004/01/20 20:28:24  pelle
 Fixed final issues highlighted by unit tests. Really just a bunch of smaller stuff.
 
@@ -127,7 +131,7 @@ public final class NeuClearJCETest extends AbstractSigningTest {
     }
 
     public final void testGetCertificate() throws NeuClearException, XMLException {
-        final IdentityBuilder id = new IdentityBuilder("neu://bob@test", signer.getPublicKey("neu://bob@test"));
+        final IdentityBuilder id = new IdentityBuilder(signer.getPublicKey("neu://bob@test"));
         final Identity bob = (Identity) id.convert("neu://bob@test",signer);
         final Certificate cert = bob.getCertificate();
         assertNotNull(cert);
@@ -142,7 +146,7 @@ public final class NeuClearJCETest extends AbstractSigningTest {
         kpg.initialize(512);
         final KeyPair kp = kpg.generateKeyPair();
         final JCESigner sig2 = new JCESigner(ks, new AlwaysTheSamePassphraseAgent("neuclear"));
-        final IdentityBuilder id = new IdentityBuilder("neu://eve@test", kp.getPublic());
+        final IdentityBuilder id = new IdentityBuilder( kp.getPublic());
         final Identity eve = (Identity) id.convert("neu://test",signer);
 
         ks.setKeyEntry("neu://eve@test", kp.getPrivate(), "neuclear".toCharArray(), eve.getCertificateChain());
@@ -203,8 +207,7 @@ public final class NeuClearJCETest extends AbstractSigningTest {
     public void testCreateAndUpdateCert() throws NeuClearException, XMLException {
         PublicKey pub=getSigner().generateKey(IVAN);
         assertNotNull(pub);
-        final IdentityBuilder id = new IdentityBuilder(IVAN,pub);
-        assertEquals(IVAN,id.getName());
+        final IdentityBuilder id = new IdentityBuilder(pub);
         assertTrue(signer.canSignFor(IVAN));
         assertNotNull(signer.getPublicKey(IVAN));
         assertEquals(pub,signer.getPublicKey(IVAN));

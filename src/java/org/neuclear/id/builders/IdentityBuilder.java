@@ -1,6 +1,10 @@
 /*
- * $Id: IdentityBuilder.java,v 1.18 2004/01/13 15:11:35 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.19 2004/02/18 00:14:30 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.19  2004/02/18 00:14:30  pelle
+ * Many, many clean ups. I've readded Targets in a new method.
+ * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+ *
  * Revision 1.18  2004/01/13 15:11:35  pelle
  * Now builds.
  * Now need to do unit tests
@@ -226,79 +230,64 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
-import org.neuclear.commons.crypto.signers.Signer;
-import org.neuclear.commons.crypto.CryptoException;
-import org.neuclear.id.NSTools;
-import org.neuclear.id.Identity;
 import org.neuclear.id.InvalidNamedObjectException;
+import org.neuclear.id.NSTools;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
-import org.neuclear.xml.XMLException;
 
 import java.security.PublicKey;
-import java.security.cert.Certificate;
 
-public class IdentityBuilder extends NamedObjectBuilder {
+public class IdentityBuilder extends Builder {
     /**
      * It creates a Standard Identity document, but doesn't sign it.
      * 
-     * @param name       The Name of Identity
      * @param allow      PublicKey allowed to sign in here
-     * @param repository URL of Default Store for NameSpace. (Note. A NameSpace object is stored in the default repository of it's parent namespace)
      * @param signer     URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
      * @param receiver   URL of default receiver for namespace
      */
 
-    public IdentityBuilder(final String name, final PublicKey allow, final String repository, final String signer, final String logger, final String receiver) throws InvalidNamedObjectException {
-        this(createNEUIDQName(TAGNAME), name, allow, repository, signer, logger, receiver);
+    public IdentityBuilder( final PublicKey allow, final String signer, final String logger, final String receiver) throws InvalidNamedObjectException {
+        this(createNEUIDQName(TAGNAME), allow, signer, logger, receiver);
     }
 
     /**
      * This constructor should be used by subclasses of Identity. It creates a Standard Identity document, but doesn't sign it.
      * 
      * @param tag        The Tag used by this sub class
-     * @param name       The Name of Identity
      * @param allow      PublicKey allowed to sign in here
-     * @param repository URL of Default Store for NameSpace. (Note. A NameSpace object is stored in the default repository of it's parent namespace)
      * @param signer     URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
      * @param receiver   URL of default receiver for namespace
      */
-    protected IdentityBuilder(final QName tag, final String name, final PublicKey allow, final String repository, final String signer, final String logger, final String receiver) throws InvalidNamedObjectException {
-        super(name, tag);
+    protected IdentityBuilder(final QName tag, final PublicKey allow,  final String signer, final String logger, final String receiver) throws InvalidNamedObjectException {
+        super(tag);
 
         final Element root = getElement();
         addLineBreak();
-        // We have meaningful defaults for the following two
-        createNEUIDAttribute("repository", repository);
-        createNEUIDAttribute("logger", logger);
         if (!Utility.isEmpty(signer))
-            createNEUIDAttribute("signer", signer);
+            addElement("Signer",signer);
+        addTarget(logger,"logger");
+        addTarget(receiver,"inbox");
 
-        if (!Utility.isEmpty(receiver))
-            createNEUIDAttribute("receiver", receiver);
+        final QName allowName = DocumentHelper.createQName("Allow", NSTools.NS_NEUID);
+        Element pub=getElement().element(allowName);
+        if (pub==null)
+            pub = getElement().addElement(allowName);
+        else
+            pub.clearContent();
+        pub.addText("\n");
+        pub.add(XMLSecTools.createKeyInfo(allow));
 
-        setPublicKey(allow);
+    }
+
+    private void addTarget(final String href,final String type) {
+        if (!Utility.isEmpty(href))
+            addElement("Target",href).addAttribute("type",type);
     }
 
 
-    public IdentityBuilder(final String name, final PublicKey allow, final String repository) throws XMLSecurityException, NeuClearException {
-        this(name, allow, repository, null, null, null);
-    }
 
-    public IdentityBuilder(final String name, final PublicKey allow) throws XMLSecurityException, NeuClearException {
-        this(name, allow, null);
-    }
-    private void setPublicKey(final PublicKey allow) {
-        if (allow != null) {
-            final QName allowName = DocumentHelper.createQName("Allow", NSTools.NS_NEUID);
-            Element pub=getElement().element(allowName);
-            if (pub==null)
-                pub = getElement().addElement(allowName);
-            else
-                pub.clearContent();
-            pub.addText("\n");
-            pub.add(XMLSecTools.createKeyInfo(allow));
-        }
+    public IdentityBuilder(final PublicKey allow) throws XMLSecurityException, NeuClearException {
+        this( allow, null,null,null);
     }
 
 

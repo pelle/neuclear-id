@@ -1,6 +1,10 @@
 /*
- * $Id: NSTools.java,v 1.28 2004/01/19 23:49:44 pelle Exp $
+ * $Id: NSTools.java,v 1.29 2004/02/18 00:14:32 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.29  2004/02/18 00:14:32  pelle
+ * Many, many clean ups. I've readded Targets in a new method.
+ * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+ *
  * Revision 1.28  2004/01/19 23:49:44  pelle
  * Unit testing uncovered further issues with Base32
  * NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
@@ -209,9 +213,9 @@
  */
 package org.neuclear.id;
 
-import org.dom4j.*;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Namespace;
 import org.neuclear.commons.Utility;
-import org.neuclear.id.resolver.NSResolver;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -365,38 +369,6 @@ public final class NSTools {
 
     }
 
-    /**
-     * Verifies that Dom4j node is an element or document containing a NamedObject.
-     * <br><b>Important</b>
-     * It does not verify if it has been signed.
-     * 
-     * @param node 
-     * @return 
-     */
-    public static boolean isNamedObject(Node node) {
-
-        if (node == null) return false;
-        Element elem = null;
-        if (node instanceof Document)
-            elem = ((Document) node).getRootElement();
-        else if (node instanceof Element)
-            elem = (Element) node;
-        else
-            return false;
-        return !Utility.isEmpty(elem.attributeValue(DocumentHelper.createQName("name", NS_NEUID)));
-    }
-
-    public static String getRepositoryURL(String alias) throws InvalidNamedObjectException {
-        String url=isHttpScheme(alias);
-        if (url==null){
-            try {
-                return NSResolver.resolveIdentity(alias).getRepository();
-            } catch (Exception e) {
-                return getRepositoryURL(getSignatoryURI(alias));
-            }
-        }
-        return url;
-    }
 
     private static final String HTTP_SCHEME_EX = "^neu:(neuid:)?\\/\\/(([\\w-]+\\.)+[\\w-]+)$";
     private static final Pattern HTTP_SCHEME = Pattern.compile(HTTP_SCHEME_EX);

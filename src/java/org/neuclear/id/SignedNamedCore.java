@@ -1,6 +1,10 @@
 /*
- * $Id: SignedNamedCore.java,v 1.18 2004/01/20 17:39:12 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.19 2004/02/18 00:14:32 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.19  2004/02/18 00:14:32  pelle
+ * Many, many clean ups. I've readded Targets in a new method.
+ * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+ *
  * Revision 1.18  2004/01/20 17:39:12  pelle
  * Further updates to unit tests
  *
@@ -293,7 +297,6 @@ import java.sql.Timestamp;
  * The SignedNamedCore has
  * @see NamedObjectReader
  * @see SignedNamedObject
- * @see org.neuclear.id.builders.NamedObjectBuilder
  * @see org.neuclear.id.verifier.VerifyingReader
  * @see org.neuclear.id.resolver.NSResolver
  * @see org.neuclear.senders.Sender
@@ -510,7 +513,7 @@ public final class SignedNamedCore {
         return encoded.equals(((SignedNamedCore)object).getEncoded());    //To change body of overriden methods use Options | File Templates.
     }
     static Identity createSimpleIdentity(PublicKey pub){
-        return new Identity(new SignedNamedCore(pub),pub);
+        return new Identity(new SignedNamedCore(pub),pub,null,null);
     }
 
     private final String name;

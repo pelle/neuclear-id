@@ -2,7 +2,7 @@ package org.neuclear.id.builders;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.signers.PublicKeySource;
-import org.neuclear.id.NSTools;
+import org.neuclear.id.Identity;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.tests.AbstractSigningTest;
 import org.neuclear.xml.XMLException;
@@ -28,8 +28,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: IdentityBuilderTest.java,v 1.11 2004/01/20 20:28:24 pelle Exp $
+$Id: IdentityBuilderTest.java,v 1.12 2004/02/18 00:14:34 pelle Exp $
 $Log: IdentityBuilderTest.java,v $
+Revision 1.12  2004/02/18 00:14:34  pelle
+Many, many clean ups. I've readded Targets in a new method.
+Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+
 Revision 1.11  2004/01/20 20:28:24  pelle
 Fixed final issues highlighted by unit tests. Really just a bunch of smaller stuff.
 
@@ -97,16 +101,18 @@ public final class IdentityBuilderTest extends AbstractSigningTest {
     public final void createIdentities(final String name) throws NeuClearException, XMLException {
         if (getSigner().canSignFor(name)) {
             final IdentityBuilder id = new IdentityBuilder(
-                    name,
-                    ((PublicKeySource) getSigner()).getPublicKey(name),
-                    "http://repository.neuclear.org",
-                    "http://users.neuclear.org:8080/Signer",
-                    "http://logger.neuclear.org",
-                    "mailto:pelle@neuclear.org");
 
-            assertEquals("neu://test", NSTools.getSignatoryURI(id.getName()));
+                    ((PublicKeySource) getSigner()).getPublicKey(name),
+                    "http://users.neuclear.org:8080/Signer",
+                    null,null);
+
+//            assertEquals("neu://test", NSTools.getSignatoryURI(id.getName()));
             final SignedNamedObject sec = id.convert(name,getSigner());
             assertNotNull(sec);
+            assertTrue(sec instanceof Identity);
+            final Identity idd=(Identity) sec;
+            assertEquals(((PublicKeySource) getSigner()).getPublicKey(name),idd.getPublicKey());
+            assertEquals("http://users.neuclear.org:8080/Signer",idd.getSigner());
 //            assertEquals(id.getName(), sec.getName());
 
         } else {

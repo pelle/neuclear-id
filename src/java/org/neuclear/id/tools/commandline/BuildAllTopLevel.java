@@ -29,8 +29,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: BuildAllTopLevel.java,v 1.5 2004/01/16 23:42:09 pelle Exp $
+$Id: BuildAllTopLevel.java,v 1.6 2004/02/18 00:14:31 pelle Exp $
 $Log: BuildAllTopLevel.java,v $
+Revision 1.6  2004/02/18 00:14:31  pelle
+Many, many clean ups. I've readded Targets in a new method.
+Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+
 Revision 1.5  2004/01/16 23:42:09  pelle
 Added Base32 class. The Base32 encoding used wasnt following the standards.
 Added user creatable Identity for Public Keys
@@ -81,15 +85,9 @@ writing SQL. (Yipee)
  */
 public final class BuildAllTopLevel {
     public static SignedNamedObject createIdentities(final String name, final Signer signer, final PublicKeySource pubsource) throws NeuClearException, XMLException {
-        final IdentityBuilder id = new IdentityBuilder(
-                name,
-                pubsource.getPublicKey(name),
-                "http://repository.neuclear.org",
-                "http://users.neuclear.org:8080/DemoSigner",
-                "http://logger.neuclear.org",
-                "mailto:pelle@neuclear.org");
+        final IdentityBuilder id = new IdentityBuilder(pubsource.getPublicKey(name));
         System.out.println("Signing: " + name);
-        return id.sign(signer);
+        return id.convert(name,signer);
     }
 
     public static void main(final String[] args) {

@@ -3,8 +3,6 @@ package org.neuclear.id;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.builders.Builder;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
@@ -26,8 +24,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequest.java,v 1.13 2004/01/20 17:39:12 pelle Exp $
+$Id: SignatureRequest.java,v 1.14 2004/02/18 00:14:32 pelle Exp $
 $Log: SignatureRequest.java,v $
+Revision 1.14  2004/02/18 00:14:32  pelle
+Many, many clean ups. I've readded Targets in a new method.
+Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+
 Revision 1.13  2004/01/20 17:39:12  pelle
 Further updates to unit tests
 

@@ -1,10 +1,14 @@
 package org.neuclear.id.resolver;
 
-import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.*;
+import org.neuclear.id.Identity;
+import org.neuclear.id.InvalidNamedObjectException;
+import org.neuclear.id.NameResolutionException;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.cache.NSCache;
-import org.neuclear.source.Source;
-import org.neuclear.source.SourceException;
+import org.neuclear.id.verifier.VerifyingReader;
+
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * Secure Identity resolver. To get an Identity object simply do:
@@ -22,9 +26,7 @@ public final class NSResolver {
     public static final String NSROOTSTORE = "http://repository.neuclear.org";
 
     /**
-     * Retrieves the Identity object of the given name
-     * defaultstore for the given namespace.
-     * This is guaranteed to be valid as it checks the signatures on each level.
+     * Given a given URI this resolves the Identity object
      * 
      * @param name 
      * @return 
@@ -49,25 +51,32 @@ public final class NSResolver {
         if (obj != null)
             return obj;
 
-        final String parentname = NSTools.getSignatoryURI(name);
+/*
+        if (name.startsWith("neu:")) {
 
-        if (parentname == null || name.equals("neu://"))
-            return Identity.NEUROOT;
+            final String parentname = NSTools.getSignatoryURI(name);
 
-        String store = NSTools.isHttpScheme(name);
-        if (store == null) {
-            final Identity parent = resolveIdentity(parentname);
-            store = parent.getRepository();
+            String store = NSTools.isHttpScheme(name);
+            if (store == null) {
+                final Identity parent = resolveIdentity(parentname);
+                store = parent.getRepository();
+            }
+            try {
+                obj = Source.getInstance().fetch(store, name);
+            } catch (SourceException e) {
+                throw new NameResolutionException(name,e.getLocalizedMessage());
+            }
+            if (obj == null)
+                throw new NameResolutionException(name);
+            NSCACHE.cache(obj);
+            return obj; //This may not be null
         }
+*/
         try {
-            obj = Source.getInstance().fetch(store, name);
-        } catch (SourceException e) {
-            throw new NameResolutionException(name,e.getLocalizedMessage());
+            return VerifyingReader.getInstance().read(new URL(name).openStream());
+        } catch (IOException e) {
+            throw new InvalidNamedObjectException(name,e);
         }
-        if (obj == null)
-            throw new NameResolutionException(name);
-        NSCACHE.cache(obj);
-        return obj; //This may not be null
     }
 
 

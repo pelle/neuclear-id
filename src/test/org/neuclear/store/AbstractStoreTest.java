@@ -1,6 +1,10 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.16 2003/12/11 23:57:30 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.17 2004/02/18 00:14:36 pelle Exp $
   $Log: AbstractStoreTest.java,v $
+  Revision 1.17  2004/02/18 00:14:36  pelle
+  Many, many clean ups. I've readded Targets in a new method.
+  Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+
   Revision 1.16  2003/12/11 23:57:30  pelle
   Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
   Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -194,11 +198,11 @@ public abstract class AbstractStoreTest extends AbstractSigningTest {
     public final void testStore() throws NeuClearException, InvalidNamedObjectException, XMLException {
         System.out.println("\nTesting " + this.getClass().getName());
         System.out.println("Storing " + bobName);
-        final IdentityBuilder bob = new IdentityBuilder(bobName, signer.getPublicKey(bobName));
-        store.receive(bob.sign(signer));
+        final IdentityBuilder bob = new IdentityBuilder(signer.getPublicKey(bobName));
+        store.receive(bob.convert(bobName, signer));
         System.out.println("Storing " + aliceName);
-        final IdentityBuilder alice = new IdentityBuilder(aliceName, signer.getPublicKey(aliceName));
-        store.receive(alice.sign(signer));
+        final IdentityBuilder alice = new IdentityBuilder(signer.getPublicKey(aliceName));
+        store.receive(alice.convert(aliceName, signer));
 
         System.out.println("Fetching " + bobName);
         final SignedNamedObject nobj2 = store.fetch(bobName);

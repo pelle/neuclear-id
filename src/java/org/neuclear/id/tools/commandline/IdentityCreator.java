@@ -1,5 +1,9 @@
-/* $Id: IdentityCreator.java,v 1.7 2004/01/20 20:28:24 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.8 2004/02/18 00:14:31 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.8  2004/02/18 00:14:31  pelle
+ * Many, many clean ups. I've readded Targets in a new method.
+ * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+ *
  * Revision 1.7  2004/01/20 20:28:24  pelle
  * Fixed final issues highlighted by unit tests. Really just a bunch of smaller stuff.
  *
@@ -218,16 +222,15 @@ import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
 import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.PublicKeySource;
 import org.neuclear.id.InvalidNamedObjectException;
-import org.neuclear.id.NSTools;
+import org.neuclear.id.builders.Builder;
 import org.neuclear.id.builders.IdentityBuilder;
-import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.senders.LogSender;
 
 import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public final class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(final String[] args) throws UserCancellationException, ParseException, InvalidNamedObjectException {
@@ -237,51 +240,39 @@ public final class IdentityCreator extends CommandLineSigner {
             System.exit(1);
         }
         pksource = (PublicKeySource) sig;
-        identity = cmd.getOptionValue("n");
+        alias = cmd.getOptionValue("n");
         //final String cachedirpath = System.getProperty("user.home") + "/.neuclear/cache";
 //        final File cachedir = new File(cachedirpath);
 //        if (!cachedir.exists())
 //            cachedir.mkdirs();
-        if (!Utility.isEmpty(identity)) {
-            of = Utility.denullString(of, "_NEUID" + NSTools.name2path(identity) + "/root.id");
-            alias = Utility.denullString(alias, NSTools.getSignatoryURI(identity));
-        }
+        of = Utility.denullString(of, alias + ".xml");
     }
 
-    protected NamedObjectBuilder build() throws UserCancellationException {
-        NamedObjectBuilder subject = null;
+    protected Builder build() throws UserCancellationException {
+        Builder subject = null;
         if (cmd.hasOption('i')) {//If we have an input file we load that instead of creating a new one
             subject = super.build();
-            identity = subject.getName();
         }
         try {
-            String store = NSTools.isHttpScheme(identity);
-            boolean isTopLevel = !Utility.isEmpty(store);
-            if (!isTopLevel) {
-                // If this isn't a top level we will derive the repository from its parent.
-                store = NSTools.isHttpScheme(NSTools.getSignatoryURI(identity));
-            }
-            alias = (isTopLevel) ? identity : NSTools.getSignatoryURI(identity);
-            final String defaultstore = Utility.denullString(cmd.getOptionValue("r"), store);
             final String defaultsigner = Utility.denullString(cmd.getOptionValue("s"), "http://localhost:11870/Signer");
             final String defaultlogger = Utility.denullString(cmd.getOptionValue("l"), LogSender.LOGGER);
             final String defaultreceiver = cmd.getOptionValue("b");
-            if (!sig.canSignFor(identity)){
+            if (!sig.canSignFor(alias)){
                 System.out.println("You do not currently have a key matching this name. Do you with to create one?");
                 if (!Utility.getAffirmative(true)) {
                     System.out.println("OK, Bye");
                     System.exit(0);
                 }
-                System.out.println("Generating Keys for "+identity+"... ");
-                PublicKey pub=sig.generateKey(identity);
+                System.out.println("Generating Keys for "+alias+"... ");
+                PublicKey pub=sig.generateKey(alias);
                 System.out.println("DONE");
                 System.out.println("STORING Keys");
                 sig.save();
 
             }
-            final PublicKey newkid = pksource.getPublicKey(identity);
+            final PublicKey newkid = pksource.getPublicKey(alias);
 
-            return new IdentityBuilder(identity, newkid, defaultstore, defaultsigner, defaultlogger, defaultreceiver);
+            return new IdentityBuilder(newkid,  defaultsigner, defaultlogger, defaultreceiver);
         } catch (InvalidNamedObjectException e) {
             System.err.println("The name: "+e.getName()+" is not valid. ");
             System.exit(1);
@@ -313,13 +304,11 @@ public final class IdentityCreator extends CommandLineSigner {
 
     protected final void getLocalOptions(final Options options) {
         options.addOption(new Option("n", "name", true, "specify name of new Identity \n[ --name neu://bob@yourdomain.com ]"));
-        options.addOption(new Option("r", "repository", true, "Identity's default Repository \n[ --repository http://repository.neuclear.org ] "));
         options.addOption(new Option("s", "signer", true, "Identity's default Interactive Signer \n[ --signer http://localhost:11870 ]"));
         options.addOption(new Option("l", "logger", true, "Identity's default Logging Service \n[ --logger http://logger.neuclear.org ]"));
         options.addOption(new Option("b", "receiver", true, "Identity's default Receiver \n[ --receiver mailto:bob@yourdomain.com ]"));
     }
 
 
-    private String identity;
     private final PublicKeySource pksource;
 }

@@ -6,7 +6,6 @@ import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.crypto.signers.JCESigner;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.id.Identity;
-import org.neuclear.id.resolver.NSResolver;
 
 import java.security.GeneralSecurityException;
 
@@ -28,8 +27,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AbstractSigningTest.java,v 1.5 2003/12/17 12:45:57 pelle Exp $
+$Id: AbstractSigningTest.java,v 1.6 2004/02/18 00:14:34 pelle Exp $
 $Log: AbstractSigningTest.java,v $
+Revision 1.6  2004/02/18 00:14:34  pelle
+Many, many clean ups. I've readded Targets in a new method.
+Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+
 Revision 1.5  2003/12/17 12:45:57  pelle
 NeuClear JCE Certificates now work with KeyStore.
 We can now create JCE certificates based on NeuClear Identity's and store them in a keystore.
@@ -69,9 +72,9 @@ public class AbstractSigningTest extends TestCase {
         assertNotNull(signer);
         assertNotNull(signer.getPublicKey("neu://bob@test"));
 
-        alice = NSResolver.resolveIdentity("neu://alice@test");
+        alice = new Identity(signer.getPublicKey("neu://alice@test"));
         assertNotNull(alice);
-        bob = NSResolver.resolveIdentity("neu://bob@test");
+        bob = new Identity(signer.getPublicKey("neu://bob@test"));
         assertNotNull(bob);
     }
 

@@ -1,6 +1,10 @@
 /*
- * $Id: Identity.java,v 1.29 2004/01/16 23:42:09 pelle Exp $
+ * $Id: Identity.java,v 1.30 2004/02/18 00:14:31 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.30  2004/02/18 00:14:31  pelle
+ * Many, many clean ups. I've readded Targets in a new method.
+ * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+ *
  * Revision 1.29  2004/01/16 23:42:09  pelle
  * Added Base32 class. The Base32 encoding used wasnt following the standards.
  * Added user creatable Identity for Public Keys
@@ -313,8 +317,10 @@ package org.neuclear.id;
 
 import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.CryptoException;
 import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.id.targets.Targets;
 import org.neuclear.xml.xmlsec.KeyInfo;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
@@ -353,45 +359,32 @@ public class Identity extends SignedNamedObject implements Principal {
      * @param pub
      */
     public Identity(final PublicKey pub){
-        this(new SignedNamedCore(pub),pub);
+        this(new SignedNamedCore(pub),pub,null,null);
     }
 
-    protected Identity(final SignedNamedCore core, final PublicKey pub)  {
+    protected Identity(final SignedNamedCore core, final PublicKey pub,String signer,Targets targets)  {
         super(core);
         this.pub = pub;
+        this.targets=(targets!=null)?targets:Targets.EMPTY;
+        this.signer=Utility.denullString(signer,DEFAULT_SIGNER);
     }
 
 
-    public final String getRepository() {
-        return "http://repository.neuclear.org";
-    }
-
+    //TODO update to use Targets
     public final String getSigner() {
-        return "http://localhost:11870/Signer";
+        return signer;
     }
 
-    public final String getLogger() {
-        return null;
-    }
 
-    public final String getReceiver() {
-        return null;
-    }
-
+    //TODO update to use Targets
     public final SignedNamedObject receive(final SignedNamedObject obj) throws NeuClearException {
-/*
-        if (!Utility.isEmpty(receiver))
-            return Sender.quickSend(receiver, obj);
-        else
-*/
-            throw new NeuClearException("Cant receive object, " + getName() + " doesnt have a registered Receiver");
+        targets.send(obj);
+        return null;
     }
 
+    //TODO update to use Targets
     final void log(final SignedNamedObject obj) throws NeuClearException {
-/*
-        if (!Utility.isEmpty(logger))
-            Sender.quickSend(logger, obj);
-*/
+        targets.log(obj);
     }
 
     public final PublicKey getPublicKey() {
@@ -404,19 +397,10 @@ public class Identity extends SignedNamedObject implements Principal {
 
 
     private final PublicKey pub;
+    private final Targets  targets;
+    private final String signer;
 
-    private final static Identity createRootIdentity() {
-
-        try {
-            final PublicKey rootpk = CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
-            return new Identity(SignedNamedCore.createRootCore(), rootpk);
-        } catch (NeuClearException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static final Identity NEUROOT = createRootIdentity();
+    public static final String DEFAULT_SIGNER = "http://localhost:11870/Signer";
 
     public final java.security.cert.Certificate[] getCertificateChain() {
         return new Certificate[]{getCertificate()};
@@ -434,6 +418,7 @@ public class Identity extends SignedNamedObject implements Principal {
             throw new RuntimeException(e);
         }
     }
+
 
     private final class NeuClearCertificate extends Certificate {
         public NeuClearCertificate(Identity id) {
@@ -502,7 +487,10 @@ public class Identity extends SignedNamedObject implements Principal {
             try {
                 final KeyInfo ki = new KeyInfo(InvalidNamedObjectException.assertContainsElementQName(allowElement, XMLSecTools.createQName("KeyInfo")));
                 final PublicKey pub = ki.getPublicKey();
-                return new Identity(core, pub);
+                final Targets targets=Targets.parseList(elem);
+                final Element se=elem.element("Signer");
+                final String signer=(se!=null)?se.getTextTrim():null;
+                return new Identity(core, pub,signer,targets);
             } catch (XMLSecurityException e) {
                 throw new InvalidNamedObjectException(core.getName(),e);
             }

@@ -5,8 +5,12 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:52:38 AM
- * $Id: SmtpSender.java,v 1.16 2003/12/16 15:05:00 pelle Exp $
+ * $Id: SmtpSender.java,v 1.17 2004/02/18 00:14:33 pelle Exp $
  * $Log: SmtpSender.java,v $
+ * Revision 1.17  2004/02/18 00:14:33  pelle
+ * Many, many clean ups. I've readded Targets in a new method.
+ * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
+ *
  * Revision 1.16  2003/12/16 15:05:00  pelle
  * Added SignedMessage contract for signing simple textual contracts.
  * Added NeuSender, updated SmtpSender and Sender to take plain email addresses (without the mailto:)
@@ -123,7 +127,6 @@ package org.neuclear.senders;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.Identity;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -133,7 +136,6 @@ import javax.mail.internet.MimeMultipart;
 import java.util.Date;
 import java.util.Properties;
 import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 public final class SmtpSender extends Sender {
     public final SignedNamedObject send(String endpoint, final SignedNamedObject obj) throws NeuClearException,UnsupportedEndpointException {
@@ -186,10 +188,10 @@ public final class SmtpSender extends Sender {
     }
 
     private String getSender(final SignedNamedObject obj) {
-        Identity senderid=obj.getSignatory();
-        final Matcher matcher = SENDER.matcher(senderid.getReceiver());
-        if (matcher.matches())
-            return matcher.group(2) ;
+//        Identity senderid=obj.getSignatory();
+//        final Matcher matcher = SENDER.matcher(senderid.getReceiver());
+//        if (matcher.matches())
+//            return matcher.group(2) ;
         return "dummy@neuclear.org";
     }
     private static final Pattern SENDER = Pattern.compile("^(mailto:)([\\w-.]+\\@[\\w-.]+)");

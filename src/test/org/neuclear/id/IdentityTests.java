@@ -27,10 +27,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class IdentityTests extends AbstractObjectCreationTest {
     private static final String NAME = "neu://test";
-    private static final String REPOSITORY = "http://repository.neuclear.org";
     private static final String SIGNER = "http://localhost:11870/Signer";
-    private static final String LOGGER = "http://logger.neuclear.org";
-    private static final String RECEIVER = "mailto:pelle@neuclear.org";
 
     public IdentityTests(String string) throws NeuClearException, GeneralSecurityException {
         super(string);
@@ -42,14 +39,14 @@ public class IdentityTests extends AbstractObjectCreationTest {
         assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(signer.getPublicKey(NAME).getEncoded())),obj.getName().substring(5,37));
 //        assertEquals(id.getLogger(),LOGGER);
 //        assertEquals(id.getName());
-        assertEquals(id.getRepository(),REPOSITORY);
+//        assertEquals(id.getRepository(),REPOSITORY);
         assertEquals(id.getSigner(),SIGNER);
 //        assertEquals(id.getReceiver(),RECEIVER);
         assertNotNull(id.getPublicKey());
     }
 
     protected Builder createBuilder() throws NeuClearException {
-        return new IdentityBuilder(NAME,getSigner().getPublicKey(NAME),REPOSITORY,SIGNER,LOGGER,RECEIVER);
+        return new IdentityBuilder(getSigner().getPublicKey(NAME),SIGNER,null,null);
     }
 
     public void testAnonymous() throws NoSuchAlgorithmException {
