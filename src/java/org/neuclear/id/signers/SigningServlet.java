@@ -1,6 +1,11 @@
 /*
- * $Id: SigningServlet.java,v 1.5 2004/04/12 15:28:08 pelle Exp $
+ * $Id: SigningServlet.java,v 1.6 2004/04/14 00:11:34 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.6  2004/04/14 00:11:34  pelle
+ * Added a MessageLabel for handling errors, validation and info
+ * Save works well now.
+ * It's pretty much there I think.
+ *
  * Revision 1.5  2004/04/12 15:28:08  pelle
  * Added Hibernate and Prevalent tests for Currency Controllers
  *
@@ -277,9 +282,9 @@ package org.neuclear.id.signers;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
+import org.neuclear.commons.crypto.signers.BrowsableSigner;
 import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.ServletSignerFactory;
-import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.SignatureRequest;
@@ -321,11 +326,11 @@ public class SigningServlet extends XMLInputStreamServlet {
 
     }
 
-    protected Signer createSigner(ServletConfig config) throws GeneralSecurityException, NeuClearException, IOException {
-        return ServletSignerFactory.getInstance().createSigner(config);
+    protected BrowsableSigner createSigner(ServletConfig config) throws GeneralSecurityException, NeuClearException, IOException {
+        return (BrowsableSigner) ServletSignerFactory.getInstance().createSigner(config);
     }
 
-    protected final Signer getSigner() {
+    protected final BrowsableSigner getSigner() {
         return signer;
     }
 
@@ -376,7 +381,7 @@ public class SigningServlet extends XMLInputStreamServlet {
             out.println("<div id=\"log\" style=\"background:#003;color:#EEE\"><tt><ul><li>Signing ...</li>");
             out.flush();
             try {
-                isSigned = sign(named, "test", out);
+                isSigned = sign(named, out);
 
             } catch (InvalidNamedObjectException e) {
 //                System.out.println("<br><font color=\"red\"><b>ERROR: Invalid Identity</b></font><br>");
@@ -418,10 +423,10 @@ public class SigningServlet extends XMLInputStreamServlet {
 
     }
 
-    private boolean sign(final Builder named, String username, final PrintWriter out) throws NeuClearException, XMLException {
+    private boolean sign(final Builder named, final PrintWriter out) throws NeuClearException, XMLException {
         boolean isSigned;
-        context.log("SIGN: Signing with " + username);
-        final SignedNamedObject signed = named.convert(username, signer);
+        context.log("SIGN: Signing with ");
+        final SignedNamedObject signed = named.convert(signer);
         isSigned = true;
         out.println("<li>Signed</li>");
         out.println("<li>" + signed.getName() + " Verified</li>");
@@ -455,7 +460,7 @@ public class SigningServlet extends XMLInputStreamServlet {
 
 
     protected javax.servlet.ServletContext context;
-    private Signer signer;
+    private BrowsableSigner signer;
     private String title;
     static private Pattern xmlescape = Pattern.compile("(\\<)");
 }
