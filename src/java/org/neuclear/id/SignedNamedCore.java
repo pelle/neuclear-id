@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedCore.java,v 1.12 2004/01/13 23:38:26 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.13 2004/01/14 06:42:15 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.13  2004/01/14 06:42:15  pelle
+ * Got rid of the verifyXXX() methods
+ *
  * Revision 1.12  2004/01/13 23:38:26  pelle
  * Refactoring parts of the core of XMLSignature. There shouldnt be any real API changes.
  *
@@ -257,11 +260,9 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.time.TimeTools;
+import org.neuclear.commons.LowLevelException;
 import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.xml.xmlsec.KeyInfo;
-import org.neuclear.xml.xmlsec.XMLSecTools;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
-import org.neuclear.xml.xmlsec.XMLSignature;
+import org.neuclear.xml.xmlsec.*;
 
 import java.security.PublicKey;
 import java.sql.Timestamp;
@@ -366,16 +367,21 @@ public final class SignedNamedCore {
     }
 
     private static String encodeElement(final Element elem) {
-        return new String(XMLSecTools.canonicalize(elem));
+        try {
+            return new String(XMLSecTools.canonicalize(elem));
+        } catch (XMLSecurityException e) {
+            throw new LowLevelException(e);
+        }
     }
 
     private static SignedNamedCore readUnnamed(final Element elem) throws XMLSecurityException, InvalidNamedObjectException {
-        final XMLSignature sig=XMLSecTools.getXMLSignature(elem);
-        final PublicKey pub = sig.getSignersKey();
-        if (sig.verifySignature(pub))
+        try {
+            final XMLSignature sig=XMLSecTools.getXMLSignature(elem);
+            final PublicKey pub = sig.getSignersKey();
             return new SignedNamedCore(pub,encodeElement(elem));
-        else
+        } catch (InvalidSignatureException e) {
             throw new InvalidNamedObjectException("Unnamed object failed Signature verification");
+        }
     }
 
     private static String getSignatoryName(final Element elem) throws InvalidNamedObjectException {
