@@ -12,8 +12,11 @@ import java.net.URL;
  * User: pelleb
  * Date: Feb 10, 2003
  * Time: 8:35:33 PM
- * $Id: HttpSource.java,v 1.6 2003/11/05 18:50:34 pelle Exp $
+ * $Id: HttpSource.java,v 1.7 2003/11/09 03:27:19 pelle Exp $
  * $Log: HttpSource.java,v $
+ * Revision 1.7  2003/11/09 03:27:19  pelle
+ * More house keeping and shuffling about mainly pay
+ *
  * Revision 1.6  2003/11/05 18:50:34  pelle
  * Refactored org.neuclear.signers.source.Source and implementing classes to provide support for a local filesystem cache.
  * Also added Unit tests to make sure it actually works and modified IdentityCreator to write directly to the cache if no output filename is given.
@@ -25,7 +28,7 @@ import java.net.URL;
  * <p/>
  * Revision 1.4  2003/09/26 23:53:10  pelle
  * Changes mainly in receiver and related fun.
- * First real neuclear stuff in the payment package. Added TransferContract and PaymentReceiver.
+ * First real neuclear stuff in the payment package. Added TransferContract and AssetControllerReceiver.
  * <p/>
  * Revision 1.3  2003/09/24 23:56:49  pelle
  * Refactoring nearly done. New model for creating signed objects.

@@ -23,8 +23,11 @@ import java.sql.Timestamp;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 1:23:05 PM
- * $Id: LogSender.java,v 1.8 2003/10/21 22:31:13 pelle Exp $
+ * $Id: LogSender.java,v 1.9 2003/11/09 03:27:19 pelle Exp $
  * $Log: LogSender.java,v $
+ * Revision 1.9  2003/11/09 03:27:19  pelle
+ * More house keeping and shuffling about mainly pay
+ *
  * Revision 1.8  2003/10/21 22:31:13  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
  * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -36,7 +39,7 @@ import java.sql.Timestamp;
  *
  * Revision 1.6  2003/09/26 23:53:10  pelle
  * Changes mainly in receiver and related fun.
- * First real neuclear stuff in the payment package. Added TransferContract and PaymentReceiver.
+ * First real neuclear stuff in the payment package. Added TransferContract and AssetControllerReceiver.
  *
  * Revision 1.5  2003/09/26 00:22:07  pelle
  * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
@@ -79,7 +82,7 @@ import java.sql.Timestamp;
  *
  */
 public class LogSender extends Sender {
-    public void send(String endpoint, NamedObjectBuilder obj) throws NeuClearException {
+    public SignedNamedObject send(String endpoint, NamedObjectBuilder obj) throws NeuClearException {
         try {
             String digest = URLEncoder.encode(Base64.encode(obj.getDigest()), "UTF-8");
             String name = URLEncoder.encode(obj.getName(), "UTF-8");
@@ -98,6 +101,7 @@ public class LogSender extends Sender {
         } catch (XMLSecurityException e) {
             Utility.rethrowException(e);
         }
+        return null;//
 
     }
 

@@ -5,8 +5,11 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:29:29 AM
- * $Id: Sender.java,v 1.7 2003/11/08 01:40:52 pelle Exp $
+ * $Id: Sender.java,v 1.8 2003/11/09 03:27:19 pelle Exp $
  * $Log: Sender.java,v $
+ * Revision 1.8  2003/11/09 03:27:19  pelle
+ * More house keeping and shuffling about mainly pay
+ *
  * Revision 1.7  2003/11/08 01:40:52  pelle
  * WARNING this rev is majorly unstable and will almost certainly not compile.
  * More major refactoring in neuclear-pay.
@@ -57,7 +60,11 @@ public abstract class Sender {
         Sender sender = getSender(protocol);
         if (sender == null)
             throw new NeuClearException("Unsupported Send Protocol:" + endpoint.toString());
-        return sender.send(endpoint, obj);
+        try {
+            return sender.send(endpoint, obj);
+        } catch (XMLException e) {
+            throw new NeuClearException(e);
+        }
     }
 
     public static Sender getSender(String protocol) {

@@ -1,6 +1,9 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.8 2003/10/29 21:16:28 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.9 2003/11/09 03:27:19 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
+ * Revision 1.9  2003/11/09 03:27:19  pelle
+ * More house keeping and shuffling about mainly pay
+ *
  * Revision 1.8  2003/10/29 21:16:28  pelle
  * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
  * To use it you pass a byte array and an alias. The sign method then returns the signature.
@@ -15,7 +18,7 @@
  *
  * Revision 1.6  2003/09/26 23:53:10  pelle
  * Changes mainly in receiver and related fun.
- * First real neuclear stuff in the payment package. Added TransferContract and PaymentReceiver.
+ * First real neuclear stuff in the payment package. Added TransferContract and AssetControllerReceiver.
  *
  * Revision 1.5  2003/09/26 00:22:07  pelle
  * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
