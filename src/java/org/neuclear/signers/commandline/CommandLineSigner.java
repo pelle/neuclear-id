@@ -1,5 +1,8 @@
-/* $Id: CommandLineSigner.java,v 1.4 2003/09/24 23:56:48 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.5  2003/09/26 00:22:07  pelle
+ * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
+ *
  * Revision 1.4  2003/09/24 23:56:48  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.
@@ -119,7 +122,7 @@ import org.dom4j.Document;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.Identity;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.NamedObjectFactory;
+
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.LogSender;
 import org.neudist.crypto.CryptoTools;
@@ -136,13 +139,14 @@ import java.security.cert.Certificate;
 
 /**
  * @author pelleb
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  **/
 public class CommandLineSigner {
 
     public static void main(String args[]) {
         CryptoTools.ensureProvider();
         String keystore = System.getProperty("user.home") + "/.keystore";
+/*
 
         try {
             //System.setProperty("org.apache.commons.cli.parser","org.apache.commons.cli.PosixParser");
@@ -234,8 +238,10 @@ public class CommandLineSigner {
             System.err.println(e.getMessage());
             e.printStackTrace(System.err);
         }
+*/
 
     }
+/*
 
     private static SignedNamedObject loadNamedObject(String sf) throws FileNotFoundException, NeudistException {
         SignedNamedObject subject;
@@ -247,6 +253,7 @@ public class CommandLineSigner {
         subject = NamedObjectFactory.createNamedObject(doc);
         return subject;
     }
+*/
 
     private static Options createOptions() {
         // create Options object

@@ -1,6 +1,9 @@
 /*
- * $Id: Store.java,v 1.4 2003/09/24 23:56:49 pelle Exp $
+ * $Id: Store.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
  * $Log: Store.java,v $
+ * Revision 1.5  2003/09/26 00:22:07  pelle
+ * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
+ *
  * Revision 1.4  2003/09/24 23:56:49  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.
@@ -128,7 +131,6 @@ package org.neuclear.store;
 
 import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.verifier.NSVerifier;
 import org.neuclear.receiver.Receiver;
 import org.neudist.utils.NeudistException;
 
@@ -148,8 +150,6 @@ abstract public class Store implements Receiver {
 //            if (fetch(obj.getName())!=null)
 //                throw new InvalidIdentityException("The name: "+obj.getName()+" already exists");
 
-            if (!NSVerifier.isNameValid(obj))
-                throw new InvalidIdentityException("The name: " + obj.getName() + " is not allowed");
             rawStore(obj);
             if (next != null)
                 next.receive(obj);

@@ -9,17 +9,12 @@
 package org.neuclear.contracts.nsauth;
 
 import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.neuclear.id.Identity;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.signrequest.SignatureRequest;
-import org.neuclear.time.TimeTools;
 import org.neudist.crypto.CryptoTools;
 import org.neudist.utils.NeudistException;
-import org.neudist.utils.Utility;
 
-import java.security.PrivateKey;
 import java.sql.Timestamp;
 import java.util.Date;
 

@@ -1,6 +1,9 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.4 2003/09/24 23:56:48 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.5  2003/09/26 00:22:07  pelle
+ * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
+ *
  * Revision 1.4  2003/09/24 23:56:48  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.
@@ -127,6 +130,7 @@ import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 
 public class DemoSigningServlet extends SigningServlet {
+/*
 
     private void buildTree() throws GeneralSecurityException, NeudistException, IOException {
         System.out.println("NEUDIST: Creating Identity Tree");
@@ -183,6 +187,7 @@ public class DemoSigningServlet extends SigningServlet {
         return new SimpleSignerStore(keyStoreFile);
     }
 
+*/
     private KeyPairGenerator kpg;
 
 }

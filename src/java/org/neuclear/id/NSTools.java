@@ -1,6 +1,9 @@
 /*
- * $Id: NSTools.java,v 1.4 2003/09/24 23:56:48 pelle Exp $
+ * $Id: NSTools.java,v 1.5 2003/09/26 00:22:06 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.5  2003/09/26 00:22:06  pelle
+ * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
+ *
  * Revision 1.4  2003/09/24 23:56:48  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.
@@ -103,6 +106,7 @@ import org.apache.regexp.RESyntaxException;
 import org.neudist.crypto.CryptoTools;
 import org.neudist.utils.NeudistException;
 import org.neudist.utils.Utility;
+import org.neuclear.id.resolver.NSResolver;
 
 import java.util.Random;
 
@@ -203,13 +207,13 @@ public final class NSTools {
 
     public static void main(String args[]) {
         try {
-            SignedNamedObject obj = NamedObjectFactory.fetchNamedObject("neu://free/pelle");
+            SignedNamedObject obj = NSResolver.resolveIdentity("neu://free/pelle");
             System.out.println("Got: " + obj.getName());
-            obj = NamedObjectFactory.fetchNamedObject("neu://pelle");
+            obj = NSResolver.resolveIdentity("neu://pelle");
             System.out.println("Got: " + obj.getName());
-            obj = NamedObjectFactory.fetchNamedObject("neu://free");
+            obj = NSResolver.resolveIdentity("neu://free");
             System.out.println("Got: " + obj.getName());
-            obj = NamedObjectFactory.fetchNamedObject("neu://free/pelle");
+            obj = NSResolver.resolveIdentity("neu://free/pelle");
             System.out.println("Got: " + obj.getName());
 //            obj=NamedObjectFactory.fetchNamedObject("neu://free/trix");
 //            System.out.println("Got: "+obj.getName());

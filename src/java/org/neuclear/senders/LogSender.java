@@ -2,6 +2,7 @@ package org.neuclear.senders;
 
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.NamedObjectFactory;
+import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.time.TimeTools;
 import org.neudist.crypto.Base64;
 import org.neudist.utils.NeudistException;
@@ -20,8 +21,11 @@ import java.sql.Timestamp;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 1:23:05 PM
- * $Id: LogSender.java,v 1.4 2003/09/24 23:56:48 pelle Exp $
+ * $Id: LogSender.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
  * $Log: LogSender.java,v $
+ * Revision 1.5  2003/09/26 00:22:07  pelle
+ * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
+ *
  * Revision 1.4  2003/09/24 23:56:48  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.
@@ -62,7 +66,7 @@ import java.sql.Timestamp;
 public class LogSender extends Sender {
     public void send(String endpoint, SignedNamedObject obj) throws NeudistException {
         try {
-            String digest = URLEncoder.encode(Base64.encode(obj.getDigest()), "UTF-8");
+            String digest = URLEncoder.encode(Base64.encode(obj.getDigest().getBytes()), "UTF-8");
             String name = URLEncoder.encode(obj.getName(), "UTF-8");
             URL url = new URL(Utility.denullString(endpoint, LOGGER) + "?nohtml=1&name=" + name + "&digest=" + digest);
             url.openStream();
@@ -85,7 +89,7 @@ public class LogSender extends Sender {
             logObject("neu://free");
             logObject("neu://free/pelle");
             logObject("neu://pelle");
-            System.out.println("Object neu://free/pelle was logged at: " + getTimeStamp(NamedObjectFactory.fetchNamedObject("neu://free/pelle")));
+            System.out.println("Object neu://free/pelle was logged at: " + getTimeStamp(NSResolver.resolveIdentity("neu://free/pelle")));
         } catch (NeudistException e) {
             e.printStackTrace();  //To change body of catch statement use Options | File Templates.
         }
@@ -116,13 +120,13 @@ public class LogSender extends Sender {
     }
 
     public static Timestamp getTimeStamp(SignedNamedObject obj) throws NeudistException {
-        return getTimeStamp(Utility.denullString(obj.getParent().getLogger(), LOGGER), obj.getDigest());
+        return getTimeStamp(Utility.denullString(obj.getSignatory().getLogger(), LOGGER), obj.getDigest().getBytes());
 
     }
 
     private static void logObject(String name) throws NeudistException {
         System.out.print("Fetching...");
-        SignedNamedObject obj = NamedObjectFactory.fetchNamedObject(name);
+        SignedNamedObject obj = NSResolver.resolveIdentity(name);
         System.out.println("Got " + obj.getName());
         Sender log = new LogSender();
         System.out.print("Logging...");

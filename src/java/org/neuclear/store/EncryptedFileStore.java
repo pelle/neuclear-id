@@ -1,6 +1,9 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.4 2003/09/24 23:56:49 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
+ * Revision 1.5  2003/09/26 00:22:07  pelle
+ * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
+ *
  * Revision 1.4  2003/09/24 23:56:49  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.
@@ -133,7 +136,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.NamedObjectFactory;
 import org.neudist.crypto.CryptoTools;
 import org.neudist.utils.NeudistException;
 import org.neudist.utils.Utility;
@@ -160,10 +162,10 @@ public class EncryptedFileStore extends FileStore {
 
         // Quick and dirty encryption for now.
 //        String xmlData=obj.getElement().asXML();
-        byte encrypted[] = CryptoTools.encrypt(obj.getName(), XMLSecTools.getElementBytes(obj.getElement()));
+//TODO Find alternative        byte encrypted[] = CryptoTools.encrypt(obj.getName(), XMLSecTools.getElementBytes(obj.getElement()));
 
         BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(outputFile));
-        os.write(encrypted);
+//TODO Find alternative        os.write(encrypted);
         os.close();
     }
 
@@ -187,7 +189,7 @@ public class EncryptedFileStore extends FileStore {
 //            System.out.print("Read: ");
 //            System.out.println(clearString);
             org.dom4j.Document doc = DocumentHelper.parseText(clearString);
-            ns = NamedObjectFactory.createNamedObject(doc);
+//TODO Find alternative            ns = NamedObjectFactory.createNamedObject(doc);
 //            Utility.rethrowException(e);
         } catch (IOException e) {
             Utility.rethrowException(e);

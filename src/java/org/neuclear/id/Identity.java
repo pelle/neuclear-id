@@ -1,6 +1,9 @@
 /*
- * $Id: Identity.java,v 1.2 2003/09/24 23:56:48 pelle Exp $
+ * $Id: Identity.java,v 1.3 2003/09/26 00:22:06 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.3  2003/09/26 00:22:06  pelle
+ * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
+ *
  * Revision 1.2  2003/09/24 23:56:48  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.
@@ -254,7 +257,7 @@ public final class Identity extends SignedNamedObject {
     }
 
     //TODO I dont like this being public
-    final static class Reader implements NamedObjectReader {
+    public final static class Reader implements NamedObjectReader {
         /**
          * Read object from Element and fill in its details
          * @param elem

@@ -5,8 +5,11 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:52:38 AM
- * $Id: SmtpSender.java,v 1.4 2003/09/24 23:56:48 pelle Exp $
+ * $Id: SmtpSender.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
  * $Log: SmtpSender.java,v $
+ * Revision 1.5  2003/09/26 00:22:07  pelle
+ * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
+ *
  * Revision 1.4  2003/09/24 23:56:48  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.
@@ -85,7 +88,7 @@ public class SmtpSender extends Sender {
             Multipart multi = new MimeMultipart();
             multi.addBodyPart(body);
             BodyPart objpart = new MimeBodyPart();
-            objpart.setText(obj.asXML());
+//TODO How do we replace this            objpart.setText(obj.asXML());
             objpart.setHeader("Content-type", "application/nsdl");
             multi.addBodyPart(objpart);
             msg.setContent(multi);

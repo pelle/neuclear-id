@@ -1,6 +1,9 @@
 /*
- * $Id: FileStore.java,v 1.4 2003/09/24 23:56:49 pelle Exp $
+ * $Id: FileStore.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
  * $Log: FileStore.java,v $
+ * Revision 1.5  2003/09/26 00:22:07  pelle
+ * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
+ *
  * Revision 1.4  2003/09/24 23:56:49  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.
@@ -119,7 +122,6 @@ package org.neuclear.store;
 import org.dom4j.Document;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.NamedObjectFactory;
 import org.neudist.utils.NeudistException;
 import org.neudist.xml.XMLTools;
 
@@ -144,7 +146,7 @@ public class FileStore extends Store {
         System.out.println("Outputting to: " + outputFilename);
         File outputFile = new File(outputFilename);
         outputFile.getParentFile().mkdirs();
-        XMLTools.writeFile(outputFile, obj.getElement());
+//TODO Find alternative        XMLTools.writeFile(outputFile, obj.getElement());
     }
 
 //    public void store(Document doc) throws InvalidIdentityException,IOException {
@@ -161,7 +163,7 @@ public class FileStore extends Store {
         SignedNamedObject ns = null;
         try {
             Document doc = XMLTools.loadDocument(new FileInputStream(fin));
-            ns = NamedObjectFactory.createNamedObject(doc);
+//TODO Find alternative            ns = NamedObjectFactory.createNamedObject(doc);
 //           System.out.println("NEUDIST: Fetched SignedNamedObject tag:"+rootName.getName()+" URI:"+rootName.getNamespaceURI());
 //        } catch (ParserConfigurationException e) {
 //            Utility.rethrowException(e);

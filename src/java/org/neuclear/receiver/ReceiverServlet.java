@@ -1,6 +1,9 @@
 /*
- * $Id: ReceiverServlet.java,v 1.3 2003/09/24 23:56:48 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.4 2003/09/26 00:22:07 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.4  2003/09/26 00:22:07  pelle
+ * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
+ *
  * Revision 1.3  2003/09/24 23:56:48  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.
@@ -63,31 +66,29 @@ package org.neuclear.receiver;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.NamedObjectFactory;
+import org.neuclear.id.verifier.VerifyingReader;
 import org.neudist.utils.NeudistException;
-import org.neudist.xml.soap.SOAPException;
-import org.neudist.xml.soap.SOAPServlet;
+import org.neudist.xml.soap.XMLInputStreamServlet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 
-public abstract class ReceiverServlet extends SOAPServlet {
+public abstract class ReceiverServlet extends XMLInputStreamServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
     }
 
-    protected Element handleSOAPRequest(Element request, String soapAction) throws SOAPException {
+    protected void handleInputStream(InputStream is, HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            System.out.println("NEUDIST: Got Storage Request " + soapAction);
-            System.out.println(request.asXML());
-            SignedNamedObject named = NamedObjectFactory.createNamedObject(request);
-            receiver.receive(named);
-            return OK;
+            receiver.receive(VerifyingReader.getInstance().read(is));
         } catch (NeudistException e) {
-            e.printStackTrace(System.out);
-            throw new SOAPException(e);
+            e.printStackTrace();
         }
+
     }
 
     protected void setReceiver(Receiver receiver) {

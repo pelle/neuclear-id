@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.4 2003/09/24 23:56:49 pelle Exp $
+ * $Id: SigningServlet.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.5  2003/09/26 00:22:07  pelle
+ * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
+ *
  * Revision 1.4  2003/09/24 23:56:49  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.
@@ -135,7 +138,6 @@ import org.dom4j.io.XMLWriter;
 import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.signrequest.SignatureRequest;
 import org.neuclear.receiver.ReceiverServlet;
 import org.neudist.crypto.signerstores.InvalidPassphraseException;
 import org.neudist.crypto.signerstores.JCESignerStore;
@@ -223,8 +225,8 @@ public class SigningServlet extends ReceiverServlet {
         String xml = request.getParameter("xml");
         String endpoint = request.getParameter("endpoint");
         String passphrase = request.getParameter("passphrase");
-        SignatureRequest sigreq;
         SignedNamedObject named;
+/*
         boolean isSigned = false;
         Element elem = null;
         try {
@@ -295,6 +297,7 @@ public class SigningServlet extends ReceiverServlet {
             out.println("</pre></font>");
         }
         out.println("<p align\"left\"><img src=\"images/neubia40x40.png\"><br><a href=\"http://www.neubia.com\"><i>&copy; 2002 Antilles Software Ventures SA</i></a></body></html>");
+*/
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -310,6 +313,7 @@ public class SigningServlet extends ReceiverServlet {
 
     }
 
+/*
     public Element receiveNamedObject(SignedNamedObject obj, String soapAction) throws SOAPException {
         try {
             signObject(obj, "hello".toCharArray());// TODO How do we get the passphrase here? Popup request?
@@ -345,6 +349,7 @@ public class SigningServlet extends ReceiverServlet {
 
     }
 
+*/
     protected javax.servlet.ServletContext context;
     private static SignerStore ks;
     private KeyPairGenerator kpg;
