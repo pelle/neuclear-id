@@ -27,8 +27,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequest.java,v 1.6 2003/11/21 04:45:13 pelle Exp $
+$Id: SignatureRequest.java,v 1.7 2003/11/21 13:57:27 pelle Exp $
 $Log: SignatureRequest.java,v $
+Revision 1.7  2003/11/21 13:57:27  pelle
+Changed some mutable fields in immutable classes, making them truely immutable. Thus safer.
+
 Revision 1.6  2003/11/21 04:45:13  pelle
 EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
 Otherwise You will Finaliate.
@@ -72,6 +75,8 @@ Created SignatureRequest and friends to send unsigned NamedObjectBuilders to int
  * The SignatureRequest presents an object for signing to a signing service.
  * The SignatureRequest would typically be created using a SignatureRequestBuilder buy
  * the Requesting site. The Users Signature service would present it to the user who signs it.
+ *
+ *
  * User: pelleb
  * Date: Nov 6, 2003
  * Time: 12:23:52 PM
@@ -89,7 +94,11 @@ public final class SignatureRequest extends SignedNamedObject {
     }
 
     public final NamedObjectBuilder getUnsigned() {
-        return unsigned;
+        try {
+            return (NamedObjectBuilder) unsigned.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public final String getDescription() {

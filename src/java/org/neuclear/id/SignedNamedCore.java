@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedCore.java,v 1.2 2003/11/21 04:45:13 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.3 2003/11/21 13:57:27 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.3  2003/11/21 13:57:27  pelle
+ * Changed some mutable fields in immutable classes, making them truely immutable. Thus safer.
+ *
  * Revision 1.2  2003/11/21 04:45:13  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -240,7 +243,7 @@ public final class SignedNamedCore  {
     private SignedNamedCore(final String name, final Identity signer, final Timestamp timestamp, final String encoded)  {
         this.name = name;
         this.signer = signer;
-        this.timestamp = timestamp;
+        this.timestamp = timestamp.getTime();
         this.encoded = encoded;
     }
 
@@ -306,7 +309,7 @@ public final class SignedNamedCore  {
      * @return 
      */
     public final Timestamp getTimeStamp() {
-        return timestamp;
+        return new Timestamp(timestamp);
 
     }
 
@@ -335,7 +338,7 @@ public final class SignedNamedCore  {
 
     private final String name;
     private final Identity signer;
-    private final Timestamp timestamp;
+    private final long timestamp;
     private final String encoded;
 
 

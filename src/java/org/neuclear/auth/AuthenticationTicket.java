@@ -43,7 +43,7 @@ public final class AuthenticationTicket extends SignedNamedObject {
      */
     private AuthenticationTicket(final SignedNamedCore core, final String requester, final Timestamp validto, final String siteurl) throws NeuClearException {
         super(core);
-        this.validTo = validto;
+        this.validTo = validto.getTime();
         this.siteurl = siteurl;
         this.requester = requester;
 
@@ -57,7 +57,7 @@ public final class AuthenticationTicket extends SignedNamedObject {
      * @throws NeuClearException 
      */
     public final Timestamp getValidTo() throws NeuClearException {
-        return validTo;
+        return new Timestamp(validTo);
     }
 
     /**
@@ -88,7 +88,7 @@ public final class AuthenticationTicket extends SignedNamedObject {
 
     private final String requester;
     private final String siteurl;
-    private final Timestamp validTo;
+    private final long validTo;
     public static final String TAG_NAME = "AuthenticationTicket";
     public static final String URI_NSAUTH = "http://neuclear.org/neu/auth";
     public static final Namespace NS_NSAUTH = DocumentHelper.createNamespace("auth", URI_NSAUTH);
