@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Simple NSDL based Asset Transfer Description Language
+    =========================================
+    There are 3 main parties in an Asset Transfer.
+    1. Asset Issuer - I (eg. bank, company (for stock) etc.)
+    2. Asset Holder - A (The entity that owns the assets)
+    3. Asset Recipient - B (The entity that will receive the transfered assets)
+
+    There are two general types of transfers:
+    1. TransferRequest - Similar to a cheque.
+        - A sends B a TransferRequest T.
+        - B presents T to I
+        - I verifies availability of assets and does a book entry transfer, thus transfering the asset.
+    2. AuthorizedTransferRequest - Similar to a Certified Cheque.
+        - A sends I a CertificationRequest C containing a TransferRequest T1.
+        - I verifies the availability of assets and reduces the available amount in A's account
+        - I creates an AuthorizedTransferRequest T2 containing the original TransferRequest T1 and signs it.
+        - This new request gets returned to A or sent directly to B
+        - On receipt B presents it to I, causing a book entry transfer, thus transfering the asset.
+-->
+<xs:schema targetNamespace="http://neudist.org/neu/nsasset"
+    xmlns:nsdl="http://neudist.org/neu/nsdl"
+    xmlns:nsasset="http://neudist.org/neu/nsasset"
+    xmlns:nswsdl="http://neudist.org/neu/nswsdl"
+
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://neudist.org/neu/nsasset"
+    elementFormDefault="qualified" version="0.2" id="nsasset">
+
+    <xs:import namespace="http://neudist.org/neu/nswsdl" schemaLocation="nswsdl.xsd"/>
+<!--    <xs:import namespace="http://neudist.org/neu/nscondition" schemaLocation="nscondition.xsd"/> -->
+  	<xs:import namespace="http://neudist.org/neu/nsdl" schemaLocation="nsdl.xsd"/>
+    <xs:import namespace="http://www.w3.org/2001/XMLSchema" schemaLocation="XMLSchema.xsd"/>
+
+    <xs:complexType name="AssetType">
+        <xs:complexContent>
+            <xs:extension base="nsdl:NamedObjectType">
+                <xs:sequence>
+                    <!-- AssetType - Description -->
+                    <xs:element name="Description" type="xs:string"  minOccurs="0" maxOccurs="1" nillable="false" />
+                    <!-- SubType of Eg. Gold, Dollar etc.-->
+                    <xs:element name="AssetType" type="xs:anyURI"  minOccurs="0" nillable="false" />
+                </xs:sequence>
+                <!-- Web Service URL -->
+                <xs:attribute name="port" type="xs:anyURI" use="required"/>
+                <!-- Interactive URL -->
+                <xs:attribute name="interactive" type="xs:anyURI" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="TransferRequestType">
+		<xs:complexContent>
+			<xs:extension base="nsdl:NamedObjectType">
+                <xs:sequence>
+                    <xs:element name="Recipient" type="xs:anyURI" minOccurs="1" maxOccurs="1" nillable="false"/>
+                    <!-- AssetType - name of AssetIssuer -->
+                    <xs:element name="AssetType" type="xs:anyURI"  minOccurs="1" maxOccurs="1" nillable="false" />
+                    <xs:element name="Amount" type="xs:double"  minOccurs="1" maxOccurs="1" nillable="false" />
+                </xs:sequence>
+                <xs:attribute name="validFrom" type="xs:dateTime" use="optional"/>
+				<xs:attribute name="validTo" type="xs:dateTime" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+    <xs:complexType name="EmbeddedTransferRequestType">
+		<xs:complexContent>
+			<xs:extension base="nsdl:NamedObjectType">
+				<xs:sequence>
+					<xs:element name="TransferRequest" minOccurs="1" maxOccurs="1" nillable="false"   />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+    <xs:element name="Asset" type="AssetType" nillable="false"/>
+    <xs:element name="TransferRequest" type="TransferRequestType" nillable="false"/>
+    <xs:element name="AuthorizationRequest" type="EmbeddedTransferRequestType" nillable="false"/>
+	<xs:element name="AuthorizedTransferRequest" type="EmbeddedTransferRequestType" nillable="false"/>
+
+</xs:schema>

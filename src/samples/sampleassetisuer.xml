@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <nsasset:AssetIssuer
+     xmlns="http://neudist.org/neu/nsasset"
+     xmlns:nsasset="http://neudist.org/neu/nsasset"
+     xmlns:nsdl="http://neudist.org/neu/nsdl"
+     port="http://neudist.org:8080/sampleissuer/Issuer"
+     nsdl:name="neu://neu/sampleissuer"
+     >
+
+
+
+
+</nsasset:AssetIssuer>
+

@@ -1,0 +1,27 @@
+
+<nsdl:NameSpace xmlns:nsdl="http://neudist.org/neu/nsdl" nsdl:name="neu://test/one" nsdl:store="http://neudist.org:8080/neudistframework/Store" nsdl:signer="http://neudist.org:8080/neudistframework/Signer" nsdl:logger="http://neudist.org:8080/neudistframework/Logger" nsdl:timestamp="20021002T104758045GMT+00:00">
+  <nsdl:allow>
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <ds:KeyValue>
+        <ds:RSAKeyValue>
+          <ds:Modulus>AKu1uEYAVe2gE8bqgEbFZXA4gx+3j9tGlcjVIKKRNFegeL4Gc4RZpzlRhffTflSCNiMqsl41LJgU bWyZf9oeWB43XnTyZEfJh4Retqx5qVPB6hREWjwU7UHkuEO8WIMRh9sVWQpEPKiEB3Prr1HeUMDl bkICOr2Si8XrQ4wt9wELvs28byTQzA7DyD3oYSCoaWMcrQeFfj78xq6C19H16p/9EjLvBB3w/j8y ERpKFiTLBI+nTsefw66/SAnKvqnDNjLHE/+3kBBTji0x25Hs1zVa3G+xKO8TtMIoaDsErA2tDNxB 3A1ea+7feaXumyOvpln5sMmtk7eKau8QQCtFlZs=</ds:Modulus>
+          <ds:Exponent>AQAB</ds:Exponent>
+        </ds:RSAKeyValue>
+      </ds:KeyValue>
+    </ds:KeyInfo>
+  </nsdl:allow>
+  <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+    <ds:SignedInfo>
+      <ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+      <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+      <ds:Reference URI="neu://test/one">
+        <ds:Transforms>
+          <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+          <ds:Transform Algorithm="uri:VillageIdiotMethod"/>
+        </ds:Transforms>
+        <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+      </ds:Reference>
+    </ds:SignedInfo>
+    <ds:SignatureValue>m/RSbEzoIBEMgEHVllhYknrDow+Kj2+9ozIhHbtGllu2Dt8EFffl5c8MOZwVPDIzS/I/ZqAA/DrV xeW9UFgJmESKKayCnbzwo4mJnmIRz/1E/eMYvIGFTuDk324oluLT7U7/vC8dAXhuEvnyZUwgshKo gwwRFkLaIB+tEvoaiVG2L1TCxe3hvDx0FkKxlHU9u49MMb26q/pT0AjkWUPnVdvQjSXfk2LE6/2e zAfDskhzot5b0dBH47TtCF41yQhY12yzVcwGpdTkSkJ+IqAvgiqOC0OSUpPJGsgtE4ySDAFUYZYF pi5LyWf8EvBtorPD2T82havBxUwRyto5CqRStw==</ds:SignatureValue>
+  </ds:Signature>
+</nsdl:NameSpace>

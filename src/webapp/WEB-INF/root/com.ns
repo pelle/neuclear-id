@@ -1,0 +1,28 @@
+
+<nsdl:NameSpace xmlns:nsdl="http://neudist.org/neu/nsdl" nsdl:name="neu://com" nsdl:store="http://neudist.org:8080/neudistframework/root/Store" nsdl:timestamp="20021010T211603156GMT+00:00">
+  <nsdl:allow>
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <ds:KeyValue>
+        <ds:RSAKeyValue>
+          <ds:Modulus>AO0s/4v53AF3exYifyyj/YuldPcxYyy8ZOe8CIRqIpsWabD7KqAF75q6HW5xecYwMWkzXhObkV/M A7B/QOhJ1qa4fApvg/nOTecgZ85IrRjvfKYTH5xqKyQnXWtv6JQx5RTYBN2lB9hWqFbG4MNyCRQm v70Mh4LXs2kQ2fQFFJLobrrN/T3jJdxIzRgUMVMgEh7Yx8f1Xj9dZyJMh/Mtd8zhrpQ9yyk0IaaD CzCb5o+hr9aMTRsCEnsQnd6mL/ZxtGTPFuUiRlV57tPtW+xU7QFVC4MZyc/UoiD2Hd3K+RhVp6wM KPUiatZAfFxdJytY01zvCcR5aa963DY4brqwvuE=</ds:Modulus>
+          <ds:Exponent>AQAB</ds:Exponent>
+        </ds:RSAKeyValue>
+      </ds:KeyValue>
+    </ds:KeyInfo>
+  </nsdl:allow>
+  <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+    <ds:SignedInfo>
+      <ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+      <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+      <ds:Reference>
+        <ds:Transforms>
+          <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+          <ds:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+        </ds:Transforms>
+        <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+        <ds:DigestValue>HngCYMIVZM+LvIj5AGv7QiYtYQw=</ds:DigestValue>
+      </ds:Reference>
+    </ds:SignedInfo>
+    <ds:SignatureValue>fyfsczg88f+ByfmqsZzw3Tjmlj8IqyZJBIQvZ94DfK1vp3b+wEOjAekNgnrOOJfHHUfc8VfPZ8Rq TsmZbmR3Ahbnve0uMWzuZ1oSe/aFuSMn5Sd+2pTNLwJhau7xlivsrO/V8xRAnt5FhVTD+B2laV5s i012AoIUsE7y7lljEXaWRQ1mVaoOTDPY1KhT5rO2y35klQFQ1PvpVLO6CswDLFW2WAppfi2AfKtJ B2v6Hk5mczpVrx8QmQe6aDCTTvoAk982sKWPGD/W6kUnjnWV3YfV4V1G5GlXsZ1XgxdbKWzrK6hT 6PS+UbP9xQjI/0yzaNSlPIley/0NIFkurEvskg==</ds:SignatureValue>
+  </ds:Signature>
+</nsdl:NameSpace>

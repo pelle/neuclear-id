@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<document>
+
+	<properties>
+		<title>NeuDist</title>
+		<author email="pelle@neubia.com">Pelle Braendgaard</author>
+	</properties>
+
+	<body>
+		<section name="Usage Models">
+            <p>
+                There are several usage models for Neubia. C2B, B2B and C2C. The difference mainly being that C (Consumer) is normally an
+                interactive user. Where as B (Business) is a server.
+            </p>
+        </section>
+    </body>
+</document>

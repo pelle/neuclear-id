@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- By Pelle Braendgaard (Antilles Software Ventures SA) -->
+<!-- This version is updated to include versioning and Typed Allows-->
+<xs:schema targetNamespace="http://neudist.org/neu/nsdl" xmlns:nsdl="http://neudist.org/neu/nsdl"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+    xmlns:ws="http://neudist.org/neu/nswsdl"
+    xmlns="http://neudist.org/neu/nsdl" elementFormDefault="qualified" version="0.4" id="nsdl">
+    <xs:import namespace="http://neudist.org/neu/nswsdl" schemaLocation="nswsdl.xsd"/>
+    <xs:import namespace="http://www.w3.org/2001/XMLSchema" schemaLocation="XMLSchema.xsd"/>
+	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd"/>
+
+	<xs:complexType name="NamedObjectType">
+		<xs:sequence>
+        <!-- I think we dont need this -->
+<!--			<xs:any namespace="##any"/>-->
+            <xs:element name="Targets" type="TargetList"/>
+			<xs:element ref="ds:Signature"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string"/>
+        <xs:attribute name="timestamp" type="xs:time" />
+	</xs:complexType>
+
+	<xs:complexType name="TargetType">
+        <xs:attribute name="href" type="xs:anyURI"/>
+        <xs:attribute name="type" type="xs:string"/>
+	</xs:complexType>
+    <xs:element name="Target" type= "TargetType"/>
+	<xs:complexType name="KeyHolder">
+		<xs:sequence>
+			<xs:element ref="ds:KeyInfo" maxOccurs="unbounded"/>
+		</xs:sequence>
+        <xs:attribute name="ns" type="xs:string"/>
+	</xs:complexType>
+
+	<xs:complexType name="NameSpaceType">
+		<xs:complexContent>
+			<xs:extension base="NamedObjectType">
+				<xs:sequence>
+					<xs:element name="Allow" type="KeyHolder" maxOccurs="unbounded"/>
+				</xs:sequence>
+                <!--
+                   Default WebServices for this namespace. These can be specified using either HTTP to a SOAP web port or
+                   given a neu://etc/etc... URI they can read the definition from a public definition.
+                -->
+                <!--
+                The Repository for this NameSpace
+                -->
+                <xs:attribute name="repository" type="xs:anyURI"/>
+                <!--
+                The Receiver for this NameSpace
+                -->
+                <xs:attribute name="receiver" type="xs:anyURI"/>
+                <!--
+                The store for this NameSpace
+                -->
+                <xs:attribute name="store" type="xs:anyURI"/>
+                <!-- The interactive signer for this NameSpace.
+                If Empty the NameSpace doesn't allow interactive signing.
+                -->
+                <xs:attribute name="signer" type="xs:anyURI"/>
+                <!--
+                The Logging Service for this NameSpace
+                -->
+                <xs:attribute name="logger" type="xs:anyURI"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="NameSpace" type="NameSpaceType"/>
+
+    <xs:complexType name="TargetList">
+        <xs:sequence>
+            <xs:element ref="Target" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

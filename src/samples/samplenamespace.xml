@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nsdl:NameSpace xmlns:nsdl="http://neudist.org/neu/nsdl"
+    name="neu://neu/one"
+ >
+    <nsdl:NameSpaceTargets >
+        <nsdl:Target href="http://logger.neubia.com/soap/Log" type="log"/>
+    </nsdl:NameSpaceTargets>
+    <nsdl:Targets>
+        <nsdl:Target href="http://storage.neubia.com/soap/Store" type="store"/>
+    </nsdl:Targets>
+ </nsdl:NameSpace>

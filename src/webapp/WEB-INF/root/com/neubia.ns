@@ -1,0 +1,28 @@
+
+<nsdl:NameSpace xmlns:nsdl="http://neudist.org/neu/nsdl" nsdl:name="neu://com/neubia" nsdl:store="http://neudist.org:8080/neudistframework/root/Store" nsdl:timestamp="20021010T211659016GMT+00:00">
+  <nsdl:allow>
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <ds:KeyValue>
+        <ds:RSAKeyValue>
+          <ds:Modulus>AOLB4Jenu6wdFM74Qz6HsfukmqqkUSAVy2LxVnshJeSj5zY0IrGD+n2qeTjSxZ4485+UdZoUaznr DwbA5khG9zgpUSsybDr0S4sCOvRPZcAcBwk/iOjs4qG/AFJmNJwFlMD1HkjivXY4gfxc+g8jZm4B m8JgnG3zjgs+av2AApDLTBxokFKwJnuN8dkyFn2jGv029xfWm3Vn3j+Vt4/wfBwhf+/7fu4msn6E OBglRPk6YbsVIjU7a/psxs706XjbijwxGE2DN9GweOAr3OvxjQxAW5PbxgTkZNNDrvy2HU5O0upL uRsPNPKZif+bjUcaFf/JmYtldXl/3u6VHDByT5s=</ds:Modulus>
+          <ds:Exponent>AQAB</ds:Exponent>
+        </ds:RSAKeyValue>
+      </ds:KeyValue>
+    </ds:KeyInfo>
+  </nsdl:allow>
+  <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+    <ds:SignedInfo>
+      <ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+      <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+      <ds:Reference>
+        <ds:Transforms>
+          <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+          <ds:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+        </ds:Transforms>
+        <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+        <ds:DigestValue>Tu27soDSy0jafaPVBs5wwRJIFJc=</ds:DigestValue>
+      </ds:Reference>
+    </ds:SignedInfo>
+    <ds:SignatureValue>FrkVnQU1WnGBcb3pfzs8mNn8C1GP46KEAPUDimybC7JW83ubV17l/655qZfWjZqD9xHCc4cGGrI+ A3WcDn0k6Nf/D3ziLiNkxo4ast9YphKzAvIHbfEmUmMmCpXOFe1DiE6+DNpM7GOjXyidsO7Iac4W LhnCW49qIP/lievgZds6Q5+YRTA8JKB/zM025pKLXfjhKHCkrg0o8MmPAr+Sub1i0/2BRrPPsUL9 NDpBJU4ZDV4ch9Rze1mjCJKmX3vMbJJaQhrerCxjg2Lw9se1r5qP5XOdc04qPOWJL3shxdzyCBuv 4AntfUJJtpgEeTM5dVqTyRgljzTRWnKknG3Kaw==</ds:SignatureValue>
+  </ds:Signature>
+</nsdl:NameSpace>

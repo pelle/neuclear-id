@@ -1,0 +1,274 @@
+/*
+  $Id: NameSpaceTest.java,v 1.1 2003/09/19 14:41:53 pelle Exp $
+  $Log: NameSpaceTest.java,v $
+  Revision 1.1  2003/09/19 14:41:53  pelle
+  Initial revision
+
+  Revision 1.5  2003/02/14 05:10:14  pelle
+  New Source model is implemented.
+  It doesnt quite verify things correctly yet. I'm not yet sure why.
+  CommandLineSigner is simplified to make it easier to use.
+
+  Revision 1.4  2003/02/10 22:30:23  pelle
+  Got rid of even further dependencies. In Particular OSCore
+
+  Revision 1.3  2003/02/09 00:15:56  pelle
+  Fixed things so they now compile with r_0.7 of XMLSig
+
+  Revision 1.2  2003/01/16 22:20:03  pelle
+  First Draft of new generalised Ledger Interface.
+  Currently we have a Book and Transaction class.
+  We also need a Ledger class and a Ledger Factory.
+
+  Revision 1.1  2003/01/16 19:16:09  pelle
+  Major Structural Changes.
+  We've split the test classes out of the normal source tree, to enable Maven's test support to work.
+  WARNING
+  for Development purposes the code does not as of this commit until otherwise notified actually verifysigs.
+  We are reworking the XMLSig library and need to continue work elsewhere for the time being.
+  DO NOT USE THIS FOR REAL APPS
+
+  Revision 1.2  2002/10/02 21:03:44  pelle
+  Major Commit
+  I completely redid the namespace resolving code.
+  It now works correctly with the new store attribute of the namespace
+  And can correctly work out the location of a namespace file
+  by hierarchically signing it.
+  I have also included several top level namespaces and finalised
+  the root namespace.
+  In short all of the above means that we can theoretically call
+  Neubia live now. (Well on my first deployment anyway).
+  There is a new CommandLineSigner utility class which creates and signs
+  namespaces using standard java keystores.
+  I'm now working on updating the documentation, so other people
+  than me might have a chance at using it.
+
+  Revision 1.1.1.1  2002/09/18 10:55:42  pelle
+  First release in new CVS structure.
+  Also first public release.
+  This implemnts simple named objects.
+  - NameSpace Objects
+  - NSAuth Objects
+
+  Storage systems
+  - In Memory Storage
+  - Clear text file based storage
+  - Encrypted File Storage (with SHA256 digested filenames)
+  - CachedStorage
+  - SoapStorage
+
+  Simple SOAP client/server
+  - Simple Single method call SOAP client, for arbitrary dom4j based requests
+  - Simple Abstract SOAP Servlet for implementing http based SOAP Servers
+
+  Simple XML-Signature Implementation
+  - Based on dom4j
+  - SHA-RSA only
+  - Very simple (likely imperfect) highspeed canonicalizer
+  - Zero support for X509 (We dont like that anyway)
+  - Super Simple
+
+
+  Revision 1.4  2002/06/18 03:04:11  pelle
+  Just added all the necessary jars.
+  Fixed a few things in the framework and
+  started a GUI Application to manage Neu's.
+
+  Revision 1.3  2002/06/13 19:04:07  pelle
+  A start to a web interface into the architecture.
+  We're getting a bit further now with functionality.
+
+  Revision 1.2  2002/06/05 23:42:04  pelle
+  The Throw clauses of several method definitions were getting out of hand, so I have
+  added a new wrapper exception NeudistException, to keep things clean in the ledger.
+  This is used as a catchall wrapper for all Exceptions in the underlying API's such as IOExceptions,
+  XML Exceptions etc.
+  You can catch any Exception and rethrow it using Utility.rethrowException(e) as a quick way of handling
+  exceptions.
+  Otherwise the Store framework and the NameSpaces are really comming along quite well. I added a CachedStore
+  which wraps around any other Store and caches the access to the store.
+
+  Revision 1.1.1.1  2002/05/29 10:02:22  pelle
+  Lets try one more time. This is the first rev of the next gen of Neudist
+
+
+  Revision 1.1.1.1  2002/03/20 00:46:52  pelleb
+  no message
+
+
+*/
+
+package org.neuclear.id;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.neuclear.store.MemoryStore;
+import org.neuclear.store.Store;
+import org.neuclear.utils.NeudistException;
+import org.neuclear.utils.Utility;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.*;
+import java.security.interfaces.RSAPrivateKey;
+
+
+/**
+ * @author Pelle Braendgaard
+ */
+public class NameSpaceTest extends TestCase  {
+    public NameSpaceTest() throws GeneralSecurityException, IOException, FileNotFoundException {
+		super("NameSpaceTest");
+                 setUp();
+    }
+    public NameSpaceTest(String name) {
+         super(name);
+     }
+    /**
+     * The general test setup consists of a minimal neuspace with 4 keys:
+     *<ul>
+     * <li>root
+     * <li>bob
+     * <li>alice
+     * <li>eve
+     * </ul>
+     * We set up a parent neu owned by root. Bob and Alice each own a sub space. Alice also has a subspace of Bob:
+     * <ul>
+     * <li>neu://
+     * <li>neu://bob
+     * <li>neu://bob/alice
+     * <li>neu://alice
+     * </ul>
+     * We attempt to create the following NeuSpaces, which shouldn't be allowed:
+     * <ul>
+     * <li>neu://eve (owned by eve)
+     * <li>neu://bob/eve (owned by eve)
+     * </ul>
+     */
+    protected void setUp() throws FileNotFoundException,GeneralSecurityException, IOException {
+
+        try {
+            //SignatureAlgorithm.providerInit();
+            //SignatureAlgorithm.register(XMLSignature.ALGO_ID_SIGNATURE_RSA,);
+            //KeyFactory fact=KeyFactory.getInstance("RSA");
+            KeyPairGenerator kgen=KeyPairGenerator.getInstance("RSA");
+            kgen.initialize(1024);
+            bob=kgen.generateKeyPair();
+            alice=kgen.generateKeyPair();
+            eve=kgen.generateKeyPair();
+
+            KeyStore ks=KeyStore.getInstance("Uber");
+            FileInputStream in=new FileInputStream("src/webapp/WEB-INF/testkeys.ks");
+            ks.load(in,"neuclear".toCharArray());
+            test= (RSAPrivateKey)ks.getKey("neu://test","neuclear".toCharArray());
+//
+//            NameSpace neuBob=createNeuBob();
+//            NameSpace neuAlice=new NameSpace("neu://alice",root,alice.getPublic());
+//            NameSpace neuBobAlice=new NameSpace("neu://bob/alice",bob,alice.getPublic());
+
+
+//            neuspace=new MemoryStore();
+//            neuspace.store(neuRoot);
+//            neuspace.store(neuBob);
+//            neuspace.store(neuAlice);
+//            neuspace.store(neuBobAlice);
+        } catch (NoSuchAlgorithmException e) {
+            Utility.handleException(e);
+
+//        } catch (NeudistException e) {
+//            Utility.handleException(e);
+        }
+
+    }
+
+/*
+    private NameSpace createNeuRoot() throws NeudistException {
+        return null;//new NameSpace("neu://",root,root.getPublic());
+    }
+    private NameSpace createNeuBob() throws NeudistException {
+        return  null;//new NameSpace("neu://bob",root,bob.getPublic());
+    }
+    private NameSpace createNeuAlice() throws NeudistException {
+        return null;// new NameSpace("neu://alice",root,alice.getPublic());
+    }
+    private NameSpace createNeuBobAlice() throws NeudistException {
+        return null;// new NameSpace("neu://bob/alice",bob,alice.getPublic());
+    }
+    private NameSpace createNeuEvilEve() throws NeudistException {
+        return null;// new NameSpace("neu://eve",eve,eve.getPublic());
+    }
+*/
+
+    protected void tearDown() {
+        }
+
+	private static void sleepabit() {
+	  try {
+		Thread.currentThread().sleep(1000);
+	  } catch (InterruptedException e) {
+		; // You are a bad boy Pelle
+	  }
+
+	}
+	public static Test suite() {
+
+
+		return new TestSuite(NameSpaceTest.class);
+	}
+
+ /*   public void testCreateRoot() throws NeudistException, InvalidNameSpaceException{
+      NameSpace neuRoot=createNeuRoot();
+      Store neuspace=new MemoryStore();
+      neuspace.receive(neuRoot);
+      assertNotNull("Test that we can add a root",neuRoot);
+    }
+*/
+
+    public void testCreateChild() throws NeudistException, InvalidNameSpaceException{
+      MemoryStore neuspace=new MemoryStore();
+      NameSpace neuBob=new NameSpace("neu://test/bob",bob.getPublic());
+      neuBob.sign(test);
+      neuspace.receive(neuBob);
+      assertNotNull("Test that we can add Bob under the root",neuBob);
+
+    }
+
+    public void testCreateInvalidChild() throws NeudistException, InvalidNameSpaceException{
+            MemoryStore neuspace=new MemoryStore();
+            NameSpace neuEve=new NameSpace("neu://test/eve",eve.getPublic());
+            neuEve.sign(eve.getPrivate());
+            boolean success=false;
+            try {
+                neuspace.receive(neuEve);
+            } catch (InvalidNameSpaceException e) {
+                success=true;
+            }
+            assertTrue("Test that we cant add Eve's selfsigned Neu under the root",success);
+
+    }
+    public static void main(String args[]) {
+        try {
+              NameSpaceTest test=new NameSpaceTest();
+              test.testCreateChild();
+              test.testCreateInvalidChild();
+          } catch (GeneralSecurityException e) {
+            Utility.handleException(e);
+          } catch (IOException e) {
+            Utility.handleException(e);
+          } catch (NeudistException e) {
+            Utility.handleException(e);
+          }
+    }
+
+//    KeyPair root;
+//    PrivateKey aliceSigner;
+//    PrivateKey bobSigner;
+    PrivateKey test;
+    KeyPair bob;
+    KeyPair alice;
+    KeyPair eve;
+//    Store neuspace;
+
+
+}
