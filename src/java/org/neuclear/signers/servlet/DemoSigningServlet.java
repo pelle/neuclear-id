@@ -1,6 +1,14 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.12 2003/12/11 23:57:29 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.13 2003/12/12 19:28:03 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.13  2003/12/12 19:28:03  pelle
+ * All the Cactus tests now for signing servlet.
+ * Added working AuthenticationFilterTest
+ * Returned original functionality to DemoSigningServlet.
+ * This is set up to use the test keys stored in neuclear-commons.
+ * SigningServlet should now work for general use. It uses the default
+ * keystore. Will add configurability later. It also uses the GUIDialogAgent.
+ *
  * Revision 1.12  2003/12/11 23:57:29  pelle
  * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
  * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -152,67 +160,44 @@
  */
 package org.neuclear.signers.servlet;
 
-import java.security.KeyPairGenerator;
+import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.passphraseagents.PassPhraseAgent;
+import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.crypto.signers.TestCaseSigner;
+import org.neuclear.xml.XMLException;
 
-public final class DemoSigningServlet extends SigningServlet {
-/*
+import javax.servlet.ServletConfig;
+import javax.servlet.SingleThreadModel;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.GeneralSecurityException;
 
-    private void buildTree() throws GeneralSecurityException, NeuClearException, IOException {
-        System.out.println("NEUDIST: Creating Identity Tree");
-        kpg = KeyPairGenerator.getInstance("RSA");
-        kpg.initialize(2048, new SecureRandom("Cartagena".getBytes()));
-
-        PrivateKey signer = getTestKey();
-        createNS("/test/one", "password", signer);
-        createNS("/test/two", "password", signer);
+public final class DemoSigningServlet extends SigningServlet implements PassPhraseAgent, SingleThreadModel {
+    protected Signer createSigner(ServletConfig config) throws GeneralSecurityException, NeuClearException {
+        passphrase = "neuclear";
+        return new TestCaseSigner(this);
     }
 
-    private RSAPrivateKey getTestKey() throws GeneralSecurityException, IOException {
-        KeyStore ks = KeyStore.getInstance("Uber");
-        FileInputStream in = new FileInputStream(context.getRealPath("/WEB-INF/testkeys.ks"));
-        ks.load(in, "neuclear".toCharArray());
-        return (RSAPrivateKey) ks.getKey("neu://test", "neuclear".toCharArray());
+    protected synchronized void handleInputStream(InputStream is, HttpServletRequest request, HttpServletResponse response) throws IOException, NeuClearException, XMLException {
+        passphrase = request.getParameter("passphrase");
+        super.handleInputStream(is, request, response);
+        passphrase = null;
     }
 
-    private void createNS(String name, String newPassword, PrivateKey signer) throws IOException, NeuClearException, GeneralSecurityException {
-        name = NSTools.normalizeNameURI(name);
-        System.out.println("NEUDIST: Generating key and Identity for: " + name);
-        KeyPair kp = kpg.generateKeyPair();
-        ((SimpleSigner) getKeyStore()).addKey(name, newPassword.toCharArray(), kp.getPrivate());
-        System.out.println("NEUDIST: Creating Identity");
-        Identity ns = new Identity(name, kp.getPublic(), "http://neuclear.org:8080/neuclearframework/Store", "http://neuclear.org:8080/neuclearframework/Signer", "http://neuclear.org:8080/neuclearframework/Logger", "");//TODO Fix these values
-//        id.addTarget(new TargetReference(id,,"store"));
-        System.out.println("NEUDIST: Signing");
-        ns.sign(signer);
-
-        try {
-            System.out.println("NEUDIST: Storing");
-//            id.store();
-//            getStore().receive(id);//Test locally first
-            ns.sendObject();
-        } catch (InvalidNamedObjectException e) {
-            System.out.println("NEUDIST: Identity Error: " + e.getLocalizedMessage());
-        }
+    /**
+     * Retrieve the PassPhrase for a given name/alias
+     * 
+     * @param name 
+     * @return 
+     */
+    public final char[] getPassPhrase(final String name) {
+        if (passphrase == null)
+            return null;
+        return passphrase.toCharArray();
     }
 
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        try {
-            buildTree();
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace(System.out);
-        } catch (IOException e) {
-            e.printStackTrace(System.out);
-        } catch (NeuClearException e) {
-            e.printStackTrace(System.out);
-        }
-    }
 
-    protected static Signer getKeyStore(File keyStoreFile, Object kspassword) throws GeneralSecurityException, IOException, NeuClearException {
-        return new SimpleSigner(keyStoreFile);
-    }
-
-*/
-    private KeyPairGenerator kpg;
-
+    private String passphrase;// Single Thread Model hack
 }

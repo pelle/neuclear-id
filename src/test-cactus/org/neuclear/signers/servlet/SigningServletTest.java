@@ -1,33 +1,26 @@
 package org.neuclear.signers.servlet;
 
+import com.meterware.httpunit.WebForm;
 import org.apache.cactus.ServletTestCase;
 import org.apache.cactus.WebRequest;
 import org.neuclear.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
+import org.neuclear.commons.crypto.Base64;
 import org.neuclear.commons.crypto.signers.JCESigner;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
-import org.neuclear.commons.crypto.Base64;
-import org.neuclear.commons.crypto.CryptoException;
+import org.neuclear.id.SignatureRequest;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.id.builders.SignatureRequestBuilder;
-import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.XMLException;
-import org.neuclear.xml.soap.SOAPTools;
-import org.neuclear.xml.xmlsec.XMLSecTools;
-import org.neuclear.receiver.ReceiverServlet;
-import org.neuclear.receiver.MockReceiver;
 import org.xml.sax.SAXException;
 
 import javax.servlet.ServletException;
-import java.io.IOException;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.net.HttpURLConnection;
-
-import com.meterware.httpunit.WebForm;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -47,8 +40,16 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningServletTest.java,v 1.1 2003/12/12 15:12:50 pelle Exp $
+$Id: SigningServletTest.java,v 1.2 2003/12/12 19:28:03 pelle Exp $
 $Log: SigningServletTest.java,v $
+Revision 1.2  2003/12/12 19:28:03  pelle
+All the Cactus tests now for signing servlet.
+Added working AuthenticationFilterTest
+Returned original functionality to DemoSigningServlet.
+This is set up to use the test keys stored in neuclear-commons.
+SigningServlet should now work for general use. It uses the default
+keystore. Will add configurability later. It also uses the GUIDialogAgent.
+
 Revision 1.1  2003/12/12 15:12:50  pelle
 The ReceiverServletTest now passes.
 Add first stab at a SigningServletTest which currently doesnt pass.
@@ -82,11 +83,11 @@ public class SigningServletTest extends ServletTestCase {
     public void beginSign(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException {
 
         AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://localhost");
-        SignatureRequestBuilder sigreq=new  SignatureRequestBuilder("neu://test","neu://bob@test",authreq,"test");
-        SignedNamedObject signed=sigreq.sign(signer);
+        SignatureRequestBuilder sigreq = new SignatureRequestBuilder("neu://test", "neu://bob@test", authreq, "test");
+        SignedNamedObject signed = sigreq.sign(signer);
         theRequest.setContentType("application/x-www-form-urlencoded");
-        String b64 =Base64.encode(signed.getEncoded().getBytes());
-        theRequest.addParameter("base64xml", b64, "POST");
+        String b64 = Base64.encode(signed.getEncoded().getBytes());
+        theRequest.addParameter("neuclear-request", b64, "POST");
         theRequest.addParameter("endpoint", "http://localhost", "POST");
         theRequest.addParameter("passphrase", "neuclear", "POST");
         theRequest.addParameter("sign", "Sign", "POST");
@@ -96,24 +97,68 @@ public class SigningServletTest extends ServletTestCase {
 
     public void testSign() throws ServletException, IOException {
         assertEquals(request.getContentType(), "application/x-www-form-urlencoded");
-        assertEquals(request.getMethod(),"POST");
-        ReceiverServlet servlet = new SigningServlet();
+        assertEquals(request.getMethod(), "POST");
+        SigningServlet servlet = new DemoSigningServlet();
         servlet.init(config);
         servlet.service(request, response);
 
     }
-    public void endSign(com.meterware.httpunit.WebResponse theResponse ) throws SAXException, NeuClearException, XMLException {
-        WebForm forms[]=theResponse.getForms();
+
+    public void endSign(com.meterware.httpunit.WebResponse theResponse) throws SAXException, NeuClearException, XMLException {
+        assertEquals("NeuClear Signing Service", theResponse.getTitle());
+        WebForm forms[] = theResponse.getForms();
         assertNotNull(forms);
-        assertEquals(forms.length,1);
+        assertEquals(1, forms.length);
         assertTrue(forms[0].hasParameterNamed("neuclear-request"));
-        String encoded=forms[0].getParameterValue("neuclear-request");
+        String encoded = forms[0].getParameterValue("neuclear-request");
         assertTrue(!Utility.isEmpty(encoded));
         final SignedNamedObject obj = VerifyingReader.getInstance().read(new ByteArrayInputStream(Base64.decode(encoded)));
         assertNotNull(obj);
         assertTrue(obj instanceof AuthenticationTicket);
         AuthenticationTicket ticket = (AuthenticationTicket) obj;
-        assertEquals(ticket.getSignatory().getName(),"neu://bob@test");
+        assertEquals(ticket.getSignatory().getName(), "neu://bob@test");
+        assertEquals("http://localhost", forms[0].getAction());
     }
+
+    public void beginSignatureRequest(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException {
+
+        AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://localhost");
+        SignatureRequestBuilder sigreq = new SignatureRequestBuilder("neu://test", "neu://bob@test", authreq, "test");
+        SignedNamedObject signed = sigreq.sign(signer);
+        theRequest.setContentType("application/x-www-form-urlencoded");
+        String b64 = Base64.encode(signed.getEncoded().getBytes());
+        theRequest.addParameter("neuclear-request", b64, "POST");
+        theRequest.addParameter("endpoint", "http://localhost", "POST");
+        theRequest.setURL("http://users.neuclear.org", "/test", "/Receiver",
+                null, null);
+    }
+
+    public void testSignatureRequest() throws ServletException, IOException {
+        assertEquals(request.getContentType(), "application/x-www-form-urlencoded");
+        assertEquals(request.getMethod(), "POST");
+        SigningServlet servlet = new DemoSigningServlet();
+        servlet.init(config);
+        servlet.service(request, response);
+
+    }
+
+    public void endSignatureRequest(com.meterware.httpunit.WebResponse theResponse) throws SAXException, NeuClearException, XMLException {
+        assertEquals("NeuClear Signing Service", theResponse.getTitle());
+        WebForm forms[] = theResponse.getForms();
+        assertNotNull(forms);
+        assertEquals(1, forms.length);
+        assertTrue(forms[0].hasParameterNamed("neuclear-request"));
+        String encoded = forms[0].getParameterValue("neuclear-request");
+        assertTrue(!Utility.isEmpty(encoded));
+        final SignedNamedObject obj = VerifyingReader.getInstance().read(new ByteArrayInputStream(Base64.decode(encoded)));
+        assertNotNull(obj);
+        assertTrue(obj instanceof SignatureRequest);
+        SignatureRequest sigreq = (SignatureRequest) obj;
+        assertEquals(sigreq.getSignatory().getName(), "neu://test");
+        assertTrue(forms[0].hasParameterNamed("endpoint"));
+        assertEquals("http://localhost", forms[0].getParameterValue("endpoint"));
+
+    }
+
     JCESigner signer;
 }

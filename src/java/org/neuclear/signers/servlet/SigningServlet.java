@@ -1,6 +1,14 @@
 /*
- * $Id: SigningServlet.java,v 1.19 2003/12/12 15:12:50 pelle Exp $
+ * $Id: SigningServlet.java,v 1.20 2003/12/12 19:28:03 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.20  2003/12/12 19:28:03  pelle
+ * All the Cactus tests now for signing servlet.
+ * Added working AuthenticationFilterTest
+ * Returned original functionality to DemoSigningServlet.
+ * This is set up to use the test keys stored in neuclear-commons.
+ * SigningServlet should now work for general use. It uses the default
+ * keystore. Will add configurability later. It also uses the GUIDialogAgent.
+ *
  * Revision 1.19  2003/12/12 15:12:50  pelle
  * The ReceiverServletTest now passes.
  * Add first stab at a SigningServletTest which currently doesnt pass.
@@ -201,11 +209,11 @@ package org.neuclear.signers.servlet;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.Base64;
-import org.neuclear.commons.crypto.passphraseagents.PassPhraseAgent;
+import org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent;
+import org.neuclear.commons.crypto.signers.DefaultSigner;
 import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
 import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.Signer;
-import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.NSTools;
@@ -213,226 +221,140 @@ import org.neuclear.id.SignatureRequest;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.verifier.VerifyingReader;
-import org.neuclear.receiver.ReceiverServlet;
+import org.neuclear.xml.XMLException;
+import org.neuclear.xml.soap.XMLInputStreamServlet;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.security.GeneralSecurityException;
-import java.util.HashMap;
-import java.util.Map;
 
-public class SigningServlet extends ReceiverServlet implements PassPhraseAgent {
+
+public class SigningServlet extends XMLInputStreamServlet {
     public final void init(final ServletConfig config) throws ServletException {
-        System.out.println("NEUDIST: Initialising SigningServlet");
         super.init(config);
         context = config.getServletContext();
-        reqMap = new HashMap();
+        context.log("NEUCLEAR: Initialising SigningServlet");
         try {
-            System.out.println("NEUDIST: Initialising SigningServlet");
             title = Utility.denullString(config.getInitParameter("title"), "NeuClear Signing Service");
-            if (signer == null) {
-                signer = new TestCaseSigner(this);
-            }
-            System.out.println("NEUDIST: Finished SigningServlet Init ");
-
+            signer = createSigner(config);
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         } catch (NeuClearException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
 
     }
 
+    protected Signer createSigner(ServletConfig config) throws GeneralSecurityException, NeuClearException, IOException {
+        return new DefaultSigner(new GuiDialogAgent());
+    }
 
-    protected static final Signer getSigner() {
+    protected final Signer getSigner() {
         return signer;
     }
 
-    protected final void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("NEUDIST: doPost()");
-        if (request.getContentType().equals("text/xml")) {
-            System.out.println("NEUDIST: call SOAP Servlet");
-            super.doPost(request, response);
-            return;
+
+    protected void handleInputStream(InputStream is, HttpServletRequest request, HttpServletResponse response) throws IOException, NeuClearException, XMLException {
+        SignatureRequest sigreq = (SignatureRequest) VerifyingReader.getInstance().read(is);
+        if (sigreq == null) {
+            throw new NeuClearException("nothing to sign");
         }
-        reqMap.put(Thread.currentThread(), request);
+        if (!signer.canSignFor(sigreq.getUserid()))
+            throw new NonExistingSignerException(sigreq.getUserid());
+
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
         response.setContentType("text/html");
         final PrintWriter out = response.getWriter();
         ServletTools.printHeader(out, request, title);
-        final String b64xml = request.getParameter("base64xml");
         final String endpoint = request.getParameter("endpoint");
-        final NamedObjectBuilder named;
-        SignatureRequest sigreq = null;
+        final NamedObjectBuilder named = sigreq.getUnsigned();
         boolean isSigned = false;
-        try {
-            if (!Utility.isEmpty(b64xml)) {
-                sigreq = (SignatureRequest) VerifyingReader.getInstance().read(new ByteArrayInputStream(Base64.decode(b64xml)));
-            } else {
-                out.print("Nothing to Sign..");
-                return;
-            }
 
-            if (sigreq != null) {
-
-                named = sigreq.getUnsigned();
-                if (!Utility.isEmpty(request.getParameter("sign"))) {
-                    final String parent = NSTools.getSignatoryURI(named.getName());
-                    out.println("Signing with " + parent + "...");
-                    out.flush();
-                    try {
-                        context.log("SIGN: Signing with " + parent);
-                        final SignedNamedObject signed = named.sign(signer);
-                        isSigned = true;
-                        out.println("Signed<br>");
-                        out.println("<br>Verifying...");
-                        out.flush();
-                        out.println(signed.getName() + " Verified<br>");
-
-                    } catch (InvalidNamedObjectException e) {
-                        out.println("<br><font color=\"red\"><b>ERROR: Invalid Identity</b></font><br>");
-                        //e.printStackTrace(out);
-                        isSigned = false;
-                    } catch (InvalidPassphraseException e) {
-                        out.println("<br><font color=\"red\"><b>ERROR: Wrong Passphrase</b></font><br>");
-                        isSigned = false;
-                    } catch (NonExistingSignerException e) {
-                        out.println("<br><font color=\"red\"><b>ERROR: We Aren't Able to Sign for that Identity</b></font><br>");
-                        isSigned = false;
-                    }
-
-                }
-                out.println("<table bgcolor=\"#708070\"><tr><td><h4 style=\"color: white\">");
-                if (isSigned)
-                    out.println("Signed Item");
-                else
-                    out.println("Item to Sign:");
-                out.println("</h4>");
-                out.println("<b>Requesting Site:</b><br/>");
-                out.println(sigreq.getSignatory().getName());
-                out.println("<br><b>Type:</b><br/>");
-                out.println(named.getElement().getName());
-                if (!Utility.isEmpty(sigreq.getDescription())) {
-                    out.println("<br><b>Description:</b><br/>");
-                    out.println(sigreq.getDescription());
-                }
-
-
-                out.println("</td></tr></table>");
-                if (!isSigned) {
-                    out.println("<table bgcolor=\"#D0FFD0\"><tr><td bgcolor=\"#026A32\"><h4 style=\"color: white\">Do you wish to sign this?</h4></td></tr>");
-                    out.print("<tr><td><form action=\"");
-                    out.print(request.getRequestURL());
-                    out.print("\" method=\"POST\"><input name=\"base64xml\" value=\"");
-                    out.print(b64xml);
-                    out.print("\" type=\"hidden\">\n <input name=\"endpoint\" value=\"");
-                    out.print(endpoint);
-                    out.println("\" type=\"hidden\"/>\nPassphrase: <input name=\"passphrase\" type=\"password\" size=\"40\">");
-                    out.println(" <input type=\"submit\" name=\"sign\" value=\"Sign\"></form></td></tr></table>");
-                } else if (!Utility.isEmpty(endpoint)) {
-                    out.print("<tr><td>Signed, returning to site...<form action=\"");
-                    out.print(endpoint);
-                    out.print("\" method=\"POST\"><input name=\"neuclear-request\" value=\"");
-//                    context.log("Signing Servlet: ");
-                    out.print(XMLSecTools.encodeElementBase64(named));
-                    out.println("\" type=\"hidden\"/>");
-//                    out.write("<input type=\"submit\">");
-                    out.write("</form>\n");
-                    out.write("<script language=\"javascript\">\n");
-                    out.write("<!--\n   document.forms[0].submit();\n-->\n");
-                    out.write("</script>\n");
-
-
-                }
-            }
-        } catch (Exception e) {
-            out.println("<br><font color=\"red\"><pre>");
-            e.printStackTrace(out);
-            out.println("</pre></font>");
-        }
-        out.println("<p align\"left\"><img src=\"images/neubia40x40.png\"><br><a href=\"http://www.neubia.com\"><i>&copy; 2002 Antilles Software Ventures SA</i></a></body></html>");
-        reqMap.remove(Thread.currentThread()); //Super Important
-    }
-
-    protected final void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        response.setHeader("Pragma", "no-cache");
-        response.setDateHeader("Expires", 0);
-
-        response.setContentType("text/html");
-        System.out.println("NEUDIST: doGet()");
-        final PrintWriter out = response.getWriter();
-        ServletTools.printHeader(out, request, title);
-        out.println("<form method=\"POST\" action=\"Signer\"><textarea name=\"xml\" cols=\"80\"rows=\"30\"></textarea><br><input type=\"submit\" name=\"submit\" value=\"Confirm\"></form>");
-        out.println("</body></html>");
-
-    }
-
-    /**
-     * Retrieve the PassPhrase for a given name/alias
-     * 
-     * @param name 
-     * @return 
-     */
-    public final char[] getPassPhrase(final String name) {
-        if (reqMap == null)
-            return null;
-        final HttpServletRequest request = (HttpServletRequest) reqMap.get(Thread.currentThread());
-        if (request == null)
-            return null;
-        final String passphrase = request.getParameter("passphrase");
-        if (passphrase == null)
-            return null;
-        return passphrase.toCharArray();
-    }
-
-/*
-    public Element receiveNamedObject(SignedNamedObject obj, String soapAction) throws SOAPException {
-        try {
-            signObject(obj, "hello".toCharArray());// TODO How do we get the passphrase here? Popup request?
-            return obj.getElement();
-        } catch (InvalidNamedObjectException e) {
-            throw new SOAPException(e);
-        } catch (InvalidPassphraseException e) {
-            throw new SOAPException(e);
-        } catch (NonExistingSignerException e) {
-            throw new SOAPException(e);
-        } catch (NeuClearException e) {
-            throw new SOAPException(e);
-        }
-    }
-
-    protected static void signObject(SignedNamedObject obj, char passphrase[]) throws NeuClearException, InvalidNamedObjectException, InvalidPassphraseException, NonExistingSignerException {
-        if (!obj.isSigned()) {
+        if (!Utility.isEmpty(request.getParameter("sign"))) {
+            final String parent = NSTools.getSignatoryURI(named.getName());
+            out.println("Signing with " + parent + "...");
+            out.flush();
             try {
-                String parentName = NSTools.getSignatoryURI(obj.getName());
-                PrivateKey pk = signer.getKey(parentName, passphrase);
-                if (pk == null)
-                    throw new NonExistingSignerException("Signing Service doesn't contain Signing keys for: " + parentName);
-                obj.sign(pk);
-//                obj.store();
-                obj.sendObject();
-            } catch (IOException e) {
-                throw new XMLSecurityException(e);
-//             } catch (GeneralSecurityException e) {
-//                throw new XMLSecurityException(e);
+                context.log("SIGN: Signing with " + parent);
+                final SignedNamedObject signed = named.sign(signer);
+                isSigned = true;
+                out.println("Signed<br>");
+                out.println("<br>Verifying...");
+                out.flush();
+                out.println("SIGN: " + signed.getName() + " Verified<br>");
+
+            } catch (InvalidNamedObjectException e) {
+                System.out.println("<br><font color=\"red\"><b>ERROR: Invalid Identity</b></font><br>");
+                out.println("<br><font color=\"red\"><b>ERROR: Invalid Identity</b></font><br>");
+                isSigned = false;
+            } catch (InvalidPassphraseException e) {
+                System.out.println("<br><font color=\"red\"><b>ERROR: Wrong Passphrase</b></font><br>");
+                out.println("<br><font color=\"red\"><b>ERROR: Wrong Passphrase</b></font><br>");
+                isSigned = false;
+            } catch (NonExistingSignerException e) {
+                System.out.println("<br><font color=\"red\"><b>ERROR: We Aren't Able to Sign for that Identity</b></font><br>");
+                out.println("<br><font color=\"red\"><b>ERROR: We Aren't Able to Sign for that Identity</b></font><br>");
+                isSigned = false;
             }
+
+        }
+        out.println("<table bgcolor=\"#708070\"><tr><td><h4 style=\"color: white\">");
+        if (isSigned)
+            out.println("Signed Item");
+        else
+            out.println("Item to Sign:");
+        out.println("</h4>");
+        out.println("<b>Requesting Site:</b><br/>");
+        out.println(sigreq.getSignatory().getName());
+        out.println("<br><b>Type:</b><br/>");
+        out.println(named.getElement().getName());
+        if (!Utility.isEmpty(sigreq.getDescription())) {
+            out.println("<br><b>Description:</b><br/>");
+            out.println(sigreq.getDescription());
+        }
+
+
+        out.println("</td></tr></table>");
+        if (!isSigned) {
+            out.println("<table><tr><td ><h4>Do you wish to sign this?</h4></td></tr>");
+            out.print("<tr><td><form action=\"");
+            out.print(request.getRequestURL());
+            out.print("\" method=\"POST\"><input name=\"neuclear-request\" value=\"");
+            out.print(Base64.encode(sigreq.getEncoded().getBytes()));
+            out.print("\" type=\"hidden\">\n <input name=\"endpoint\" value=\"");
+            out.print(endpoint);
+            out.println("\" type=\"hidden\"/>\nPassphrase: <input name=\"passphrase\" type=\"password\" size=\"40\">");
+            out.println(" <input type=\"submit\" name=\"sign\" value=\"Sign\"></form></td></tr></table>");
+        } else if (!Utility.isEmpty(endpoint)) {
+            out.print("<tr><td>Signed, returning to site...<form action=\"");
+            out.print(endpoint);
+            out.print("\" method=\"POST\"><input name=\"neuclear-request\" value=\"");
+//                    context.log("Signing Servlet: ");
+            out.print(XMLSecTools.encodeElementBase64(named));
+            out.println("\" type=\"hidden\"/>");
+//                    out.write("<input type=\"submit\">");
+            out.write("</form>\n");
+            out.write("<script language=\"javascript\">\n");
+            out.write("<!--\n   document.forms[0].submit();\n-->\n");
+            out.write("</script>\n");
+
+
         }
 
 
     }
 
-*/
     protected javax.servlet.ServletContext context;
-    private static Signer signer;
-    private String id;
+    private Signer signer;
     private String title;
-    private Map reqMap;
 }
