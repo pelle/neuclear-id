@@ -1,5 +1,8 @@
-/* $Id: CommandLineSigner.java,v 1.9 2004/02/18 00:14:31 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.10 2004/02/19 15:30:21 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.10  2004/02/19 15:30:21  pelle
+ * Various cleanups and corrections
+ *
  * Revision 1.9  2004/02/18 00:14:31  pelle
  * Many, many clean ups. I've readded Targets in a new method.
  * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
@@ -214,7 +217,6 @@
  */
 package org.neuclear.id.tools.commandline;
 
-import org.apache.commons.cli.*;
 import org.dom4j.Document;
 import org.neuclear.commons.LowLevelException;
 import org.neuclear.commons.NeuClearException;
@@ -239,16 +241,16 @@ import java.io.*;
 
 /**
  * @author pelleb
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class CommandLineSigner {
-    private final String EXECUTABLE ;
+    private final String executable;
 
     public CommandLineSigner(final String[] args) throws UserCancellationException {
         CryptoTools.ensureProvider();
-        EXECUTABLE=Utility.getExecutable(getClass());
+        executable = Utility.getExecutable(getClass());
         options = createOptions();
-        cmd=parseOptions(args);
+        cmd = parseOptions(args);
         checkArguments();
         if (cmd.hasOption('v')) {
             String name = cmd.getOptionValue('v');
@@ -270,7 +272,7 @@ public class CommandLineSigner {
             System.exit(0);
         }
 //        agent=(PassPhraseAgent)Configuration.getComponent(PassPhraseAgent.class,"neuclear-id");
-        final InteractiveAgent agent = cmd.hasOption('g')?(InteractiveAgent)new GuiDialogAgent():new ConsoleAgent();
+        final InteractiveAgent agent = cmd.hasOption('g') ? (InteractiveAgent) new GuiDialogAgent() : new ConsoleAgent();
         sig = createSigner(agent);
         alias = cmd.getOptionValue("a");
         of = cmd.getOptionValue("o");
@@ -304,7 +306,7 @@ public class CommandLineSigner {
             System.out.println();
             final CommandLineSigner signer = new CommandLineSigner(args);
             signer.execute();
-        } catch (UserCancellationException e){
+        } catch (UserCancellationException e) {
             System.out.println("Bye");
         } catch (Exception e) {
             e.printStackTrace();
@@ -312,7 +314,7 @@ public class CommandLineSigner {
     }
 
     public final void checkArguments() {
-        if (!hasArguments()||cmd.hasOption('h')) {
+        if (!hasArguments() || cmd.hasOption('h')) {
             printHelp();
             System.exit(1);
         }
@@ -321,10 +323,10 @@ public class CommandLineSigner {
     private void printHelp() {
         final HelpFormatter help = new HelpFormatter();
         help.setDescPadding(10);
-        help.printHelp("\n"+EXECUTABLE +getExtraHelp()+
+        help.printHelp("\n" + executable + getExtraHelp() +
                 "  [--outputfile signed/test.id] \n" +
-                EXECUTABLE+" --verify neu://neuclear.org\n" +
-                EXECUTABLE+" --inputfile joe@yourdomain.xml \n" , options);
+                executable + " --verify neu://neuclear.org\n" +
+                executable + " --inputfile joe@yourdomain.xml \n", options);
     }
 
     protected String getExtraHelp() {
@@ -336,14 +338,14 @@ public class CommandLineSigner {
     }
 
     public final void execute() throws UserCancellationException {
-            final Builder subject = build();
+        final Builder subject = build();
 
         try {
             if (!sig.canSignFor(alias)) {
                 if (!Utility.isEmpty(of))
-                    of =  "signthis.xml";
+                    of = "signthis.xml";
                 System.out.println("Key with alias: " + alias + " doesnt exist in our keystore. \nSaving unsigned Identity as: " + of);
-            } else if(!subject.isSigned()) {
+            } else if (!subject.isSigned()) {
                 System.out.println("Signing by " + alias + " ...");
                 subject.sign(alias, sig);
             }
@@ -358,10 +360,10 @@ public class CommandLineSigner {
             }
             XMLTools.writeFile(dest, subject.getElement());
             System.out.println();
-            System.out.println("You now need to copy the file: "+of+ " to your webserver so it is visible at a given location");
+            System.out.println("You now need to copy the file: " + of + " to your webserver so it is visible at a given location");
 
 //            System.out.println("\nOnce this is done you will be able to verify your new Identity like this:");
-//            System.out.println(EXECUTABLE+" -v "+subject.getName());
+//            System.out.println(executable+" -v "+subject.getName());
 /*  We need to be able to send an unsigned object before I can enable this
             if (!sig.canSignFor(alias)) {
                 System.out.println("Do you wish to send the contract to the signer of "+alias+"?");
@@ -391,7 +393,7 @@ public class CommandLineSigner {
 
     protected Builder build() throws UserCancellationException {
         final String sf = cmd.getOptionValue("i");
-        Builder subject=null;
+        Builder subject = null;
         try {
             InputStream source = System.in;
             if (!Utility.isEmpty(sf)) {
@@ -437,8 +439,8 @@ public class CommandLineSigner {
         options.addOption(new Option("o", "outputfile", true, "specify output file \n[ --outputfile bob.id ]"));
         options.addOption(new Option("i", "inputfile", true, "specify Input File \n[ --inputfile bob.xml ]"));
         options.addOption(new Option("v", "verify", true, "Specify NEU ID to verify \n[ --verify neu://bob@yourdomain.com ]"));
-        options.addOption(new Option("h","help",false,"Help"));
-        options.addOption(new Option("g","gui",false,"Use GUI Passphrase Dialog"));
+        options.addOption(new Option("h", "help", false, "Help"));
+        options.addOption(new Option("g", "gui", false, "Use GUI Passphrase Dialog"));
         getLocalOptions(options);
 
 

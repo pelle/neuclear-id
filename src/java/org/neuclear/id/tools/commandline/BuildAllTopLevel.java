@@ -29,8 +29,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: BuildAllTopLevel.java,v 1.6 2004/02/18 00:14:31 pelle Exp $
+$Id: BuildAllTopLevel.java,v 1.7 2004/02/19 15:30:21 pelle Exp $
 $Log: BuildAllTopLevel.java,v $
+Revision 1.7  2004/02/19 15:30:21  pelle
+Various cleanups and corrections
+
 Revision 1.6  2004/02/18 00:14:31  pelle
 Many, many clean ups. I've readded Targets in a new method.
 Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
@@ -84,10 +87,13 @@ writing SQL. (Yipee)
  * Time: 3:26:45 PM
  */
 public final class BuildAllTopLevel {
+    private BuildAllTopLevel() { //Dont Instantiate
+    }
+
     public static SignedNamedObject createIdentities(final String name, final Signer signer, final PublicKeySource pubsource) throws NeuClearException, XMLException {
         final IdentityBuilder id = new IdentityBuilder(pubsource.getPublicKey(name));
         System.out.println("Signing: " + name);
-        return id.convert(name,signer);
+        return id.convert(name, signer);
     }
 
     public static void main(final String[] args) {

@@ -28,8 +28,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.18 2004/01/10 00:03:20 pelle Exp $
+$Id: VerifyingReader.java,v 1.19 2004/02/19 15:30:21 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.19  2004/02/19 15:30:21  pelle
+Various cleanups and corrections
+
 Revision 1.18  2004/01/10 00:03:20  pelle
 Implemented new Schema for Transfer*
 Working on it for Exchange*, so far all Receipts are implemented.
@@ -161,15 +164,15 @@ public final class VerifyingReader {
     }
 
     public static VerifyingReader getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     /**
      * Read Object from input stream.
      * Verify signature with parent Identity
-     * 
-     * @param is 
-     * @return 
+     *
+     * @param is
+     * @return
      * @throws InvalidNamedObjectException
      */
     public final SignedNamedObject read(final InputStream is) throws InvalidNamedObjectException, NameResolutionException {
@@ -181,7 +184,7 @@ public final class VerifyingReader {
         }
     }
 
-    public final SignedNamedObject read(final Element elem) throws InvalidNamedObjectException, NameResolutionException{
+    public final SignedNamedObject read(final Element elem) throws InvalidNamedObjectException, NameResolutionException {
         return resolveReader(elem).read(SignedNamedCore.read(elem), elem);
     }
 
@@ -201,5 +204,5 @@ public final class VerifyingReader {
 
     private final Map readers;
     private final NamedObjectReader defaultReader;
-    private static final VerifyingReader instance = new VerifyingReader();
+    private static final VerifyingReader INSTANCE = new VerifyingReader();
 }

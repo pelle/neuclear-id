@@ -5,8 +5,11 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:29:29 AM
- * $Id: Sender.java,v 1.14 2003/12/16 15:05:00 pelle Exp $
+ * $Id: Sender.java,v 1.15 2004/02/19 15:30:21 pelle Exp $
  * $Log: Sender.java,v $
+ * Revision 1.15  2004/02/19 15:30:21  pelle
+ * Various cleanups and corrections
+ *
  * Revision 1.14  2003/12/16 15:05:00  pelle
  * Added SignedMessage contract for signing simple textual contracts.
  * Added NeuSender, updated SmtpSender and Sender to take plain email addresses (without the mailto:)
@@ -108,38 +111,29 @@ public abstract class Sender {
     private static String getProtocol(final String endpoint) throws NeuClearException {
         final int protloc = endpoint.indexOf(":");
         final int atloc = endpoint.indexOf("@");
-        if (protloc < 0&&atloc<0)
+        if (protloc < 0 && atloc < 0)
             throw new NeuClearException(endpoint + "Is not in URL format");
-        if (protloc>=0)
+        if (protloc >= 0)
             return endpoint.substring(0, protloc);
         return "mailto";
     }
 
     public static Sender getSender(final String protocol) {
-        if (SENDERS == null) {
-            SENDERS = new HashMap();
-            SENDERS.put("soap", new SoapSender());
-            SENDERS.put("http", new SoapSender());
-            SENDERS.put("mailto", new SmtpSender());
-            SENDERS.put("neu", new NeuSender());
-        }
+        makeSenders();
 
         return (Sender) SENDERS.get(protocol);
     }
 
-    private static Map SENDERS;
-
-    public static void main(final String[] args) {
-/*
-        try {
-            NameSpace pelle=(NameSpace)NamedObjectFactory.fetchNamedObject("neu://free/pelle");
-            NamedObject free=NamedObjectFactory.fetchNamedObject("neu://free");
-            pelle.receive(free);
-        } catch (NeuClearException e) {
-            e.printStackTrace();  //To change body of catch statement use Options | File Templates.
-        }
-*/
-
+    private static HashMap makeSenders() {
+        HashMap map = new HashMap();
+        map.put("soap", new SoapSender());
+        map.put("http", new SoapSender());
+        map.put("mailto", new SmtpSender());
+        map.put("neu", new NeuSender());
+        return map;
     }
+
+    private static final Map SENDERS = makeSenders();
+
 }
 

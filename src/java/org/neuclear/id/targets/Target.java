@@ -22,8 +22,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: Target.java,v 1.1 2004/02/18 00:14:31 pelle Exp $
+$Id: Target.java,v 1.2 2004/02/19 15:30:20 pelle Exp $
 $Log: Target.java,v $
+Revision 1.2  2004/02/19 15:30:20  pelle
+Various cleanups and corrections
+
 Revision 1.1  2004/02/18 00:14:31  pelle
 Many, many clean ups. I've readded Targets in a new method.
 Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
@@ -34,7 +37,7 @@ Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
  * Targets are services that receive SignedObjects
  */
 final class Target {
-    private Target( int type, String href) {
+    private Target(int type, String href) {
         this.href = href;
         this.type = type;
     }
@@ -47,31 +50,32 @@ final class Target {
         return type;
     }
 
-    final static Target make(String type,String href){
+    final static Target make(String type, String href) {
         int t = getType(type);
-        return new Target(t,href);
+        return new Target(t, href);
     }
 
     final static int getType(String type) {
-        int t=0;
-        if (type!=null&&typemap.containsKey(type))
-            t=((Byte)typemap.get(type)).byteValue();
+        int t = 0;
+        if (type != null && TYPEMAP.containsKey(type))
+            t = ((Byte) TYPEMAP.get(type)).byteValue();
         return t;
     }
 
-    final static Target parseElement(Element elem){
-        return make(elem.attributeValue("type"),elem.getTextTrim());
+    final static Target parseElement(Element elem) {
+        return make(elem.attributeValue("type"), elem.getTextTrim());
     }
 
     private final String href;
     private final int type;
 
-    private final static HashMap typemap=new HashMap();
+    private final static HashMap TYPEMAP = new HashMap();
 
-    // Add further standard types here
-    private final static String[] types= new String[] {"misc","auditor","receiver","logger"};
+    // Add further standard TYPES here
+    private final static String[] TYPES = new String[]{"misc", "auditor", "receiver", "logger"};
+
     {
-        for(byte i=0;i<types.length;i++)
-            typemap.put(types[i],new Byte(i));
+        for (byte i = 0; i < TYPES.length; i++)
+            TYPEMAP.put(TYPES[i], new Byte(i));
     }
 }

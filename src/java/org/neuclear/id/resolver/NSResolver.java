@@ -21,6 +21,9 @@ import java.net.URL;
  * </code>
  */
 public final class NSResolver {
+    private NSResolver() { //Dont Instantiate
+    }
+
     private static final NSCache NSCACHE = new NSCache();
 
     public static final String NSROOTSTORE = "http://repository.neuclear.org";
@@ -75,7 +78,7 @@ public final class NSResolver {
         try {
             return VerifyingReader.getInstance().read(new URL(name).openStream());
         } catch (IOException e) {
-            throw new InvalidNamedObjectException(name,e);
+            throw new InvalidNamedObjectException(name, e);
         }
     }
 

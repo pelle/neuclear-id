@@ -1,6 +1,9 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.17 2004/02/18 00:14:36 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.18 2004/02/19 15:30:22 pelle Exp $
   $Log: AbstractStoreTest.java,v $
+  Revision 1.18  2004/02/19 15:30:22  pelle
+  Various cleanups and corrections
+
   Revision 1.17  2004/02/18 00:14:36  pelle
   Many, many clean ups. I've readded Targets in a new method.
   Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
@@ -197,25 +200,25 @@ public abstract class AbstractStoreTest extends AbstractSigningTest {
 
     public final void testStore() throws NeuClearException, InvalidNamedObjectException, XMLException {
         System.out.println("\nTesting " + this.getClass().getName());
-        System.out.println("Storing " + bobName);
-        final IdentityBuilder bob = new IdentityBuilder(signer.getPublicKey(bobName));
-        store.receive(bob.convert(bobName, signer));
-        System.out.println("Storing " + aliceName);
-        final IdentityBuilder alice = new IdentityBuilder(signer.getPublicKey(aliceName));
-        store.receive(alice.convert(aliceName, signer));
+        System.out.println("Storing " + BOB);
+        final IdentityBuilder bob = new IdentityBuilder(signer.getPublicKey(BOB));
+        store.receive(bob.convert(BOB, signer));
+        System.out.println("Storing " + ALICE);
+        final IdentityBuilder alice = new IdentityBuilder(signer.getPublicKey(ALICE));
+        store.receive(alice.convert(ALICE, signer));
 
-        System.out.println("Fetching " + bobName);
-        final SignedNamedObject nobj2 = store.fetch(bobName);
+        System.out.println("Fetching " + BOB);
+        final SignedNamedObject nobj2 = store.fetch(BOB);
         assertNotNull(nobj2);
-        assertEquals(bobName, nobj2.getName());
+        assertEquals(BOB, nobj2.getName());
 
-        System.out.println("Fetching " + aliceName);
-        final SignedNamedObject nobj4 = store.fetch(aliceName);
-        assertEquals(aliceName, nobj4.getName());
+        System.out.println("Fetching " + ALICE);
+        final SignedNamedObject nobj4 = store.fetch(ALICE);
+        assertEquals(ALICE, nobj4.getName());
     }
 
     private Store store;
-    protected static final String bobName = "neu://bob@test";
-    protected static final String aliceName = "neu://alice@test";
+    protected static final String BOB = "neu://bob@test";
+    protected static final String ALICE = "neu://alice@test";
 
 }
