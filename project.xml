@@ -70,7 +70,7 @@
         <dependency>
             <id>neuclear-xmlsig</id>
             <name>neuclear-xmlsig</name>
-            <version>0.11.1</version>
+            <version>0.12-SNAPSHOT</version>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
@@ -79,7 +79,7 @@
         <dependency>
             <id>neuclear-commons</id>
             <name>neuclear-commons</name>
-            <version>0.5.1</version>
+            <version>0.6-SNAPSHOT</version>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>

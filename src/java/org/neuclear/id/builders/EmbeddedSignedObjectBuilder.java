@@ -1,16 +1,9 @@
 package org.neuclear.id.builders;
 
-import org.neuclear.xml.xmlsec.SignedElement;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
-import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.NameResolutionException;
-import org.neuclear.id.InvalidNamedObjectException;
-import org.neuclear.commons.crypto.signers.Signer;
-import org.neuclear.commons.crypto.signers.NonExistingSignerException;
-import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
-import org.dom4j.QName;
-import org.dom4j.DocumentHelper;
 import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.QName;
+import org.neuclear.id.SignedNamedObject;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,10 +20,6 @@ public class EmbeddedSignedObjectBuilder extends Builder {
         } catch (DocumentException e) {
             throw new RuntimeException((e));
         }
-    }
-
-    public String getURI() throws XMLSecurityException {
-        return "#";  //To change body of implemented methods use Options | File Templates.
     }
 
 }

@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedCore.java,v 1.11 2004/01/10 00:03:21 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.12 2004/01/13 23:38:26 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.12  2004/01/13 23:38:26  pelle
+ * Refactoring parts of the core of XMLSignature. There shouldnt be any real API changes.
+ *
  * Revision 1.11  2004/01/10 00:03:21  pelle
  * Implemented new Schema for Transfer*
  * Working on it for Exchange*, so far all Receipts are implemented.
@@ -472,6 +475,9 @@ public final class SignedNamedCore {
         if (object instanceof SignedNamedCore)
             return true;
         return encoded.equals(((SignedNamedCore)object).getEncoded());    //To change body of overriden methods use Options | File Templates.
+    }
+    static Identity createSimpleIdentity(PublicKey pub){
+        return new Identity(new SignedNamedCore(pub),pub);
     }
 
     private final String name;

@@ -1,12 +1,10 @@
 package org.neuclear.id.builders;
 
 import org.dom4j.DocumentHelper;
-import org.dom4j.QName;
 import org.neuclear.auth.AuthenticationTicket;
-import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.time.TimeTools;
-import org.neuclear.id.NSTools;
 import org.neuclear.id.InvalidNamedObjectException;
+import org.neuclear.id.NSTools;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -29,8 +27,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationTicketBuilder.java,v 1.9 2004/01/13 15:11:35 pelle Exp $
+$Id: AuthenticationTicketBuilder.java,v 1.10 2004/01/13 23:38:26 pelle Exp $
 $Log: AuthenticationTicketBuilder.java,v $
+Revision 1.10  2004/01/13 23:38:26  pelle
+Refactoring parts of the core of XMLSignature. There shouldnt be any real API changes.
+
 Revision 1.9  2004/01/13 15:11:35  pelle
 Now builds.
 Now need to do unit tests
@@ -83,13 +84,14 @@ Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to 
  * Date: Nov 6, 2003
  * Time: 11:59:58 AM
  */
-public final class AuthenticationTicketBuilder extends NamedObjectBuilder {
+public final class AuthenticationTicketBuilder extends Builder {
     public AuthenticationTicketBuilder(final String user, final String requester, final String site) throws InvalidNamedObjectException {
         this(user, requester, new Timestamp(new Date().getTime() + 1800000), site);
     }
 
     public AuthenticationTicketBuilder(final String user, final String requester, final Date validto, final String site) throws InvalidNamedObjectException {
-        super(NSTools.createUniqueTransactionID(user, requester), AuthenticationTicket.TAG_NAME, AuthenticationTicket.NS_NSAUTH);
+        super(DocumentHelper.createQName(AuthenticationTicket.TAG_NAME, AuthenticationTicket.NS_NSAUTH));
+        createAttribute("userid",user);
         createAttribute("requester", NSTools.normalizeNameURI(requester));
         createAttribute("validto", TimeTools.formatTimeStamp(validto));
         createAttribute("sitehref", site);

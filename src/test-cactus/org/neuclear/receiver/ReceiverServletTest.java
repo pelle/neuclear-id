@@ -4,20 +4,16 @@ import org.apache.cactus.ServletTestCase;
 import org.apache.cactus.WebRequest;
 import org.neuclear.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.Base64;
 import org.neuclear.commons.crypto.signers.JCESigner;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
-import org.neuclear.commons.crypto.Base64;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.xml.XMLException;
-import org.neuclear.xml.soap.SOAPTools;
-import org.neuclear.xml.xmlsec.XMLSecTools;
 
 import javax.servlet.ServletException;
-import java.io.IOException;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.net.HttpURLConnection;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -37,8 +33,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: ReceiverServletTest.java,v 1.5 2003/12/12 15:12:50 pelle Exp $
+$Id: ReceiverServletTest.java,v 1.6 2004/01/13 23:38:26 pelle Exp $
 $Log: ReceiverServletTest.java,v $
+Revision 1.6  2004/01/13 23:38:26  pelle
+Refactoring parts of the core of XMLSignature. There shouldnt be any real API changes.
+
 Revision 1.5  2003/12/12 15:12:50  pelle
 The ReceiverServletTest now passes.
 Add first stab at a SigningServletTest which currently doesnt pass.
@@ -72,7 +71,7 @@ public class ReceiverServletTest extends ServletTestCase {
     public void beginReceiveBase64(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException {
 
         AuthenticationTicketBuilder builder = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://localhost");
-        AuthenticationTicket ticket = (AuthenticationTicket) builder.sign(signer);
+        AuthenticationTicket ticket = (AuthenticationTicket) builder.convert("neu://bob@test",signer);
         theRequest.setContentType("application/x-www-form-urlencoded");
         String b64 =Base64.encode(ticket.getEncoded().getBytes());
         theRequest.addParameter("neuclear-request", b64, "POST");
@@ -95,7 +94,7 @@ public class ReceiverServletTest extends ServletTestCase {
    public void beginReceiveSOAP(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException, IOException {
 
         AuthenticationTicketBuilder builder = new AuthenticationTicketBuilder("neu://alice@test", "neu://test", "http://localhost");
-        AuthenticationTicket ticket = (AuthenticationTicket) builder.sign(signer);
+        AuthenticationTicket ticket = (AuthenticationTicket) builder.convert("neu://bob@test",signer);
         theRequest.setContentType("text/xml");
         theRequest.setURL("http://users.neuclear.org", "/test", "/Service",
                 null, null);

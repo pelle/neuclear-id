@@ -1,6 +1,9 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.23 2004/01/13 15:11:35 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.24 2004/01/13 23:38:26 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.24  2004/01/13 23:38:26  pelle
+ * Refactoring parts of the core of XMLSignature. There shouldnt be any real API changes.
+ *
  * Revision 1.23  2004/01/13 15:11:35  pelle
  * Now builds.
  * Now need to do unit tests
@@ -230,21 +233,12 @@
 package org.neuclear.id.builders;
 
 import org.dom4j.*;
-import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.Utility;
-import org.neuclear.commons.crypto.signers.Signer;
-import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
-import org.neuclear.commons.time.TimeTools;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
+import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.id.*;
 import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.id.verifier.VerifyingReader;
-import org.neuclear.xml.XMLException;
-import org.neuclear.xml.xmlsec.SignedElement;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
-
-import java.sql.Timestamp;
-import java.text.ParseException;
 
 /**
  * This simple wrapper takes most of the contents of a NamedObject and puts it into a Serializable form that can be signed.
@@ -354,13 +348,6 @@ public class NamedObjectBuilder extends Builder implements  Cloneable {
         if (elem.getDocument() == null) {
             final Document doc = DocumentHelper.createDocument(elem);
         }
-    }
-
-    /**
-     * @return the URI of the object. In this case the same as getName();
-     */
-    public final String getURI() throws XMLSecurityException {
-        return getName();
     }
 
 

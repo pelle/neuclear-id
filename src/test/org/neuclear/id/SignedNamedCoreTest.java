@@ -2,7 +2,8 @@ package org.neuclear.id;
 
 import junit.framework.TestCase;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.crypto.signers.JCESigner;
+import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.id.builders.Builder;
@@ -29,8 +30,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignedNamedCoreTest.java,v 1.5 2004/01/12 22:39:26 pelle Exp $
+$Id: SignedNamedCoreTest.java,v 1.6 2004/01/13 23:38:26 pelle Exp $
 $Log: SignedNamedCoreTest.java,v $
+Revision 1.6  2004/01/13 23:38:26  pelle
+Refactoring parts of the core of XMLSignature. There shouldnt be any real API changes.
+
 Revision 1.5  2004/01/12 22:39:26  pelle
 Completed all the builders and contracts.
 Added a new abstract Value class to contain either an amount or a list of serial numbers.
@@ -67,6 +71,11 @@ writing SQL. (Yipee)
  */
 public final class SignedNamedCoreTest extends TestCase {
 
+    public SignedNamedCoreTest(String string) throws NeuClearException {
+        super(string);
+        signer = new TestCaseSigner();
+    }
+    
     public final void testCreateRoot() {
         final SignedNamedCore core = SignedNamedCore.createRootCore();
         assertNotNull(core);
@@ -74,11 +83,26 @@ public final class SignedNamedCoreTest extends TestCase {
         assertNull(core.getSignatory());
     }
 
+    public final void testCreateNymous() throws InvalidNamedObjectException, XMLException, NonExistingSignerException, UserCancellationException {
+        final String name = "neu://bob@test";
+        Identity bobx=SignedNamedCore.createSimpleIdentity(signer.getPublicKey(name));
+        assertNotNull(bobx);
+        assertNotNull(bobx.getName());
+        System.out.println(bobx.getName());
+        assertNotNull(bobx.getEncoded());
+        assertNull(bobx.getSigner());
+        assertNotNull(bobx.getPublicKey());
+    }
+
     public final void testRead() throws NeuClearException, GeneralSecurityException, XMLException, FileNotFoundException {
         final String name = "neu://bob@test";
         final Builder builder = new AuthenticationTicketBuilder(name, "neu://test", "http://slashdot.org");
-        final JCESigner signer = new TestCaseSigner();
+        System.out.println("=====");
+        System.out.println(builder.asXML());
+
         builder.sign(name, signer);
+        System.out.println(builder.asXML());
+
         assertTrue(builder.verifySignature(signer.getPublicKey(name)));
         try {
             final SignedNamedCore core = SignedNamedCore.read(builder.getElement());
@@ -86,7 +110,7 @@ public final class SignedNamedCoreTest extends TestCase {
         } catch (InvalidNamedObjectException e) {
             assertTrue(e.getLocalizedMessage(), false);
         }
-
-
     }
+
+    private TestCaseSigner signer;
 }

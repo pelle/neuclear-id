@@ -32,8 +32,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationFilterTest.java,v 1.1 2003/12/12 19:28:03 pelle Exp $
+$Id: AuthenticationFilterTest.java,v 1.2 2004/01/13 23:38:26 pelle Exp $
 $Log: AuthenticationFilterTest.java,v $
+Revision 1.2  2004/01/13 23:38:26  pelle
+Refactoring parts of the core of XMLSignature. There shouldnt be any real API changes.
+
 Revision 1.1  2003/12/12 19:28:03  pelle
 All the Cactus tests now for signing servlet.
 Added working AuthenticationFilterTest
@@ -57,7 +60,7 @@ public class AuthenticationFilterTest extends FilterTestCase {
     public void beginValid(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException {
 
         AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://localhost");
-        SignedNamedObject signed = authreq.sign(signer);
+        SignedNamedObject signed = authreq.convert("neu://bob@test",signer);
         theRequest.setContentType("application/x-www-form-urlencoded");
         String b64 = Base64.encode(signed.getEncoded().getBytes());
         theRequest.addParameter("neuclear-request", b64, "POST");

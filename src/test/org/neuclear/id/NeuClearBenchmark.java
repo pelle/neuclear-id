@@ -1,14 +1,10 @@
 package org.neuclear.id;
 
+import org.neuclear.auth.AuthenticationTicket;
+import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
 import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
-import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
-import org.neuclear.commons.crypto.signers.NonExistingSignerException;
-import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
-import org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent;
-import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
-import org.neuclear.auth.AuthenticationTicket;
 
 /**
  * Created by IntelliJ IDEA.
@@ -67,14 +63,10 @@ public class NeuClearBenchmark implements Runnable{
             for (int i=0;i<RUNS;i++) {
 
                 AuthenticationTicketBuilder builder=new AuthenticationTicketBuilder("neu://alice@test","neu://test","http://test.com");
-                AuthenticationTicket ticket=(AuthenticationTicket) builder.sign(signer);
+                AuthenticationTicket ticket=(AuthenticationTicket) builder.convert("neu://bob@test",signer);
             }
             finished();
         } catch (InvalidNamedObjectException e) {
-            e.printStackTrace();  //To change body of catch statement use Options | File Templates.
-        } catch (NonExistingSignerException e) {
-            e.printStackTrace();  //To change body of catch statement use Options | File Templates.
-        } catch (UserCancellationException e) {
             e.printStackTrace();  //To change body of catch statement use Options | File Templates.
         } catch (NameResolutionException e) {
             e.printStackTrace();  //To change body of catch statement use Options | File Templates.
