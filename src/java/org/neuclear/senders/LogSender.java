@@ -20,8 +20,15 @@ import java.text.ParseException;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 1:23:05 PM
- * $Id: LogSender.java,v 1.14 2003/12/19 18:03:35 pelle Exp $
+ * $Id: LogSender.java,v 1.15 2004/01/10 00:03:21 pelle Exp $
  * $Log: LogSender.java,v $
+ * Revision 1.15  2004/01/10 00:03:21  pelle
+ * Implemented new Schema for Transfer*
+ * Working on it for Exchange*, so far all Receipts are implemented.
+ * Added SignedNamedDocument which is a generic SignedNamedObject that works with all Signed XML.
+ * Changed SignedNamedObject.getDigest() from byte array to String.
+ * The whole malarchy in neuclear-pay does not build yet. The refactoring is a big job, but getting there.
+ *
  * Revision 1.14  2003/12/19 18:03:35  pelle
  * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
  * - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -116,7 +123,7 @@ import java.text.ParseException;
 public final class LogSender extends Sender {
     public final SignedNamedObject send(final String endpoint, final SignedNamedObject obj) throws NeuClearException {
         try {
-            final String digest = URLEncoder.encode(Base64.encode(obj.getDigest()), "UTF-8");
+            final String digest = obj.getDigest();
             final String name = URLEncoder.encode(obj.getName(), "UTF-8");
             final URL url = new URL(Utility.denullString(endpoint, LOGGER) + "?nohtml=1&name=" + name + "&digest=" + digest);
             url.openStream();

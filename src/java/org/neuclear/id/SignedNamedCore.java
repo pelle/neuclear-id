@@ -1,6 +1,13 @@
 /*
- * $Id: SignedNamedCore.java,v 1.10 2004/01/09 16:34:40 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.11 2004/01/10 00:03:21 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.11  2004/01/10 00:03:21  pelle
+ * Implemented new Schema for Transfer*
+ * Working on it for Exchange*, so far all Receipts are implemented.
+ * Added SignedNamedDocument which is a generic SignedNamedObject that works with all Signed XML.
+ * Changed SignedNamedObject.getDigest() from byte array to String.
+ * The whole malarchy in neuclear-pay does not build yet. The refactoring is a big job, but getting there.
+ *
  * Revision 1.10  2004/01/09 16:34:40  pelle
  * changed use of base36 encoding to base32 to ensure compatibility with other schemes.
  *
@@ -245,13 +252,9 @@ package org.neuclear.id;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
-import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.commons.crypto.Base64;
-import org.neuclear.commons.crypto.CryptoException;
 import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.xml.XMLException;
 import org.neuclear.xml.xmlsec.KeyInfo;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
@@ -281,7 +284,7 @@ public final class SignedNamedCore {
      */
     private SignedNamedCore(final PublicKey pub){
         this.digest=CryptoTools.encodeBase32(CryptoTools.digest(pub.getEncoded()));
-        this.name="neu:sha1:"+digest;
+        this.name="neu:sha1://"+digest;
         this.timestamp=System.currentTimeMillis();
         this.encoded=new String(pub.getEncoded());
         this.signer = null;//new Identity(this,pub);

@@ -1,6 +1,13 @@
 /*
- * $Id: SignedNamedObject.java,v 1.16 2004/01/08 23:39:06 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.17 2004/01/10 00:03:21 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.17  2004/01/10 00:03:21  pelle
+ * Implemented new Schema for Transfer*
+ * Working on it for Exchange*, so far all Receipts are implemented.
+ * Added SignedNamedDocument which is a generic SignedNamedObject that works with all Signed XML.
+ * Changed SignedNamedObject.getDigest() from byte array to String.
+ * The whole malarchy in neuclear-pay does not build yet. The refactoring is a big job, but getting there.
+ *
  * Revision 1.16  2004/01/08 23:39:06  pelle
  * XMLSignature can now give you the Signing key and the id of the signer.
  * SignedElement can now self verify using embedded public keys as well as KeyName's
@@ -229,11 +236,9 @@
  */
 package org.neuclear.id;
 
-import org.dom4j.Element;
-import org.dom4j.QName;
 import org.dom4j.DocumentHelper;
+import org.dom4j.QName;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.sql.Timestamp;
 
@@ -317,7 +322,7 @@ public class SignedNamedObject {
         return core.getEncoded();
     }
 
-    public final byte[] getDigest() {
+    public final String getDigest() {
         return core.getDigest();
     }
 
@@ -359,24 +364,5 @@ public class SignedNamedObject {
     }
 
     private final SignedNamedCore core;
-
-    final public static class Reader implements NamedObjectReader {
-        /**
-         * Read object from Element and fill in its details
-         * 
-         * @param elem 
-         * @return 
-         */
-        public SignedNamedObject read(final SignedNamedCore core, final Element elem)  {
-            return new SignedNamedObject(core);
-        }
-        /**
-         * Read object from Element and fill in its details
-         * 
-         * @param elem 
-         * @return 
-         */
-
-    }
 
 }

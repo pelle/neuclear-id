@@ -2,11 +2,9 @@ package org.neuclear.id.verifier;
 
 import org.dom4j.Element;
 import org.neuclear.auth.AuthenticationTicket;
-import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.*;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -30,8 +28,15 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.17 2003/12/19 18:03:34 pelle Exp $
+$Id: VerifyingReader.java,v 1.18 2004/01/10 00:03:20 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.18  2004/01/10 00:03:20  pelle
+Implemented new Schema for Transfer*
+Working on it for Exchange*, so far all Receipts are implemented.
+Added SignedNamedDocument which is a generic SignedNamedObject that works with all Signed XML.
+Changed SignedNamedObject.getDigest() from byte array to String.
+The whole malarchy in neuclear-pay does not build yet. The refactoring is a big job, but getting there.
+
 Revision 1.17  2003/12/19 18:03:34  pelle
 Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
 - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -152,7 +157,7 @@ public final class VerifyingReader {
         readers.put(AuthenticationTicket.TAG_NAME, new AuthenticationTicket.Reader());
         readers.put(SignatureRequest.SIGREQUEST_TAG, new SignatureRequest.Reader());
         readers.put(SignedMessage.TAG_NAME, new SignedMessage.Reader());
-        defaultReader = new SignedNamedObject.Reader();
+        defaultReader = new SignedNamedDocument.Reader();
     }
 
     public static VerifyingReader getInstance() {
