@@ -1,6 +1,11 @@
 /*
- * $Id: SigningServlet.java,v 1.22 2003/12/15 14:38:30 pelle Exp $
+ * $Id: SigningServlet.java,v 1.23 2003/12/15 23:33:05 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.23  2003/12/15 23:33:05  pelle
+ * added ServletTools.getInitParam() which first tries the ServletConfig, then the context config.
+ * All the web.xml's have been updated to support this. Also various further generalizations have been done throughout
+ * for getServiceid(), getTitle(), getSigner()
+ *
  * Revision 1.22  2003/12/15 14:38:30  pelle
  * Added EnsureHostRequestFilter to commons, to only allow requests from a particular IP
  * Added a method to optionally show the passphrase box in the SigningServlet. As the default SigningServlet
@@ -256,7 +261,7 @@ public class SigningServlet extends XMLInputStreamServlet {
         context = config.getServletContext();
         context.log("NEUCLEAR: Initialising SigningServlet");
         try {
-            title = Utility.denullString(config.getInitParameter("title"), "NeuClear Signing Service");
+            title = ServletTools.getInitParam("title",config);
             signer = createSigner(config);
         } catch (GeneralSecurityException e) {
             e.printStackTrace();

@@ -42,8 +42,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServlet.java,v 1.9 2003/12/14 20:53:04 pelle Exp $
+$Id: AuthenticationServlet.java,v 1.10 2003/12/15 23:33:04 pelle Exp $
 $Log: AuthenticationServlet.java,v $
+Revision 1.10  2003/12/15 23:33:04  pelle
+added ServletTools.getInitParam() which first tries the ServletConfig, then the context config.
+All the web.xml's have been updated to support this. Also various further generalizations have been done throughout
+for getServiceid(), getTitle(), getSigner()
+
 Revision 1.9  2003/12/14 20:53:04  pelle
 Added ServletPassPhraseAgent which uses ThreadLocal to transfer the passphrase to the signer.
 Added ServletSignerFactory, which builds Signers for use within servlets based on parameters in the Servlets
@@ -96,8 +101,8 @@ Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to 
 public class AuthenticationServlet extends HttpServlet {
     public final void init(final ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
-        serviceid = servletConfig.getInitParameter("serviceid");
-        title = servletConfig.getInitParameter("title");
+        serviceid = ServletTools.getInitParam("serviceid",servletConfig);
+        title = ServletTools.getInitParam("title",servletConfig);
 
         try {
             signer = createSigner(servletConfig);
