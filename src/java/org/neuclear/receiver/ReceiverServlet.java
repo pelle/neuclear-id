@@ -1,6 +1,10 @@
 /*
- * $Id: ReceiverServlet.java,v 1.12 2003/12/12 00:13:11 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.13 2003/12/12 15:12:50 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.13  2003/12/12 15:12:50  pelle
+ * The ReceiverServletTest now passes.
+ * Add first stab at a SigningServletTest which currently doesnt pass.
+ *
  * Revision 1.12  2003/12/12 00:13:11  pelle
  * This may actually work now. Need to put a few more test cases in to make sure.
  *
@@ -105,6 +109,7 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.ElementProxy;
+import org.neuclear.xml.XMLException;
 import org.neuclear.xml.soap.XMLInputStreamServlet;
 
 import javax.servlet.ServletConfig;
@@ -120,35 +125,31 @@ public class ReceiverServlet extends XMLInputStreamServlet {
         super.init(config);
     }
 
-    protected final void handleInputStream(final InputStream is, final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        final PrintWriter writer = response.getWriter();
+    protected final void handleInputStream(final InputStream is, final HttpServletRequest request, final HttpServletResponse response) throws IOException, NeuClearException, XMLException {
         final boolean isXML = request.getContentType().equals("text/xml");
         if (isXML) {
             response.setContentType("text/xml");
         } else {
             response.setContentType("text/html");
+        }
+        final PrintWriter writer = response.getWriter();
+        if (!isXML)
             writer.print("<html><head><title>ReceiverServler</title></head><body>");
-        }
-        try {
 
-            final SignedNamedObject obj = VerifyingReader.getInstance().read(is);
-            if (obj == null)
-                throw new NeuClearException("Missing Request");
-            ctx.log("NeuClear: Got Request " + obj.getName());
-            ctx.log(obj.getEncoded());
-            ElementProxy receipt = receiver.receive(obj);
-            if (isXML)
-                writer.print(receipt.canonicalize());
-            else
-                writer.print(receipt.getElement().getName());
-
-        } catch (Exception e) {
-            writer.println("<h1>Error</h1><h3>");
-            writer.println(e.getLocalizedMessage());
-            writer.println("</h3><pre>");
-            e.printStackTrace(writer);
-            writer.println("</pre>");
+        final SignedNamedObject obj = VerifyingReader.getInstance().read(is);
+        if (obj == null)
+            throw new NeuClearException("Missing Request");
+        ctx.log("NeuClear: Got Request " + obj.getName());
+        ctx.log(obj.getEncoded());
+        ElementProxy receipt = receiver.receive(obj);
+        if (isXML)
+            writer.print(receipt.canonicalize());
+        else{
+            writer.print("<h1>");
+            writer.print(receipt.getElement().getName());
+            writer.print("</h1>");
         }
+
         writer.close();
 
     }

@@ -1,6 +1,10 @@
 /*
- * $Id: SigningServlet.java,v 1.18 2003/12/12 00:13:11 pelle Exp $
+ * $Id: SigningServlet.java,v 1.19 2003/12/12 15:12:50 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.19  2003/12/12 15:12:50  pelle
+ * The ReceiverServletTest now passes.
+ * Add first stab at a SigningServletTest which currently doesnt pass.
+ *
  * Revision 1.18  2003/12/12 00:13:11  pelle
  * This may actually work now. Need to put a few more test cases in to make sure.
  *
@@ -231,7 +235,7 @@ public class SigningServlet extends ReceiverServlet implements PassPhraseAgent {
         reqMap = new HashMap();
         try {
             System.out.println("NEUDIST: Initialising SigningServlet");
-            title = Utility.denullString(config.getInitParameter("title").toString(), "NeuClear Signing Service");
+            title = Utility.denullString(config.getInitParameter("title"), "NeuClear Signing Service");
             if (signer == null) {
                 signer = new TestCaseSigner(this);
             }

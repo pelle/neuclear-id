@@ -1,6 +1,10 @@
 /*
- * $Id: NSTools.java,v 1.20 2003/12/11 23:57:29 pelle Exp $
+ * $Id: NSTools.java,v 1.21 2003/12/12 15:12:50 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.21  2003/12/12 15:12:50  pelle
+ * The ReceiverServletTest now passes.
+ * Add first stab at a SigningServletTest which currently doesnt pass.
+ *
  * Revision 1.20  2003/12/11 23:57:29  pelle
  * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
  * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -330,7 +334,6 @@ public final class NSTools {
         dig.doFinal(output, 0);
 
         buffy.append(CryptoTools.formatAsBase36(output));
-        System.out.println(buffy.toString());
         return buffy.toString();
     }
 
