@@ -16,6 +16,7 @@ import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.Identity;
 import org.neuclear.id.NamedObjectReader;
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.SignedNamedCore;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.sql.Timestamp;
@@ -24,7 +25,7 @@ import java.sql.Timestamp;
  * This Authentication Ticket is used by websites to authenticate a user.
  * It generates a unique Name in the users Identity, which the user then signs.
  */
-public class AuthenticationTicket extends SignedNamedObject {
+public final class AuthenticationTicket extends SignedNamedObject {
     /**
      * <p>Used by a website to create an authentication ticket for validation.</p>
      * <p>Eg.:<br>
@@ -34,30 +35,19 @@ public class AuthenticationTicket extends SignedNamedObject {
      * &lt;/auth:AuthenticationTicket&gt;
      * </pre>
      * 
-     * @param name      
-     * @param signatory 
-     * @param timestamp 
-     * @param encoded   
-     * @param requester 
+     * @param core
+     * @param requester
      * @param validto   
      * @param siteurl   
      * @throws NeuClearException 
      */
-    private AuthenticationTicket(String name, Identity signatory, Timestamp timestamp, String encoded, String requester, Timestamp validto, String siteurl) throws NeuClearException {
-        super(name, signatory, timestamp, encoded);
+    private AuthenticationTicket(SignedNamedCore core, String requester, Timestamp validto, String siteurl) throws NeuClearException {
+        super(core);
         this.validTo = validto;
         this.siteurl = siteurl;
         this.requester = requester;
 
     }
-
-/*
-    public static SignatureRequest createAuthenticationRequest(String user, String requester, long validity, String siteurl, String targeturl, PrivateKey signer) throws NeuClearException {
-        AuthenticationTicket ticket = new AuthenticationTicket(user, requester, validity, siteurl);
-        return SignatureRequest.createRequest(requester, targeturl, ticket, signer);
-
-    }
-*/
 
 
     /**
@@ -66,7 +56,7 @@ public class AuthenticationTicket extends SignedNamedObject {
      * @return Timestamp object containing the end time of the ticket
      * @throws NeuClearException 
      */
-    public Timestamp getValidTo() throws NeuClearException {
+    public final Timestamp getValidTo() throws NeuClearException {
         return validTo;
     }
 
@@ -75,12 +65,8 @@ public class AuthenticationTicket extends SignedNamedObject {
      * 
      * @return the URL or null if unavailable.
      */
-    public String getSiteHref() {
+    public final String getSiteHref() {
         return siteurl;
-    }
-
-    public String getTagName() {
-        return TAG_NAME;
     }
 
     public final static class Reader implements NamedObjectReader {
@@ -90,12 +76,12 @@ public class AuthenticationTicket extends SignedNamedObject {
          * @param elem 
          * @return 
          */
-        public SignedNamedObject read(Element elem, String name, Identity signatory, String digest, Timestamp timestamp) throws XMLSecurityException, NeuClearException {
+        public final SignedNamedObject read(SignedNamedCore core, Element elem) throws NeuClearException, XMLSecurityException {
             String requester = elem.attributeValue(DocumentHelper.createQName("requester", NS_NSAUTH));
             String sitehref = elem.attributeValue(DocumentHelper.createQName("sitehref", NS_NSAUTH));
             Timestamp validto = TimeTools.parseTimeStamp(elem.attributeValue(DocumentHelper.createQName("validto", NS_NSAUTH)));
 
-            return new AuthenticationTicket(name, signatory, timestamp, digest, requester, validto, sitehref);
+            return new AuthenticationTicket(core, requester, validto, sitehref);
         }
 
     }

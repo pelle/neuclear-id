@@ -1,7 +1,7 @@
 /*
- * $Id: SignedNamedObject.java,v 1.11 2003/11/20 16:01:25 pelle Exp $
- * $Log: SignedNamedObject.java,v $
- * Revision 1.11  2003/11/20 16:01:25  pelle
+ * $Id: SignedNamedCore.java,v 1.1 2003/11/20 16:01:25 pelle Exp $
+ * $Log: SignedNamedCore.java,v $
+ * Revision 1.1  2003/11/20 16:01:25  pelle
  * Did a security review of the basic Verification process and needed to make changes.
  * I've introduced the SignedNamedCore which all subclasses of SignedNamedObject need to include in their constructor.
  * What does this mean?
@@ -194,11 +194,19 @@
 package org.neuclear.id;
 
 import org.dom4j.Element;
+import org.dom4j.QName;
+import org.dom4j.DocumentHelper;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.time.TimeTools;
 import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
+import org.neuclear.xml.XMLException;
+import org.neuclear.xml.XMLTools;
+import org.neuclear.xml.xmlsec.XMLSecTools;
+import org.neuclear.id.resolver.NSResolver;
+import org.neuclear.id.verifier.VerifyingReader;
 
 import java.sql.Timestamp;
+import java.io.InputStream;
 
 /**
  * The SignedNamedObject is a <i>secure</i> object normally encapsulating a Digitally signed contract of some
@@ -221,19 +229,52 @@ import java.sql.Timestamp;
  * @see org.neuclear.senders.Sender
  * @see org.neuclear.commons.crypto.signers.Signer
  */
-public class SignedNamedObject implements SignedObject, Named {
+public final class SignedNamedCore  {
 
-    protected SignedNamedObject(SignedNamedCore core) throws NeuClearException {
-        this.core=core;
+    private SignedNamedCore(String name, Identity signer, Timestamp timestamp, String encoded)  {
+        this.name = name;
+        this.signer = signer;
+        this.timestamp = timestamp;
+        this.encoded = encoded;
     }
 
+    /**
+     * Used to read and authenticate a SignedNamedObject.
+     * @param elem
+     * @return
+     * @throws XMLException
+     * @throws NeuClearException
+     */
+    public final static SignedNamedCore read(Element elem) throws XMLException, NeuClearException {
+        String name = NSTools.normalizeNameURI(elem.attributeValue(getNameAttrQName()));
+        String signatoryName = NSTools.getParentNSURI(name);
+
+        Identity signatory = NSResolver.resolveIdentity(signatoryName);
+        if (XMLSecTools.verifySignature(elem, signatory.getPublicKey())) {
+            Timestamp timestamp = TimeTools.parseTimeStamp(elem.attributeValue("timestamp"));
+            return new SignedNamedCore( name, signatory, timestamp,new String(XMLSecTools.canonicalize(elem)));
+        } else
+            throw new InvalidNamedObject(name + " isnt valid");
+    }
+
+    /**
+     * Solely used by RootIdentity
+     * @return
+     */
+    final static SignedNamedCore createRootCore()  {
+        return new SignedNamedCore("neu://",null,new Timestamp(0),null);
+    }
+    private static QName getNameAttrQName() {
+        return DocumentHelper.createQName("name", NSTools.NS_NEUID);
+
+    }
     /**
      * The full name (URI) of an object
      * 
      * @return String containing the fully qualified URI of an object
      */
     public final String getName() {
-        return core.getName();
+        return name;
     }
 
     /**
@@ -247,7 +288,9 @@ public class SignedNamedObject implements SignedObject, Named {
      * @return Name
      */
     public final String getLocalName() {
-        return core.getLocalName();
+        String fullName = getName();
+        int i = fullName.lastIndexOf('/');
+        return fullName.substring(i + 1);
     }
 
 
@@ -257,7 +300,7 @@ public class SignedNamedObject implements SignedObject, Named {
      * @return 
      */
     public final Timestamp getTimeStamp() {
-        return core.getTimeStamp();
+        return timestamp;
 
     }
 
@@ -268,7 +311,7 @@ public class SignedNamedObject implements SignedObject, Named {
      * @return 
      */
     public final Identity getSignatory() {
-        return core.getSignatory();
+        return signer;
     }
 
     /**
@@ -277,32 +320,18 @@ public class SignedNamedObject implements SignedObject, Named {
      * @return 
      */
     public final String getEncoded() {
-        return core.getEncoded();
+        return encoded;
     }
 
     public final byte[] getDigest() {
-        return core.getDigest();
+        return CryptoTools.digest(encoded.getBytes());
     }
 
-    private final SignedNamedCore core;
+    private final String name;
+    private final Identity signer;
+    private final Timestamp timestamp;
+    private final String encoded;
 
-    final public static class Reader implements NamedObjectReader {
-        /**
-         * Read object from Element and fill in its details
-         *
-         * @param elem
-         * @return
-         */
-        public SignedNamedObject read(SignedNamedCore core, Element elem) throws NeuClearException, XMLSecurityException {
-            return new SignedNamedObject(core);
-        }
-        /**
-         * Read object from Element and fill in its details
-         * 
-         * @param elem 
-         * @return 
-         */
 
-    }
 
 }

@@ -27,8 +27,16 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequest.java,v 1.4 2003/11/19 23:33:59 pelle Exp $
+$Id: SignatureRequest.java,v 1.5 2003/11/20 16:01:25 pelle Exp $
 $Log: SignatureRequest.java,v $
+Revision 1.5  2003/11/20 16:01:25  pelle
+Did a security review of the basic Verification process and needed to make changes.
+I've introduced the SignedNamedCore which all subclasses of SignedNamedObject need to include in their constructor.
+What does this mean?
+It means that all subclasses of SignedNamedObject have a guaranteed "signed final ticket" that can only be created in one place.
+This also simplifies the constructors as well as the NamedObjectReaders.
+I've gone through making everything in these contracts that is possible final. Thus further ensuring the security.
+
 Revision 1.4  2003/11/19 23:33:59  pelle
 Signers now can generatekeys via the generateKey() method.
 Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -62,23 +70,23 @@ Created SignatureRequest and friends to send unsigned NamedObjectBuilders to int
  * Date: Nov 6, 2003
  * Time: 12:23:52 PM
  */
-public class SignatureRequest extends SignedNamedObject {
-    private SignatureRequest(String name, Identity signer, Timestamp timestamp, String encoded, String userid, NamedObjectBuilder unsigned, String description) throws NeuClearException {
-        super(name, signer, timestamp, encoded);
+public final class SignatureRequest extends SignedNamedObject {
+    private SignatureRequest(SignedNamedCore core, String userid, NamedObjectBuilder unsigned, String description) throws NeuClearException {
+        super(core);
         this.userid = userid;
         this.unsigned = unsigned;
         this.description = description;
     }
 
-    public String getUserid() {
+    public final  String getUserid() {
         return userid;
     }
 
-    public NamedObjectBuilder getUnsigned() {
+    public final NamedObjectBuilder getUnsigned() {
         return unsigned;
     }
 
-    public String getDescription() {
+    public final String getDescription() {
         return description;
     }
 
@@ -89,7 +97,7 @@ public class SignatureRequest extends SignedNamedObject {
          * @param elem 
          * @return 
          */
-        public SignedNamedObject read(Element elem, String name, Identity signatory, String digest, Timestamp timestamp) throws XMLSecurityException, NeuClearException {
+        public final SignedNamedObject read(SignedNamedCore core, Element elem) throws NeuClearException, XMLSecurityException {
             Element request = elem.element(DocumentHelper.createQName("Unsigned", NSTools.NS_NEUID));
             String userid = elem.attributeValue(DocumentHelper.createQName("userid", NSTools.NS_NEUID));
             Element uelem = ((Element) request.elements().get(0)).createCopy();
@@ -100,8 +108,9 @@ public class SignatureRequest extends SignedNamedObject {
             if (descrelem != null)
                 description = descrelem.getText();
 
-            return new SignatureRequest(name, signatory, timestamp, digest, userid, unsigned, description);
+            return new SignatureRequest(core, userid, unsigned, description);
         }
+
 
     }
 

@@ -24,8 +24,16 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NamedObjectReader.java,v 1.4 2003/11/19 23:33:59 pelle Exp $
+$Id: NamedObjectReader.java,v 1.5 2003/11/20 16:01:25 pelle Exp $
 $Log: NamedObjectReader.java,v $
+Revision 1.5  2003/11/20 16:01:25  pelle
+Did a security review of the basic Verification process and needed to make changes.
+I've introduced the SignedNamedCore which all subclasses of SignedNamedObject need to include in their constructor.
+What does this mean?
+It means that all subclasses of SignedNamedObject have a guaranteed "signed final ticket" that can only be created in one place.
+This also simplifies the constructors as well as the NamedObjectReaders.
+I've gone through making everything in these contracts that is possible final. Thus further ensuring the security.
+
 Revision 1.4  2003/11/19 23:33:59  pelle
 Signers now can generatekeys via the generateKey() method.
 Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -70,5 +78,5 @@ public interface NamedObjectReader {
      * @param elem 
      * @return 
      */
-    public SignedNamedObject read(Element elem, String name, Identity signatory, String encoded, Timestamp timestamp) throws NeuClearException, XMLSecurityException;
+    public SignedNamedObject read(SignedNamedCore core,Element elem) throws NeuClearException, XMLSecurityException;
 }

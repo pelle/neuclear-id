@@ -35,8 +35,16 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.10 2003/11/19 23:33:59 pelle Exp $
+$Id: VerifyingReader.java,v 1.11 2003/11/20 16:01:25 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.11  2003/11/20 16:01:25  pelle
+Did a security review of the basic Verification process and needed to make changes.
+I've introduced the SignedNamedCore which all subclasses of SignedNamedObject need to include in their constructor.
+What does this mean?
+It means that all subclasses of SignedNamedObject have a guaranteed "signed final ticket" that can only be created in one place.
+This also simplifies the constructors as well as the NamedObjectReaders.
+I've gone through making everything in these contracts that is possible final. Thus further ensuring the security.
+
 Revision 1.10  2003/11/19 23:33:59  pelle
 Signers now can generatekeys via the generateKey() method.
 Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -120,18 +128,11 @@ public class VerifyingReader {
      * @return 
      * @throws NeuClearException 
      */
-    public SignedNamedObject read(InputStream is) throws XMLException, NeuClearException {
+    public final  SignedNamedObject read(InputStream is) throws XMLException, NeuClearException {
         Element elem = XMLTools.loadDocument(is).getRootElement();
-        String name = NSTools.normalizeNameURI(elem.attributeValue(getNameAttrQName()));
-        String signatoryName = NSTools.getParentNSURI(name);
-
-        Identity signatory = NSResolver.resolveIdentity(signatoryName);
-        if (XMLSecTools.verifySignature(elem, signatory.getPublicKey())) {
-            Timestamp timestamp = TimeTools.parseTimeStamp(elem.attributeValue("timestamp"));
-            return resolveReader(elem).read(elem, name, signatory, new String(XMLSecTools.canonicalize(elem)), timestamp);
-        } else
-            throw new InvalidNamedObject(name + " isnt valid");
+        return resolveReader(elem).read(SignedNamedCore.read(elem),elem);
     }
+
 
     private NamedObjectReader resolveReader(Element elem) {
         NamedObjectReader reader = (NamedObjectReader) readers.get(elem.getName());
@@ -140,10 +141,6 @@ public class VerifyingReader {
         return reader;
     }
 
-    private static QName getNameAttrQName() {
-        return DocumentHelper.createQName("name", NSTools.NS_NEUID);
-
-    }
 
     public void registerReader(String name, NamedObjectReader reader) {
         readers.put(name, reader);
