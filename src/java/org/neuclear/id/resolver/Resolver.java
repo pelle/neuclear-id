@@ -53,7 +53,7 @@ public final class Resolver {
 
         // If name is a hash check the cache
         if (name.length() == 32 || name.length() == 37 || name.length() == 38 || name.length() == 69) {
-            System.out.println("Fetching Cached");
+//            System.out.println("Fetching Cached");
             SignedNamedObject obj = NSCACHE.fetchCached(cleanName(name));
             if (obj != null)
                 return obj;
@@ -79,7 +79,7 @@ public final class Resolver {
     }
 
     private static String cleanName(String name) {
-        if (name.charAt(36) == '!')
+        if (name.length() > 36 && name.charAt(36) == '!')
             return name.substring(37);
         if (name.startsWith("sha1:"))
             return name.substring(5);

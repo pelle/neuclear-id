@@ -19,12 +19,12 @@ public final class NSCache extends Cache {
      * @return a valid Identity object if found otherwise null
      */
     public SignedNamedObject fetchCached(final String name) {
-        System.out.println("Fetch:" + name);
+//        System.out.println("Fetch:" + name);
         return (SignedNamedObject) lookup(name);
     }
 
     public SignedNamedObject cache(final SignedNamedObject obj) {
-        System.out.println("Caching: " + obj.getDigest());
+//        System.out.println("Caching: " + obj.getDigest());
         return (SignedNamedObject) cache(obj.getDigest(), obj);
     }
 
