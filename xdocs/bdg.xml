@@ -89,11 +89,13 @@ Enter key password for neu://yourdomain.com
                 Excuse the long and ugly name, we will package it nicer later on. Currently this tool allows you to create a certificate and
                 sign it. Lets run it with our ID and receiver we decided on earlier.
             </p>
-            <source>
-java -jar neuclear-id-0.8-SNAPSHOT-uber.jar <b>neu://yourdomain.com mailto:admin@yourdomain.com</b>
-Creating neu://yourdomain.com
-Signing: neu://yourdomain.com
-Saving to: _NEUID/yourdomain.com/root.id            </source>
+            <source>$ java -jar neuclear-id-0.8-SNAPSHOT-uber.jar --name neu://yourdomain.com --receiver mailto:admin@yourdomain.com
+Please enter passphrase for: KeyStore Passphrase for~/.keystore
+:
+Signing by neu://yourdomain.com ...
+Please enter passphrase for: neu://yourdomain.com
+:
+Outputting to: _NEUID/yourdomain.com/root.id</source>
             <p>
                 The program asks you for the passphrases for both the keystore and your key. Enter them exactly like you did
                 before. As the program has to initialise all sorts of cryptographic processes, it might seem a bit slow, but be patient.
@@ -112,15 +114,17 @@ Saving to: _NEUID/yourdomain.com/root.id            </source>
         </section>
         <section name="Test your Identity">
             <p>
-                Now lets write a little tiny bit of code to show what we can do:
+                To verify an Identity type the following in your command prompt:
             </p>
-            <source>// Lets get hold of your Identity:
-Identity me=NSResolver.resolveIdentity("<b>neu://yourdomain.com</b>");
-System.out.println(me.getName());</source>
+            <source>$ java -jar neuclear-id-0.8-SNAPSHOT-uber.jar --verify neu://pelle@neuclear.org
+Resolving and Verifying: neu://pelle@neuclear.org
+Signed Object: neu://pelle@neuclear.org is verified
+was signed at: 2003-12-09T10:00:42,466EST
+Is of type: org.neuclear.id.Identity
+repository: http://neuclear.org/_NEUID
+signer: http://localhost:11870/Signer</source>
             <p>
-                Type this snippet into a main method in some class in your favorite IDE. Add the neuclear jar file you downloaded before to
-                your classpath and run it.
-                If it didnt throw any exceptions you have just resolved your first Identity through the NeuClear ID system.
+                Try it with your new identity that you created above.
             </p>
         </section>
         <section name="Creating a Sub Identity">
@@ -183,11 +187,13 @@ Enter key password for neu://bob@yourdomain.com
                  machine. The process is completely identical from a users stand point, with the notable exception
                  that we are asked for the root identity's passphrase and not the one of the sub identity.
              </p>
-             <source>
- java -jar neuclear-id-0.8-SNAPSHOT-uber.jar <b>neu://bob@yourdomain.com mailto:bob@yourdomain.com</b>
- Creating neu://bob@yourdomain.com
- Signing: neu://bob@yourdomain.com
- Saving to: _NEUID/yourdomain.com/@bob/root.id            </source>
+            <source>$ java -jar neuclear-id-0.8-SNAPSHOT-uber.jar --name neu://bob@yourdomain.com --receiver mailto:bob@yourdomain.com
+Please enter passphrase for: KeyStore Passphrase for~/.keystore
+:
+Signing by neu://yourdomain.com ...
+Please enter passphrase for: neu://yourdomain.com
+:
+Outputting to: _NEUID/yourdomain.com/@bob/root.id</source>
             <p>
                 Now all that remains is to copy it to your web server exactly like you did above and your new sub identity is
                 ready and live.

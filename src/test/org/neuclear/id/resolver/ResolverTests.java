@@ -18,7 +18,10 @@ public class ResolverTests extends TestCase {
         assertNotNull(NSResolver.resolveIdentity("neu://bob@test"));
         assertNotNull(NSResolver.resolveIdentity("neu://alice@test"));
         assertNotNull(NSResolver.resolveIdentity("neu://neuclear.org"));
+        assertNotNull(NSResolver.resolveIdentity("neu://pelle@neuclear.org"));
         assertNotNull(NSResolver.resolveIdentity("neu://veraxpay.com"));
+        assertNotNull(NSResolver.resolveIdentity("neu://pelle@talk.org"));
+        //assertNotNull(NSResolver.resolveIdentity("neu://will-k.com"));
 
     }
 }

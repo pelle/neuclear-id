@@ -15,7 +15,8 @@
             <p>
                  Download the <a href="http://neuclear.org/maven/neuclear-id/jars/neuclear-id-0.8-SNAPSHOT-uber.jar">NeuClear ID Executable</a>.
                  Excuse the long and ugly name, we will package it nicer later on. Currently this tool allows you to create a certificate and
-                 sign it. The jar file also contains all the required libraries and should be suitable for adding to your favorite IDE's classpath.
+                 sign it. The jar file also contains all the required libraries and should be suitable for unpacking and
+                adding to your favorite IDE's classpath.
              </p>
 
         </section>

@@ -1,7 +1,20 @@
 /*
  *
- * $Id: CachedSource.java,v 1.15 2003/12/06 00:17:03 pelle Exp $
+ * $Id: CachedSource.java,v 1.16 2003/12/09 23:41:44 pelle Exp $
  * $Log: CachedSource.java,v $
+ * Revision 1.16  2003/12/09 23:41:44  pelle
+ * IdentityCreator is now the default class of the uber jar.
+ * It has many new features such as:
+ * - Self signed certificates
+ * - Unsigned Certificates (for external signing)
+ * - Signing of Externally generated Certificates
+ * - Command Line verification of an Identity name
+ *
+ * CachedSource now supports freshness. It needs to be tested a bit more thoroughly
+ * though.
+ *
+ * Documentation including the bdg has been updated to reflect these changes.
+ *
  * Revision 1.15  2003/12/06 00:17:03  pelle
  * Updated various areas in NSTools.
  * Updated URI Validation in particular to support new expanded format
@@ -135,8 +148,10 @@ public final class CachedSource extends Source {
     protected InputStream getStream(final String endpoint, final String name) throws NeuClearException {
         final File object = new File(cachedirpath + NSTools.name2path(name) + "/root.id");
         try {
-            if (!object.exists()) {   //TODO check for freshness
+            if (!object.exists()||((object.lastModified()+MS_STALE)<System.currentTimeMillis())) {
                 object.getParentFile().mkdirs();
+                if (object.exists())
+                    object.delete();
                 final InputStream in = src.getStream(endpoint, name);
                 final OutputStream out = new FileOutputStream(object);
                 int character;
@@ -156,6 +171,6 @@ public final class CachedSource extends Source {
 
     private final Source src;
     private final String cachedirpath;
-
+    private final static long MS_STALE=8640000; // Milliseconds until a cache entry is stale
 
 }
