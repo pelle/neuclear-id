@@ -50,31 +50,15 @@ public final class Resolver {
      * @return 
      */
     public final static SignedNamedObject resolve(final String name) throws NameResolutionException, InvalidNamedObjectException {
-        SignedNamedObject obj = NSCACHE.fetchCached(name);
-        if (obj != null)
-            return obj;
 
-/*
-        if (name.startsWith("neu:")) {
-
-            final String parentname = NSTools.getSignatoryURI(name);
-
-            String store = NSTools.isHttpScheme(name);
-            if (store == null) {
-                final Identity parent = resolveIdentity(parentname);
-                store = parent.getRepository();
-            }
-            try {
-                obj = Source.getInstance().fetch(store, name);
-            } catch (SourceException e) {
-                throw new NameResolutionException(name,e.getLocalizedMessage());
-            }
-            if (obj == null)
-                throw new NameResolutionException(name);
-            NSCACHE.cache(obj);
-            return obj; //This may not be null
+        // If name is a hash check the cache
+        if (name.length() == 32 || name.length() == 37 || name.length() == 38 || name.length() == 69) {
+            System.out.println("Fetching Cached");
+            SignedNamedObject obj = NSCACHE.fetchCached(cleanName(name));
+            if (obj != null)
+                return obj;
         }
-*/
+
         try {
 
             return VerifyingReader.getInstance().read(new URL(getURLString(name)).openStream());
@@ -95,7 +79,11 @@ public final class Resolver {
     }
 
     private static String cleanName(String name) {
-        if (name.startsWith("sha:"))
+        if (name.charAt(36) == '!')
+            return name.substring(37);
+        if (name.startsWith("sha1:"))
+            return name.substring(5);
+        if (name.startsWith("neu:"))
             return name.substring(4);
 
         return name;

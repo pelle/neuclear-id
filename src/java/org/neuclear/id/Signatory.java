@@ -1,6 +1,10 @@
 /*
- * $Id: Signatory.java,v 1.1 2004/04/01 23:19:49 pelle Exp $
+ * $Id: Signatory.java,v 1.2 2004/04/02 23:05:03 pelle Exp $
  * $Log: Signatory.java,v $
+ * Revision 1.2  2004/04/02 23:05:03  pelle
+ * Got TransferOrder and Builder working with their test cases.
+ * Working on TransferReceipt which is the first embedded receipt. This is causing some problems at the moment.
+ *
  * Revision 1.1  2004/04/01 23:19:49  pelle
  * Split Identity into Signatory and Identity class.
  * Identity remains a signed named object and will in the future just be used for self declared information.
@@ -325,6 +329,7 @@ package org.neuclear.id;
 
 import org.neuclear.commons.crypto.Base32;
 import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.commons.crypto.keyresolvers.PublicKeyCache;
 import org.neuclear.id.resolver.Resolver;
 
 import java.security.*;
@@ -356,8 +361,9 @@ public final class Signatory implements Principal {
      * @param pub
      */
     public Signatory(final PublicKey pub) {
-        this.pub = pub;
         this.id = Base32.encode(CryptoTools.digest(pub.getEncoded()));
+        this.pub = pub;
+        PublicKeyCache.cachePublicKey(pub);
     }
 
     public String getName() {

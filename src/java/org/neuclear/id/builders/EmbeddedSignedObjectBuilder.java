@@ -13,10 +13,10 @@ import org.neuclear.id.SignedNamedObject;
  * To change this template use Options | File Templates.
  */
 public class EmbeddedSignedObjectBuilder extends Builder {
-    public EmbeddedSignedObjectBuilder(final QName qname, final SignedNamedObject embedded)  {
+    public EmbeddedSignedObjectBuilder(final QName qname, final SignedNamedObject embedded) {
         super(qname);
         try {
-            getElement().add(DocumentHelper.parseText(embedded.getEncoded()));
+            getElement().add(DocumentHelper.parseText(embedded.getEncoded()).getRootElement());
         } catch (DocumentException e) {
             throw new RuntimeException((e));
         }

@@ -1,10 +1,7 @@
 package org.neuclear.id.cache;
 
+import org.neuclear.commons.Cache;
 import org.neuclear.id.SignedNamedObject;
-
-import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The Idea of the NSCache is to have a quick cache of verified public NameSpaces. This is not stored, but is created from scratch
@@ -12,10 +9,7 @@ import java.util.Map;
  * I have replaced the standard java HashMap implementation with Tyler Close's Cache class from his ADT collections library.
  * This should help with both security and memory usage.
  */
-public final class NSCache {
-    public NSCache() {
-        spaces = new HashMap();
-    }
+public final class NSCache extends Cache {
 
 
     /**
@@ -25,17 +19,13 @@ public final class NSCache {
      * @return a valid Identity object if found otherwise null
      */
     public SignedNamedObject fetchCached(final String name) {
-        final WeakReference ref = (WeakReference) spaces.get(name);
-        if (ref == null)
-            return null;
-        return (SignedNamedObject) ref.get();
+        System.out.println("Fetch:" + name);
+        return (SignedNamedObject) lookup(name);
     }
 
     public SignedNamedObject cache(final SignedNamedObject obj) {
-        if (!spaces.containsKey(obj.getDigest()))
-            spaces.put(obj.getDigest(), new WeakReference(obj));
-        return obj;
+        System.out.println("Caching: " + obj.getDigest());
+        return (SignedNamedObject) cache(obj.getDigest(), obj);
     }
 
-    private final Map spaces;
 }
