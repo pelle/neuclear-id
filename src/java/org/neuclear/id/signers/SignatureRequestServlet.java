@@ -41,8 +41,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.3 2004/04/14 23:44:44 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.4 2004/04/30 15:13:32 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.4  2004/04/30 15:13:32  pelle
+Added RESTTools for creating normal POST requests as handled by XMLInputStreamServlet
+Fixed bug in SignatureRequestServlet with regards to autosubmition to Mozilla based browsers such as FireFox.
+
 Revision 1.3  2004/04/14 23:44:44  pelle
 Got the cactus tests working and the sample web app
 
@@ -164,7 +168,7 @@ public abstract class SignatureRequestServlet extends HttpServlet {
 //            out.write("<input type=\"submit\">");
             out.write("</form>\n");
             out.write("<script language=\"javascript\">\n");
-            out.write("<!--\n   sigrequest.submit();\n-->\n");
+            out.write("<!--\n   document.forms[0].submit();\n-->\n");
             out.write("</script>\n");
 
         } catch (NeuClearException e) {
