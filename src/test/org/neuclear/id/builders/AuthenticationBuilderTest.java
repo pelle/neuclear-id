@@ -26,8 +26,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationBuilderTest.java,v 1.10 2004/03/22 20:09:49 pelle Exp $
+$Id: AuthenticationBuilderTest.java,v 1.11 2004/04/14 23:44:45 pelle Exp $
 $Log: AuthenticationBuilderTest.java,v $
+Revision 1.11  2004/04/14 23:44:45  pelle
+Got the cactus tests working and the sample web app
+
 Revision 1.10  2004/03/22 20:09:49  pelle
 Added simple ledger for unit testing and in memory use
 
@@ -96,7 +99,7 @@ public final class AuthenticationBuilderTest extends AbstractObjectCreationTest 
     }
 
     protected Builder createBuilder() throws Exception {
-        return new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://users.neuclear.org:8080");
+        return new AuthenticationTicketBuilder("http://users.neuclear.org:8080");
     }
 
 }

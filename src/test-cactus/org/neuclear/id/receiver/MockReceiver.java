@@ -1,12 +1,11 @@
 package org.neuclear.id.receiver;
 
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
 import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
-import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
-import org.neuclear.xml.ElementProxy;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -26,8 +25,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: MockReceiver.java,v 1.1 2004/03/02 18:59:13 pelle Exp $
+$Id: MockReceiver.java,v 1.2 2004/04/14 23:44:46 pelle Exp $
 $Log: MockReceiver.java,v $
+Revision 1.2  2004/04/14 23:44:46  pelle
+Got the cactus tests working and the sample web app
+
 Revision 1.1  2004/03/02 18:59:13  pelle
 Further cleanups in neuclear-id. Moved everything under id.
 
@@ -52,27 +54,29 @@ Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQN
 public class MockReceiver implements Receiver {
     public MockReceiver() {
         try {
-            signer=new TestCaseSigner();
+            signer = new TestCaseSigner();
         } catch (InvalidPassphraseException e) {
             throw new RuntimeException(e);
         }
     }
+
     /**
      * Add your main transaction processing logic within this method.
      * Remember you must check the validity of the SignedNamedObject here. Until you do so
      * you can not trust it.
-     * 
+     *
      * @param obj
      * @throws UnsupportedTransaction
      */
     public SignedNamedObject receive(SignedNamedObject obj) throws UnsupportedTransaction, NeuClearException {
         received = obj;
-        return new AuthenticationTicketBuilder("neu://test", obj.getName(), "http://localhost").convert("neu://bob@test",signer);//Just some dummy
+        return new AuthenticationTicketBuilder("http://localhost").convert("neu://bob@test", signer);//Just some dummy
     }
 
     public SignedNamedObject getLastReceived() {
         return received;
     }
+
     private Signer signer;
     private SignedNamedObject received = null;
 }

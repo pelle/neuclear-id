@@ -13,10 +13,11 @@ import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.dom4j.QName;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.Utility;
 import org.neuclear.commons.time.TimeTools;
-import org.neuclear.id.*;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
+import org.neuclear.id.InvalidNamedObjectException;
+import org.neuclear.id.NamedObjectReader;
+import org.neuclear.id.SignedNamedCore;
+import org.neuclear.id.SignedNamedObject;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -34,18 +35,15 @@ public final class AuthenticationTicket extends SignedNamedObject {
      * <pre>&lt;auth:AuthenticationTicket xmlns:auth="http://neuclear.org/neu/auth" xmlns:nsdl="http://neuclear.org/neu/nsdl" nsdl:name="/test/two/neu.testapp.-2o1qkqrvxyesyt7dae22ulvp56eju30zyys5t6nxjjie2gw3qq" auth:validto="20021002T084919848GMT+00:00" auth:href="http://localhost:8080/neuclearframework/"&gt;
      * &lt;/auth:AuthenticationTicket&gt;
      * </pre>
-     * 
+     *
      * @param core
-     * @param requester
-     * @param validto   
-     * @param siteurl   
+     * @param validto
+     * @param siteurl
      */
-    private AuthenticationTicket(final SignedNamedCore core, final String requester, final Timestamp validto, final String siteurl)  {
+    private AuthenticationTicket(final SignedNamedCore core, final Timestamp validto, final String siteurl) {
         super(core);
         this.validTo = validto.getTime();
         this.siteurl = siteurl;
-        this.requester = requester;
-
     }
 
 
@@ -76,24 +74,21 @@ public final class AuthenticationTicket extends SignedNamedObject {
          * @return 
          */
         public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws InvalidNamedObjectException {
-            final QName qelem=DocumentHelper.createQName(TAG_NAME,NS_NSAUTH);
-            InvalidNamedObjectException.assertElementQName(core,elem,qelem);
-            final QName qreq = DocumentHelper.createQName("requester", NS_NSAUTH);
-            final String requester = InvalidNamedObjectException.assertAttributeQName(core,elem,qreq);
+            final QName qelem = DocumentHelper.createQName(TAG_NAME, NS_NSAUTH);
+            InvalidNamedObjectException.assertElementQName(core, elem, qelem);
             final QName qsite = DocumentHelper.createQName("sitehref", NS_NSAUTH);
-            final String sitehref = InvalidNamedObjectException.assertAttributeQName(core,elem,qsite);
+            final String sitehref = InvalidNamedObjectException.assertAttributeQName(core, elem, qsite);
             try {
                 final QName qtime = DocumentHelper.createQName("validto", NS_NSAUTH);
-                final Timestamp validto = TimeTools.parseTimeStamp(InvalidNamedObjectException.assertAttributeQName(core,elem,qtime));
-                return new AuthenticationTicket(core, requester, validto, sitehref);
+                final Timestamp validto = TimeTools.parseTimeStamp(InvalidNamedObjectException.assertAttributeQName(core, elem, qtime));
+                return new AuthenticationTicket(core, validto, sitehref);
             } catch (ParseException e) {
-                throw new InvalidNamedObjectException(core.getName(),e.getLocalizedMessage());
+                throw new InvalidNamedObjectException(core.getName(), e.getLocalizedMessage());
             }
         }
 
     }
 
-    private final String requester;
     private final String siteurl;
     private final long validTo;
     public static final String TAG_NAME = "AuthenticationTicket";

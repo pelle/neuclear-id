@@ -25,8 +25,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServlet.java,v 1.2 2004/03/22 20:09:43 pelle Exp $
+$Id: AuthenticationServlet.java,v 1.3 2004/04/14 23:44:28 pelle Exp $
 $Log: AuthenticationServlet.java,v $
+Revision 1.3  2004/04/14 23:44:28  pelle
+Got the cactus tests working and the sample web app
+
 Revision 1.2  2004/03/22 20:09:43  pelle
 Added simple ledger for unit testing and in memory use
 
@@ -107,9 +110,9 @@ Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to 
 public class AuthenticationServlet extends SignatureRequestServlet {
 
     protected Builder createBuilder(final HttpServletRequest request) throws NeuClearException {
-        final String userns = request.getParameter("identity");
+        final String userns = request.getParameter("signer");
         request.getSession(true).setAttribute("auth", userns);
-        return new AuthenticationTicketBuilder(userns, getServiceid(), request.getRequestURI());
+        return new AuthenticationTicketBuilder(request.getRequestURI());
     }
 
 }

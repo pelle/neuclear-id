@@ -3,7 +3,10 @@ package org.neuclear.id.auth;
 import org.apache.cactus.FilterTestCase;
 import org.apache.cactus.WebRequest;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.Base32;
 import org.neuclear.commons.crypto.Base64;
+import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
@@ -32,8 +35,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationFilterTest.java,v 1.1 2004/03/02 18:59:13 pelle Exp $
+$Id: AuthenticationFilterTest.java,v 1.2 2004/04/14 23:44:46 pelle Exp $
 $Log: AuthenticationFilterTest.java,v $
+Revision 1.2  2004/04/14 23:44:46  pelle
+Got the cactus tests working and the sample web app
+
 Revision 1.1  2004/03/02 18:59:13  pelle
 Further cleanups in neuclear-id. Moved everything under id.
 
@@ -62,8 +68,8 @@ public class AuthenticationFilterTest extends FilterTestCase {
 
     public void beginValid(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException {
 
-        AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://localhost");
-        SignedNamedObject signed = authreq.convert("neu://bob@test",signer);
+        AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("http://localhost");
+        SignedNamedObject signed = authreq.convert("neu://bob@test", signer);
         theRequest.setContentType("application/x-www-form-urlencoded");
         String b64 = Base64.encode(signed.getEncoded().getBytes());
         theRequest.addParameter("neuclear-request", b64, "POST");
@@ -80,7 +86,12 @@ public class AuthenticationFilterTest extends FilterTestCase {
             public void doFilter(ServletRequest theRequest,
                                  ServletResponse theResponse) throws IOException, ServletException {
                 assertNotNull(request.getUserPrincipal());
-                assertEquals("neu://bob@test", request.getUserPrincipal().getName());
+                try {
+                    assertEquals(Base32.encode(CryptoTools.digest(signer.getPublicKey("neu://bob@test").getEncoded())), request.getUserPrincipal().getName());
+                } catch (NonExistingSignerException e) {
+                    e.printStackTrace();
+                    assertTrue(false);
+                }
             }
 
             public void init(FilterConfig theConfig) {
@@ -95,7 +106,7 @@ public class AuthenticationFilterTest extends FilterTestCase {
 
     public void beginUnsigned(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException {
 
-        AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://localhost");
+        AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("http://localhost");
         theRequest.setContentType("application/x-www-form-urlencoded");
         String b64 = XMLSecTools.encodeElementBase64(authreq);
         theRequest.addParameter("neuclear-request", b64, "POST");

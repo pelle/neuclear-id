@@ -2,8 +2,10 @@ package org.neuclear.tests;
 
 import junit.framework.TestCase;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.Base32;
 import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.crypto.signers.JCESigner;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.id.Signatory;
 
@@ -28,8 +30,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AbstractSigningTest.java,v 1.8 2004/04/12 19:27:27 pelle Exp $
+$Id: AbstractSigningTest.java,v 1.9 2004/04/14 23:44:45 pelle Exp $
 $Log: AbstractSigningTest.java,v $
+Revision 1.9  2004/04/14 23:44:45  pelle
+Got the cactus tests working and the sample web app
+
 Revision 1.8  2004/04/12 19:27:27  pelle
 Hibernate and Pervayler implementations of the Ledger all pass now for both currency and ledger tests.
 
@@ -87,6 +92,10 @@ public class AbstractSigningTest extends TestCase {
         assertNotNull(bob);
         issuerkp = CryptoTools.createTinyRSAKeyPair();
         issuer = new Signatory(issuerkp.getPublic());
+    }
+
+    protected String getPublicKeyName(String alias) throws NonExistingSignerException {
+        return Base32.encode(CryptoTools.digest(signer.getPublicKey(alias).getEncoded()));
     }
 
     /**

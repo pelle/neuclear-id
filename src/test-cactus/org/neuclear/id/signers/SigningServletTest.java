@@ -3,14 +3,17 @@ package org.neuclear.id.signers;
 import com.meterware.httpunit.WebForm;
 import org.apache.cactus.ServletTestCase;
 import org.apache.cactus.WebRequest;
-import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
+import org.neuclear.commons.crypto.Base32;
 import org.neuclear.commons.crypto.Base64;
+import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.crypto.signers.JCESigner;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.id.SignatureRequest;
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.id.builders.SignatureRequestBuilder;
 import org.neuclear.id.verifier.VerifyingReader;
@@ -40,8 +43,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningServletTest.java,v 1.1 2004/03/02 18:59:13 pelle Exp $
+$Id: SigningServletTest.java,v 1.2 2004/04/14 23:44:46 pelle Exp $
 $Log: SigningServletTest.java,v $
+Revision 1.2  2004/04/14 23:44:46  pelle
+Got the cactus tests working and the sample web app
+
 Revision 1.1  2004/03/02 18:59:13  pelle
 Further cleanups in neuclear-id. Moved everything under id.
 
@@ -96,9 +102,9 @@ public class SigningServletTest extends ServletTestCase {
 
     public void beginSign(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException {
 
-        AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://localhost");
-        SignatureRequestBuilder sigreq = new SignatureRequestBuilder("neu://bob@test", authreq, "test");
-        SignedNamedObject signed = sigreq.convert("neu://test",signer);
+        AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("http://localhost");
+        SignatureRequestBuilder sigreq = new SignatureRequestBuilder(authreq, "test");
+        SignedNamedObject signed = sigreq.convert("neu://test", signer);
         theRequest.setContentType("application/x-www-form-urlencoded");
         String b64 = Base64.encode(signed.getEncoded().getBytes());
         theRequest.addParameter("neuclear-request", b64, "POST");
@@ -136,9 +142,9 @@ public class SigningServletTest extends ServletTestCase {
 
     public void beginSignatureRequest(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException {
 
-        AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://localhost");
-        SignatureRequestBuilder sigreq = new SignatureRequestBuilder( "neu://bob@test", authreq, "test");
-        SignedNamedObject signed = sigreq.convert("neu://test",signer);
+        AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("http://localhost");
+        SignatureRequestBuilder sigreq = new SignatureRequestBuilder(authreq, "test");
+        SignedNamedObject signed = sigreq.convert("neu://test", signer);
         theRequest.setContentType("application/x-www-form-urlencoded");
         String b64 = Base64.encode(signed.getEncoded().getBytes());
         theRequest.addParameter("neuclear-request", b64, "POST");
@@ -168,10 +174,14 @@ public class SigningServletTest extends ServletTestCase {
         assertNotNull(obj);
         assertTrue(obj instanceof SignatureRequest);
         SignatureRequest sigreq = (SignatureRequest) obj;
-        assertEquals(sigreq.getSignatory().getName(), "neu://test");
+        assertEquals(getPublicKeyName("neu://test"), sigreq.getSignatory().getName());
         assertTrue(forms[0].hasParameterNamed("endpoint"));
         assertEquals("http://localhost", forms[0].getParameterValue("endpoint"));
 
+    }
+
+    protected String getPublicKeyName(String alias) throws NonExistingSignerException {
+        return Base32.encode(CryptoTools.digest(signer.getPublicKey(alias).getEncoded()));
     }
 
     JCESigner signer;

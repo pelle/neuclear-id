@@ -4,11 +4,12 @@
                  org.neuclear.id.NSTools,
                  org.neuclear.commons.servlets.ServletTools        ,
                  org.neuclear.id.Identity,
-                 org.neuclear.id.resolver.Resolver"%>
+                 org.neuclear.id.resolver.Resolver,
+                 org.neuclear.id.Signatory"%>
  <%
     response.setHeader("Pragma","no-cache");
     response.setDateHeader("Expires",0);
-    Identity userns=(Identity) request.getUserPrincipal();
+    Signatory userns=(Signatory) request.getUserPrincipal();
     boolean loggedin=userns!=null;
 
  %>
@@ -23,7 +24,7 @@ NeuClear Sample Web App
 %>
 <form action="Authorize" method="POST">
 <table bgcolor="#FFFFE0"><tr><td valign="top">
-    <input name="identity" value="<%=(userns!=null)?userns.getName():""%>" type="text" size="30">
+    <input name="signer" value="<%=(userns!=null)?userns.getName():""%>" type="text" size="30">
     </td><td valign="top">
     <input type="submit" name="submit" value="Login">
     </td>

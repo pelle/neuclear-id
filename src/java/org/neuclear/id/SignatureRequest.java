@@ -24,8 +24,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequest.java,v 1.15 2004/03/22 20:09:49 pelle Exp $
+$Id: SignatureRequest.java,v 1.16 2004/04/14 23:44:45 pelle Exp $
 $Log: SignatureRequest.java,v $
+Revision 1.16  2004/04/14 23:44:45  pelle
+Got the cactus tests working and the sample web app
+
 Revision 1.15  2004/03/22 20:09:49  pelle
 Added simple ledger for unit testing and in memory use
 
@@ -119,15 +122,10 @@ Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to 
  * Time: 12:23:52 PM
  */
 public final class SignatureRequest extends SignedNamedObject {
-    private SignatureRequest(final SignedNamedCore core, final String userid, final Builder unsigned, final String description) {
+    private SignatureRequest(final SignedNamedCore core, final Builder unsigned, final String description) {
         super(core);
-        this.userid = userid;
         this.unsigned = unsigned;
         this.description = description;
-    }
-
-    public final String getUserid() {
-        return userid;
     }
 
     public final Builder getUnsigned() {
@@ -148,7 +146,6 @@ public final class SignatureRequest extends SignedNamedObject {
         public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws InvalidNamedObjectException {
             InvalidNamedObjectException.assertElementQName(core, elem, createNEUIDQName(SIGREQUEST_TAG));
             final Element request = InvalidNamedObjectException.assertContainsElementQName(core, elem, createNEUIDQName("Unsigned"));
-            final String userid = InvalidNamedObjectException.assertAttributeQName(core, elem, createNEUIDQName("userid"));
             final Element uelem = ((Element) request.elements().get(0)).createCopy();
             final Document doc = DocumentHelper.createDocument(uelem);
             try {
@@ -158,7 +155,7 @@ public final class SignatureRequest extends SignedNamedObject {
                 if (descrelem != null)
                     description = descrelem.getText();
 
-                return new SignatureRequest(core, userid, unsigned, description);
+                return new SignatureRequest(core, unsigned, description);
             } catch (XMLSecurityException e) {
                 throw new InvalidNamedObjectException(core.getName(), e);
             }
@@ -167,7 +164,6 @@ public final class SignatureRequest extends SignedNamedObject {
 
     }
 
-    private final String userid;
     private final Builder unsigned;
     private final String description;
     public final static String SIGREQUEST_TAG = "SignatureRequest";

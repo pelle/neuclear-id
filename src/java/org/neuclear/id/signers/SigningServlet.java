@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.6 2004/04/14 00:11:34 pelle Exp $
+ * $Id: SigningServlet.java,v 1.7 2004/04/14 23:44:44 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.7  2004/04/14 23:44:44  pelle
+ * Got the cactus tests working and the sample web app
+ *
  * Revision 1.6  2004/04/14 00:11:34  pelle
  * Added a MessageLabel for handling errors, validation and info
  * Save works well now.
@@ -340,9 +343,6 @@ public class SigningServlet extends XMLInputStreamServlet {
         if (sigreq == null) {
             throw new NeuClearException("nothing to sign");
         }
-        if (!signer.canSignFor(sigreq.getUserid()))
-            throw new NonExistingSignerException(sigreq.getUserid());
-
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
         response.setContentType("text/html");

@@ -1,14 +1,14 @@
 package org.neuclear.id.signers;
 
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.Utility;
+import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.ServletSignerFactory;
 import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.Identity;
 import org.neuclear.id.builders.Builder;
 import org.neuclear.id.builders.SignatureRequestBuilder;
-import org.neuclear.id.resolver.Resolver;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
@@ -41,8 +41,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.2 2004/04/01 23:19:48 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.3 2004/04/14 23:44:44 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.3  2004/04/14 23:44:44  pelle
+Got the cactus tests working and the sample web app
+
 Revision 1.2  2004/04/01 23:19:48  pelle
 Split Identity into Signatory and Identity class.
 Identity remains a signed named object and will in the future just be used for self declared information.
@@ -136,12 +139,21 @@ public abstract class SignatureRequestServlet extends HttpServlet {
         out.flush();
 
         try {
-            final Identity user = getUserNS(request);
+//            final Identity user = getUserNS(request);
             final Builder namedreq = createBuilder(request);
-            final SignatureRequestBuilder sigreq = new SignatureRequestBuilder(user.getName(), namedreq, "Login to Site");
-            sigreq.sign(serviceid, signer);
+            final SignatureRequestBuilder sigreq = new SignatureRequestBuilder(namedreq, "Login to Site");
+            try {
+                sigreq.sign(serviceid, signer);
+            } catch (XMLSecurityException e) {
+                e.printStackTrace();
+            } catch (UserCancellationException e) {
+                e.printStackTrace();
+            } catch (NonExistingSignerException e) {
+                e.printStackTrace();
+            }
             out.write("<form action=\"");
-            out.print(user.getSigner());
+            out.write(Identity.DEFAULT_SIGNER);
+//            out.print(user.getSigner());
             out.write("\" method=\"POST\" id=\"sigrequest\">\n    ");
             out.write("<input name=\"neuclear-request\" value=\"");
             out.print(XMLSecTools.encodeElementBase64(sigreq));
@@ -165,12 +177,12 @@ public abstract class SignatureRequestServlet extends HttpServlet {
     }
 
     protected Identity getUserNS(final HttpServletRequest request) throws NeuClearException {
-        if (request.getUserPrincipal() != null)
-            return (Identity) request.getUserPrincipal();
-        final String username = request.getParameter("identity");
-        if (Utility.isEmpty(username))
-            throw new NeuClearException("No Identity Provided");
-        return Resolver.resolveIdentity(username);
+//        if (request.getUserPrincipal() != null)
+        return (Identity) request.getUserPrincipal();
+//        final String username = request.getParameter("identity");
+//        if (Utility.isEmpty(username))
+//            throw new NeuClearException("No Identity Provided");
+//        return Resolver.resolveIdentity(username);
     }
 
     protected abstract Builder createBuilder(HttpServletRequest request) throws NeuClearException;

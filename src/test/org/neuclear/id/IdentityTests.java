@@ -37,9 +37,9 @@ public class IdentityTests extends AbstractObjectCreationTest {
         assertTrue(obj instanceof Identity);
         Identity id = (Identity) obj;
         assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(signer.getPublicKey(NAME).getEncoded())),
-                obj.getName().substring(5, 37));
+                obj.getName().substring(4, 36));
         assertEquals(new String(CryptoTools.digest(signer.getPublicKey(NAME).getEncoded())),
-                new String(Base32.decode(obj.getName().substring(5, 37))));
+                new String(Base32.decode(obj.getName().substring(4, 36))));
         assertEquals(id.getSigner(), SIGNER);
         assertNotNull(id.getSignatory().getPublicKey());
     }
@@ -57,8 +57,8 @@ public class IdentityTests extends AbstractObjectCreationTest {
         Signatory id = new Signatory(kp.getPublic());
         assertNotNull(id);
         assertNotNull(id.getName());
-        assertEquals("sha1:", id.getName().substring(0, 5));
-        assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(kp.getPublic().getEncoded())), id.getName().substring(5));
+//        assertEquals("sha1:", id.getName().substring(0, 5));
+        assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(kp.getPublic().getEncoded())), id.getName());
         assertEquals(kp.getPublic(), id.getPublicKey());
 
     }
@@ -71,16 +71,16 @@ public class IdentityTests extends AbstractObjectCreationTest {
         assertEquals(kp.getPublic(), sig.getSignersKey());
         SignedNamedObject obj = VerifyingReader.getInstance().read(elem);
         System.out.println("Name: " + obj.getName());
-        assertEquals("sha1:", obj.getName().substring(0, 5));
-        assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(kp.getPublic().getEncoded())), obj.getName().substring(5, 37));
+//        assertEquals("sha1:", obj.getName().substring(0, 5));
+        assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(kp.getPublic().getEncoded())), obj.getName().substring(4, 36));
         assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(obj.getEncoded().getBytes())), obj.getName().substring(obj.getName().length() - 32));
 
 
         Signatory id = obj.getSignatory();
         assertNotNull(id);
         assertNotNull(id.getName());
-        assertEquals("sha1:", id.getName().substring(0, 5));
-        assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(kp.getPublic().getEncoded())), id.getName().substring(5));
+//        assertEquals("sha1:", id.getName().substring(0, 5));
+        assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(kp.getPublic().getEncoded())), id.getName());
         assertEquals(kp.getPublic(), id.getPublicKey());
 
 

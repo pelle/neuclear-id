@@ -23,8 +23,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestBuilder.java,v 1.10 2004/01/19 23:49:44 pelle Exp $
+$Id: SignatureRequestBuilder.java,v 1.11 2004/04/14 23:44:28 pelle Exp $
 $Log: SignatureRequestBuilder.java,v $
+Revision 1.11  2004/04/14 23:44:28  pelle
+Got the cactus tests working and the sample web app
+
 Revision 1.10  2004/01/19 23:49:44  pelle
 Unit testing uncovered further issues with Base32
 NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
@@ -84,11 +87,10 @@ Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to 
  * Time: 12:45:14 PM
  */
 public final class SignatureRequestBuilder extends Builder {
-    public SignatureRequestBuilder(final String userid, final Builder unsigned, final String description) throws NeuClearException {
+    public SignatureRequestBuilder(final Builder unsigned, final String description) throws NeuClearException {
         super(createNEUIDQName(SignatureRequest.SIGREQUEST_TAG));
         final Element unsignedElem = addElement("Unsigned");
         unsignedElem.add(unsigned.getElement());
-        createAttribute("userid", userid);
         if (!Utility.isEmpty(description))
             addElement("Description").setText(description);
 

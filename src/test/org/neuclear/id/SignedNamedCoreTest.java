@@ -30,8 +30,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignedNamedCoreTest.java,v 1.9 2004/04/01 23:19:51 pelle Exp $
+$Id: SignedNamedCoreTest.java,v 1.10 2004/04/14 23:44:46 pelle Exp $
 $Log: SignedNamedCoreTest.java,v $
+Revision 1.10  2004/04/14 23:44:46  pelle
+Got the cactus tests working and the sample web app
+
 Revision 1.9  2004/04/01 23:19:51  pelle
 Split Identity into Signatory and Identity class.
 Identity remains a signed named object and will in the future just be used for self declared information.
@@ -92,18 +95,18 @@ public final class SignedNamedCoreTest extends TestCase {
         Signatory bobx = new Signatory(signer.getPublicKey(name));
         assertNotNull(bobx);
         assertNotNull(bobx.getName());
-        System.out.println(bobx.getName());
+//        System.out.println(bobx.getName());
         assertNotNull(bobx.getPublicKey());
     }
 
     public final void testRead() throws NeuClearException, GeneralSecurityException, XMLException, FileNotFoundException {
         final String name = "neu://bob@test";
-        final Builder builder = new AuthenticationTicketBuilder(name, "neu://test", "http://slashdot.org");
-        System.out.println("=====");
-        System.out.println(builder.asXML());
+        final Builder builder = new AuthenticationTicketBuilder("http://slashdot.org");
+//        System.out.println("=====");
+//        System.out.println(builder.asXML());
 
         builder.sign(name, signer);
-        System.out.println(builder.asXML());
+//        System.out.println(builder.asXML());
 
         assertTrue(builder.verify());
         try {

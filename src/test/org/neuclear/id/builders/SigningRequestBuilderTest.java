@@ -26,8 +26,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningRequestBuilderTest.java,v 1.13 2004/03/22 20:09:49 pelle Exp $
+$Id: SigningRequestBuilderTest.java,v 1.14 2004/04/14 23:44:45 pelle Exp $
 $Log: SigningRequestBuilderTest.java,v $
+Revision 1.14  2004/04/14 23:44:45  pelle
+Got the cactus tests working and the sample web app
+
 Revision 1.13  2004/03/22 20:09:49  pelle
 Added simple ledger for unit testing and in memory use
 
@@ -116,8 +119,8 @@ public final class SigningRequestBuilderTest extends AbstractObjectCreationTest 
     }
 
     protected Builder createBuilder() throws Exception {
-        final AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://users.neuclear.org:8080");
-        return new SignatureRequestBuilder("neu://bob@test", authreq, "For testing purposes");
+        final AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("http://users.neuclear.org:8080");
+        return new SignatureRequestBuilder(authreq, "For testing purposes");
     }
 
 }

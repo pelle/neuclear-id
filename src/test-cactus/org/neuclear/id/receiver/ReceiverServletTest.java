@@ -2,11 +2,14 @@ package org.neuclear.id.receiver;
 
 import org.apache.cactus.ServletTestCase;
 import org.apache.cactus.WebRequest;
-import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.Base32;
 import org.neuclear.commons.crypto.Base64;
+import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.crypto.signers.JCESigner;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
+import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.xml.XMLException;
 
@@ -33,8 +36,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: ReceiverServletTest.java,v 1.1 2004/03/02 18:59:13 pelle Exp $
+$Id: ReceiverServletTest.java,v 1.2 2004/04/14 23:44:46 pelle Exp $
 $Log: ReceiverServletTest.java,v $
+Revision 1.2  2004/04/14 23:44:46  pelle
+Got the cactus tests working and the sample web app
+
 Revision 1.1  2004/03/02 18:59:13  pelle
 Further cleanups in neuclear-id. Moved everything under id.
 
@@ -73,48 +79,54 @@ public class ReceiverServletTest extends ServletTestCase {
 
     public void beginReceiveBase64(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException {
 
-        AuthenticationTicketBuilder builder = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://localhost");
-        AuthenticationTicket ticket = (AuthenticationTicket) builder.convert("neu://bob@test",signer);
+        AuthenticationTicketBuilder builder = new AuthenticationTicketBuilder("http://localhost");
+        AuthenticationTicket ticket = (AuthenticationTicket) builder.convert("neu://bob@test", signer);
         theRequest.setContentType("application/x-www-form-urlencoded");
-        String b64 =Base64.encode(ticket.getEncoded().getBytes());
+        String b64 = Base64.encode(ticket.getEncoded().getBytes());
         theRequest.addParameter("neuclear-request", b64, "POST");
         theRequest.setURL("http://users.neuclear.org", "/test", "/Receiver",
                 null, null);
     }
 
-    public void testReceiveBase64() throws ServletException, IOException {
+    protected String getPublicKeyName(String alias) throws NonExistingSignerException {
+        return Base32.encode(CryptoTools.digest(signer.getPublicKey(alias).getEncoded()));
+    }
+
+    public void testReceiveBase64() throws ServletException, IOException, NonExistingSignerException {
         assertEquals(request.getContentType(), "application/x-www-form-urlencoded");
-        assertEquals(request.getMethod(),"POST");
+        assertEquals(request.getMethod(), "POST");
         ReceiverServlet servlet = new ReceiverServlet();
         MockReceiver receiver = new MockReceiver();
         servlet.setReceiver(receiver);
         servlet.init(config);
         servlet.service(request, response);
         assertNotNull(receiver.getLastReceived());
-        assertEquals(receiver.getLastReceived().getSignatory().getName(), "neu://bob@test");
+        assertEquals(getPublicKeyName("neu://bob@test"), receiver.getLastReceived().getSignatory().getName());
 
     }
-   public void beginReceiveSOAP(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException, IOException {
 
-        AuthenticationTicketBuilder builder = new AuthenticationTicketBuilder("neu://alice@test", "neu://test", "http://localhost");
-        AuthenticationTicket ticket = (AuthenticationTicket) builder.convert("neu://bob@test",signer);
+    public void beginReceiveSOAP(WebRequest theRequest) throws GeneralSecurityException, NeuClearException, XMLException, IOException {
+
+        AuthenticationTicketBuilder builder = new AuthenticationTicketBuilder("http://localhost");
+        AuthenticationTicket ticket = (AuthenticationTicket) builder.convert("neu://bob@test", signer);
         theRequest.setContentType("text/xml");
         theRequest.setURL("http://users.neuclear.org", "/test", "/Service",
                 null, null);
-       theRequest.setUserData(new ByteArrayInputStream(ticket.getEncoded().getBytes()));
-     }
+        theRequest.setUserData(new ByteArrayInputStream(ticket.getEncoded().getBytes()));
+    }
 
-    public void testReceiveSOAP() throws ServletException, IOException {
+    public void testReceiveSOAP() throws ServletException, IOException, NonExistingSignerException {
         assertEquals(request.getContentType(), "text/xml");
-        assertEquals(request.getMethod(),"POST");
+        assertEquals(request.getMethod(), "POST");
         ReceiverServlet servlet = new ReceiverServlet();
         MockReceiver receiver = new MockReceiver();
         servlet.setReceiver(receiver);
         servlet.init(config);
         servlet.service(request, response);
         assertNotNull(receiver.getLastReceived());
-        assertEquals(receiver.getLastReceived().getSignatory().getName(), "neu://alice@test");
+        assertEquals(getPublicKeyName("neu://bob@test"), receiver.getLastReceived().getSignatory().getName());
 
     }
+
     JCESigner signer;
 }

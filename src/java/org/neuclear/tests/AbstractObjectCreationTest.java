@@ -24,10 +24,14 @@ public abstract class AbstractObjectCreationTest extends AbstractSigningTest {
         Builder builder = createBuilder();
 //        System.out.println(builder.asXML());
         assertNotNull(builder);
-        SignedNamedObject obj = builder.convert(NAME, getSigner());
+        SignedNamedObject obj = builder.convert(getSignersAlias(), getSigner());
         assertNotNull(obj);
         assertEquals(getRequiredClass(), obj.getClass());
         verifyObject(obj);
+    }
+
+    protected String getSignersAlias() {
+        return NAME;
     }
 
     protected void assertEquals(byte a[], byte b[]) {
@@ -50,5 +54,5 @@ public abstract class AbstractObjectCreationTest extends AbstractSigningTest {
 
     protected abstract Builder createBuilder() throws Exception;
 
-    public static final String NAME = "neu://test";
+    protected static final String NAME = "neu://test";
 }
