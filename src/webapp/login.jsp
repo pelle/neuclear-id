@@ -3,7 +3,7 @@
                  org.neuclear.contracts.nsauth.AuthenticationTicket,
                  java.util.Date,
                  org.neudist.xml.xmlsec.XMLSecTools,
-                org.neuclear.id.targets.TargetReference,
+
                 org.neudist.utils.ServletTools,
                 org.neuclear.id.Identity,
 

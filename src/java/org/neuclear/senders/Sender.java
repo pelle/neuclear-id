@@ -1,38 +1,59 @@
 package org.neuclear.senders;
 
-import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.builders.NamedObjectBuilder;
+/**
+ * (C) 2003 Antilles Software Ventures SA
+ * User: pelleb
+ * Date: Feb 14, 2003
+ * Time: 9:29:29 AM
+ * $Id: Sender.java,v 1.4 2003/09/29 23:17:32 pelle Exp $
+ * $Log: Sender.java,v $
+ * Revision 1.4  2003/09/29 23:17:32  pelle
+ * Changes to the senders. Now the senders only work with NamedObjectBuilders
+ * which are the only NamedObject representations that contain full XML.
+ *
+ */
 import org.neudist.utils.NeudistException;
+import org.neuclear.id.builders.NamedObjectBuilder;
 
+import java.util.HashMap;
+import java.util.Map;
+
+public abstract class Sender {
+
+    public abstract void send(String endpoint,NamedObjectBuilder obj) throws NeudistException;
+
+    public static void quickSend(String endpoint,NamedObjectBuilder obj) throws NeudistException {
+        int protloc=endpoint.indexOf(":");
+        if (protloc<0)
+            throw new NeudistException(endpoint+"Is not in URL format");
+        String protocol=endpoint.substring(0,protloc);
+        Sender sender=getSender(protocol);
+        if (sender==null)
+            throw new NeudistException("Unsupported Send Protocol:" + endpoint.toString());
+        sender.send(endpoint,obj);
+    }
+
+    public static Sender getSender(String protocol) {
+        if (SENDERS==null){
+            SENDERS=new HashMap();
+            SENDERS.put("soap",new SoapSender());
+            SENDERS.put("mailto",new SmtpSender());
+        }
+
+        return (Sender) SENDERS.get(protocol);
+    }
+    private static Map SENDERS;
+    public static void main(String args[]){
 /*
-NeuClear Distributed Transaction Clearing Platform
-(C) 2003 Pelle Braendgaard
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
+        try {
+            NameSpace pelle=(NameSpace)NamedObjectFactory.fetchNamedObject("neu://free/pelle");
+            NamedObject free=NamedObjectFactory.fetchNamedObject("neu://free");
+            pelle.send(free);
+        } catch (NeudistException e) {
+            e.printStackTrace();  //To change body of catch statement use Options | File Templates.
+        }
 */
 
-/**
- * 
- * User: pelleb
- * Date: Sep 22, 2003
- * Time: 1:28:39 PM
- */
-public abstract class Sender {
-    public abstract void send(String endpoint, NamedObjectBuilder obj) throws NeudistException;
-
-    public static void quickSend(String receiver, NamedObjectBuilder obj) {
     }
 }
+

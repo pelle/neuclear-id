@@ -1,6 +1,8 @@
 package org.neuclear.senders;
 
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.Named;
+import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.time.TimeTools;
 import org.neudist.crypto.Base64;
@@ -20,8 +22,12 @@ import java.sql.Timestamp;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 1:23:05 PM
- * $Id: LogSender.java,v 1.6 2003/09/26 23:53:10 pelle Exp $
+ * $Id: LogSender.java,v 1.7 2003/09/29 23:17:32 pelle Exp $
  * $Log: LogSender.java,v $
+ * Revision 1.7  2003/09/29 23:17:32  pelle
+ * Changes to the senders. Now the senders only work with NamedObjectBuilders
+ * which are the only NamedObject representations that contain full XML.
+ *
  * Revision 1.6  2003/09/26 23:53:10  pelle
  * Changes mainly in receiver and related fun.
  * First real neuclear stuff in the payment package. Added TransferContract and PaymentReceiver.
@@ -67,9 +73,9 @@ import java.sql.Timestamp;
  *
  */
 public class LogSender extends Sender {
-    public void send(String endpoint, SignedNamedObject obj) throws NeudistException {
+    public void send(String endpoint, NamedObjectBuilder obj) throws NeudistException {
         try {
-            String digest = URLEncoder.encode(Base64.encode(obj.getDigest().getBytes()), "UTF-8");
+            String digest = URLEncoder.encode(Base64.encode(obj.getDigest()), "UTF-8");
             String name = URLEncoder.encode(obj.getName(), "UTF-8");
             URL url = new URL(Utility.denullString(endpoint, LOGGER) + "?nohtml=1&name=" + name + "&digest=" + digest);
             url.openStream();
@@ -87,6 +93,7 @@ public class LogSender extends Sender {
 
     }
 
+/*
     public static void main(String args[]) {
         try {
             logObject("neu://free");
@@ -97,6 +104,7 @@ public class LogSender extends Sender {
             e.printStackTrace();  //To change body of catch statement use Options | File Templates.
         }
     }
+*/
 
     public static Timestamp getTimeStamp(String endpoint, byte rdigest[]) throws NeudistException {
         try {
@@ -127,6 +135,7 @@ public class LogSender extends Sender {
 
     }
 
+/*
     private static void logObject(String name) throws NeudistException {
         System.out.print("Fetching...");
         SignedNamedObject obj = NSResolver.resolveIdentity(name);
@@ -137,5 +146,6 @@ public class LogSender extends Sender {
         System.out.println("Done");
     }
 
+*/
     public static final String LOGGER = "http://logger.neuclear.org/log.cgi";
 }

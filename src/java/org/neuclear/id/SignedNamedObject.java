@@ -1,6 +1,10 @@
 /*
- * $Id: SignedNamedObject.java,v 1.1 2003/09/24 23:56:48 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.2 2003/09/29 23:17:31 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.2  2003/09/29 23:17:31  pelle
+ * Changes to the senders. Now the senders only work with NamedObjectBuilders
+ * which are the only NamedObject representations that contain full XML.
+ *
  * Revision 1.1  2003/09/24 23:56:48  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.
@@ -184,11 +188,6 @@ public class SignedNamedObject implements SignedObject, Named {
 
     }
 
-    public final void log() throws NeudistException {
-        Identity ns = getSignatory();
-        ns.log(this);
-    }
-
     public Identity getSignatory() {
         return signer;
     }
@@ -196,10 +195,10 @@ public class SignedNamedObject implements SignedObject, Named {
     public String getDigest() {
         return digest;
     }
-    private String name;
-    private Identity signer;
-    private Timestamp timestamp;
-    private String digest;
+    private final String name;
+    private final Identity signer;
+    private final Timestamp timestamp;
+    private final String digest;
 
     final public static class Reader implements NamedObjectReader {
         /**

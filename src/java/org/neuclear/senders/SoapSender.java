@@ -5,8 +5,12 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:50:30 AM
- * $Id: SoapSender.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
+ * $Id: SoapSender.java,v 1.6 2003/09/29 23:17:32 pelle Exp $
  * $Log: SoapSender.java,v $
+ * Revision 1.6  2003/09/29 23:17:32  pelle
+ * Changes to the senders. Now the senders only work with NamedObjectBuilders
+ * which are the only NamedObject representations that contain full XML.
+ *
  * Revision 1.5  2003/09/26 00:22:07  pelle
  * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
  *
@@ -45,12 +49,14 @@ package org.neuclear.senders;
  */
 
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.Named;
+import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neudist.utils.NeudistException;
 import org.neudist.xml.soap.SOAPTools;
 
 
 public class SoapSender extends Sender {
-    public void send(String endpoint, SignedNamedObject obj) throws NeudistException {
-        //SOAPTools.soapRequest(endpoint, obj.getElement(), "/receive");TODO Rething this
+    public void send(String endpoint, NamedObjectBuilder obj) throws NeudistException {
+        SOAPTools.soapRequest(endpoint, obj.getElement(), "/receive");
     }
 }

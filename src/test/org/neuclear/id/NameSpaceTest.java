@@ -1,6 +1,10 @@
 /*
-  $Id: NameSpaceTest.java,v 1.3 2003/09/23 19:16:29 pelle Exp $
+  $Id: NameSpaceTest.java,v 1.4 2003/09/29 23:17:32 pelle Exp $
   $Log: NameSpaceTest.java,v $
+  Revision 1.4  2003/09/29 23:17:32  pelle
+  Changes to the senders. Now the senders only work with NamedObjectBuilders
+  which are the only NamedObject representations that contain full XML.
+
   Revision 1.3  2003/09/23 19:16:29  pelle
   Changed NameSpace to Identity.
   To cause less confusion in the future.
@@ -133,13 +137,11 @@ import java.security.interfaces.RSAPrivateKey;
  * @author Pelle Braendgaard
  */
 public class NameSpaceTest extends TestCase  {
-    public NameSpaceTest() throws GeneralSecurityException, IOException, FileNotFoundException {
-		super("NameSpaceTest");
-                 setUp();
+
+    public NameSpaceTest(String string) {
+        super(string);
     }
-    public NameSpaceTest(String name) {
-         super(name);
-     }
+
     /**
      * The general test setup consists of a minimal neuspace with 4 keys:
      *<ul>
@@ -197,26 +199,9 @@ public class NameSpaceTest extends TestCase  {
 
     }
 
-/*
-    private Identity createNeuRoot() throws NeudistException {
-        return null;//new Identity("neu://",root,root.getPublic());
-    }
-    private Identity createNeuBob() throws NeudistException {
-        return  null;//new Identity("neu://bob",root,bob.getPublic());
-    }
-    private Identity createNeuAlice() throws NeudistException {
-        return null;// new Identity("neu://alice",root,alice.getPublic());
-    }
-    private Identity createNeuBobAlice() throws NeudistException {
-        return null;// new Identity("neu://bob/alice",bob,alice.getPublic());
-    }
-    private Identity createNeuEvilEve() throws NeudistException {
-        return null;// new Identity("neu://eve",eve,eve.getPublic());
-    }
-*/
 
     protected void tearDown() {
-        }
+    }
 
 	private static void sleepabit() {
 	  try {
@@ -226,61 +211,10 @@ public class NameSpaceTest extends TestCase  {
 	  }
 
 	}
-	public static Test suite() {
 
-
-		return new TestSuite(NameSpaceTest.class);
-	}
-
- /*   public void testCreateRoot() throws NeudistException, InvalidIdentityException{
-      Identity neuRoot=createNeuRoot();
-      Store neuspace=new MemoryStore();
-      neuspace.receive(neuRoot);
-      assertNotNull("Test that we can add a root",neuRoot);
-    }
-*/
-/*
-
-    public void testCreateChild() throws NeudistException, InvalidIdentityException{
-      MemoryStore neuspace=new MemoryStore();
-      Identity neuBob=new Identity("neu://test/bob",bob.getPublic());
-      neuBob.sign(test);
-      neuspace.receive(neuBob);
-      assertNotNull("Test that we can add Bob under the root",neuBob);
-
-    }
-
-    public void testCreateInvalidChild() throws NeudistException, InvalidIdentityException{
-            MemoryStore neuspace=new MemoryStore();
-            Identity neuEve=new Identity("neu://test/eve",eve.getPublic());
-            neuEve.sign(eve.getPrivate());
-            boolean success=false;
-            try {
-                neuspace.receive(neuEve);
-            } catch (InvalidIdentityException e) {
-                success=true;
-            }
-            assertTrue("Test that we cant add Eve's selfsigned Neu under the root",success);
-
-    }
-    public static void main(String args[]) {
-        try {
-              NameSpaceTest test=new NameSpaceTest();
-              test.testCreateChild();
-              test.testCreateInvalidChild();
-          } catch (GeneralSecurityException e) {
-            Utility.handleException(e);
-          } catch (IOException e) {
-            Utility.handleException(e);
-          } catch (NeudistException e) {
-            Utility.handleException(e);
-          }
-    }
-*/
-
-//    KeyPair root;
-//    PrivateKey aliceSigner;
-//    PrivateKey bobSigner;
+    KeyPair root;
+    PrivateKey aliceSigner;
+    PrivateKey bobSigner;
     PrivateKey test;
     KeyPair bob;
     KeyPair alice;

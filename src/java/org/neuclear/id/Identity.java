@@ -1,6 +1,10 @@
 /*
- * $Id: Identity.java,v 1.3 2003/09/26 00:22:06 pelle Exp $
+ * $Id: Identity.java,v 1.4 2003/09/29 23:17:31 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.4  2003/09/29 23:17:31  pelle
+ * Changes to the senders. Now the senders only work with NamedObjectBuilders
+ * which are the only NamedObject representations that contain full XML.
+ *
  * Revision 1.3  2003/09/26 00:22:06  pelle
  * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
  *
@@ -165,6 +169,7 @@ import org.neudist.crypto.CryptoTools;
 import org.neudist.crypto.CryptoException;
 import org.neuclear.senders.Sender;
 import org.neuclear.id.resolver.NSResolver;
+import org.neuclear.id.builders.NamedObjectBuilder;
 
 import java.security.PublicKey;
 import java.util.Iterator;
@@ -212,14 +217,14 @@ public final class Identity extends SignedNamedObject {
         return logger;
     }
 
-    public final void send(SignedNamedObject obj) throws NeudistException {
+    public final void send(NamedObjectBuilder obj) throws NeudistException {
         if (!Utility.isEmpty(receiver))
             Sender.quickSend(receiver, obj);
         else
             throw new NeudistException("Cant send object, " + getName() + " doesnt have a registered Receiver");
     }
 
-    void log(SignedNamedObject obj) throws NeudistException {
+    void log(NamedObjectBuilder obj) throws NeudistException {
         if (!Utility.isEmpty(logger))
             Sender.quickSend(logger, obj);
     }
@@ -230,22 +235,28 @@ public final class Identity extends SignedNamedObject {
     public PublicKey[] getPublicKeys(){
         return pubs;
     }
-    private String repository;
-    private String signer;
-    private String logger;
-    private String receiver;
+    private final String repository;
+    private final String signer;
+    private final String logger;
+    private final String receiver;
 
-    private PublicKey pubs[];
+    private final PublicKey pubs[];
 
+    private final static Identity createRootIdentity() {
 
-    public final static Identity getRootIdentity() throws NeudistException {
+        try {
+            PublicKey rootpk=CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
+            return new Identity("neu://",null,new Timestamp(0),null,NSResolver.NSROOTSTORE,
+                    null,null,null,new PublicKey[]{rootpk});
+        } catch (NeudistException e) {
+            e.printStackTrace();
 
-        PublicKey rootpk=CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
-        root=new Identity("neu://",null,new Timestamp(0),null,NSResolver.NSROOTSTORE,
-                null,null,null,new PublicKey[]{rootpk});
-        return root;
+            return null;
+        }
+
     }
-    private static Identity root;
+
+    public static final Identity NEUROOT=createRootIdentity();
 
     /**
      *  Returns the fixed Root PublicKey
@@ -283,4 +294,7 @@ public final class Identity extends SignedNamedObject {
 
     }
 
+    public static void main(String args[]){
+
+    }
 }

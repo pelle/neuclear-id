@@ -31,7 +31,7 @@ public final class NSResolver {
         String parentname = NSTools.getParentNSURI(name);
         String store = NSROOTSTORE;
         if (parentname == null || parentname.equals("neu://"))
-            return Identity.getRootIdentity();
+            return Identity.NEUROOT;
         Identity parent = resolveIdentity(parentname);
         store = parent.getRepository();
         // fetches Identity from parent Identity's Default Store

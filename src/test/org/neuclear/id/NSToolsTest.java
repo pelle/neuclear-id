@@ -1,6 +1,10 @@
 /*
-  $Id: NSToolsTest.java,v 1.3 2003/09/23 19:16:29 pelle Exp $
+  $Id: NSToolsTest.java,v 1.4 2003/09/29 23:17:32 pelle Exp $
   $Log: NSToolsTest.java,v $
+  Revision 1.4  2003/09/29 23:17:32  pelle
+  Changes to the senders. Now the senders only work with NamedObjectBuilders
+  which are the only NamedObject representations that contain full XML.
+
   Revision 1.3  2003/09/23 19:16:29  pelle
   Changed NameSpace to Identity.
   To cause less confusion in the future.
@@ -74,29 +78,13 @@ import org.neudist.utils.NeudistException;
 
 
 /**
- * @stereotype role
+ *
  * @author Pelle Braendgaard
  */
 public class NSToolsTest extends TestCase {
-    public NSToolsTest() {
-        super("NSToolsTest");
-        setUp();
-    }
 
     public NSToolsTest(String name) {
         super(name);
-    }
-
-    /**
-     */
-    protected void setUp() {
-    }
-
-    protected void tearDown() {
-    }
-
-    public static Test suite() {
-        return new TestSuite(NSToolsTest.class);
     }
 
     private static void assertValidName(String name) throws NeudistException {

@@ -5,8 +5,12 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:52:38 AM
- * $Id: SmtpSender.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
+ * $Id: SmtpSender.java,v 1.6 2003/09/29 23:17:32 pelle Exp $
  * $Log: SmtpSender.java,v $
+ * Revision 1.6  2003/09/29 23:17:32  pelle
+ * Changes to the senders. Now the senders only work with NamedObjectBuilders
+ * which are the only NamedObject representations that contain full XML.
+ *
  * Revision 1.5  2003/09/26 00:22:07  pelle
  * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
  *
@@ -45,6 +49,8 @@ package org.neuclear.senders;
  */
 
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.Named;
+import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neudist.utils.NeudistException;
 import org.neudist.utils.Utility;
 
@@ -57,7 +63,7 @@ import java.util.Date;
 import java.util.Properties;
 
 public class SmtpSender extends Sender {
-    public void send(String endpoint, SignedNamedObject obj) throws NeudistException {
+    public void send(String endpoint, NamedObjectBuilder obj) throws NeudistException {
         Properties props = System.getProperties();
         if (endpoint.startsWith("mailto:"))
             endpoint = endpoint.substring(7);
