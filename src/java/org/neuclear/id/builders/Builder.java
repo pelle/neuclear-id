@@ -2,12 +2,12 @@ package org.neuclear.id.builders;
 
 import org.dom4j.*;
 import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
+import org.neuclear.commons.crypto.signers.BrowsableSigner;
 import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.NSTools;
-import org.neuclear.id.NameResolutionException;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.xmlsec.SignedElement;
@@ -33,18 +33,21 @@ public class Builder extends SignedElement {
 
     public Builder(final Element elem) throws XMLSecurityException {
         super(elem);
-        createDocument();    }
+        createDocument();
+    }
 
-    final public SignedNamedObject convert() throws InvalidNamedObjectException{
+    final public SignedNamedObject convert() throws InvalidNamedObjectException {
 
         return VerifyingReader.getInstance().read(getElement());
     }
+
     private void createDocument() {
         final Element elem = getElement();
         if (elem.getDocument() == null) {
             final Document doc = DocumentHelper.createDocument(elem);
         }
     }
+
     /**
      * Sign NamedObject using given PrivateKey. This also adds a timestamp to the root element prior to signing
      */
@@ -52,7 +55,8 @@ public class Builder extends SignedElement {
         // We need to timestamp it before we sign it
         getElement().addAttribute(DocumentHelper.createQName("timestamp", NSTools.NS_NEUID), TimeTools.createTimeStamp());
     }
-     public Object clone() {
+
+    public Object clone() {
         try {
             final Element elem = (Element) getElement().clone();
             DocumentHelper.createDocument(elem);
@@ -62,15 +66,26 @@ public class Builder extends SignedElement {
         }
     }
 
-    public final SignedNamedObject convert(String name,Signer signer) throws  InvalidNamedObjectException {
+    public final SignedNamedObject convert(String name, Signer signer) throws InvalidNamedObjectException {
         try {
-            sign(name,signer);
+            sign(name, signer);
         } catch (XMLSecurityException e) {
-            throw new InvalidNamedObjectException("Problem in XML Sig",e);
+            throw new InvalidNamedObjectException("Problem in XML Sig", e);
         } catch (NonExistingSignerException e) {
-            throw new InvalidNamedObjectException("Can not Sign with "+name,e);
+            throw new InvalidNamedObjectException("Can not Sign with " + name, e);
         } catch (UserCancellationException e) {
-            throw new InvalidNamedObjectException("User Cancelled Signing",e);
+            throw new InvalidNamedObjectException("User Cancelled Signing", e);
+        }
+        return convert();
+    }
+
+    public final SignedNamedObject convert(BrowsableSigner signer) throws InvalidNamedObjectException {
+        try {
+            sign(signer);
+        } catch (XMLSecurityException e) {
+            throw new InvalidNamedObjectException("Problem in XML Sig", e);
+        } catch (UserCancellationException e) {
+            throw new InvalidNamedObjectException("User Cancelled Signing", e);
         }
         return convert();
     }

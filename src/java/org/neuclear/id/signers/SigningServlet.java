@@ -1,6 +1,10 @@
 /*
- * $Id: SigningServlet.java,v 1.3 2004/03/22 20:09:47 pelle Exp $
+ * $Id: SigningServlet.java,v 1.4 2004/04/12 15:00:54 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.4  2004/04/12 15:00:54  pelle
+ * Now have a slightly better way of handling the waiting for input using the WaitForInput class.
+ * This will later be put into a command queue for execution.
+ *
  * Revision 1.3  2004/03/22 20:09:47  pelle
  * Added simple ledger for unit testing and in memory use
  *
@@ -338,13 +342,13 @@ public class SigningServlet extends XMLInputStreamServlet {
         ServletTools.printHeader(out, request, getTitle());
         final String endpoint = request.getParameter("endpoint");
         final Builder named = sigreq.getUnsigned();
-        final String username = sigreq.getUserid();
+//        final String username = sigreq.getUserid();
         boolean isSigned = false;
-        if (!signer.canSignFor(username)) {
-            out.println("<h3>Can not Sign for:");
-            out.println(username);
-            out.println("</h3>");
-        }
+//        if (!signer.canSignFor(username)) {
+//            out.println("<h3>Can not Sign for:");
+//            out.println(username);
+//            out.println("</h3>");
+//        }
         out.println("<table bgcolor=\"#708070\"><tr><td><h4 style=\"color: white\">");
         if (isSigned)
             out.println("Signed Item");
@@ -369,7 +373,7 @@ public class SigningServlet extends XMLInputStreamServlet {
             out.println("<div id=\"log\" style=\"background:#003;color:#EEE\"><tt><ul><li>Signing with " + username + "...</li>");
             out.flush();
             try {
-                isSigned = sign(named, username, out);
+                isSigned = sign(named, out);
 
             } catch (InvalidNamedObjectException e) {
 //                System.out.println("<br><font color=\"red\"><b>ERROR: Invalid Identity</b></font><br>");
