@@ -9,7 +9,7 @@
 -->
 <xs:schema targetNamespace="http://neuclear.org/neu/nssign"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:neuid="http://neuclear.org/neu/neuid.xsd"
+    xmlns:id="http://neuclear.org/neu/neuid.xsd"
     xmlns:sigreq="http://neuclear.org/neu/sigreq.xsd"
     xmlns="http://neuclear.org/neu/sigreq.xsd"
     elementFormDefault="qualified" version="0.3" id="sigreq">
@@ -18,17 +18,15 @@
 
 	<xs:element name="SignatureRequest" nillable="false">
         <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="neuid:NamedObjectType">
-                    <xs:sequence>
-                        <!-- Include one element to sign -->
-                        <xs:any maxOccurs="1" minOccurs="1"/>
-                        <!-- Optional verbal Description -->
-                        <xs:element name="description" type="xs:string" maxOccurs="1"/>
-                    </xs:sequence>
-                    <xs:attribute name="href" type="xs:string"/>
-                </xs:extension>
-            </xs:complexContent>
+            <xs:sequence>
+                <!-- Include one element to sign -->
+                <xs:any maxOccurs="1" minOccurs="1"/>
+                <!-- Optional verbal Description -->
+                <xs:element name="description" type="xs:string" maxOccurs="1"/>
+                <xs:element ref="id:TargetList"/>
+                <xs:group ref="id:SignedObjectGroup" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+            <xs:attribute name="href" type="xs:string"/>
         </xs:complexType>
     </xs:element>
 

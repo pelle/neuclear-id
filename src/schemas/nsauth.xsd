@@ -11,7 +11,7 @@
 -->
 <xs:schema targetNamespace="http://neuclear.org/neu/nsauth"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:neuid="http://neuclear.org/neu/neuid.xsd"
+    xmlns:id="http://neuclear.org/neu/neuid.xsd"
     xmlns:nsauth="http://neuclear.org/neu/nsauth.xsd"
     xmlns="http://neuclear.org/neu/nsauth.xsd"
     elementFormDefault="qualified" version="0.3" id="nsauth">
@@ -19,12 +19,11 @@
 
 	<xs:element name="AuthenticationTicket" nillable="true">
         <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="neuid:NamedObjectType">
-                    <xs:attribute name="validTo" type="xs:dateTime" use="optional"/>
-                    <xs:attribute name="href" type="xs:anyURI" use="optional"/>
-                </xs:extension>
-            </xs:complexContent>
+            <xs:sequence>
+                <xs:group ref="id:SignedObjectGroup" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+            <xs:attribute name="expiry" type="xs:dateTime" use="optional"/>
+            <xs:attribute name="href" type="xs:anyURI" use="optional"/>
         </xs:complexType>
     </xs:element>
 </xs:schema>

@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- By Pelle Braendgaard (Antilles Software Ventures SA) -->
-<!--$Id: neuid.xsd,v 1.4 2004/01/08 17:15:33 pelle Exp $
+<!--$Id: neuid.xsd,v 1.5 2004/01/11 00:39:14 pelle Exp $
 $Log: neuid.xsd,v $
+Revision 1.5  2004/01/11 00:39:14  pelle
+Cleaned up the schemas even more they now all verifiy.
+The Order/Receipt pairs for neuclear pay, should now work. They all have Readers using the latest
+Schema.
+The TransferBuilders are done and the ExchangeBuilders are nearly there.
+The new EmbeddedSignedNamedObject builder is useful for creating new Receipts. The new ReceiptBuilder uses
+this to create the embedded transaction.
+ExchangeOrders now have the concept of BidItem's, you could create an ExchangeOrder bidding on various items at the same time, to be exchanged as one atomic multiparty exchange.
+Still doesnt build yet, but very close now ;-)
+
 Revision 1.4  2004/01/08 17:15:33  pelle
 Further improving the model. Removing the need for transactions to be members of NamedObject
 
@@ -34,7 +44,7 @@ Updated the Exchange and transfer orders.
 
     <xs:simpleType name="sha1">
         <xs:restriction base="xs:string">
-            <xs:pattern value='^(sha1:)?.{20}$'/>
+            <xs:pattern value='^(sha1:)?[a-zA-Z2-7]{20}$'/>
             <xs:whiteSpace value="collapse"/>
         </xs:restriction>
     </xs:simpleType>
@@ -89,8 +99,9 @@ Updated the Exchange and transfer orders.
 	<xs:complexType name="IdentityType">
         <xs:sequence>
             <xs:element ref="Repository" minOccurs="0" maxOccurs="1"/>
+            <xs:element ref="TargetList" minOccurs="0" maxOccurs="1"/>
             <xs:element ref="Allow"  minOccurs="1" maxOccurs="1"/>
-            <xs:group ref="SignedObjectGroup"/>
+            <xs:group ref="id:SignedObjectGroup" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
 	</xs:complexType>
 
