@@ -9,7 +9,14 @@ import org.neuclear.id.cache.NSCache;
 import org.neuclear.source.Source;
 
 /**
- * Secure Identity resolver
+ * Secure Identity resolver. To get an Identity object simply do:
+ * <code>
+ * Identity bob=NSResolver.resolveIdentity("neu://bob@test");
+ * </code>
+ * To resolve an arbitrary SignedNamedObject use:
+ * <code>
+ * SignedNamedObject obj=NSResolver.resolve("neu://bob@test/wicked");
+ * </code>
  */
 public final class NSResolver {
     private static final NSCache NSCACHE = NSCache.make();

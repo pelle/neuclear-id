@@ -1,7 +1,10 @@
 /*
  *
- * $Id: CachedSource.java,v 1.13 2003/11/21 04:45:14 pelle Exp $
+ * $Id: CachedSource.java,v 1.14 2003/12/04 21:50:36 pelle Exp $
  * $Log: CachedSource.java,v $
+ * Revision 1.14  2003/12/04 21:50:36  pelle
+ * Mainly documentation changes.
+ *
  * Revision 1.13  2003/11/21 04:45:14  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -106,6 +109,11 @@ import java.io.*;
 /**
  * This is a simple Cached version of the Source.
  * It can be used in front of any other Source, such as a HTTP based source to cache items locally.
+ * <p/>
+ * The items are stored in a cache folder in the users home directory called:
+ * <p/>
+ * <code>~/.neuclear/cache</code>
+ * <p>This can safely be removed at all times.
  */
 public final class CachedSource extends Source {
     public CachedSource(final Source src) {

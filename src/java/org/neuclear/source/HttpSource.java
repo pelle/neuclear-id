@@ -1,19 +1,15 @@
 package org.neuclear.source;
 
-import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.NSTools;
-import org.neuclear.id.SignedNamedObject;
-
-import java.io.InputStream;
-import java.net.URL;
-
 /**
  * (C) 2003 Antilles Software Ventures SA
  * User: pelleb
  * Date: Feb 10, 2003
  * Time: 8:35:33 PM
- * $Id: HttpSource.java,v 1.9 2003/11/21 04:45:14 pelle Exp $
+ * $Id: HttpSource.java,v 1.10 2003/12/04 21:50:36 pelle Exp $
  * $Log: HttpSource.java,v $
+ * Revision 1.10  2003/12/04 21:50:36  pelle
+ * Mainly documentation changes.
+ *
  * Revision 1.9  2003/11/21 04:45:14  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -73,6 +69,33 @@ import java.net.URL;
  * New Source model is implemented.
  * It doesnt quite verify things correctly yet. I'm not yet sure why.
  * CommandLineSigner is simplified to make it easier to use.
+ */
+
+import org.neuclear.commons.NeuClearException;
+import org.neuclear.id.NSTools;
+import org.neuclear.id.SignedNamedObject;
+
+import java.io.InputStream;
+import java.net.URL;
+
+/**
+ * Implementation of Source that uses HTTP to fetch an XMLStream from a repository on a web server.
+ * <p/>
+ * The following points apply to storing the XML on the web site:
+ * <dl>
+ * <dt>The Endpoint provided should be the root of the repository of the webserver.</dt>
+ * <dd>Such as <tt>http://repository.neuclear.org</tt> and not <tt>http://repository.neuclear.org/test/bob@</tt>
+ * <dt>The files are to be stored like this on the web server:</dt>
+ * <dd>
+ * <table border="2"><tr><th>NeuClear ID</th><th>Relative path to root of repository on web server</th></tr>
+ * <tr><td><tt>neu://</tt></td><td>./root.id</td></tr>
+ * <tr><td><tt>neu://test</tt></td><td>./test/root.id</td></tr>
+ * <tr><td><tt>neu://bob@test</tt></td><td>./test/bob@/root.id</td></tr>
+ * <tr><td><tt>neu://test/alice</tt></td><td>./test/alice/root.id</td></tr>
+ * <tr><td><tt>neu://bob@test/funds</tt></td><td>./test/bob@/funds/root.id</td></tr>
+ * </table>
+ * </dd>
+ * </dl>
  */
 public final class HttpSource extends Source {
 

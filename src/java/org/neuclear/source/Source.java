@@ -1,23 +1,15 @@
 package org.neuclear.source;
 
-import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.NSTools;
-import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.verifier.VerifyingReader;
-import org.neuclear.commons.Utility;
-import org.neuclear.xml.XMLException;
-
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * (C) 2003 Antilles Software Ventures SA
  * User: pelleb
  * Date: Feb 10, 2003
  * Time: 8:26:04 PM
- * $Id: Source.java,v 1.7 2003/11/21 04:45:14 pelle Exp $
+ * $Id: Source.java,v 1.8 2003/12/04 21:50:36 pelle Exp $
  * $Log: Source.java,v $
+ * Revision 1.8  2003/12/04 21:50:36  pelle
+ * Mainly documentation changes.
+ *
  * Revision 1.7  2003/11/21 04:45:14  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -76,11 +68,42 @@ import java.util.Map;
  * It doesnt quite verify things correctly yet. I'm not yet sure why.
  * CommandLineSigner is simplified to make it easier to use.
  */
+
+import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.Utility;
+import org.neuclear.id.NSTools;
+import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.verifier.VerifyingReader;
+import org.neuclear.xml.XMLException;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * A Source for fetching a SignedNamedObject from some specified source.
+ * Developers not writing core NeuClear services would propably prefer to use the much simpler NSResolver.
+ * 
+ * @see org.neuclear.id.resolver.NSResolver
+ */
 public abstract class Source {
     protected Source() {
         cache = new HashMap(CACHE_SIZE);
     }
 
+    /**
+     * This is the main entry point to the Source pattern. Pass it a endpoint such as a URL as well as the name of the
+     * object in mind. It operates a two level caching with verified objects in memory and raw signed object stored on
+     * disk. Currently the default implementation is @see HttpSource which fetches via http.
+     * <code>
+     * SignedNamedObject obj=Source.getInstance().fetch("http://repository.neuclear.org/","neu://test");
+     * </code>
+     * 
+     * @param endpoint 
+     * @param name     
+     * @return 
+     * @throws NeuClearException 
+     */
     public final SignedNamedObject fetch(final String endpoint, String name) throws NeuClearException {
         try {
             name = NSTools.normalizeNameURI(name);
@@ -98,7 +121,7 @@ public abstract class Source {
     }
 
     /**
-     * This gets the stream of the content from the source
+     * This gets the stream of the content from the source. Implementers should overide this and return a Stream to the Signed Unverified information.
      * 
      * @param endpoint 
      * @param name     
