@@ -18,7 +18,7 @@
     Java framework for NeuClear Distributed PKI Authentication Framework
   </description>
 
-  <url>http://neuclear.org/</url>
+  <url>http://neuclear.org/id/</url>
     <repository>
      <connection>
          scm:cvs:pserver:anonymous@cvs.neuclear.sourceforge.net:/cvsroot/neuclear:neuclear-id
@@ -29,27 +29,29 @@
   </repository>
 
   <siteAddress>neuclear.org</siteAddress>
-  <siteDirectory>/home/sites/neuclear.org/public_html/</siteDirectory>
+  <siteDirectory>/home/sites/neuclear.org/public_html/id/</siteDirectory>
   <issueTrackingUrl>http://devone.veraxpay.com:9090/</issueTrackingUrl>
-  <mailingLists>
-    <mailingList>
-      <name>NeuClear Announce</name>
-      <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-announce</subscribe>
-      <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-announce</unsubscribe>
-      <archive>http://www.geocrawler.com/redir-sf.php3?list=neuclear-announce</archive>
-    </mailingList>
-    <mailingList>
-      <name>NeuClear General</name>
-      <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-general</subscribe>
-      <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-general</unsubscribe>
-      <archive>http://www.geocrawler.com/redir-sf.php3?list=neuclear-general</archive>
-    </mailingList>
+    <mailingLists>
       <mailingList>
-        <name>NeuClear Develop</name>
-        <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-develop</subscribe>
-        <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-develop</unsubscribe>
-        <archive>http://www.geocrawler.com/redir-sf.php3?list=neuclear-develop</archive>
-      </mailingList>  </mailingLists>
+        <name>NeuClear Announce</name>
+        <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-announce</subscribe>
+        <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-announce</unsubscribe>
+        <archive>http://sourceforge.net/mailarchive/forum.php?forum=neuclear-announce</archive>
+      </mailingList>
+      <mailingList>
+        <name>NeuClear General</name>
+        <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-general</subscribe>
+        <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-general</unsubscribe>
+        <archive>http://sourceforge.net/mailarchive/forum.php?forum=neuclear-general</archive>
+      </mailingList>
+        <mailingList>
+          <name>NeuClear Develop</name>
+          <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-develop</subscribe>
+          <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-develop</unsubscribe>
+          <archive>http://sourceforge.net/mailarchive/forum.php?forum=neuclear-develop</archive>
+        </mailingList>
+    </mailingLists>
+
 
   <developers>
 

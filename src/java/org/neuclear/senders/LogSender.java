@@ -20,8 +20,12 @@ import java.sql.Timestamp;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 1:23:05 PM
- * $Id: LogSender.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
+ * $Id: LogSender.java,v 1.3 2003/09/23 19:16:28 pelle Exp $
  * $Log: LogSender.java,v $
+ * Revision 1.3  2003/09/23 19:16:28  pelle
+ * Changed NameSpace to Identity.
+ * To cause less confusion in the future.
+ *
  * Revision 1.2  2003/09/22 19:24:02  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -41,16 +45,16 @@ import java.sql.Timestamp;
  *
  * Revision 1.1  2003/02/14 21:10:34  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
- * The NamedObject has a new log() method that logs it's contents at it's parent NameSpace's logger.
- * The NameSpace object also has a new method send() which allows one to send a named object to the NameSpace's
+ * The NamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
+ * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  *
  */
 public class LogSender extends Sender {
     public void send(String endpoint, NamedObject obj) throws NeudistException {
         try {
-            String digest = URLEncoder.encode(Base64.encode(obj.getDigest()));
-            String name = URLEncoder.encode(obj.getName());
+            String digest = URLEncoder.encode(Base64.encode(obj.getDigest()), "UTF-8");
+            String name = URLEncoder.encode(obj.getName(), "UTF-8");
             URL url = new URL(Utility.denullString(endpoint, LOGGER) + "?nohtml=1&name=" + name + "&digest=" + digest);
             url.openStream();
 
@@ -82,7 +86,7 @@ public class LogSender extends Sender {
         try {
             String digest = Base64.encode(rdigest);
 //            System.out.println(digest);
-            String encdigest = URLEncoder.encode(digest);
+            String encdigest = URLEncoder.encode(digest, "UTF-8");
             URL url = null;
             url = new URL(LOGGER + "?mode=Query&nohtml=1&digest=" + encdigest);
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));

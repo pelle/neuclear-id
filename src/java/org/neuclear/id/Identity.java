@@ -1,6 +1,10 @@
 /*
- * $Id: NameSpace.java,v 1.2 2003/09/22 19:24:01 pelle Exp $
- * $Log: NameSpace.java,v $
+ * $Id: Identity.java,v 1.1 2003/09/23 19:16:26 pelle Exp $
+ * $Log: Identity.java,v $
+ * Revision 1.1  2003/09/23 19:16:26  pelle
+ * Changed NameSpace to Identity.
+ * To cause less confusion in the future.
+ *
  * Revision 1.2  2003/09/22 19:24:01  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -28,8 +32,8 @@
  *
  * Revision 1.8  2003/02/14 21:10:29  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
- * The NamedObject has a new log() method that logs it's contents at it's parent NameSpace's logger.
- * The NameSpace object also has a new method send() which allows one to send a named object to the NameSpace's
+ * The NamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
+ * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  *
  * Revision 1.7  2003/02/10 22:30:05  pelle
@@ -81,7 +85,7 @@
  * First release in new CVS structure.
  * Also first public release.
  * This implemnts simple named objects.
- * - NameSpace Objects
+ * - Identity Objects
  * - NSAuth Objects
  *
  * Storage systems
@@ -153,21 +157,21 @@ import java.security.PublicKey;
 import java.util.Iterator;
 import java.util.List;
 
-public final class NameSpace extends NamedObject {
+public final class Identity extends NamedObject {
 
 
     /**
-     * This constructor should be used by subclasses of NameSpace. It creates a Standard NameSpace document, but doesn't sign it.
+     * This constructor should be used by subclasses of Identity. It creates a Standard Identity document, but doesn't sign it.
      * The signing should be done as the last step of the constructor of the subclass.
-     * @param name The Name of NameSpace
+     * @param name The Name of Identity
      * @param allow PublicKey allowed to sign in here
-     * @param repository URL of Default Store for NameSpace. (Note. A NameSpace object is stored in the default repository of it's parent namespace)
+     * @param repository URL of Default Store for Identity. (Note. A Identity object is stored in the default repository of it's parent namespace)
      * @param signer URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
      * @param receiver URL of default receiver for namespace
      * @throws NeudistException
      */
-    public NameSpace(String name, PublicKey allow, String repository, String signer, String logger, String receiver) throws NeudistException {
-        super(name, "NameSpace");
+    public Identity(String name, PublicKey allow, String repository, String signer, String logger, String receiver) throws NeudistException {
+        super(name, "Identity");
 
         Element root = getElement();
         // We have meaningful defaults for the following two
@@ -193,28 +197,28 @@ public final class NameSpace extends NamedObject {
         }
     }
 
-    public NameSpace(String name, PublicKey allow, String repository) throws NeudistException {
+    public Identity(String name, PublicKey allow, String repository) throws NeudistException {
         this(name, allow, repository, null, null, null);
     }
 
-    public NameSpace(String name, PublicKey allow) throws NeudistException {
+    public Identity(String name, PublicKey allow) throws NeudistException {
         this(name, allow, null);
     }
 
     /**
-     * This constructor should be used by subclasses of NameSpace. It creates a Standard NameSpace document, but doesn't sign it.
+     * This constructor should be used by subclasses of Identity. It creates a Standard Identity document, but doesn't sign it.
      * The signing should be done as the last step of the constructor of the subclass.
      */
 /*
-   protected NameSpace(String name) throws NeudistException {
-        super(name,"NameSpace");
+   protected Identity(String name) throws NeudistException {
+        super(name,"Identity");
    }
 */
 
     /**
-     * Builds a NameSpace from an XML Document.
+     * Builds a Identity from an XML Document.
      */
-    public NameSpace(Element nsElem) throws NeudistException/*,KeyResolverException*/ {
+    public Identity(Element nsElem) throws NeudistException/*,KeyResolverException*/ {
         super(nsElem);
         try {
             Element ns = getElement();
@@ -284,7 +288,7 @@ public final class NameSpace extends NamedObject {
     }
 
     public String getTagName() {
-        return "NameSpace";
+        return "Identity";
     }
 
     private String repository;

@@ -1,6 +1,10 @@
 /*
- * $Id: Asset.java,v 1.2 2003/09/22 19:24:01 pelle Exp $
+ * $Id: Asset.java,v 1.3 2003/09/23 19:16:26 pelle Exp $
  * $Log: Asset.java,v $
+ * Revision 1.3  2003/09/23 19:16:26  pelle
+ * Changed NameSpace to Identity.
+ * To cause less confusion in the future.
+ *
  * Revision 1.2  2003/09/22 19:24:01  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -16,8 +20,8 @@
  *
  * Revision 1.6  2003/02/14 21:10:32  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
- * The NamedObject has a new log() method that logs it's contents at it's parent NameSpace's logger.
- * The NameSpace object also has a new method send() which allows one to send a named object to the NameSpace's
+ * The NamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
+ * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  *
  * Revision 1.5  2003/02/10 22:30:10  pelle
@@ -80,7 +84,7 @@ public class Asset extends NamedObject implements Receiver {
     }
 
     /**
-     * @return the XML NameSpace object
+     * @return the XML Identity object
      */
     public Namespace getNS() {
         return NS_NSASSET;

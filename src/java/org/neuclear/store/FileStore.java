@@ -1,6 +1,10 @@
 /*
- * $Id: FileStore.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
+ * $Id: FileStore.java,v 1.3 2003/09/23 19:16:29 pelle Exp $
  * $Log: FileStore.java,v $
+ * Revision 1.3  2003/09/23 19:16:29  pelle
+ * Changed NameSpace to Identity.
+ * To cause less confusion in the future.
+ *
  * Revision 1.2  2003/09/22 19:24:02  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -48,7 +52,7 @@
  * First release in new CVS structure.
  * Also first public release.
  * This implemnts simple named objects.
- * - NameSpace Objects
+ * - Identity Objects
  * - NSAuth Objects
  *
  * Storage systems
@@ -134,7 +138,7 @@ public class FileStore extends Store {
         XMLTools.writeFile(outputFile, obj.getElement());
     }
 
-//    public void store(Document doc) throws InvalidNameSpaceException,IOException {
+//    public void store(Document doc) throws InvalidIdentityException,IOException {
 //        store(new NSDLObject(doc));
 //    }
 
@@ -172,7 +176,7 @@ public class FileStore extends Store {
 
     protected static String getFileName(NamedObject obj) throws NeudistException {
         return getFileName(obj.getName());
-//        if (! (obj instanceof NameSpace))
+//        if (! (obj instanceof Identity))
 //            return obj.getName();
 //        else if (obj.getName().equals("/")||obj.getName().equals(""))
 //            return "/root.id";

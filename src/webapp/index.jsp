@@ -38,7 +38,7 @@
 //        }
 
         if (ticket!=null){
-            if (ticket.isNameValid()) {
+            if (true /*ticket. isNameValid()*/) {//TODO Que pasa aca?
                 loggedin=true;
                 userns=NSTools.getParentNSURI(ticket.getName());
             }  else {

@@ -1,8 +1,8 @@
 package org.neuclear.id.verifier;
 
-import org.neuclear.id.InvalidNameSpaceException;
+import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.NSTools;
-import org.neuclear.id.NameSpace;
+import org.neuclear.id.Identity;
 import org.neuclear.id.NamedObject;
 import org.neuclear.id.resolver.NSResolver;
 import org.neudist.crypto.CryptoTools;
@@ -21,7 +21,7 @@ public final class NSVerifier {
 
     /**
      * We first check if the name is syntactically correct.
-     * Then we check if it is a toplevel NameSpace.
+     * Then we check if it is a toplevel Identity.
      * If it is we check if the objects signature matches the toplevel namespace
      * We check if the parent is valid
      * We check if this object is allowed within the parents namespace
@@ -34,16 +34,16 @@ public final class NSVerifier {
 
         if (parentName.equals("neu://")) {
             boolean valid = obj.verifySignature(getRootPK());
-//            if (valid && obj instanceof NameSpace)
-//                NSResolver.NSCACHE.cache((NameSpace)obj);
+//            if (valid && obj instanceof Identity)
+//                NSResolver.NSCACHE.cache((Identity)obj);
             return valid;
         }
 
         // Allright we need to do this the hard way
-        NameSpace parent = null;
+        Identity parent = null;
         try {
             parent = NSResolver.resolveNameSpace(parentName);
-        } catch (InvalidNameSpaceException e) {
+        } catch (InvalidIdentityException e) {
             return false;
         }
 
@@ -51,8 +51,8 @@ public final class NSVerifier {
         //if (parent==null&&getName().equals("neu://")) return true;
 
         boolean valid = (parent != null && parent.postAllowed(obj));
-//        if (valid && obj instanceof NameSpace)
-//            NSResolver.NSCACHE.cache((NameSpace)obj);
+//        if (valid && obj instanceof Identity)
+//            NSResolver.NSCACHE.cache((Identity)obj);
         return valid;
     }
 

@@ -1,5 +1,9 @@
-/* $Id: CommandLineSigner.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.3 2003/09/23 19:16:28 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.3  2003/09/23 19:16:28  pelle
+ * Changed NameSpace to Identity.
+ * To cause less confusion in the future.
+ *
  * Revision 1.2  2003/09/22 19:24:02  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -26,8 +30,8 @@
  *
  * Revision 1.10  2003/02/14 21:10:35  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
- * The NamedObject has a new log() method that logs it's contents at it's parent NameSpace's logger.
- * The NameSpace object also has a new method send() which allows one to send a named object to the NameSpace's
+ * The NamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
+ * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  *
  * Revision 1.9  2003/02/14 05:10:13  pelle
@@ -104,7 +108,7 @@ package org.neuclear.signers.commandline;
 import org.apache.commons.cli.*;
 import org.dom4j.Document;
 import org.neuclear.id.NSTools;
-import org.neuclear.id.NameSpace;
+import org.neuclear.id.Identity;
 import org.neuclear.id.NamedObject;
 import org.neuclear.id.NamedObjectFactory;
 import org.neuclear.id.resolver.NSResolver;
@@ -123,7 +127,7 @@ import java.security.cert.Certificate;
 
 /**
  * @author pelleb
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  **/
 public class CommandLineSigner {
 
@@ -191,7 +195,7 @@ public class CommandLineSigner {
                     newkid = cert.getPublicKey();
                 } else
                     newkid = ks.getCertificate(alias).getPublicKey(); //Self Sign
-                subject = new NameSpace(namespace, newkid, defaultstore, defaultsigner, defaultlogger, defaultreceiver);
+                subject = new Identity(namespace, newkid, defaultstore, defaultsigner, defaultlogger, defaultreceiver);
 
             }
 
@@ -249,10 +253,10 @@ public class CommandLineSigner {
         options.addOption("o", "outputfile", true, "specify Output File");
         options.addOption("n", "name", true, "specify name of new object");
         options.addOption("w", "allow", true, "specify alias of owner of new namespace");
-        options.addOption("r", "defaultrepository", true, "NameSpace's default Repository");
-        options.addOption("i", "defaultsigner", true, "NameSpace's default Interactive Signer");
-        options.addOption("l", "defaultlogger", true, "NameSpace's default Logging Service");
-        options.addOption("b", "defaultreceiver", true, "NameSpace's default Receiver");
+        options.addOption("r", "defaultrepository", true, "Identity's default Repository");
+        options.addOption("i", "defaultsigner", true, "Identity's default Interactive Signer");
+        options.addOption("l", "defaultlogger", true, "Identity's default Logging Service");
+        options.addOption("b", "defaultreceiver", true, "Identity's default Receiver");
 
 
         return options;

@@ -1,8 +1,19 @@
 /*
- * $Id: NSCommandLine.java,v 1.1 2003/09/19 14:40:59 pelle Exp $
+ * $Id: NSCommandLine.java,v 1.2 2003/09/23 19:16:27 pelle Exp $
  * $Log: NSCommandLine.java,v $
- * Revision 1.1  2003/09/19 14:40:59  pelle
- * Initial revision
+ * Revision 1.2  2003/09/23 19:16:27  pelle
+ * Changed NameSpace to Identity.
+ * To cause less confusion in the future.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:40:59  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.4  2003/02/10 22:30:04  pelle
  * Got rid of even further dependencies. In Particular OSCore
@@ -19,7 +30,7 @@
  * First release in new CVS structure.
  * Also first public release.
  * This implemnts simple named objects.
- * - NameSpace Objects
+ * - Identity Objects
  * - NSAuth Objects
  *
  * Storage systems
@@ -127,7 +138,7 @@ public class NSCommandLine {
 
             String baseURI = "neu:/"+name;
 
-            NameSpace id=new NameSpace(baseURI,CryptoTools.getKeyPair(ks,signer,password.toCharArray()),
+            Identity id=new Identity(baseURI,CryptoTools.getKeyPair(ks,signer,password.toCharArray()),
                     //CryptoTools.getKeyPair(ks,"bob",password.toCharArray()),
                     ks.getCertificate(allowed[0]).getPublicKey());
             Store st=new CachedStore(new FileStore(outputPath));

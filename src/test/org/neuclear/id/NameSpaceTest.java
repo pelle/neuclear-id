@@ -1,6 +1,10 @@
 /*
-  $Id: NameSpaceTest.java,v 1.2 2003/09/19 14:54:43 pelle Exp $
+  $Id: NameSpaceTest.java,v 1.3 2003/09/23 19:16:29 pelle Exp $
   $Log: NameSpaceTest.java,v $
+  Revision 1.3  2003/09/23 19:16:29  pelle
+  Changed NameSpace to Identity.
+  To cause less confusion in the future.
+
   Revision 1.2  2003/09/19 14:54:43  pelle
   Bumped version to 0.7
   Changed the logo to the neuclear logo
@@ -59,7 +63,7 @@
   First release in new CVS structure.
   Also first public release.
   This implemnts simple named objects.
-  - NameSpace Objects
+  - Identity Objects
   - NSAuth Objects
 
   Storage systems
@@ -174,9 +178,9 @@ public class NameSpaceTest extends TestCase  {
             ks.load(in,"neuclear".toCharArray());
             test= (RSAPrivateKey)ks.getKey("neu://test","neuclear".toCharArray());
 //
-//            NameSpace neuBob=createNeuBob();
-//            NameSpace neuAlice=new NameSpace("neu://alice",root,alice.getPublic());
-//            NameSpace neuBobAlice=new NameSpace("neu://bob/alice",bob,alice.getPublic());
+//            Identity neuBob=createNeuBob();
+//            Identity neuAlice=new Identity("neu://alice",root,alice.getPublic());
+//            Identity neuBobAlice=new Identity("neu://bob/alice",bob,alice.getPublic());
 
 
 //            neuspace=new MemoryStore();
@@ -194,20 +198,20 @@ public class NameSpaceTest extends TestCase  {
     }
 
 /*
-    private NameSpace createNeuRoot() throws NeudistException {
-        return null;//new NameSpace("neu://",root,root.getPublic());
+    private Identity createNeuRoot() throws NeudistException {
+        return null;//new Identity("neu://",root,root.getPublic());
     }
-    private NameSpace createNeuBob() throws NeudistException {
-        return  null;//new NameSpace("neu://bob",root,bob.getPublic());
+    private Identity createNeuBob() throws NeudistException {
+        return  null;//new Identity("neu://bob",root,bob.getPublic());
     }
-    private NameSpace createNeuAlice() throws NeudistException {
-        return null;// new NameSpace("neu://alice",root,alice.getPublic());
+    private Identity createNeuAlice() throws NeudistException {
+        return null;// new Identity("neu://alice",root,alice.getPublic());
     }
-    private NameSpace createNeuBobAlice() throws NeudistException {
-        return null;// new NameSpace("neu://bob/alice",bob,alice.getPublic());
+    private Identity createNeuBobAlice() throws NeudistException {
+        return null;// new Identity("neu://bob/alice",bob,alice.getPublic());
     }
-    private NameSpace createNeuEvilEve() throws NeudistException {
-        return null;// new NameSpace("neu://eve",eve,eve.getPublic());
+    private Identity createNeuEvilEve() throws NeudistException {
+        return null;// new Identity("neu://eve",eve,eve.getPublic());
     }
 */
 
@@ -228,8 +232,8 @@ public class NameSpaceTest extends TestCase  {
 		return new TestSuite(NameSpaceTest.class);
 	}
 
- /*   public void testCreateRoot() throws NeudistException, InvalidNameSpaceException{
-      NameSpace neuRoot=createNeuRoot();
+ /*   public void testCreateRoot() throws NeudistException, InvalidIdentityException{
+      Identity neuRoot=createNeuRoot();
       Store neuspace=new MemoryStore();
       neuspace.receive(neuRoot);
       assertNotNull("Test that we can add a root",neuRoot);
@@ -237,23 +241,23 @@ public class NameSpaceTest extends TestCase  {
 */
 /*
 
-    public void testCreateChild() throws NeudistException, InvalidNameSpaceException{
+    public void testCreateChild() throws NeudistException, InvalidIdentityException{
       MemoryStore neuspace=new MemoryStore();
-      NameSpace neuBob=new NameSpace("neu://test/bob",bob.getPublic());
+      Identity neuBob=new Identity("neu://test/bob",bob.getPublic());
       neuBob.sign(test);
       neuspace.receive(neuBob);
       assertNotNull("Test that we can add Bob under the root",neuBob);
 
     }
 
-    public void testCreateInvalidChild() throws NeudistException, InvalidNameSpaceException{
+    public void testCreateInvalidChild() throws NeudistException, InvalidIdentityException{
             MemoryStore neuspace=new MemoryStore();
-            NameSpace neuEve=new NameSpace("neu://test/eve",eve.getPublic());
+            Identity neuEve=new Identity("neu://test/eve",eve.getPublic());
             neuEve.sign(eve.getPrivate());
             boolean success=false;
             try {
                 neuspace.receive(neuEve);
-            } catch (InvalidNameSpaceException e) {
+            } catch (InvalidIdentityException e) {
                 success=true;
             }
             assertTrue("Test that we cant add Eve's selfsigned Neu under the root",success);

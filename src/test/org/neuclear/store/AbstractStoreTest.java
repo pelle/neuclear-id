@@ -1,6 +1,10 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.2 2003/09/22 19:24:03 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.3 2003/09/23 19:16:29 pelle Exp $
   $Log: AbstractStoreTest.java,v $
+  Revision 1.3  2003/09/23 19:16:29  pelle
+  Changed NameSpace to Identity.
+  To cause less confusion in the future.
+
   Revision 1.2  2003/09/22 19:24:03  pelle
   More fixes throughout to problems caused by renaming.
 
@@ -50,7 +54,7 @@
   First release in new CVS structure.
   Also first public release.
   This implemnts simple named objects.
-  - NameSpace Objects
+  - Identity Objects
   - NSAuth Objects
 
   Storage systems
@@ -85,7 +89,7 @@
 package org.neuclear.store;
 
 import junit.framework.TestCase;
-import org.neuclear.id.InvalidNameSpaceException;
+import org.neuclear.id.InvalidIdentityException;
 import org.neudist.utils.NeudistException;
 
 import java.security.GeneralSecurityException;
@@ -131,16 +135,16 @@ public abstract class AbstractStoreTest extends TestCase {
     }
 
 
-    public void testStore() throws NeudistException, InvalidNameSpaceException {
+    public void testStore() throws NeudistException, InvalidIdentityException {
         System.out.println("\nTesting " + this.getClass().getName());
 //                System.out.println("Storing "+rootName);
-//                store.receive(new NameSpace(rootName,root,root.getPublic()));
+//                store.receive(new Identity(rootName,root,root.getPublic()));
 //                System.out.println("Storing "+bobName);
-//                store.receive(new NameSpace(bobName,root,bob.getPublic()));
+//                store.receive(new Identity(bobName,root,bob.getPublic()));
 //                System.out.println("Storing "+bobAliceName);
-//                store.receive(new NameSpace(bobAliceName,bob,alice.getPublic()));
+//                store.receive(new Identity(bobAliceName,bob,alice.getPublic()));
 //                System.out.println("Storing "+eveName);
-//                store.receive(new NameSpace(eveName,root,eve.getPublic()));
+//                store.receive(new Identity(eveName,root,eve.getPublic()));
 //                System.out.println("Fetching "+rootName);
 //                NamedObject nobj1=store.fetch(rootName);
 //                assertEquals(NSTools.normalizeNameURI(rootName),nobj1.getName());

@@ -1,6 +1,10 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.3 2003/09/23 19:16:29 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
+ * Revision 1.3  2003/09/23 19:16:29  pelle
+ * Changed NameSpace to Identity.
+ * To cause less confusion in the future.
+ *
  * Revision 1.2  2003/09/22 19:24:02  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -63,7 +67,7 @@
  * First release in new CVS structure.
  * Also first public release.
  * This implemnts simple named objects.
- * - NameSpace Objects
+ * - Identity Objects
  * - NSAuth Objects
  *
  * Storage systems

@@ -2,50 +2,11 @@
 <document>
 
 	<properties>
-		<title>NeuDist.org</title>
+		<title>NeuClear/Identity</title>
 		<author email="pelle@neubia.com">Pelle Braendgaard</author>
 	</properties>
 
 	<body>
-        <section name="Restructuring of NeuDist">
-            <p>
-                After much thinking and talking to colleagues I'm restructuring NeuDist and changing it's focus a bit.
-                From now on NeuDist will essentially be an XML based PKI and identity system. All the parts of NeuDist that have
-                to do with financial clearing and financial systems have been moved to <a href="http://neuclear.org">NeuClear</a>.
-            </p>
-            <p>
-                NeuDist it self will be split into several projects. The first being <a href="/xmlsig/">NeuDist-XMLSig</a>. This is our
-                homegrown XML Signature implementation, which will now be carried out as a seperate project.
-            </p>
-        </section>
-        <section name="New NeuDist Framework Release 0.40">
-            <p>
-                [October 3rd, 2002] New Release 0.40 is available. This is the first version I would say is ready for live applications.
-                You can try out an <a href="http://neudist.org:8080/neudistframework/">example user authentication application here</a>.
-            </p>
-            <p>
-                Because things are moving quite fast right now, I recommend downloading via CVS rather than the distribution files. However if you just want to peak at
-                the source code go ahead.
-            </p>
-        </section>
-        <section name="Register Your Own NameSpaces">
-            <p>
-                We are just getting the infrastructure in place to allow anyone to register namespaces.
-                To make it simple for people to understand, you will be able to register permanent namespaces (NEU's) for
-                you existing domain names. Initially any request coming from a .com,.net and .org domain will be registered for free.
-                To help finance the development we will start charging for non opensource domains soon. Prices will be quite low.
-                You can then have any number of namespaces under it. eg. Our domain name neudist.org has a NEU registered as neu://org/neudist.
-                </p>
-            <p>
-                Top level namespaces will be auctioned off. Starting fairly soon. We will initially control neu://neu, neu://test,
-                neu://com, neu://org, neu://net . Anything else will be available for sale to help fund our development.
-            </p>
-            <p>
-                You can create your own namespaces in the neu://test free for all namespace. The key for signing new test namespaces
-                is in CVS. You can use the org.neuclear.signers.commandline.CommandLineSigner class to create and sign new sub namespaces using
-                that key. We are in the process of simplifying this process a bit and wrapping it in shell and .bat file wrappers.
-            </p>
-        </section>
 		<section name="Introduction">
 			<p>
 				NeuDist is an Open Source software framework written to support the Neubia project for Distributed Transaction Clearing. The initial version is

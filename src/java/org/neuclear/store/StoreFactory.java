@@ -1,8 +1,19 @@
 /*
- * $Id: StoreFactory.java,v 1.1 2003/09/19 14:41:22 pelle Exp $
+ * $Id: StoreFactory.java,v 1.2 2003/09/23 19:16:29 pelle Exp $
  * $Log: StoreFactory.java,v $
- * Revision 1.1  2003/09/19 14:41:22  pelle
- * Initial revision
+ * Revision 1.2  2003/09/23 19:16:29  pelle
+ * Changed NameSpace to Identity.
+ * To cause less confusion in the future.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:41:22  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.3  2003/02/18 14:57:35  pelle
  * Finished Cleaning up Receivers and Stores.
@@ -16,7 +27,7 @@
  * First release in new CVS structure.
  * Also first public release.
  * This implemnts simple named objects.
- * - NameSpace Objects
+ * - Identity Objects
  * - NSAuth Objects
  *
  * Storage systems

@@ -1,6 +1,10 @@
 /*
- * $Id: Store.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
+ * $Id: Store.java,v 1.3 2003/09/23 19:16:29 pelle Exp $
  * $Log: Store.java,v $
+ * Revision 1.3  2003/09/23 19:16:29  pelle
+ * Changed NameSpace to Identity.
+ * To cause less confusion in the future.
+ *
  * Revision 1.2  2003/09/22 19:24:02  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -73,7 +77,7 @@
  * First release in new CVS structure.
  * Also first public release.
  * This implemnts simple named objects.
- * - NameSpace Objects
+ * - Identity Objects
  * - NSAuth Objects
  *
  * Storage systems
@@ -113,7 +117,7 @@
  */
 package org.neuclear.store;
 
-import org.neuclear.id.InvalidNameSpaceException;
+import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.NamedObject;
 import org.neuclear.id.verifier.NSVerifier;
 import org.neuclear.receiver.Receiver;
@@ -126,17 +130,17 @@ abstract public class Store implements Receiver {
     //protected Store(Store store)
 
     /**
-     *  This handles the NameSpace checking on the object.
+     *  This handles the Identity checking on the object.
      */
-    public final void receive(NamedObject obj) throws InvalidNameSpaceException, NeudistException {
+    public final void receive(NamedObject obj) throws InvalidIdentityException, NeudistException {
         try {
             // Dont allow overwrites
             //TODO: Implement versioning
 //            if (fetch(obj.getName())!=null)
-//                throw new InvalidNameSpaceException("The name: "+obj.getName()+" already exists");
+//                throw new InvalidIdentityException("The name: "+obj.getName()+" already exists");
 
             if (!NSVerifier.isNameValid(obj))
-                throw new InvalidNameSpaceException("The name: " + obj.getName() + " is not allowed");
+                throw new InvalidIdentityException("The name: " + obj.getName() + " is not allowed");
             rawStore(obj);
             if (next != null)
                 next.receive(obj);
@@ -144,8 +148,8 @@ abstract public class Store implements Receiver {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//            if (e instanceof InvalidNameSpaceException)
-//                throw (InvalidNameSpaceException)e;
+//            if (e instanceof InvalidIdentityException)
+//                throw (InvalidIdentityException)e;
 //            else if(e instanceof NeudistException)
 //                throw (NeudistException)e;
 //            else

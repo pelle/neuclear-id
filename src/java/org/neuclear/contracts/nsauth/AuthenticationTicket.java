@@ -11,7 +11,7 @@ package org.neuclear.contracts.nsauth;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
-import org.neuclear.id.NameSpace;
+import org.neuclear.id.Identity;
 import org.neuclear.id.NamedObject;
 import org.neuclear.id.NamedObjectFactory;
 import org.neuclear.id.signrequest.SignatureRequest;
@@ -26,7 +26,7 @@ import java.util.Date;
 
 /**
  * This Authentication Ticket is used by websites to authenticate a user.
- * It generates a unique Name in the users NameSpace, which the user then signs.
+ * It generates a unique Name in the users Identity, which the user then signs.
  */
 public class AuthenticationTicket extends NamedObject {
     /**
@@ -39,7 +39,7 @@ public class AuthenticationTicket extends NamedObject {
      *</pre>
      *
      * @param user The Users namespace eg: neu://test/bob
-     * @param requester The requesters NameSpace eg. neu://site/neubay
+     * @param requester The requesters Identity eg. neu://site/neubay
      * @param validity The validity of the ticket in Milliseconds
      * @param siteurl URL for interactive signing service to send user to after signing.
      */
@@ -48,7 +48,7 @@ public class AuthenticationTicket extends NamedObject {
 
         NamedObject userns = NamedObjectFactory.fetchNamedObject(user);
 
-        if (userns == null || (!(userns instanceof NameSpace)) || (Utility.isEmpty(((NameSpace) userns).getSigner())))
+        if (userns == null || (!(userns instanceof Identity)) || (Utility.isEmpty(((Identity) userns).getSigner())))
             throw new NeudistException("The provided namespace: " + user + " doesnt exist or doesnt allow interactive signing");
         Element root = getElement();
         if (validity >= 0)
@@ -127,7 +127,7 @@ public class AuthenticationTicket extends NamedObject {
     }
 
     /**
-     * @return the XML NameSpace object
+     * @return the XML Identity object
      */
     public Namespace getNS() {
         return NS_NSAUTH;

@@ -1,6 +1,10 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.3 2003/09/23 19:16:29 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.3  2003/09/23 19:16:29  pelle
+ * Changed NameSpace to Identity.
+ * To cause less confusion in the future.
+ *
  * Revision 1.2  2003/09/22 19:24:02  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -27,8 +31,8 @@
  *
  * Revision 1.5  2003/02/14 21:10:36  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
- * The NamedObject has a new log() method that logs it's contents at it's parent NameSpace's logger.
- * The NameSpace object also has a new method send() which allows one to send a named object to the NameSpace's
+ * The NamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
+ * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  *
  * Revision 1.4  2003/02/14 14:04:59  pelle
@@ -98,9 +102,9 @@
  */
 package org.neuclear.signers.servlet;
 
-import org.neuclear.id.InvalidNameSpaceException;
+import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.NSTools;
-import org.neuclear.id.NameSpace;
+import org.neuclear.id.Identity;
 import org.neudist.crypto.signerstores.SignerStore;
 import org.neudist.crypto.signerstores.SimpleSignerStore;
 import org.neudist.utils.NeudistException;
@@ -116,7 +120,7 @@ import java.security.interfaces.RSAPrivateKey;
 public class DemoSigningServlet extends SigningServlet {
 
     private void buildTree() throws GeneralSecurityException, NeudistException, IOException {
-        System.out.println("NEUDIST: Creating NameSpace Tree");
+        System.out.println("NEUDIST: Creating Identity Tree");
         kpg = KeyPairGenerator.getInstance("RSA");
         kpg.initialize(2048, new SecureRandom("Cartagena".getBytes()));
 
@@ -134,11 +138,11 @@ public class DemoSigningServlet extends SigningServlet {
 
     private void createNS(String name, String newPassword, PrivateKey signer) throws IOException, NeudistException, GeneralSecurityException {
         name = NSTools.normalizeNameURI(name);
-        System.out.println("NEUDIST: Generating key and NameSpace for: " + name);
+        System.out.println("NEUDIST: Generating key and Identity for: " + name);
         KeyPair kp = kpg.generateKeyPair();
         ((SimpleSignerStore) getKeyStore()).addKey(name, newPassword.toCharArray(), kp.getPrivate());
-        System.out.println("NEUDIST: Creating NameSpace");
-        NameSpace ns = new NameSpace(name, kp.getPublic(), "http://neuclear.org:8080/neudistframework/Store", "http://neuclear.org:8080/neudistframework/Signer", "http://neuclear.org:8080/neudistframework/Logger", "");//TODO Fix these values
+        System.out.println("NEUDIST: Creating Identity");
+        Identity ns = new Identity(name, kp.getPublic(), "http://neuclear.org:8080/neudistframework/Store", "http://neuclear.org:8080/neudistframework/Signer", "http://neuclear.org:8080/neudistframework/Logger", "");//TODO Fix these values
 //        id.addTarget(new TargetReference(id,,"store"));
         System.out.println("NEUDIST: Signing");
         ns.sign(signer);
@@ -148,8 +152,8 @@ public class DemoSigningServlet extends SigningServlet {
 //            id.store();
 //            getStore().receive(id);//Test locally first
             ns.sendObject();
-        } catch (InvalidNameSpaceException e) {
-            System.out.println("NEUDIST: NameSpace Error: " + e.getLocalizedMessage());
+        } catch (InvalidIdentityException e) {
+            System.out.println("NEUDIST: Identity Error: " + e.getLocalizedMessage());
         }
     }
 

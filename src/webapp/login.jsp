@@ -5,7 +5,7 @@
                  org.neudist.xml.xmlsec.XMLSecTools,
                 org.neuclear.id.targets.TargetReference,
                 org.neudist.utils.ServletTools,
-                org.neuclear.id.NameSpace,
+                org.neuclear.id.Identity,
                 org.neuclear.id.NamedObjectFactory,
                 org.neudist.utils.NeudistException,
                 org.neuclear.id.signrequest.SignatureRequest"%>
@@ -15,7 +15,7 @@
     String siteurl=ServletTools.getAbsoluteURL(request,"/");
     String userns=request.getParameter("namespace");
     if (Utility.isEmpty(userns)) {
-        response.sendError(500,"No NameSpace");
+        response.sendError(500,"No Identity");
         response.flushBuffer();
         return;
     }
@@ -55,7 +55,7 @@ NeuDist Login
 </title></head>
 <body>
 <h3>contacting signing service...</h3>
-<form action="<%=((NameSpace)NamedObjectFactory.fetchNamedObject(userns)).getSigner()%>" method="POST">
+<form action="<%=((Identity)NamedObjectFactory.fetchNamedObject(userns)).getSigner()%>" method="POST">
     <input name="base64xml" value="<%=XMLSecTools.encodeElementBase64(auth.getElement())%>" type="hidden">
     <input name="endpoint" value="<%=siteurl%>" type="hidden"/>
 </form>

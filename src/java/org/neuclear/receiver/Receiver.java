@@ -6,8 +6,12 @@ package org.neuclear.receiver;
  * Date: Oct 10, 2002
  * Time: 11:24:59 PM
  * To change this template use Options | File Templates.
- * $Id: Receiver.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
+ * $Id: Receiver.java,v 1.3 2003/09/23 19:16:28 pelle Exp $
  * $Log: Receiver.java,v $
+ * Revision 1.3  2003/09/23 19:16:28  pelle
+ * Changed NameSpace to Identity.
+ * To cause less confusion in the future.
+ *
  * Revision 1.2  2003/09/22 19:24:02  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -28,7 +32,7 @@ package org.neuclear.receiver;
  *
  */
 
-import org.neuclear.id.InvalidNameSpaceException;
+import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.NamedObject;
 import org.neudist.utils.NeudistException;
 
@@ -43,8 +47,8 @@ public interface Receiver {
      * Remember you must check the validity of the NamedObject here. Until you do so
      * you can not trust it.
      * @param obj
-     * @throws InvalidNameSpaceException
+     * @throws InvalidIdentityException
      * @throws NeudistException
      */
-    void receive(NamedObject obj) throws InvalidNameSpaceException, NeudistException;
+    void receive(NamedObject obj) throws InvalidIdentityException, NeudistException;
 }

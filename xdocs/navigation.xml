@@ -1,22 +1,20 @@
 <project name="neudist" repository="neudist" href="http://neudist.org">
 
-	<title>NeuDist - Distributed Clearing System</title>
+	<title>NeuClear - Distributed Clearing System</title>
 
 	<body>
 		<links>
 <!--            <item name="NeuDist Live!" href="http://neudist.org:8080/neudistframework/"/>-->
-			<item name="NeuDist" href="http://neudist.org/index.html"/>
             <item name="NeuClear" href="http://neuclear.org/index.html"/>
 <!--            <item name="NeuWiki" href="http://neudist.org:8080/neuwiki/"/>-->
-			<item name="Neubia" href="http://neubia.com"/>
 			<item name="Talk.org" href="http://talk.org"/>
-			<item name="SourceForge" href="http://sourceforge.net/projects/neudist/"/>
+			<item name="SourceForge" href="http://sourceforge.net/projects/neuclear/"/>
 		</links>
-		<menu name="NeuDist">
+		<menu name="NeuClear">
 			<item name="Front Page"            href="/index.html"/>
             <item name="Overview"            href="/overview.html"/>
             <item name="SubProjects" href="/subprojects.html">
-                <item name="XMLSignature Library" href="/xmlsig/index.html"/>
+                <item name="XMLSignature Library" href="http://www.neudist.org/xmlsig/index.html"/>
             </item>
             <item name="Use Cases" href="/usecases/index.html">
  <!--               <item name="Consumer to Business" href="/usecases/usecase-c2b.html"/>
@@ -32,8 +30,7 @@
 <!--            <item name="Live Application" href="http://neudist.org:8080/neudistframework/"/>-->
             <item name="Installation" href="/installation.html"/>
             <item name="Credits and Dependencies" href="/credits.html"/>
-			<item name="Downloads" href="http://sourceforge.net/project/showfiles.php?group_id=9652"/>
-			<item name="SourceForge" href="http://sourceforge.net/projects/neudist/"/>
+			<item name="SourceForge" href="http://sourceforge.net/projects/neuclear/"/>
 		</menu>
 	</body>
 

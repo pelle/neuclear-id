@@ -1,6 +1,10 @@
 /*
- * $Id: NSTools.java,v 1.2 2003/09/22 19:24:01 pelle Exp $
+ * $Id: NSTools.java,v 1.3 2003/09/23 19:16:27 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.3  2003/09/23 19:16:27  pelle
+ * Changed NameSpace to Identity.
+ * To cause less confusion in the future.
+ *
  * Revision 1.2  2003/09/22 19:24:01  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -16,8 +20,8 @@
  *
  * Revision 1.11  2003/02/14 21:10:28  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
- * The NamedObject has a new log() method that logs it's contents at it's parent NameSpace's logger.
- * The NameSpace object also has a new method send() which allows one to send a named object to the NameSpace's
+ * The NamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
+ * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  *
  * Revision 1.10  2003/02/14 14:04:28  pelle
@@ -134,7 +138,7 @@ public final class NSTools {
     }
 
     /**
-     * Returns the URI of the parent NameSpace for a given NEU Name
+     * Returns the URI of the parent Identity for a given NEU Name
      * @param name a valid NEU Name
      * @return Parent URI or null if name is the root
      * @throws NeudistException if name is invalid

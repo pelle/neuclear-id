@@ -34,7 +34,7 @@ public class SignatureRequest extends NamedObject {
      * &lt;/nsauth:AuthenticationTicket&gt;
      *</pre>
      *
-     * @param reqNameSpace The requesters NameSpace eg. neu://site/neubay
+     * @param reqNameSpace The requesters Identity eg. neu://site/neubay
      * @param target URL for interactive signing service to send user to after signing.
      * @param payload the NamedObject to request signing
      */
@@ -110,7 +110,7 @@ public class SignatureRequest extends NamedObject {
     }
 
     /**
-     * @return the XML NameSpace object
+     * @return the XML Identity object
      */
     public Namespace getNS() {
         return NS_NSSIGREQ;
