@@ -2,24 +2,27 @@
 <document>
 
 	<properties>
-		<title>NeuClear/Identity</title>
+		<title>NeuClear - ID</title>
 		<author email="pelle@neubia.com">Pelle Braendgaard</author>
 	</properties>
 
 	<body>
 		<section name="Introduction">
 			<p>
-				NeuDist is an Open Source software framework written to support the Neubia project for Distributed Transaction Clearing. The initial version is
-                written in Java, but we do hope to also provide .NET CLR, Perl and Python implentations of the core functionality soon.
+				NeuClear is an umbrella project to create various technologies to enable a truely distributed future of
+                electronic commerce. The NeuClear ID project is a new simplified PKI system to help try to enable the kinds
+                applications that people have been talking about the last 10 years, but never got of the ground due to
+                usability and logistical reasons.
 			</p>
             <p>
-                The framework will be available to support a wide variety of multi layered financial and non-financial applications. Examples of applications include
-                User Authentication, Payments, Auctions, Exchanges, Financial Instruments (Options, Bonds etc). The same basic framework provides the core functionality
-                of assurance, authentication and trust for all of these applications. Leaving developers to worry only about the front end functionality of their application.
+                The NeuClear ID attempts to take flexibility of <a href="http://www.pgp.org">PGP</a> and merge it with the
+                ease of use of DNS. We have attempted to stay away from any of the thought processes behind the traditional X509
+                CA model as offered by VeriSign, as we belive it doesnt solve any problems and presents too many.
             </p>
             <p>
-                The Core technology is based on XML. With heavy use of the new XML-Signature standard to handle trust and security aspects of the framework.
-                We implement a new simple to use PKI (Public Key Infrastructure) to base this trust upon. Communication is done primarily using SOAP.
+                The Core technology is based on XML. With heavy use of the new XML-Signature standard to handle trust and
+                security aspects of the framework. The initial implementation is in Java, but there is absolutely no
+                reason at all that it couldnt be implemented in say C#, Pythom or Perl.
             </p>
 		</section>
 	</body>

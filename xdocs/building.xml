@@ -9,7 +9,7 @@
 	<body>
 		<section name="Requirements">
             <p>
-                To build the NeuDist framework you first need to install <a href="http://jakarta.apache.org/turbine/maven/">Maven</a>.
+                To build the NeuClear framework you first need to install <a href="http://jakarta.apache.org/turbine/maven/">Maven</a>.
                 Follow their installation instructions and you should be ok. I haven't tried this under windows yet, but I'm guessing
                 it should work fine.
             </p>
@@ -45,13 +45,13 @@ security.provider.6=org.bouncycastle.jce.provider.BouncyCastleProvider
                 Unpack the source and binary distributions. Familiarise yourself a bit with maven. It's a bit different than ant, but
                 very easy to learn. To see the options available go to the type:
             </p>
-            <source>~/projects/neudistframework> maven -g</source>
+            <source>~/projects/NeuClearframework> maven -g</source>
             <p>
                 Of these the most important one is to simply type:
             </p>
-            <source>~/projects/neudistframework> maven war</source>
+            <source>~/projects/NeuClearframework> maven war</source>
             <p>
-                This should build everything and create a neudistframework.war file in <tt>target/</tt>. You can then deploy
+                This should build everything and create a NeuClearframework.war file in <tt>target/</tt>. You can then deploy
                 this war file in your J2EE compliant servlet engine. eg. place it in tomcat or jetty's <tt>webapps/</tt> directory
                 and restart.
             </p>

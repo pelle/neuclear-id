@@ -7,109 +7,31 @@
 	</properties>
 
 	<body>
-		<section name="Introduction">
-			<p>
-				NeuDist is an Open Source software framework written to support the Neubia project for Distributed Transaction Clearing. The initial version is
-                written in Java, but we do hope to also provide .NET CLR, Perl and Python implentations of the core functionality soon.
-			</p>
+		<section name="Simplifying Identity">
             <p>
-                The framework will be available to support a wide variety of multi layered financial and non-financial applications. Examples of applications include
-                User Authentication, Payments, Auctions, Exchanges, Financial Instruments (Options, Bonds etc). The same basic framework provides the core functionality
-                of assurance, authentication and trust for all of these applications. Leaving developers to worry only about the front end functionality of their application.
+                If you believe most vendors selling Identity software, Identity is all about identifying the national ID
+                number of the person who is clicking the mouse that links to your web site. This means that the relatively
+                simple concept of verifying the person who logs in as "misterwhammo" to your web site as the same person
+                who buys the t-shirt you are selling is made difficult.
             </p>
             <p>
-                The Core technology is based on XML. With heavy use of the new XML-Signature standard to handle trust and security aspects of the framework.
-                We implement a new simple to use PKI (Public Key Infrastructure) to base this trust upon. Communication is done primarily using SOAP.
+                <a href="http://neuclear.org/id/">NeuClear ID</a> aims to cut the <i>Real World</i> aspect of Identity out
+                of the core feature of online identity and makes it an optional extra. NeuClear presents Identity as a set
+                of simple id's that your average user can easily setup and understand:
             </p>
-		</section>
-        <section name="Networked Economic Units (NEUs)">
-            <p>
-                Networked Economic Units (from now on NEUs) are the basic building block of NeuDist. A NEU contains a bunch of related items,
-                that are all guaranteed to be from the same person or entity. This is ensured using Public Key cryptography. Each item within a NEU
-                is guaranteed to be related to other items by virtue of having been signed by the same signing key.
-            </p>
-        </section>
-        <section name="NameSpaces">
+            <ul>
+                <li>
+                    neu://superbux
+                </li>
+                <li>neu://pelle@super</li>
 
-            <p>
-                A NEU and any object within it is identified by a unique name. This name is a URI and is hierarchical in nature exactly like Domain names. A NEU
-                and it's contained items share what we call a NameSpace. This NameSpace is similar to Domain Names in DNS. <tt>neu://com/neubia</tt> is the name
-                of an example NEU. It and any items directly below it in the hierarchy share a NameSpace. So <tt>neu://com/neubia/abcd-0000001</tt> is an item within
-                the NameSpace of <tt>neu://com/neubia</tt>.
-            </p>
-        </section>
-        <section name="Named Contracts">
-            <p>
-                The items within a NEU can be thought of as Contracts. In reality anything that can be described in XML can become part of a NEU. A NEU NameSpace
-                definition is itself a NamedContract within the parent NameSpace in the hierarchy. Any given NEU can also issue further such child NameSpace's below
-                itself.
-            </p>
-            <p>
-                It is important to realise that a Name URI such as <tt>neu://com/neubia/abcd-0000001</tt> are URI's and not URL's.
-                URI's are identifiers not locators. What this means is that a transaction might have a unique URI, but not be stored anywhere.
-                Depending on the application certain types of contracts should be stored publically, others might be logged unto a public or private logging service.
-            </p>
-            <p>
-                The following is an example <i>Contract</i>. It is an AuthenticationTicket for authenticating a user to a web site:
-            </p>
-            <source>
-<![CDATA[<nsauth:AuthenticationTicket
-    xmlns:nsauth="http://neudist.org/neu/nsauth"
-    xmlns:nsdl="http://neudist.org/neu/nsdl"
-    nsdl:name="neu://neu/bob/neu.neubay.-2fv64da9ir471nn7tkaerjxsvvh5x25dr3g3zem34s8vj02sxu"
-    nsauth:validto="Sun Sep 15 18:47:21 EST 2002"
-    nsauth:href="http://neubay.com"
-    nsdl:timestamp="Sun Sep 15 18:47:21 EST 2002"
-   >
-    <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-        <ds:SignatureInfo>
-            <ds:CanonicalizationMethod
-                Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
-            <ds:SignatureMethod
-                Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
-            <ds:Reference
-                URI="neu://neu/bob/neu.neubay.-2fv64da9ir471nn7tkaerjxsvvh5x25dr3g3zem34s8vj02sxu"
-            >
-                <ds:Transforms>
-                    <ds:Transform
-                        Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
-                    <ds:Transform
-                        Algorithm="uri:VillageIdiotMethod"/>
-                </ds:Transforms>
-            <ds:DigestMethod
-                Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-            </ds:Reference>
-        </ds:SignatureInfo>
-        <ds:SignatureValue>
-            cCvHEFohJQAKAX+iHswmJn2GHKygDXPkWocrH7hQtIFQYvl1C3rGfaZG1nxu+qTMsArkafqcSFO4
-            a1JfBT+vTn5YQHKviWcMPfoxjNJ00MZxseNodsFm/HmHLbidTU1hw3GyosiBNKC6ObOn+vhXhfe+
-            hqqoRJw6gGCKNJTnCmw=
-        </ds:SignatureValue>
-    </ds:Signature>
-</nsauth:AuthenticationTicket>]]>
-            </source>
-            <p>
-                Most of the XML is the XML-Signature itself. The main thing that identifies it as being a Named Contract is the
-                <tt>nsdl:name</tt> attribute of the top level element. This is the URI of the document. The XML-Signature verifies that
-                the contract is part of the <tt>neu://neu/bob</tt> NameSpace.
+            </ul>
 
-            </p>
-            <p>
-                To create this ticket in Java code using the NeuDist framework all you need is Bob's Private Key:
-            </p>
-            <source>
-NamedObject ticket=new AuthenticationTicket(
-    "/neu/bob",
-    "/neu/neubay",
-    new Date(),
-    "http://neubay.com"
-);
-ticket.sign(bob.getPrivate());
-            </source>
-            <p>
-                This generates the URI of the Contract as part of "neu://neu/bob". "/neu/neubay" is the NameSpace of the website wishing to authenticate the user.
-                The date is when the ticket is valid to and the URL is the website we are going to authenticate to.
-            </p>
+        </section>
+        <section name="Hierarchical">
+            One of the largest problems with DNS is its Hierarchical nature. However that is also one of its best features.
+            It makes it easy to understand. We have taken the hierarchical nature of it and taken away the main problem of
+            a central point of failure.
         </section>
 	</body>
 

@@ -14,9 +14,10 @@
                     <li><a href="http://www.bouncycastle.org">Bouncy Castle for Crypto</a></li>
                     <li><a href="http://www.dom4j.org">Dom4J - XML API</a></li>
                     <li><a href="http://jakarta.apache.org/turbine/maven/">Maven - for Building</a></li>
-                    <li><a href="http://www.opensymphony.org">OpenSymphony - OSCore</a></li>
-                    <li><a href="http://jakarta.apache.org/commons/regexp/">Apache Jakarta Commons RegExp</a></li>
                     <li><a href="http://jakarta.apache.org/commons/cli/">Apache Jakarta Commons CLI</a></li>
+                    <li><a href="http://jakarta.apache.org/commons/collections.html">Apache Jakarta Commons Collections</a></li>
+                    <li><a href="http://www.picocontainer.org">PicoContainer</a></li>
+                    <li><a href="http://www.nanocontainer.org">NanoContainer</a></li>
                </ul>
 
             </p>
