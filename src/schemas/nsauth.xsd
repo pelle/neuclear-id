@@ -11,21 +11,20 @@
 -->
 <xs:schema targetNamespace="http://neuclear.org/neu/nsauth"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:nsdl="http://neuclear.org/neu/nsdl"
-    xmlns:nsauth="http://neuclear.org/neu/nsauth"
-    xmlns="http://neuclear.org/neu/nsauth"
-    elementFormDefault="qualified" version="0.2" id="nsauth">
-    <xs:import namespace="http://www.w3.org/2001/XMLSchema" schemaLocation="XMLSchema.xsd"/>
-	<xs:import namespace="http://neuclear.org/neu/nsdl" schemaLocation="nsdl.xsd"/>
+    xmlns:neuid="http://neuclear.org/neu/neuid.xsd"
+    xmlns:nsauth="http://neuclear.org/neu/nsauth.xsd"
+    xmlns="http://neuclear.org/neu/nsauth.xsd"
+    elementFormDefault="qualified" version="0.3" id="nsauth">
+	<xs:import namespace="http://neuclear.org/neu/neuid.xsd" schemaLocation="neuid.xsd"/>
 
-    <xs:complexType name="AuthenticationTicketType">
-		<xs:complexContent>
-			<xs:extension base="nsdl:NamedObjectType">
-				<xs:attribute name="validTo" type="xs:dateTime" use="optional"/>
-				<xs:attribute name="href" type="xs:anyURI" use="optional"/>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-
-	<xs:element name="AuthenticationTicket" type="AuthenticationTicketType" nillable="true"/>
+	<xs:element name="AuthenticationTicket" nillable="true">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="neuid:NamedObjectType">
+                    <xs:attribute name="validTo" type="xs:dateTime" use="optional"/>
+                    <xs:attribute name="href" type="xs:anyURI" use="optional"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
 </xs:schema>
