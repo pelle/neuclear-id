@@ -41,8 +41,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.10 2004/06/22 14:23:45 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.11 2004/06/22 14:38:46 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.11  2004/06/22 14:38:46  pelle
+Fixed issues with endpoints in the signing request and signing servlets
+
 Revision 1.10  2004/06/22 14:23:45  pelle
 Fixed issues with endpoints in the signing request and signing servlets
 
@@ -171,14 +174,8 @@ public abstract class SignatureRequestServlet extends HttpServlet {
 
 */
         final PrintWriter out = response.getWriter();
-        out.write("\n ");
-        out.write("<html>\n");
-        out.write("<head>");
-        out.write("<title>");
-        out.write(title);
-        out.write("</title>");
-        out.write("</head>\n");
-        out.write("<body>\n");
+        ServletTools.printHeader(out, request, getTitle(), "Transfering to Personal Trader");
+//        out.write("<div id=\"banner\n");
         out.write("<table border=2><tr><th  colspan=\"4\" style=\"background-color:blue;color:white\">Processing: ");
         out.write(getRequestType());
         out.write("</th></tr><tr><td id=\"prepare\" width=\"150\" style=\"background-color:#F0F0FF\">");
