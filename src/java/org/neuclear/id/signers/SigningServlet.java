@@ -1,6 +1,10 @@
 /*
- * $Id: SigningServlet.java,v 1.7 2004/04/14 23:44:44 pelle Exp $
+ * $Id: SigningServlet.java,v 1.8 2004/04/15 20:04:05 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.8  2004/04/15 20:04:05  pelle
+ * Added license screen to Personal Signer.
+ * Added Sign document menu to  Personal Signer.
+ *
  * Revision 1.7  2004/04/14 23:44:44  pelle
  * Got the cactus tests working and the sample web app
  *
@@ -333,7 +337,7 @@ public class SigningServlet extends XMLInputStreamServlet {
         return (BrowsableSigner) ServletSignerFactory.getInstance().createSigner(config);
     }
 
-    protected final BrowsableSigner getSigner() {
+    protected BrowsableSigner getSigner() {
         return signer;
     }
 
