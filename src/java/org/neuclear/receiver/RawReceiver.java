@@ -6,8 +6,12 @@ package org.neuclear.receiver;
  * Date: Oct 10, 2002
  * Time: 11:24:59 PM
  * To change this template use Options | File Templates.
- * $Id: RawReceiver.java,v 1.7 2003/11/15 01:58:16 pelle Exp $
+ * $Id: RawReceiver.java,v 1.8 2003/11/18 15:07:36 pelle Exp $
  * $Log: RawReceiver.java,v $
+ * Revision 1.8  2003/11/18 15:07:36  pelle
+ * Changes to JCE Implementation
+ * Working on getting all tests working including store tests
+ *
  * Revision 1.7  2003/11/15 01:58:16  pelle
  * More work all around on web applications.
  *
@@ -92,6 +96,7 @@ package org.neuclear.receiver;
 
 import org.neuclear.id.InvalidNamedObject;
 import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.commons.NeuClearException;
 
 /**
  * <p>The RawReceiver interface is the base interface for almost all applications based on the NeuDist Framework.
@@ -107,5 +112,5 @@ public interface RawReceiver {
      * @param obj 
      * @throws UnsupportedTransaction 
      */
-    void receive(NamedObjectBuilder obj) throws UnsupportedTransaction, InvalidNamedObject;
+    void receive(NamedObjectBuilder obj) throws UnsupportedTransaction, InvalidNamedObject, NeuClearException;
 }

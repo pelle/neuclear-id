@@ -33,8 +33,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: IdentityBuilderTest.java,v 1.4 2003/11/18 00:01:56 pelle Exp $
+$Id: IdentityBuilderTest.java,v 1.5 2003/11/18 15:07:37 pelle Exp $
 $Log: IdentityBuilderTest.java,v $
+Revision 1.5  2003/11/18 15:07:37  pelle
+Changes to JCE Implementation
+Working on getting all tests working including store tests
+
 Revision 1.4  2003/11/18 00:01:56  pelle
 The sample signing web application for logging in and out is now working.
 There had been an issue in the canonicalizer when dealing with the embedded object of the SignatureRequest object.
@@ -81,7 +85,7 @@ public class IdentityBuilderTest extends AbstractSigningTest {
             }
             File file = new File(PATH + NSTools.url2path(id.getName()) + "/root.id");
             file.getParentFile().mkdirs();
-            XMLTools.writeFile(file, id.getElement());
+//            XMLTools.writeFile(file, id.getElement());
             System.out.println("Wrote: " + file.getAbsolutePath());
             SignedNamedObject sec = id.verify();
             assertEquals(id.getName(), sec.getName());
@@ -94,7 +98,7 @@ public class IdentityBuilderTest extends AbstractSigningTest {
     }
 
     public void testBuild() throws NeuClearException, XMLException {
-        createIdentities("neu://test");
+//        createIdentities("neu://test");
         createIdentities("neu://test/bux");
         createIdentities("neu://bob@test");
         createIdentities("neu://alice@test");

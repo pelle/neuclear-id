@@ -1,6 +1,10 @@
 /*
-  $Id: NameSpaceTest.java,v 1.7 2003/11/11 21:18:46 pelle Exp $
+  $Id: NameSpaceTest.java,v 1.8 2003/11/18 15:07:37 pelle Exp $
   $Log: NameSpaceTest.java,v $
+  Revision 1.8  2003/11/18 15:07:37  pelle
+  Changes to JCE Implementation
+  Working on getting all tests working including store tests
+
   Revision 1.7  2003/11/11 21:18:46  pelle
   Further vital reshuffling.
   org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -145,6 +149,8 @@ import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 
+import org.neuclear.commons.crypto.CryptoTools;
+
 
 /**
  * @author Pelle Braendgaard
@@ -153,6 +159,7 @@ public class NameSpaceTest extends TestCase {
 
     public NameSpaceTest(String string) {
         super(string);
+        CryptoTools.ensureProvider();
     }
 
     /**

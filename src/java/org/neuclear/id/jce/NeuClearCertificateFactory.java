@@ -1,12 +1,14 @@
 package org.neuclear.id.jce;
 
 import org.neuclear.id.Identity;
+import org.neuclear.id.NSTools;
+import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.xml.XMLException;
 
 import java.security.cert.*;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
@@ -30,8 +32,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearCertificateFactory.java,v 1.4 2003/11/11 21:18:42 pelle Exp $
+$Id: NeuClearCertificateFactory.java,v 1.5 2003/11/18 15:07:36 pelle Exp $
 $Log: NeuClearCertificateFactory.java,v $
+Revision 1.5  2003/11/18 15:07:36  pelle
+Changes to JCE Implementation
+Working on getting all tests working including store tests
+
 Revision 1.4  2003/11/11 21:18:42  pelle
 Further vital reshuffling.
 org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -67,18 +73,37 @@ Added new JCE Provider and java Certificate implementation for NeuClear Identity
 public class NeuClearCertificateFactory extends CertificateFactorySpi {
     final public Certificate engineGenerateCertificate(InputStream inputStream) throws CertificateException {
         try {
-            Identity id=(Identity) VerifyingReader.getInstance().read(inputStream);
-            return id.getCertificate();
-        } catch (XMLException e) {
-            throw new CertificateException("NeuClear: Problem reading Certificate:"+e.getMessage());
+            //Identity id=(Identity) VerifyingReader.getInstance().read(inputStream);
+            BufferedReader d = new BufferedReader(new InputStreamReader(inputStream));
+            if (d.ready()) {
+                String name = d.readLine();
+                if (name==null)
+                    throw new CertificateEncodingException("Certificate is empty");
+                if (!NSTools.isValidName(name))
+                    throw new CertificateParsingException("Invalid format");
+                Identity identity = null;
+                identity = NSResolver.resolveIdentity(name);
+                if (identity==null)
+                    throw new CertificateException("Invalid Certificate")
+                return identity.getCertificate();
+            }
+            return null;
         } catch (NeuClearException e) {
+            throw new CertificateException("NeuClear: Problem reading Certificate:"+e.getMessage());
+        } catch (IOException e) {
             throw new CertificateException("NeuClear: Problem reading Certificate:"+e.getMessage());
         }
     }
 
     final public Collection engineGenerateCertificates(InputStream inputStream) throws CertificateException {
-        List list=new ArrayList(1);
-        list.add(engineGenerateCertificate(inputStream));
+        List list=new LinkedList();
+        try {
+            while(inputStream.available()>0) {
+                list.add(engineGenerateCertificate(inputStream));
+            }
+        } catch (IOException e) {
+            throw new CertificateException(e.getLocalizedMessage());
+        }
         return list;
     }
 

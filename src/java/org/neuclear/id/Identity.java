@@ -1,6 +1,10 @@
 /*
- * $Id: Identity.java,v 1.17 2003/11/15 01:58:16 pelle Exp $
+ * $Id: Identity.java,v 1.18 2003/11/18 15:07:36 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.18  2003/11/18 15:07:36  pelle
+ * Changes to JCE Implementation
+ * Working on getting all tests working including store tests
+ *
  * Revision 1.17  2003/11/15 01:58:16  pelle
  * More work all around on web applications.
  *
@@ -248,6 +252,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 /**
  * The Identity class is one of the most important concepts in <a href="http://neuclear.org">NeuClear</a>.
@@ -350,6 +355,17 @@ public class Identity extends SignedNamedObject implements Principal {
 
     public static final Identity NEUROOT = createRootIdentity();
 
+    public final Certificate[] getCertificateChain(){
+        ArrayList certs=new ArrayList(3);
+        Identity id=this;
+        while(id!=null ||id.getName().equals("neu://")) {
+            certs.add(id.getCertificate());
+            id=id.getSignatory();
+        }
+        certs.add(NEUROOT);
+        certs.trimToSize();
+        return (Certificate[])certs.toArray();
+    }
 
     /**
      * Returns the fixed Root PublicKey

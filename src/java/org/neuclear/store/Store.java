@@ -1,6 +1,10 @@
 /*
- * $Id: Store.java,v 1.11 2003/11/15 01:58:17 pelle Exp $
+ * $Id: Store.java,v 1.12 2003/11/18 15:07:36 pelle Exp $
  * $Log: Store.java,v $
+ * Revision 1.12  2003/11/18 15:07:36  pelle
+ * Changes to JCE Implementation
+ * Working on getting all tests working including store tests
+ *
  * Revision 1.11  2003/11/15 01:58:17  pelle
  * More work all around on web applications.
  *
@@ -161,6 +165,8 @@ import org.neuclear.id.InvalidNamedObject;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.receiver.RawReceiver;
+import org.neuclear.receiver.UnsupportedTransaction;
+import org.neuclear.xml.XMLException;
 
 import java.io.IOException;
 
@@ -172,32 +178,21 @@ abstract public class Store implements RawReceiver {
     /**
      * This handles the Identity checking on the object.
      */
-    public final void receive(NamedObjectBuilder obj) throws InvalidNamedObject {
+    public final void receive(NamedObjectBuilder obj) throws InvalidNamedObject,NeuClearException {
         try {
             // Dont allow overwrites
             //TODO: Implement versioning
-
-//            if (obj.verifySignature(obj.getParent().getPublicKey()))
+            obj.verify();
             rawStore(obj);
-//            else
-//                throw new InvalidNamedObject("INVALID Signature");
             if (next != null)
                 next.receive(obj);
 
 
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NeuClearException e) {
-            if (e instanceof InvalidNamedObject)
-                throw (InvalidNamedObject) e;
+            throw new NeuClearException(e);
+        } catch (XMLException e) {
+            throw new NeuClearException(e);
         }
-//            if (e instanceof InvalidNamedObject)
-//                throw (InvalidNamedObject)e;
-//            else if(e instanceof NeuClearException)
-//                throw (NeuClearException)e;
-//            else
-//                Utility.rethrowException(e);
-//        }
     }
 
     /**

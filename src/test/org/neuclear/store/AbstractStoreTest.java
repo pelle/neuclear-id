@@ -1,6 +1,10 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.10 2003/11/15 01:58:19 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.11 2003/11/18 15:07:37 pelle Exp $
   $Log: AbstractStoreTest.java,v $
+  Revision 1.11  2003/11/18 15:07:37  pelle
+  Changes to JCE Implementation
+  Working on getting all tests working including store tests
+
   Revision 1.10  2003/11/15 01:58:19  pelle
   More work all around on web applications.
 
@@ -131,7 +135,11 @@ package org.neuclear.store;
 import junit.framework.TestCase;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.InvalidNamedObject;
+import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.NSTools;
+import org.neuclear.id.builders.IdentityBuilder;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
+import org.neuclear.tests.AbstractSigningTest;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -142,8 +150,8 @@ import java.security.SecureRandom;
 /**
  * @author Pelle Braendgaard
  */
-public abstract class AbstractStoreTest extends TestCase {
-    public AbstractStoreTest(String name) throws GeneralSecurityException {
+public abstract class AbstractStoreTest extends AbstractSigningTest {
+    public AbstractStoreTest(String name) throws GeneralSecurityException, NeuClearException {
         super(name);
         store = getStoreInstance();
         //generateKeys();
@@ -153,19 +161,6 @@ public abstract class AbstractStoreTest extends TestCase {
      */
     public abstract Store getStoreInstance();
 
-    protected static synchronized void generateKeys() throws GeneralSecurityException {
-        if (kg == null) {
-            System.out.println("Generating Test Keys");
-            kg = KeyPairGenerator.getInstance("RSA");
-
-            kg.initialize(2048, new SecureRandom("Bear it all with NeuDist".getBytes()));
-            //       kp=kg.generateKeyPair();
-            root = kg.generateKeyPair();
-            bob = kg.generateKeyPair();
-            alice = kg.generateKeyPair();
-            eve = kg.generateKeyPair();
-        }
-    }
 
     protected void tearDown() {
         store = null;
@@ -173,46 +168,35 @@ public abstract class AbstractStoreTest extends TestCase {
 
 
     public void testStore() throws NeuClearException, InvalidNamedObject, XMLSecurityException {
-//        System.out.println("\nTesting " + this.getClass().getName());
-//        System.out.println("Storing " + rootName);
-//        store.receive(new IdentityBuilder(rootName, root.getPrivate(), root.getPublic()));
-//        System.out.println("Storing " + bobName);
-//        store.receive(new IdentityBuilder(bobName, root.getPrivate(), bob.getPublic()));
-//        System.out.println("Storing " + bobAliceName);
-//        store.receive(new IdentityBuilder(bobAliceName, bob.getPrivate(), alice.getPublic()));
-//        System.out.println("Storing " + eveName);
-//        store.receive(new IdentityBuilder(eveName, root.getPrivate(), eve.getPublic()));
-/* TODO: To complete this part I need to have a parent testkey in a keystore that is signed by root.
-                System.out.println("Fetching "+rootName);
-                SignedNamedObject nobj1=store.fetch(rootName);
-                assertEquals(NSTools.normalizeNameURI(rootName),nobj1.getName());
-                System.out.println("Fetching "+bobName);
-                SignedNamedObject nobj2=store.fetch(bobName);
-                assertEquals(NSTools.normalizeNameURI(bobName),nobj2.getName());
+        System.out.println("\nTesting " + this.getClass().getName());
+        System.out.println("Storing " + rootName);
+        IdentityBuilder root=new IdentityBuilder(rootName,signer.getPublicKey(rootName));
+        root.sign(signer);
+        store.receive(root);
+        System.out.println("Storing " + bobName);
+        IdentityBuilder bob=new IdentityBuilder(bobName,signer.getPublicKey(bobName));
+        root.sign(signer);
+        store.receive(bob);
+        System.out.println("Storing " + aliceName);
+        IdentityBuilder alice=new IdentityBuilder(aliceName,signer.getPublicKey(aliceName));
+        root.sign(signer);
+        store.receive(alice);
 
-                System.out.println("Fetching "+bobAliceName);
-                SignedNamedObject nobj3=store.fetch(bobAliceName);
-                assertEquals(NSTools.normalizeNameURI(bobAliceName),nobj3.getName());
+        System.out.println("Fetching "+rootName);
+        SignedNamedObject nobj1=store.fetch(rootName);
+        assertEquals(rootName,nobj1.getName());
+        System.out.println("Fetching "+bobName);
+        SignedNamedObject nobj2=store.fetch(bobName);
+        assertEquals(bobName,nobj2.getName());
 
-                System.out.println("Fetching "+eveName);
-                SignedNamedObject nobj4=store.fetch(eveName);
-                assertEquals(NSTools.normalizeNameURI(eveName),nobj4.getName());
-*/
+        System.out.println("Fetching "+aliceName);
+        SignedNamedObject nobj4=store.fetch(aliceName);
+        assertEquals(aliceName,nobj4.getName());
     }
 
-//    KeyPair root;
-//    PrivateKey aliceSigner;
-//    PrivateKey bobSigner;
-    Store store;
-    protected static final String rootName = "/";
-    protected static final String bobName = "/bob";
-    protected static final String bobAliceName = "/bob/alice";
-    protected static final String eveName = "/eve";
-
-    protected static KeyPairGenerator kg;
-    protected static KeyPair root;
-    protected static KeyPair alice;
-    protected static KeyPair bob;
-    protected static KeyPair eve;
+    private Store store;
+    protected static final String rootName = "neu://test";
+    protected static final String bobName = "neu://bob@test";
+    protected static final String aliceName = "neu://alice@test";
 
 }

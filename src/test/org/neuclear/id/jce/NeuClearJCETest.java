@@ -2,9 +2,21 @@ package org.neuclear.id.jce;
 
 import junit.framework.TestCase;
 
-import java.security.Security;
+import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateException;
+
+import org.neuclear.tests.AbstractSigningTest;
+import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.CryptoException;
+import org.neuclear.commons.crypto.passphraseagents.AlwaysTheSamePassphraseAgent;
+import org.neuclear.commons.crypto.signers.JCESigner;
+import org.neuclear.id.Identity;
+import org.neuclear.id.builders.IdentityBuilder;
+import org.neuclear.id.builders.AuthenticationTicketBuilder;
+import org.neuclear.xml.xmlsec.XMLSecurityException;
+import org.neuclear.xml.XMLException;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -24,8 +36,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearJCETest.java,v 1.1 2003/10/01 17:05:38 pelle Exp $
+$Id: NeuClearJCETest.java,v 1.2 2003/11/18 15:07:37 pelle Exp $
 $Log: NeuClearJCETest.java,v $
+Revision 1.2  2003/11/18 15:07:37  pelle
+Changes to JCE Implementation
+Working on getting all tests working including store tests
+
 Revision 1.1  2003/10/01 17:05:38  pelle
 Moved the NeuClearCertificate class to be an inner class of Identity.
 
@@ -37,8 +53,8 @@ Moved the NeuClearCertificate class to be an inner class of Identity.
  * Date: Oct 1, 2003
  * Time: 11:50:58 AM
  */
-public class NeuClearJCETest extends TestCase {
-    public NeuClearJCETest(String string) {
+public class NeuClearJCETest extends AbstractSigningTest {
+    public NeuClearJCETest(String string) throws NeuClearException, GeneralSecurityException {
         super(string);
         if (Security.getProvider("NeuClear") == null) {
             Security.addProvider(new NeuClearJCEProvider());
@@ -51,6 +67,29 @@ public class NeuClearJCETest extends TestCase {
     }
     public void testCertificateFactory() throws CertificateException {
         assertNotNull(CertificateFactory.getInstance("NeuClear"));
+
+    }
+    public void testGetCertificate() throws NeuClearException, XMLException {
+        IdentityBuilder id=new IdentityBuilder("neu://bob@test",signer.getPublicKey("neu://bob@test"));
+        id.sign(signer);
+        Identity bob=(Identity) id.verify();
+        Certificate cert=bob.getCertificate();
+        assertNotNull(cert);
+        assertEquals(cert.getPublicKey(),bob.getPublicKey());
+    }
+    public void testStoreKey() throws NeuClearException, XMLException, NoSuchProviderException, NoSuchAlgorithmException, KeyStoreException {
+        KeyPairGenerator kpg=KeyPairGenerator.getInstance("RSA","BC");
+        KeyStore ks=KeyStore.getInstance("jks","SUN");
+        kpg.initialize(512);
+        KeyPair kp=kpg.generateKeyPair();
+        JCESigner sig2=new JCESigner(ks,new AlwaysTheSamePassphraseAgent("neuclear"));
+        IdentityBuilder id=new IdentityBuilder("neu://eve@test",kp.getPublic());
+        id.sign(signer);
+        Identity eve=(Identity) id.verify();
+        ks.setKeyEntry("neu://eve@test",kp.getPrivate(),"neuclear".toCharArray(),eve.getCertificateChain());
+
+        AuthenticationTicketBuilder authb=new AuthenticationTicketBuilder("neu://eve@test","neu://test","http://users.neuclear.org:8080");
+        authb.sign(sig2);
 
     }
 }

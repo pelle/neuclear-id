@@ -1,6 +1,10 @@
 /*
- * $Id: EncryptedFileStoreTest.java,v 1.3 2003/11/11 21:18:46 pelle Exp $
+ * $Id: EncryptedFileStoreTest.java,v 1.4 2003/11/18 15:07:37 pelle Exp $
  * $Log: EncryptedFileStoreTest.java,v $
+ * Revision 1.4  2003/11/18 15:07:37  pelle
+ * Changes to JCE Implementation
+ * Working on getting all tests working including store tests
+ *
  * Revision 1.3  2003/11/11 21:18:46  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -45,17 +49,19 @@
  */
 package org.neuclear.store;
 
+import org.neuclear.commons.NeuClearException;
+
 import java.security.GeneralSecurityException;
 
 public class EncryptedFileStoreTest extends AbstractStoreTest {
-    public EncryptedFileStoreTest(String name) throws GeneralSecurityException {
+    public EncryptedFileStoreTest(String name) throws GeneralSecurityException, NeuClearException {
         super(name);
     }
 
     /**
      */
     public Store getStoreInstance() {
-        return new EncryptedFileStore("target/neuclear/tests/efs");
+        return new EncryptedFileStore("target/testdata/efs");
     }
 
 }
