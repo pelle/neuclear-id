@@ -1,7 +1,11 @@
 /*
  *
- * $Id: CachedSource.java,v 1.5 2003/10/21 22:31:13 pelle Exp $
+ * $Id: CachedSource.java,v 1.6 2003/11/05 18:50:34 pelle Exp $
  * $Log: CachedSource.java,v $
+ * Revision 1.6  2003/11/05 18:50:34  pelle
+ * Refactored org.neuclear.signers.source.Source and implementing classes to provide support for a local filesystem cache.
+ * Also added Unit tests to make sure it actually works and modified IdentityCreator to write directly to the cache if no output filename is given.
+ *
  * Revision 1.5  2003/10/21 22:31:13  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
  * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -51,12 +55,10 @@
  */
 package org.neuclear.source;
 
-import org.neuclear.id.NSTools;
-import org.neuclear.id.SignedNamedObject;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.id.NSTools;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
 
 /**
  * This is a simple Cached version of the Source.
@@ -65,31 +67,37 @@ import java.util.Map;
 public final class CachedSource extends Source {
     public CachedSource(Source src) {
         this.src = src;
-        cache = new HashMap(CACHE_SIZE);
+        cachedirpath = System.getProperty("user.home") + "/.neuclear/cache";
+        File cachedir = new File(cachedirpath);
+        if (!cachedir.exists())
+            cachedir.mkdirs();
     }
 
 
-    public SignedNamedObject fetch(String endpoint, String name) throws NeuClearException {
-        name = NSTools.normalizeNameURI(name);
-        SignedNamedObject candidate = (SignedNamedObject) cache.get(name);
-        if (candidate != null)
-            return candidate;
-
-        candidate = src.fetch(endpoint, name);
-        if (candidate != null)
-            storeInCache(candidate);
-        return candidate;
+    protected InputStream getStream(String endpoint, String name) throws NeuClearException {
+        File object = new File(cachedirpath + NSTools.url2path(name) + "/root.id");
+        try {
+            if (!object.exists()) {
+                object.getParentFile().mkdirs();
+                InputStream in = src.getStream(endpoint, name);
+                OutputStream out = new FileOutputStream(object);
+                int character;
+                //TODO Explore more efficient ways of copying streams
+                while ((character = in.read()) != -1)
+                    out.write(character);
+                in.close();
+                out.close();
+            }
+            return new FileInputStream(object);
+        } catch (IOException e) {
+            // I have already checked for this but will wrap it anyhow.
+            throw new NeuClearException(e);
+        }
 
     }
 
-    private void storeInCache(SignedNamedObject obj) throws NeuClearException {
-        cache.put(obj.getName(), obj);
-    }
-
-    private final Map cache;
     private final Source src;
-
-    public static final int CACHE_SIZE = 10000;
+    private final String cachedirpath;
 
 
 }

@@ -1,5 +1,9 @@
-/* $Id: IdentityCreator.java,v 1.3 2003/10/31 23:58:53 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.4 2003/11/05 18:50:33 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.4  2003/11/05 18:50:33  pelle
+ * Refactored org.neuclear.signers.source.Source and implementing classes to provide support for a local filesystem cache.
+ * Also added Unit tests to make sure it actually works and modified IdentityCreator to write directly to the cache if no output filename is given.
+ *
  * Revision 1.3  2003/10/31 23:58:53  pelle
  * The IdentityCreator now fully works with the new Signer architecture.
  *
@@ -155,11 +159,12 @@ import org.neuclear.signers.PublicKeySource;
 import org.neudist.crypto.CryptoException;
 import org.neudist.utils.Utility;
 
+import java.io.File;
 import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(String args[]) throws Exception {
@@ -168,7 +173,12 @@ public class IdentityCreator extends CommandLineSigner {
             throw new NeuClearException("The default signer has to include public keys");
         pksource = (PublicKeySource) sig;
         identity = cmd.getOptionValue("n");
-        of = Utility.denullString(of, "." + NSTools.url2path(identity) + "/root.id");
+        String cachedirpath = System.getProperty("user.home") + "/.neuclear/cache";
+        File cachedir = new File(cachedirpath);
+        if (!cachedir.exists())
+            cachedir.mkdirs();
+
+        of = Utility.denullString(of, cachedirpath + NSTools.url2path(identity) + "/root.id");
         alias = Utility.denullString(alias, NSTools.getParentNSURI(identity));
 
 
@@ -213,6 +223,7 @@ public class IdentityCreator extends CommandLineSigner {
         options.addOption("l", "defaultlogger", true, "Identity's default Logging Service");
         options.addOption("b", "defaultreceiver", true, "Identity's default Receiver");
     }
+
 
     private final String identity;
     private final PublicKeySource pksource;
