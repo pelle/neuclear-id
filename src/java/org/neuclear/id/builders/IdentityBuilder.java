@@ -1,6 +1,13 @@
 /*
- * $Id: IdentityBuilder.java,v 1.26 2004/04/26 23:58:04 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.27 2004/04/28 00:24:05 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.27  2004/04/28 00:24:05  pelle
+ * Fixed the strange verification error
+ * Added bunch of new unit tests to support this.
+ * Updated Signer's dependencies and version number to be a 0.9 release.
+ * Implemented ThreadLocalSession session management for Hibernate ledger.
+ * Various other minor changes.
+ *
  * Revision 1.26  2004/04/26 23:58:04  pelle
  * Trying to find the verifying error
  *
@@ -254,8 +261,8 @@ package org.neuclear.id.builders;
 
 import org.dom4j.Element;
 import org.neuclear.commons.Utility;
-import org.neuclear.commons.crypto.signers.JCESigner;
-import org.neuclear.commons.crypto.signers.TestCaseSigner;
+import org.neuclear.commons.crypto.passphraseagents.swing.SwingAgent;
+import org.neuclear.commons.crypto.signers.DefaultSigner;
 import org.neuclear.id.Identity;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.XMLTools;
@@ -325,30 +332,31 @@ public class IdentityBuilder extends Builder {
 
     public static void main(final String[] args) {
         try {
-            final JCESigner signer = new TestCaseSigner();
+            final DefaultSigner signer = new DefaultSigner(new SwingAgent());
 
 
             final IdentityBuilder assetraw = new IdentityBuilder("Bob",
                     "http://neuclear.org/bob.html",
                     "http://portfolio.neuclear.org", "Bobs ID");
-            assetraw.sign("neu://bob@test", signer);
+            assetraw.sign(signer);
 //            System.out.println("Length:"+assetraw.asXML().length());
-            File out = new File("target/testdata/ids/bob.html");
+            File out = new File("src/testdata/simple/bob.html");
             out.getParentFile().mkdirs();
             XMLTools.writeFile(out, assetraw.getElement().getDocument());
             final InputStream is = new BufferedInputStream(new FileInputStream(out));
             final Identity asset = (Identity) VerifyingReader.getInstance().read(is);
-
+            System.exit(0);
 
         } catch (Exception e) {
             e.printStackTrace();
+            System.exit(1);
         }
     }
 
     protected final Element head;
     protected final Element body;
 
-    private static final String TYPENAME = "Identity";
+    private static final String TYPENAME = "identity";
 
 
 }

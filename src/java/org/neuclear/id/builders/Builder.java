@@ -5,7 +5,6 @@ import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
 import org.neuclear.commons.crypto.signers.BrowsableSigner;
 import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.Signer;
-import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
@@ -23,7 +22,7 @@ import org.neuclear.xml.xmlsec.XMLSecurityException;
 public class Builder extends SignedElement {
     public Builder(final QName qname) {
         super(qname);
-        createDocument();
+//        createDocument();
     }
 
     public Builder(final String name) {
@@ -32,12 +31,12 @@ public class Builder extends SignedElement {
 
     public Builder(final String name, final Namespace ns) {
         super(name, ns);
-        createDocument();
+//        createDocument();
     }
 
     public Builder(final Element elem) throws XMLSecurityException {
         super(elem);
-        createDocument();
+//        createDocument();
     }
 
     final public SignedNamedObject convert() throws InvalidNamedObjectException {
@@ -57,7 +56,7 @@ public class Builder extends SignedElement {
      */
     protected final void preSign() throws XMLSecurityException {
         // We need to timestamp it before we sign it
-        getElement().addAttribute(DocumentHelper.createQName("timestamp", NSTools.NS_NEUID), TimeTools.createTimeStamp());
+//        getElement().addAttribute(DocumentHelper.createQName("timestamp", NSTools.NS_NEUID), TimeTools.createTimeStamp());
     }
 
     public Object clone() {
