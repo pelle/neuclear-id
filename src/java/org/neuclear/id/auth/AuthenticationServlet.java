@@ -1,4 +1,4 @@
-package org.neuclear.auth;
+package org.neuclear.id.auth;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
@@ -15,7 +15,7 @@ import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
-import org.neuclear.signers.servlet.SignatureRequestServlet;
+import org.neuclear.id.signers.SignatureRequestServlet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -46,8 +46,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServlet.java,v 1.13 2004/01/12 22:39:26 pelle Exp $
+$Id: AuthenticationServlet.java,v 1.1 2004/03/02 18:59:10 pelle Exp $
 $Log: AuthenticationServlet.java,v $
+Revision 1.1  2004/03/02 18:59:10  pelle
+Further cleanups in neuclear-id. Moved everything under id.
+
 Revision 1.13  2004/01/12 22:39:26  pelle
 Completed all the builders and contracts.
 Added a new abstract Value class to contain either an amount or a list of serial numbers.

@@ -1,6 +1,6 @@
 package org.neuclear.id.builders;
 
-import org.neuclear.auth.AuthenticationTicket;
+import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.tests.AbstractSigningTest;
@@ -26,8 +26,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationBuilderTest.java,v 1.7 2004/01/13 23:38:26 pelle Exp $
+$Id: AuthenticationBuilderTest.java,v 1.8 2004/03/02 18:59:12 pelle Exp $
 $Log: AuthenticationBuilderTest.java,v $
+Revision 1.8  2004/03/02 18:59:12  pelle
+Further cleanups in neuclear-id. Moved everything under id.
+
 Revision 1.7  2004/01/13 23:38:26  pelle
 Refactoring parts of the core of XMLSignature. There shouldnt be any real API changes.
 

@@ -1,6 +1,6 @@
 package org.neuclear.id;
 
-import org.neuclear.auth.AuthenticationTicket;
+import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
 import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;

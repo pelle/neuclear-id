@@ -6,7 +6,7 @@
  * To change template for new class use 
  * Code Style | Class Templates options (Tools | IDE Options).
  */
-package org.neuclear.auth;
+package org.neuclear.id.auth;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;

@@ -3,7 +3,7 @@ package org.neuclear.id;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.time.TimeTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
-import org.neuclear.auth.AuthenticationTicket;
+import org.neuclear.id.auth.AuthenticationTicket;
 import org.dom4j.Element;
 import org.dom4j.DocumentHelper;
 

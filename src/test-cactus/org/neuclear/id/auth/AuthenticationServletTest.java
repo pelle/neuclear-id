@@ -1,4 +1,4 @@
-package org.neuclear.auth;
+package org.neuclear.id.auth;
 
 import org.apache.cactus.ServletTestCase;
 import org.apache.cactus.WebRequest;
@@ -14,8 +14,8 @@ import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.SignatureRequest;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.id.verifier.VerifyingReader;
-import org.neuclear.signers.servlet.SigningServlet;
-import org.neuclear.signers.servlet.DemoSigningServlet;
+import org.neuclear.id.signers.SigningServlet;
+import org.neuclear.id.signers.DemoSigningServlet;
 import org.xml.sax.SAXException;
 
 import javax.servlet.ServletException;
@@ -43,8 +43,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServletTest.java,v 1.1 2003/12/20 00:21:19 pelle Exp $
+$Id: AuthenticationServletTest.java,v 1.1 2004/03/02 18:59:13 pelle Exp $
 $Log: AuthenticationServletTest.java,v $
+Revision 1.1  2004/03/02 18:59:13  pelle
+Further cleanups in neuclear-id. Moved everything under id.
+
 Revision 1.1  2003/12/20 00:21:19  pelle
 overwrote the standard Object.toString(), hashCode() and equals() methods for SignedNamedObject/Core
 fixed cactus tests

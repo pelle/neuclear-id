@@ -1,4 +1,4 @@
-package org.neuclear.signers.servlet;
+package org.neuclear.id.signers;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
@@ -41,8 +41,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.5 2004/01/19 23:49:45 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.1 2004/03/02 18:59:10 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.1  2004/03/02 18:59:10  pelle
+Further cleanups in neuclear-id. Moved everything under id.
+
 Revision 1.5  2004/01/19 23:49:45  pelle
 Unit testing uncovered further issues with Base32
 NSTools is now uptodate as are many other classes. All transactional builders habe been updated.

@@ -1,4 +1,4 @@
-package org.neuclear.auth;
+package org.neuclear.id.auth;
 
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.Base64;
@@ -32,8 +32,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationFilter.java,v 1.2 2003/11/21 04:45:10 pelle Exp $
+$Id: AuthenticationFilter.java,v 1.1 2004/03/02 18:59:10 pelle Exp $
 $Log: AuthenticationFilter.java,v $
+Revision 1.1  2004/03/02 18:59:10  pelle
+Further cleanups in neuclear-id. Moved everything under id.
+
 Revision 1.2  2003/11/21 04:45:10  pelle
 EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
 Otherwise You will Finaliate.

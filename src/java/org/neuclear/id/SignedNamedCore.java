@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedCore.java,v 1.19 2004/02/18 00:14:32 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.20 2004/03/02 18:59:11 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.20  2004/03/02 18:59:11  pelle
+ * Further cleanups in neuclear-id. Moved everything under id.
+ *
  * Revision 1.19  2004/02/18 00:14:32  pelle
  * Many, many clean ups. I've readded Targets in a new method.
  * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
@@ -299,7 +302,7 @@ import java.sql.Timestamp;
  * @see SignedNamedObject
  * @see org.neuclear.id.verifier.VerifyingReader
  * @see org.neuclear.id.resolver.NSResolver
- * @see org.neuclear.senders.Sender
+ * @see org.neuclear.id.senders.Sender
  * @see org.neuclear.commons.crypto.signers.Signer
  */
 public final class SignedNamedCore {

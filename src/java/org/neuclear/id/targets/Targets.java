@@ -3,7 +3,7 @@ package org.neuclear.id.targets;
 import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.senders.Sender;
+import org.neuclear.id.senders.Sender;
 
 import java.util.List;
 
@@ -25,8 +25,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: Targets.java,v 1.1 2004/02/18 00:14:31 pelle Exp $
+$Id: Targets.java,v 1.2 2004/03/02 18:59:10 pelle Exp $
 $Log: Targets.java,v $
+Revision 1.2  2004/03/02 18:59:10  pelle
+Further cleanups in neuclear-id. Moved everything under id.
+
 Revision 1.1  2004/02/18 00:14:31  pelle
 Many, many clean ups. I've readded Targets in a new method.
 Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers

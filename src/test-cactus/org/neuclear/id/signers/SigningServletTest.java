@@ -1,9 +1,9 @@
-package org.neuclear.signers.servlet;
+package org.neuclear.id.signers;
 
 import com.meterware.httpunit.WebForm;
 import org.apache.cactus.ServletTestCase;
 import org.apache.cactus.WebRequest;
-import org.neuclear.auth.AuthenticationTicket;
+import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.Base64;
@@ -40,8 +40,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningServletTest.java,v 1.4 2004/01/19 23:49:45 pelle Exp $
+$Id: SigningServletTest.java,v 1.1 2004/03/02 18:59:13 pelle Exp $
 $Log: SigningServletTest.java,v $
+Revision 1.1  2004/03/02 18:59:13  pelle
+Further cleanups in neuclear-id. Moved everything under id.
+
 Revision 1.4  2004/01/19 23:49:45  pelle
 Unit testing uncovered further issues with Base32
 NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
@@ -54,7 +57,7 @@ Added TransferRequestServlet
 Added cactus tests to pay
 
 Revision 1.2  2003/12/12 19:28:03  pelle
-All the Cactus tests now for signing servlet.
+All the Cactus tests now for signing signers.
 Added working AuthenticationFilterTest
 Returned original functionality to DemoSigningServlet.
 This is set up to use the test keys stored in neuclear-commons.

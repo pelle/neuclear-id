@@ -1,4 +1,4 @@
-package org.neuclear.senders;
+package org.neuclear.id.senders;
 
 import org.neuclear.commons.NeuClearException;
 

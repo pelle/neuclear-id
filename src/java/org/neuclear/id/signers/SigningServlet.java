@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.29 2004/02/18 00:14:33 pelle Exp $
+ * $Id: SigningServlet.java,v 1.1 2004/03/02 18:59:10 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.1  2004/03/02 18:59:10  pelle
+ * Further cleanups in neuclear-id. Moved everything under id.
+ *
  * Revision 1.29  2004/02/18 00:14:33  pelle
  * Many, many clean ups. I've readded Targets in a new method.
  * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
@@ -54,7 +57,7 @@
  * configuration parameters in web.xml
  *
  * Revision 1.20  2003/12/12 19:28:03  pelle
- * All the Cactus tests now for signing servlet.
+ * All the Cactus tests now for signing signers.
  * Added working AuthenticationFilterTest
  * Returned original functionality to DemoSigningServlet.
  * This is set up to use the test keys stored in neuclear-commons.
@@ -256,7 +259,7 @@
  * To change template for new class use
  * Code Style | Class Templates options (Tools | IDE Options).
  */
-package org.neuclear.signers.servlet;
+package org.neuclear.id.signers;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;

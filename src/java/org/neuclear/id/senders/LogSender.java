@@ -1,4 +1,4 @@
-package org.neuclear.senders;
+package org.neuclear.id.senders;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
@@ -20,8 +20,11 @@ import java.text.ParseException;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 1:23:05 PM
- * $Id: LogSender.java,v 1.16 2004/02/18 00:14:33 pelle Exp $
+ * $Id: LogSender.java,v 1.1 2004/03/02 18:59:10 pelle Exp $
  * $Log: LogSender.java,v $
+ * Revision 1.1  2004/03/02 18:59:10  pelle
+ * Further cleanups in neuclear-id. Moved everything under id.
+ *
  * Revision 1.16  2004/02/18 00:14:33  pelle
  * Many, many clean ups. I've readded Targets in a new method.
  * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers

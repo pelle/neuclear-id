@@ -1,4 +1,4 @@
-package org.neuclear.senders;
+package org.neuclear.id.senders;
 
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.NSTools;

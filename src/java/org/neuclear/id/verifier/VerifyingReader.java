@@ -1,7 +1,7 @@
 package org.neuclear.id.verifier;
 
 import org.dom4j.Element;
-import org.neuclear.auth.AuthenticationTicket;
+import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.id.*;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
@@ -28,8 +28,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.19 2004/02/19 15:30:21 pelle Exp $
+$Id: VerifyingReader.java,v 1.20 2004/03/02 18:59:11 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.20  2004/03/02 18:59:11  pelle
+Further cleanups in neuclear-id. Moved everything under id.
+
 Revision 1.19  2004/02/19 15:30:21  pelle
 Various cleanups and corrections
 

@@ -1,4 +1,4 @@
-package org.neuclear.auth;
+package org.neuclear.id.auth;
 
 import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;

@@ -1,6 +1,9 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.17 2003/12/19 00:31:31 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.1 2004/03/02 18:59:10 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.1  2004/03/02 18:59:10  pelle
+ * Further cleanups in neuclear-id. Moved everything under id.
+ *
  * Revision 1.17  2003/12/19 00:31:31  pelle
  * Lots of usability changes through out all the passphrase agents and end user tools.
  *
@@ -30,7 +33,7 @@
  * configuration parameters in web.xml
  *
  * Revision 1.13  2003/12/12 19:28:03  pelle
- * All the Cactus tests now for signing servlet.
+ * All the Cactus tests now for signing signers.
  * Added working AuthenticationFilterTest
  * Returned original functionality to DemoSigningServlet.
  * This is set up to use the test keys stored in neuclear-commons.
@@ -186,7 +189,7 @@
  * To change template for new class use
  * Code Style | Class Templates options (Tools | IDE Options).
  */
-package org.neuclear.signers.servlet;
+package org.neuclear.id.signers;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;

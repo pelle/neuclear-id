@@ -26,7 +26,7 @@
      </context-param>
     <filter>
         <filter-name>authfilter</filter-name>
-        <filter-class>org.neuclear.auth.AuthenticationFilter</filter-class>
+        <filter-class>org.neuclear.id.auth.AuthenticationFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>authfilter</filter-name>
@@ -34,7 +34,7 @@
     </filter-mapping>
     <servlet>
         <servlet-name>demosigner</servlet-name>
-        <servlet-class>org.neuclear.signers.servlet.DemoSigningServlet</servlet-class>
+        <servlet-class>org.neuclear.id.signers.DemoSigningServlet</servlet-class>
         <init-param>
             <param-name>title</param-name>
             <param-value>NeuClear Demo Signer</param-value>
@@ -43,7 +43,7 @@
     </servlet>
     <servlet>
         <servlet-name>authenticator</servlet-name>
-        <servlet-class>org.neuclear.auth.AuthenticationServlet</servlet-class>
+        <servlet-class>org.neuclear.id.auth.AuthenticationServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>

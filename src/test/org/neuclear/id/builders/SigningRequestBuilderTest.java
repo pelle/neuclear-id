@@ -1,6 +1,6 @@
 package org.neuclear.id.builders;
 
-import org.neuclear.auth.AuthenticationTicket;
+import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.SignatureRequest;
@@ -27,8 +27,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningRequestBuilderTest.java,v 1.10 2004/01/20 17:39:13 pelle Exp $
+$Id: SigningRequestBuilderTest.java,v 1.11 2004/03/02 18:59:12 pelle Exp $
 $Log: SigningRequestBuilderTest.java,v $
+Revision 1.11  2004/03/02 18:59:12  pelle
+Further cleanups in neuclear-id. Moved everything under id.
+
 Revision 1.10  2004/01/20 17:39:13  pelle
 Further updates to unit tests
 

@@ -1,7 +1,7 @@
 package org.neuclear.id.builders;
 
 import org.dom4j.DocumentHelper;
-import org.neuclear.auth.AuthenticationTicket;
+import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.NSTools;
@@ -27,8 +27,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationTicketBuilder.java,v 1.10 2004/01/13 23:38:26 pelle Exp $
+$Id: AuthenticationTicketBuilder.java,v 1.11 2004/03/02 18:59:10 pelle Exp $
 $Log: AuthenticationTicketBuilder.java,v $
+Revision 1.11  2004/03/02 18:59:10  pelle
+Further cleanups in neuclear-id. Moved everything under id.
+
 Revision 1.10  2004/01/13 23:38:26  pelle
 Refactoring parts of the core of XMLSignature. There shouldnt be any real API changes.
 

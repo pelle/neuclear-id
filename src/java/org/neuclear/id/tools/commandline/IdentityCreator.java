@@ -1,5 +1,8 @@
-/* $Id: IdentityCreator.java,v 1.8 2004/02/18 00:14:31 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.9 2004/03/02 18:59:11 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.9  2004/03/02 18:59:11  pelle
+ * Further cleanups in neuclear-id. Moved everything under id.
+ *
  * Revision 1.8  2004/02/18 00:14:31  pelle
  * Many, many clean ups. I've readded Targets in a new method.
  * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
@@ -224,13 +227,13 @@ import org.neuclear.commons.crypto.signers.PublicKeySource;
 import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.builders.Builder;
 import org.neuclear.id.builders.IdentityBuilder;
-import org.neuclear.senders.LogSender;
+import org.neuclear.id.senders.LogSender;
 
 import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public final class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(final String[] args) throws UserCancellationException, ParseException, InvalidNamedObjectException {

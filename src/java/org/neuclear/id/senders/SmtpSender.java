@@ -1,12 +1,15 @@
-package org.neuclear.senders;
+package org.neuclear.id.senders;
 
 /**
  * (C) 2003 Antilles Software Ventures SA
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:52:38 AM
- * $Id: SmtpSender.java,v 1.17 2004/02/18 00:14:33 pelle Exp $
+ * $Id: SmtpSender.java,v 1.1 2004/03/02 18:59:10 pelle Exp $
  * $Log: SmtpSender.java,v $
+ * Revision 1.1  2004/03/02 18:59:10  pelle
+ * Further cleanups in neuclear-id. Moved everything under id.
+ *
  * Revision 1.17  2004/02/18 00:14:33  pelle
  * Many, many clean ups. I've readded Targets in a new method.
  * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers

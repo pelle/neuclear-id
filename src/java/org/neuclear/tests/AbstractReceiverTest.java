@@ -5,7 +5,7 @@ import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.verifier.VerifyingReader;
-import org.neuclear.receiver.Receiver;
+import org.neuclear.id.receiver.Receiver;
 import org.neuclear.xml.XMLException;
 
 import java.io.*;
@@ -29,8 +29,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AbstractReceiverTest.java,v 1.6 2003/12/11 23:57:29 pelle Exp $
+$Id: AbstractReceiverTest.java,v 1.7 2004/03/02 18:59:12 pelle Exp $
 $Log: AbstractReceiverTest.java,v $
+Revision 1.7  2004/03/02 18:59:12  pelle
+Further cleanups in neuclear-id. Moved everything under id.
+
 Revision 1.6  2003/12/11 23:57:29  pelle
 Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
 Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
