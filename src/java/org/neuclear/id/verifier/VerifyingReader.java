@@ -30,8 +30,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.24 2004/04/17 19:28:22 pelle Exp $
+$Id: VerifyingReader.java,v 1.25 2004/04/19 18:44:17 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.25  2004/04/19 18:44:17  pelle
+Stores a cache on disk
+
 Revision 1.24  2004/04/17 19:28:22  pelle
 Identity is now fully html based as is the ServiceBuilder.
 VerifyingReader correctly identifies html files and parses them as such.
@@ -176,8 +179,8 @@ todo with regards to cleaning up some of the outlying parts of the code.
 public final class VerifyingReader {
     private VerifyingReader() {
         readers = new HashMap();
-        readers.put("Identity", new Identity.Reader());
-        readers.put("Asset", new Identity.Reader());
+        readers.put("identity", new Identity.Reader());
+        readers.put("asset", new Identity.Reader());
         readers.put(AuthenticationTicket.TAG_NAME, new AuthenticationTicket.Reader());
         readers.put(SignatureRequest.SIGREQUEST_TAG, new SignatureRequest.Reader());
         readers.put(SignedMessage.TAG_NAME, new SignedMessage.Reader());
@@ -221,8 +224,8 @@ public final class VerifyingReader {
         if (elem.getName().equals("html")) {
             Attribute type = (Attribute) elem.selectSingleNode("//html/head/meta[@name='neu:type']/@content");
             if (type != null && type.getValue() != null)
-                return type.getValue();
-            return "Identity"; //default to identity
+                return type.getValue().toLowerCase();
+            return "identity"; //default to identity
         }
         return elem.getName();
     }
