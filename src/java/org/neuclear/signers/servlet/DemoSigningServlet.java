@@ -1,6 +1,14 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.14 2003/12/14 20:53:04 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.15 2003/12/15 14:38:30 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.15  2003/12/15 14:38:30  pelle
+ * Added EnsureHostRequestFilter to commons, to only allow requests from a particular IP
+ * Added a method to optionally show the passphrase box in the SigningServlet. As the default SigningServlet
+ * is intended to be used with a gui passphrase agent, we dont want to display it.
+ * The DemoSigningServlet does display the dialogue.
+ * Added the new neuclear-signer package, which is a standalone web signer using Jetty. The project runs
+ * when built with "maven javaapp". More testing needs to be done as well as a startup wizard.
+ *
  * Revision 1.14  2003/12/14 20:53:04  pelle
  * Added ServletPassPhraseAgent which uses ThreadLocal to transfer the passphrase to the signer.
  * Added ServletSignerFactory, which builds Signers for use within servlets based on parameters in the Servlets
@@ -182,6 +190,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.security.GeneralSecurityException;
 
 public final class DemoSigningServlet extends SigningServlet {
@@ -199,6 +208,9 @@ public final class DemoSigningServlet extends SigningServlet {
         agent.setRequest(request);
         super.handleInputStream(is, request, response);
         agent.clear();
+    }
+    protected void writePassphraseDialogue(final PrintWriter out) {
+        out.println("Passphrase: <input name=\"passphrase\" type=\"password\" size=\"40\">");
     }
 
      private final ServletPassPhraseAgent agent;

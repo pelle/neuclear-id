@@ -1,6 +1,14 @@
 /*
- * $Id: SigningServlet.java,v 1.21 2003/12/14 20:53:04 pelle Exp $
+ * $Id: SigningServlet.java,v 1.22 2003/12/15 14:38:30 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.22  2003/12/15 14:38:30  pelle
+ * Added EnsureHostRequestFilter to commons, to only allow requests from a particular IP
+ * Added a method to optionally show the passphrase box in the SigningServlet. As the default SigningServlet
+ * is intended to be used with a gui passphrase agent, we dont want to display it.
+ * The DemoSigningServlet does display the dialogue.
+ * Added the new neuclear-signer package, which is a standalone web signer using Jetty. The project runs
+ * when built with "maven javaapp". More testing needs to be done as well as a startup wizard.
+ *
  * Revision 1.21  2003/12/14 20:53:04  pelle
  * Added ServletPassPhraseAgent which uses ThreadLocal to transfer the passphrase to the signer.
  * Added ServletSignerFactory, which builds Signers for use within servlets based on parameters in the Servlets
@@ -340,7 +348,8 @@ public class SigningServlet extends XMLInputStreamServlet {
             out.print(Base64.encode(sigreq.getEncoded().getBytes()));
             out.print("\" type=\"hidden\">\n <input name=\"endpoint\" value=\"");
             out.print(endpoint);
-            out.println("\" type=\"hidden\"/>\nPassphrase: <input name=\"passphrase\" type=\"password\" size=\"40\">");
+            out.println("\" type=\"hidden\"/>\n");
+            writePassphraseDialogue(out);
             out.println(" <input type=\"submit\" name=\"sign\" value=\"Sign\"></form></td></tr></table>");
         } else if (!Utility.isEmpty(endpoint)) {
             out.print("<tr><td>Signed, returning to site...<form action=\"");
@@ -359,6 +368,9 @@ public class SigningServlet extends XMLInputStreamServlet {
         }
 
 
+    }
+
+    protected void writePassphraseDialogue(final PrintWriter out) {
     }
 
     protected javax.servlet.ServletContext context;
