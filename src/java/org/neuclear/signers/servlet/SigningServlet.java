@@ -1,6 +1,10 @@
 /*
- * $Id: SigningServlet.java,v 1.11 2003/11/15 01:58:16 pelle Exp $
+ * $Id: SigningServlet.java,v 1.12 2003/11/18 00:01:55 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.12  2003/11/18 00:01:55  pelle
+ * The sample signing web application for logging in and out is now working.
+ * There had been an issue in the canonicalizer when dealing with the embedded object of the SignatureRequest object.
+ *
  * Revision 1.11  2003/11/15 01:58:16  pelle
  * More work all around on web applications.
  *
@@ -245,7 +249,7 @@ public class SigningServlet extends ReceiverServlet {
                     out.flush();
                     try {
                         context.log("SIGN: Signing with " + parent);
-                        named.sign(parent, signer);
+                        named.sign(signer);
                         isSigned = true;
                         out.println("Signed<br>");
                         out.println("<br>Verifying...");
@@ -255,6 +259,7 @@ public class SigningServlet extends ReceiverServlet {
 
                     } catch (InvalidNamedObject e) {
                         out.println("<br><font color=\"red\"><b>ERROR: Invalid Identity</b></font><br>");
+                        //e.printStackTrace(out);
                         isSigned = false;
                     } catch (InvalidPassphraseException e) {
                         out.println("<br><font color=\"red\"><b>ERROR: Wrong Passphrase</b></font><br>");

@@ -14,7 +14,6 @@ import org.neuclear.xml.XMLTools;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 
 import java.io.InputStream;
-import java.security.PublicKey;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,8 +36,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.8 2003/11/15 01:58:16 pelle Exp $
+$Id: VerifyingReader.java,v 1.9 2003/11/18 00:01:55 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.9  2003/11/18 00:01:55  pelle
+The sample signing web application for logging in and out is now working.
+There had been an issue in the canonicalizer when dealing with the embedded object of the SignatureRequest object.
+
 Revision 1.8  2003/11/15 01:58:16  pelle
 More work all around on web applications.
 
@@ -113,7 +116,7 @@ public class VerifyingReader {
         Element elem = XMLTools.loadDocument(is).getRootElement();
         String name = NSTools.normalizeNameURI(elem.attributeValue(getNameAttrQName()));
         String signatoryName = NSTools.getParentNSURI(name);
-        PublicKey pubs[] = null;
+
         Identity signatory = NSResolver.resolveIdentity(signatoryName);
         if (XMLSecTools.verifySignature(elem, signatory.getPublicKey())) {
             //I should be able to get this from within. This is just a quick hack.

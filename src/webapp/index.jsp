@@ -40,7 +40,7 @@ Use the passphrase: "<tt>neuclear</tt>" when asked.
 <%
     } else {
         %>
-        <%=userns%> is Logged In<br><hr>
+        <%=userns.getName()%> is Logged In<br><hr>
         <a href="<%=ServletTools.getAbsoluteURL(request,"/")%>?logout=1">Log Out</a>
         <%
     }

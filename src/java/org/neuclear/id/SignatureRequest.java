@@ -1,5 +1,6 @@
 package org.neuclear.id;
 
+import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
@@ -26,8 +27,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequest.java,v 1.2 2003/11/11 21:18:43 pelle Exp $
+$Id: SignatureRequest.java,v 1.3 2003/11/18 00:01:55 pelle Exp $
 $Log: SignatureRequest.java,v $
+Revision 1.3  2003/11/18 00:01:55  pelle
+The sample signing web application for logging in and out is now working.
+There had been an issue in the canonicalizer when dealing with the embedded object of the SignatureRequest object.
+
 Revision 1.2  2003/11/11 21:18:43  pelle
 Further vital reshuffling.
 org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -77,8 +82,10 @@ public class SignatureRequest extends SignedNamedObject {
          */
         public SignedNamedObject read(Element elem, String name, Identity signatory, String digest, Timestamp timestamp) throws XMLSecurityException, NeuClearException {
             Element request = elem.element(DocumentHelper.createQName("Unsigned", NSTools.NS_NEUID));
-            String userid = request.attributeValue(DocumentHelper.createQName("userid", NSTools.NS_NEUID));
-            NamedObjectBuilder unsigned = new NamedObjectBuilder((Element) request.elements().get(0));
+            String userid = elem.attributeValue(DocumentHelper.createQName("userid", NSTools.NS_NEUID));
+            Element uelem = ((Element) request.elements().get(0)).createCopy();
+            Document doc = DocumentHelper.createDocument(uelem);
+            NamedObjectBuilder unsigned = new NamedObjectBuilder(uelem);
             String description = null;
             Element descrelem = elem.element(DocumentHelper.createQName("Description", NSTools.NS_NEUID));
             if (descrelem != null)
