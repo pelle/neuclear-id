@@ -1,7 +1,12 @@
 /*
  *
- * $Id: CachedSource.java,v 1.10 2003/11/09 03:27:19 pelle Exp $
+ * $Id: CachedSource.java,v 1.11 2003/11/10 17:42:36 pelle Exp $
  * $Log: CachedSource.java,v $
+ * Revision 1.11  2003/11/10 17:42:36  pelle
+ * The AssetController interface has been more or less finalized.
+ * CurrencyController fully implemented
+ * AssetControlClient implementes a remote client for communicating with AssetControllers
+ *
  * Revision 1.10  2003/11/09 03:27:19  pelle
  * More house keeping and shuffling about mainly pay
  *
@@ -20,8 +25,8 @@
  * Revision 1.8  2003/11/06 23:49:00  pelle
  * Major Refactoring of CurrencyController.
  * Factored out AssetController to be new abstract parent class together with most of its support classes.
- * Created (Half way) RemoteAssetController, which can perform transactions on external AssetControllers via NeuClear.
- * Created the first attempt at the ExchangeAgent. This will need use of the RemoteAssetController.
+ * Created (Half way) AssetControlClient, which can perform transactions on external AssetControllers via NeuClear.
+ * Created the first attempt at the ExchangeAgent. This will need use of the AssetControlClient.
  * SOAPTools was changed to return a stream. This is required by the VerifyingReader in NeuClear.
  *
  * Revision 1.7  2003/11/05 23:40:21  pelle

@@ -1,12 +1,13 @@
-package org.neuclear.receiver;
+package org.neuclear.tests;
 
 import junit.framework.TestCase;
-import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.InvalidIdentityException;
-import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.verifier.VerifyingReader;
 import org.neudist.crypto.CryptoTools;
 import org.neudist.xml.XMLException;
+import org.neuclear.id.verifier.VerifyingReader;
+import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.InvalidIdentityException;
+import org.neuclear.receiver.Receiver;
+import org.neuclear.commons.NeuClearException;
 
 import java.io.*;
 
@@ -28,8 +29,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AbstractReceiverTest.java,v 1.1 2003/10/25 00:39:54 pelle Exp $
+$Id: AbstractReceiverTest.java,v 1.1 2003/11/10 17:42:37 pelle Exp $
 $Log: AbstractReceiverTest.java,v $
+Revision 1.1  2003/11/10 17:42:37  pelle
+The AssetController interface has been more or less finalized.
+CurrencyController fully implemented
+AssetControlClient implementes a remote client for communicating with AssetControllers
+
 Revision 1.1  2003/10/25 00:39:54  pelle
 Fixed SmtpSender it now sends the messages.
 Refactored CommandLineSigner. Now it simply signs files read from command line. However new class IdentityCreator
@@ -54,34 +60,34 @@ public abstract class AbstractReceiverTest extends TestCase {
     /**
      * The receiver to test. This would probably be initialized by the constructor
      * of the implementing class.
-     * 
-     * @return 
+     *
+     * @return
      */
     public abstract Receiver getReceiver();
 
     /**
      * The extension of files to verify, eg. ".xml"
-     * 
-     * @return 
+     *
+     * @return
      */
     public abstract String getExtension();
 
     /**
      * Verify the effect of the transaction based on the given state.
-     * 
+     *
      * @param obj   The Transaction Object to test
      * @param state An object created first from the matching getPreTransactionState() method.
-     * @return 
+     * @return
      */
     public abstract boolean verifyTransaction(SignedNamedObject obj, Object state) throws Exception;
 
     /**
      * Should return an object identifying the state of the system prior to the transaction.
      * The object should be meaningful to the matching verifyTransaction method.
-     * 
-     * @param obj 
-     * @return 
-     * @throws Exception 
+     *
+     * @param obj
+     * @return
+     * @throws Exception
      */
     public abstract Object getPreTransactionState(SignedNamedObject obj) throws Exception;
 

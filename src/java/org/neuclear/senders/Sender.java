@@ -5,8 +5,13 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:29:29 AM
- * $Id: Sender.java,v 1.8 2003/11/09 03:27:19 pelle Exp $
+ * $Id: Sender.java,v 1.9 2003/11/10 17:42:36 pelle Exp $
  * $Log: Sender.java,v $
+ * Revision 1.9  2003/11/10 17:42:36  pelle
+ * The AssetController interface has been more or less finalized.
+ * CurrencyController fully implemented
+ * AssetControlClient implementes a remote client for communicating with AssetControllers
+ *
  * Revision 1.8  2003/11/09 03:27:19  pelle
  * More house keeping and shuffling about mainly pay
  *
@@ -25,8 +30,8 @@ package org.neuclear.senders;
  * Revision 1.6  2003/11/06 23:48:59  pelle
  * Major Refactoring of CurrencyController.
  * Factored out AssetController to be new abstract parent class together with most of its support classes.
- * Created (Half way) RemoteAssetController, which can perform transactions on external AssetControllers via NeuClear.
- * Created the first attempt at the ExchangeAgent. This will need use of the RemoteAssetController.
+ * Created (Half way) AssetControlClient, which can perform transactions on external AssetControllers via NeuClear.
+ * Created the first attempt at the ExchangeAgent. This will need use of the AssetControlClient.
  * SOAPTools was changed to return a stream. This is required by the VerifyingReader in NeuClear.
  *
  * Revision 1.5  2003/10/21 22:31:13  pelle

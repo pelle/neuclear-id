@@ -1,6 +1,11 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.5 2003/10/21 22:31:12 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.6 2003/11/10 17:42:36 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.6  2003/11/10 17:42:36  pelle
+ * The AssetController interface has been more or less finalized.
+ * CurrencyController fully implemented
+ * AssetControlClient implementes a remote client for communicating with AssetControllers
+ *
  * Revision 1.5  2003/10/21 22:31:12  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
  * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -151,6 +156,7 @@ import org.neudist.xml.XMLException;
 import org.neudist.xml.xmlsec.SignedElement;
 import org.neudist.xml.xmlsec.XMLSecTools;
 import org.neudist.xml.xmlsec.XMLSecurityException;
+import org.neudist.crypto.Signer;
 
 import java.sql.Timestamp;
 import java.util.Iterator;
@@ -200,6 +206,9 @@ public class NamedObjectBuilder extends SignedElement implements Named {
         super(doc.getRootElement());
     }
 
+    final public void  sign(Signer signer) throws NeuClearException, XMLSecurityException {
+        sign(getParent().getName(),signer);
+    }
     /**
      * The full name (URI) of an object
      * @return String containing the fully qualified URI of an object
