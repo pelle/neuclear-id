@@ -1,6 +1,14 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.15 2003/12/15 14:38:30 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.16 2003/12/16 23:17:06 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.16  2003/12/16 23:17:06  pelle
+ * Work done on the SigningServlet. The two phase web model is now only an option.
+ * Allowing much quicker signing, using the GuiDialogueAgent.
+ * The screen has also been cleaned up and displays the xml to be signed.
+ * The GuiDialogueAgent now optionally remembers passphrases and has a checkbox to support this.
+ * The PassPhraseAgent's now have a UserCancelsException, which allows the agent to tell the application if the user specifically
+ * cancels the signing process.
+ *
  * Revision 1.15  2003/12/15 14:38:30  pelle
  * Added EnsureHostRequestFilter to commons, to only allow requests from a particular IP
  * Added a method to optionally show the passphrase box in the SigningServlet. As the default SigningServlet
@@ -178,11 +186,14 @@
 package org.neuclear.signers.servlet;
 
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.passphraseagents.PassPhraseAgent;
 import org.neuclear.commons.crypto.passphraseagents.ServletPassPhraseAgent;
 import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
+import org.neuclear.commons.crypto.Base64;
 import org.neuclear.xml.XMLException;
+import org.neuclear.id.SignatureRequest;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.SingleThreadModel;
@@ -209,8 +220,20 @@ public final class DemoSigningServlet extends SigningServlet {
         super.handleInputStream(is, request, response);
         agent.clear();
     }
-    protected void writePassphraseDialogue(final PrintWriter out) {
+    protected boolean isReadyToSign(HttpServletRequest request) {
+        return !Utility.isEmpty(request.getParameter("sign"));
+    }
+    protected void printSecondStageForm(HttpServletRequest request, final PrintWriter out, SignatureRequest sigreq, final String endpoint) {
+        out.println("<table><tr><td ><h4>Do you wish to sign this?</h4></td></tr>");
+        out.print("<tr><td><form action=\"");
+        out.print(request.getRequestURL());
+        out.print("\" method=\"POST\"><input name=\"neuclear-request\" value=\"");
+        out.print(Base64.encode(sigreq.getEncoded().getBytes()));
+        out.print("\" type=\"hidden\">\n <input name=\"endpoint\" value=\"");
+        out.print(endpoint);
+        out.println("\" type=\"hidden\"/>\n");
         out.println("Passphrase: <input name=\"passphrase\" type=\"password\" size=\"40\">");
+        out.println(" <input type=\"submit\" name=\"sign\" value=\"Sign\"></form></td></tr></table>");
     }
 
      private final ServletPassPhraseAgent agent;
