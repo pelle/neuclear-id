@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<document>
+
+	<properties>
+		<title>The Busy Developer's Guide to the NeuClear ID API</title>
+		<author email="pelle@neubia.com">Pelle Braendgaard</author>
+	</properties>
+
+	<body>
+		<section name="Introduction">
+
+            <h3>Scope</h3>
+            <p>
+                This document describes in Example form the usage of the NeuClear ID API. The Document is not intended as
+                an implemntation document or a strict API definition. The current final API Specifications can be found in the
+                <a href="apidocs/index.html">Project Java Docs</a>.
+            </p>
+            <h3>Purpose</h3>
+                <p>
+                    The main purpose of the NeuClear ID API is to provide a simple framework and API for building applications
+                    using a Public Key Infrastructure (PKI).
+                </p>
+        </section>
+        <section name="Creating an Identity">
+            <p>
+                All messages (<a href="apidocs/org/neuclear/id/SignedNamedObject.html">SignedNamedObjects</a> in NeuClear lingo)
+                in NeuClear ID must be signed by an <a href="apidocs/org/neuclear/id/Identity.html">Identity</a>. So to get started we
+                must first create a new Identity.
+            </p>
+            <p>
+                The easiest way to get started is to use the neuclear-id-uber.jar from a command line.
+                We need to have the following ready:
+            </p> 
+            <ul>
+                <li>The Name</li>
+                <li>A default receiver</li>
+                <li>A Public/Private KeyPair</li>
+
+            </ul>
+            <p>
+                As we first need to create a top level Identity for your domain we will use the name neu://yourdomain.com as the
+                Identity name. For now to keep things simple lets use your email address as the default receiver.
+            </p>
+            <p>
+                Now we know the name of our new identity we first need to create our keypair. Sun provides us with a very badly designed
+                tool called <a href="http://java.sun.com/j2se/1.4.2/docs/tooldocs/solaris/keytool.html">keytool</a> which we can use to
+                create and store our keypair. The NeuClear toolset will provide its own keygeneration tools soon, but for now we've got to do it like this:
+            </p>
+            <source> <![CDATA[
+$ keytool -genkey -keyalg RSA -alias neu://yourdomain.com
+Enter keystore password:  #####
+What is your first and last name?
+  [Unknown]:  neu://yourdomain.com
+What is the name of your organizational unit?
+  [Unknown]:  Your Domain
+What is the name of your organization?
+  [Unknown]:  Your Domain
+What is the name of your City or Locality?
+  [Unknown]:  Panama City
+What is the name of your State or Province?
+  [Unknown]:  Panama
+What is the two-letter country code for this unit?
+  [Unknown]:  PA
+Is CN=neu://yourdomain.com, OU=Your Domain, O=Your Domain, L=Panama City, ST=Panama, C=PA correct?
+  [no]:  yes
+
+Enter key password for <neu://yourdomain.com>
+        (RETURN if same as keystore password):
+            ]]></source>
+            <p>
+                This makes our commandline look like this:
+            </p>
+            <source> <![CDATA[
+java -jar neuclear-id-uber.jar neu://yourdomain.com mailto:joeblogs@yourdomain.com
+            ]]></source>
+            <p>
+            </p>
+        </section>
+
+
+	</body>
+
+</document>

@@ -13,6 +13,7 @@
 		<menu name="NeuClear">
 			<item name="Front Page"            href="/index.html"/>
             <item name="Overview"            href="/overview.html"/>
+            <item name="Busy Developers Guide" href="/bdg.html"/>
 <!--            <item name="SubProjects" href="/subprojects.html">
                 <item name="XMLSignature Library" href="http://www.NeuClear.org/xmlsig/index.html"/>
             </item>
