@@ -53,13 +53,8 @@ public class IdentityTests extends AbstractObjectCreationTest {
     }
 
     public void testAnonymous() throws NoSuchAlgorithmException {
-        <<<<<<< IdentityTests.java
         KeyPair kp = CryptoTools.createTinyDSAKeyPair();
         Identity id = new Identity(kp.getPublic());
-        =======
-        KeyPair kp = CryptoTools.createTinyRSAKeyPair();
-        Identity id = new Identity(kp.getPublic());
-        >>>>>>> 1.6
         assertNotNull(id);
         assertNotNull(id.getName());
         assertEquals("sha1:", id.getName().substring(0, 5));
@@ -68,7 +63,6 @@ public class IdentityTests extends AbstractObjectCreationTest {
 
     }
 
-    <<<<<<< IdentityTests.java
     public void testEmbedded() throws NoSuchAlgorithmException, XMLSecurityException, CryptoException, NameResolutionException, InvalidNamedObjectException {
         KeyPair kp = CryptoTools.createTinyDSAKeyPair();
         Document doc = DocumentHelper.createDocument();
@@ -80,30 +74,15 @@ public class IdentityTests extends AbstractObjectCreationTest {
         assertEquals("sha1:", obj.getName().substring(0, 5));
         assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(kp.getPublic().getEncoded())), obj.getName().substring(5, 37));
         assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(obj.getEncoded().getBytes())), obj.getName().substring(obj.getName().length() - 32));
-        =======
-        public void testEmbedded
-        () throws NoSuchAlgorithmException, XMLSecurityException, CryptoException, NameResolutionException, InvalidNamedObjectException
-        {
-            KeyPair kp = CryptoTools.createTinyRSAKeyPair();
-            Document doc = DocumentHelper.createDocument();
-            Element elem = doc.addElement("TestElement");
-            XMLSignature sig = new XMLSignature(kp, elem);
-            assertEquals(kp.getPublic(), sig.getSignersKey());
-            SignedNamedObject obj = VerifyingReader.getInstance().read(elem);
-            System.out.println("Name: " + obj.getName());
-            assertEquals("sha1:", obj.getName().substring(0, 5));
-            assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(kp.getPublic().getEncoded())), obj.getName().substring(5, 37));
-            assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(obj.getEncoded().getBytes())), obj.getName().substring(obj.getName().length() - 32));
-            >>>>>>> 1.6
 
 
-            Identity id = obj.getSignatory();
-            assertNotNull(id);
-            assertNotNull(id.getName());
-            assertEquals("sha1:", id.getName().substring(0, 5));
-            assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(kp.getPublic().getEncoded())), id.getName().substring(5));
-            assertEquals(kp.getPublic(), id.getPublicKey());
+        Identity id = obj.getSignatory();
+        assertNotNull(id);
+        assertNotNull(id.getName());
+        assertEquals("sha1:", id.getName().substring(0, 5));
+        assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(kp.getPublic().getEncoded())), id.getName().substring(5));
+        assertEquals(kp.getPublic(), id.getPublicKey());
 
 
-        }
     }
+}
