@@ -1,6 +1,13 @@
 /*
-  $Id: NSToolsTest.java,v 1.11 2003/11/21 04:45:17 pelle Exp $
+  $Id: NSToolsTest.java,v 1.12 2003/12/06 00:17:04 pelle Exp $
   $Log: NSToolsTest.java,v $
+  Revision 1.12  2003/12/06 00:17:04  pelle
+  Updated various areas in NSTools.
+  Updated URI Validation in particular to support new expanded format
+  Updated createUniqueID and friends to be a lot more unique and more efficient.
+  In CryptoTools updated getRandom() to finally use a SecureRandom.
+  Changed CryptoTools.getFormatURLSafe to getBase36 because that is what it really is.
+
   Revision 1.11  2003/11/21 04:45:17  pelle
   EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
   Otherwise You will Finaliate.
@@ -19,7 +26,7 @@
 
   Revision 1.8  2003/10/23 22:02:36  pelle
   Moved some certificates to live status at http://repository.neuclear.org
-  Updated NSTools.url2path to support neuids with @ signs.
+  Updated NSTools.name2path to support neuids with @ signs.
 
   Revision 1.7  2003/10/22 23:11:43  pelle
   Updated the getParentURI method to support the new neu://test@home format.
@@ -106,6 +113,7 @@ package org.neuclear.id;
 
 import junit.framework.TestCase;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.CryptoTools;
 
 
 /**
@@ -115,6 +123,9 @@ public final class NSToolsTest extends TestCase {
 
     public NSToolsTest(final String name) {
         super(name);
+        CryptoTools.createRandomID();//Initialises the Random number generator to not scew times in the generateID test
+
+
     }
 
     private static void assertValidName(final String name) throws NeuClearException {
@@ -126,24 +137,42 @@ public final class NSToolsTest extends TestCase {
     }
 
     public final void testValidName() throws NeuClearException {
-        assertValidName("/");
         assertValidName("neu://");
-        assertValidName("/help");
-        assertValidName("neu://help");
-        assertValidName("neu://help/abcdefg232Avc");
-        assertValidName("/help/abcdefg232Avc");
+        assertValidName("neu://hel-_.p");
+        assertValidName("neu://help/ab-c_defg232Avc");
 
-        assertValidName("neu://pelle@help");
+        assertValidName("neu://pelle.user-guy_type@help");
         assertValidName("neu://pelle@help/abcdefg232Avc");
 
         assertValidName("neu://pelle@neuclear.org");
         assertValidName("neu://pelle@neuclear.org/abcdefg232Avc");
-        assertValidName("/help/abcd_efg.-232Avc/");
+
+        assertValidName("neu://help!aasfdasdf3_.-243");
+        assertValidName("neu://help/abcdefg232Avc!aasfdasdf3_.-243");
+
+        assertValidName("neu://pelle@help!aasfdasdf3_.-243");
+        assertValidName("neu://pelle@help/abcdefg232Avc!aasfdasdf3_.-243");
+
+        assertValidName("neu://pelle@neuclear.org!aasfdasdf3_.-243");
+        assertValidName("neu://pelle@neuclear.org/abcdefg232Avc!aasfdasdf3_.-243");
 
         assertInvalidName("neu:/");
         assertInvalidName("neu://pelle@");
+        assertInvalidName("neu://pelle@/test");
+        assertInvalidName("neu://@test");
         assertInvalidName("neu://test/pelle@help");
         assertInvalidName("neu://test/pelle@help/abcdefg232Avc");
+
+        assertInvalidName("neu://hel-_.p*34)");
+        assertInvalidName("neu://help/ab-c_d.efg232Avc");
+
+        assertInvalidName("neu://pelle.user-g!uy_type@help");
+        assertInvalidName("neu://pelle@help/ab.cdefg232Avc");
+
+        assertInvalidName("/");
+        assertInvalidName("/help");
+        assertInvalidName("/help/abcdefg232Avc");
+        assertInvalidName("/help/abcd_efg.-232Avc/");
 
         assertInvalidName("neu");
         assertInvalidName("");
@@ -160,26 +189,26 @@ public final class NSToolsTest extends TestCase {
         assertEquals("neu://hello", NSTools.getParentNSURI("neu://hello/one"));
         assertEquals("neu://hello", NSTools.getParentNSURI("neu://one@hello"));
         assertEquals("neu://one@hello", NSTools.getParentNSURI("neu://one@hello/test"));
-        assertEquals("neu://hello", NSTools.getParentNSURI("/hello/one"));
+        assertEquals("neu://hello", NSTools.getParentNSURI("neu://hello/one"));
         assertEquals("neu://", NSTools.getParentNSURI("neu://hello"));
-        assertEquals("neu://", NSTools.getParentNSURI("/hello"));
+        assertEquals("neu://one@hello", NSTools.getParentNSURI("neu://one@hello!test"));
+        assertEquals("neu://hello", NSTools.getParentNSURI("neu://hello!one"));
         assertEquals("neu://", NSTools.getParentNSURI("neu://"));
-        assertEquals("neu://", NSTools.getParentNSURI("/"));
 
     }
 
-    public static void testURL2Path() {
-        assertEquals("/", NSTools.url2path("neu://"));
-        assertEquals("/", NSTools.url2path("/"));
-        assertEquals("/test", NSTools.url2path("neu://test"));
-        assertEquals("/test", NSTools.url2path("/test"));
-        assertEquals("/test/@pelle", NSTools.url2path("neu://pelle@test"));
-        assertEquals("/test/@pelle", NSTools.url2path("/pelle@test"));
-        assertEquals("/test/@pelle/one", NSTools.url2path("neu://pelle@test/one"));
-        assertEquals("/test/@pelle/one", NSTools.url2path("/pelle@test/one"));
-        assertEquals("/test/@pelle/one/two", NSTools.url2path("neu://pelle@test/one/two"));
-        assertEquals("/test/@pelle/one/two", NSTools.url2path("/pelle@test/one/two"));
-
+    public static void testURL2Path() throws InvalidNamedObject {
+        assertEquals("/", NSTools.name2path("neu://"));
+        assertEquals("/test", NSTools.name2path("neu://test"));
+        assertEquals("/test/@pelle", NSTools.name2path("neu://pelle@test"));
+        assertEquals("/test/@pelle/one", NSTools.name2path("neu://pelle@test/one"));
+        assertEquals("/test/@pelle/one/two", NSTools.name2path("neu://pelle@test/one/two"));
     }
 
+    public static void testGenerateIDs() {
+        assertTrue(NSTools.isValidName(NSTools.createUniqueTransactionID("neu://bob@test", "neu://neuclear.org")));
+        assertTrue(NSTools.isValidName(NSTools.createUniqueTransactionID("neu://bob@test/one", "neu://neuclear.org")));
+        assertTrue(NSTools.isValidName(NSTools.createUniqueTransactionID("neu://neuclear.org", "neu://bob@neuclear.org")));
+        assertTrue(NSTools.isValidName(NSTools.createUniqueTransactionID("neu://bob@test.org", "neu://neuclear.org/test")));
+    }
 }

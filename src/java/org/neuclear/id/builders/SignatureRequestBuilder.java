@@ -2,10 +2,10 @@ package org.neuclear.id.builders;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.Utility;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignatureRequest;
-import org.neuclear.commons.Utility;
-import org.neuclear.commons.NeuClearException;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -25,8 +25,15 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestBuilder.java,v 1.3 2003/11/21 04:45:10 pelle Exp $
+$Id: SignatureRequestBuilder.java,v 1.4 2003/12/06 00:17:03 pelle Exp $
 $Log: SignatureRequestBuilder.java,v $
+Revision 1.4  2003/12/06 00:17:03  pelle
+Updated various areas in NSTools.
+Updated URI Validation in particular to support new expanded format
+Updated createUniqueID and friends to be a lot more unique and more efficient.
+In CryptoTools updated getRandom() to finally use a SecureRandom.
+Changed CryptoTools.getFormatURLSafe to getBase36 because that is what it really is.
+
 Revision 1.3  2003/11/21 04:45:10  pelle
 EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
 Otherwise You will Finaliate.
@@ -52,7 +59,7 @@ Created SignatureRequest and friends to send unsigned NamedObjectBuilders to int
  */
 public final class SignatureRequestBuilder extends NamedObjectBuilder {
     public SignatureRequestBuilder(final String requestor, final String userid, final NamedObjectBuilder unsigned, final String description) throws NeuClearException {
-        super(NSTools.createUniqueNamedID(requestor, userid), SignatureRequest.SIGREQUEST_TAG);
+        super(NSTools.createUniqueTransactionID(requestor, userid), SignatureRequest.SIGREQUEST_TAG);
         final Element unsignedElem = getElement().addElement(DocumentHelper.createQName("Unsigned", NSTools.NS_NEUID));
         unsignedElem.add(unsigned.getElement());
         getElement().addAttribute(DocumentHelper.createQName("userid", NSTools.NS_NEUID), userid);

@@ -5,8 +5,15 @@ package org.neuclear.source;
  * User: pelleb
  * Date: Feb 10, 2003
  * Time: 8:35:33 PM
- * $Id: HttpSource.java,v 1.10 2003/12/04 21:50:36 pelle Exp $
+ * $Id: HttpSource.java,v 1.11 2003/12/06 00:17:04 pelle Exp $
  * $Log: HttpSource.java,v $
+ * Revision 1.11  2003/12/06 00:17:04  pelle
+ * Updated various areas in NSTools.
+ * Updated URI Validation in particular to support new expanded format
+ * Updated createUniqueID and friends to be a lot more unique and more efficient.
+ * In CryptoTools updated getRandom() to finally use a SecureRandom.
+ * Changed CryptoTools.getFormatURLSafe to getBase36 because that is what it really is.
+ *
  * Revision 1.10  2003/12/04 21:50:36  pelle
  * Mainly documentation changes.
  *
@@ -101,7 +108,7 @@ public final class HttpSource extends Source {
 
     protected final InputStream getStream(final String endpoint, final String name) throws NeuClearException {
         try {
-            final String urlstring = endpoint + NSTools.url2path(name);
+            final String urlstring = endpoint + NSTools.name2path(name);
             final URL url = new URL(urlstring);
 
             return url.openStream();

@@ -1,7 +1,14 @@
 /*
  *
- * $Id: CachedSource.java,v 1.14 2003/12/04 21:50:36 pelle Exp $
+ * $Id: CachedSource.java,v 1.15 2003/12/06 00:17:03 pelle Exp $
  * $Log: CachedSource.java,v $
+ * Revision 1.15  2003/12/06 00:17:03  pelle
+ * Updated various areas in NSTools.
+ * Updated URI Validation in particular to support new expanded format
+ * Updated createUniqueID and friends to be a lot more unique and more efficient.
+ * In CryptoTools updated getRandom() to finally use a SecureRandom.
+ * Changed CryptoTools.getFormatURLSafe to getBase36 because that is what it really is.
+ *
  * Revision 1.14  2003/12/04 21:50:36  pelle
  * Mainly documentation changes.
  *
@@ -126,7 +133,7 @@ public final class CachedSource extends Source {
 
 
     protected InputStream getStream(final String endpoint, final String name) throws NeuClearException {
-        final File object = new File(cachedirpath + NSTools.url2path(name) + "/root.id");
+        final File object = new File(cachedirpath + NSTools.name2path(name) + "/root.id");
         try {
             if (!object.exists()) {   //TODO check for freshness
                 object.getParentFile().mkdirs();

@@ -28,8 +28,15 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerificationTest.java,v 1.8 2003/11/21 04:45:17 pelle Exp $
+$Id: VerificationTest.java,v 1.9 2003/12/06 00:17:04 pelle Exp $
 $Log: VerificationTest.java,v $
+Revision 1.9  2003/12/06 00:17:04  pelle
+Updated various areas in NSTools.
+Updated URI Validation in particular to support new expanded format
+Updated createUniqueID and friends to be a lot more unique and more efficient.
+In CryptoTools updated getRandom() to finally use a SecureRandom.
+Changed CryptoTools.getFormatURLSafe to getBase36 because that is what it really is.
+
 Revision 1.8  2003/11/21 04:45:17  pelle
 EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
 Otherwise You will Finaliate.
@@ -47,7 +54,7 @@ Did a bit of work on the Canonicalizer and changed a few other minor bits.
 
 Revision 1.5  2003/10/23 22:02:36  pelle
 Moved some certificates to live status at http://repository.neuclear.org
-Updated NSTools.url2path to support neuids with @ signs.
+Updated NSTools.name2path to support neuids with @ signs.
 
 Revision 1.4  2003/10/21 22:31:14  pelle
 Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.

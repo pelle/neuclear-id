@@ -1,6 +1,13 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.14 2003/11/21 04:45:14 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.15 2003/12/06 00:17:04 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
+ * Revision 1.15  2003/12/06 00:17:04  pelle
+ * Updated various areas in NSTools.
+ * Updated URI Validation in particular to support new expanded format
+ * Updated createUniqueID and friends to be a lot more unique and more efficient.
+ * In CryptoTools updated getRandom() to finally use a SecureRandom.
+ * Changed CryptoTools.getFormatURLSafe to getBase36 because that is what it really is.
+ *
  * Revision 1.14  2003/11/21 04:45:14  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -179,14 +186,14 @@
 package org.neuclear.store;
 
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.crypto.CryptoException;
+import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
 
+import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
-import javax.crypto.Cipher;
 import java.io.*;
 
 
@@ -205,7 +212,7 @@ public final class EncryptedFileStore extends FileStore {
         final File outputFile = new File(outputFilename);
         outputFile.getParentFile().mkdirs();
         try {
-            return new CipherOutputStream(new FileOutputStream(outputFile), CryptoTools.makePBECipher(Cipher.ENCRYPT_MODE,obj.getName().toCharArray()));
+            return new CipherOutputStream(new FileOutputStream(outputFile), CryptoTools.makePBECipher(Cipher.ENCRYPT_MODE, obj.getName().toCharArray()));
         } catch (Exception e) {
             throw new CryptoException(e);
         }
@@ -218,7 +225,7 @@ public final class EncryptedFileStore extends FileStore {
         if (!fin.exists())
             throw new NeuClearException("NeuClear: " + name + " doesnt exist");
         try {
-            return new CipherInputStream(new FileInputStream(fin), CryptoTools.makePBECipher(Cipher.DECRYPT_MODE,name.toCharArray()));
+            return new CipherInputStream(new FileInputStream(fin), CryptoTools.makePBECipher(Cipher.DECRYPT_MODE, name.toCharArray()));
         } catch (Exception e) {
             throw new CryptoException(e);
         }
@@ -227,7 +234,7 @@ public final class EncryptedFileStore extends FileStore {
 
     protected final String getFileName(final String name) throws NeuClearException {
         final String deURLizedName = NSTools.normalizeNameURI(name);
-        final byte[] hash = CryptoTools.formatAsURLSafe(CryptoTools.digest256(deURLizedName.getBytes())).getBytes();
+        final byte[] hash = CryptoTools.formatAsBase36(CryptoTools.digest256(deURLizedName.getBytes())).getBytes();
         //if (true) return new String(hash);
         final int partlength = hash.length / 8;
         final byte[] newName = new byte[hash.length + 8];

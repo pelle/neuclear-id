@@ -4,8 +4,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.QName;
 import org.neuclear.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.NSTools;
 import org.neuclear.commons.time.TimeTools;
+import org.neuclear.id.NSTools;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -28,8 +28,15 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationTicketBuilder.java,v 1.3 2003/11/21 04:45:10 pelle Exp $
+$Id: AuthenticationTicketBuilder.java,v 1.4 2003/12/06 00:17:03 pelle Exp $
 $Log: AuthenticationTicketBuilder.java,v $
+Revision 1.4  2003/12/06 00:17:03  pelle
+Updated various areas in NSTools.
+Updated URI Validation in particular to support new expanded format
+Updated createUniqueID and friends to be a lot more unique and more efficient.
+In CryptoTools updated getRandom() to finally use a SecureRandom.
+Changed CryptoTools.getFormatURLSafe to getBase36 because that is what it really is.
+
 Revision 1.3  2003/11/21 04:45:10  pelle
 EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
 Otherwise You will Finaliate.
@@ -59,7 +66,7 @@ public final class AuthenticationTicketBuilder extends NamedObjectBuilder {
     }
 
     public AuthenticationTicketBuilder(final String user, final String requester, final Date validto, final String site) throws NeuClearException {
-        super(NSTools.createUniqueNamedID(user, requester), AuthenticationTicket.TAG_NAME, AuthenticationTicket.NS_NSAUTH);
+        super(NSTools.createUniqueTransactionID(user, requester), AuthenticationTicket.TAG_NAME, AuthenticationTicket.NS_NSAUTH);
         getElement().addAttribute(createQName("requester"), NSTools.normalizeNameURI(requester));
         getElement().addAttribute(createQName("validto"), TimeTools.formatTimeStamp(validto));
         getElement().addAttribute(createQName("sitehref"), site);

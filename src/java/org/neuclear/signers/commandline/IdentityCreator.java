@@ -1,5 +1,12 @@
-/* $Id: IdentityCreator.java,v 1.6 2003/11/21 04:45:13 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.7 2003/12/06 00:17:03 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.7  2003/12/06 00:17:03  pelle
+ * Updated various areas in NSTools.
+ * Updated URI Validation in particular to support new expanded format
+ * Updated createUniqueID and friends to be a lot more unique and more efficient.
+ * In CryptoTools updated getRandom() to finally use a SecureRandom.
+ * Changed CryptoTools.getFormatURLSafe to getBase36 because that is what it really is.
+ *
  * Revision 1.6  2003/11/21 04:45:13  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -162,21 +169,21 @@ package org.neuclear.signers.commandline;
 
 import org.apache.commons.cli.Options;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.Utility;
+import org.neuclear.commons.crypto.CryptoException;
+import org.neuclear.commons.crypto.signers.PublicKeySource;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.builders.IdentityBuilder;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.LogSender;
-import org.neuclear.commons.crypto.signers.PublicKeySource;
-import org.neuclear.commons.crypto.CryptoException;
-import org.neuclear.commons.Utility;
 
 import java.io.File;
 import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public final class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(final String[] args) throws Exception {
@@ -190,7 +197,7 @@ public final class IdentityCreator extends CommandLineSigner {
         if (!cachedir.exists())
             cachedir.mkdirs();
 
-        of = Utility.denullString(of, cachedirpath + NSTools.url2path(identity) + "/root.id");
+        of = Utility.denullString(of, cachedirpath + NSTools.name2path(identity) + "/root.id");
         alias = Utility.denullString(alias, NSTools.getParentNSURI(identity));
 
 

@@ -1,6 +1,13 @@
 /*
- * $Id: FileStore.java,v 1.15 2003/11/21 04:45:16 pelle Exp $
+ * $Id: FileStore.java,v 1.16 2003/12/06 00:17:04 pelle Exp $
  * $Log: FileStore.java,v $
+ * Revision 1.16  2003/12/06 00:17:04  pelle
+ * Updated various areas in NSTools.
+ * Updated URI Validation in particular to support new expanded format
+ * Updated createUniqueID and friends to be a lot more unique and more efficient.
+ * In CryptoTools updated getRandom() to finally use a SecureRandom.
+ * Changed CryptoTools.getFormatURLSafe to getBase36 because that is what it really is.
+ *
  * Revision 1.15  2003/11/21 04:45:16  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -231,7 +238,7 @@ public class FileStore extends Store {
 
 
     protected String getFileName(final String name) throws NeuClearException {
-        return NSTools.url2path(name) + "/root.id";
+        return NSTools.name2path(name) + "/root.id";
     }
 
     protected final String getFileName(final SignedNamedObject obj) throws NeuClearException {

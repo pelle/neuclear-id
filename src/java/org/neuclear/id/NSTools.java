@@ -1,6 +1,13 @@
 /*
- * $Id: NSTools.java,v 1.15 2003/11/21 04:45:13 pelle Exp $
+ * $Id: NSTools.java,v 1.16 2003/12/06 00:17:03 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.16  2003/12/06 00:17:03  pelle
+ * Updated various areas in NSTools.
+ * Updated URI Validation in particular to support new expanded format
+ * Updated createUniqueID and friends to be a lot more unique and more efficient.
+ * In CryptoTools updated getRandom() to finally use a SecureRandom.
+ * Changed CryptoTools.getFormatURLSafe to getBase36 because that is what it really is.
+ *
  * Revision 1.15  2003/11/21 04:45:13  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -24,7 +31,7 @@
  *
  * Revision 1.11  2003/10/23 22:02:36  pelle
  * Moved some certificates to live status at http://repository.neuclear.org
- * Updated NSTools.url2path to support neuids with @ signs.
+ * Updated NSTools.name2path to support neuids with @ signs.
  *
  * Revision 1.10  2003/10/22 23:16:00  pelle
  * Cleaned up some unused stuff in NSTools
@@ -148,13 +155,14 @@
  */
 package org.neuclear.id;
 
+import org.bouncycastle.crypto.Digest;
+import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Namespace;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.CryptoTools;
 
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -169,20 +177,46 @@ public final class NSTools {
      * @return Valid URI
      * @throws NeuClearException If name isn't a valid NEU Name
      */
-    public static String normalizeNameURI(final String name) throws NeuClearException {
+    public static String normalizeNameURI(String name) throws NeuClearException {
+        if (!name.startsWith("neu://"))
+            name = "neu:/" + name;
         if (!isValidName(name))
             throw new InvalidNamedObject("Name: '" + name + "' is not valid");
-        if (!name.startsWith("neu://"))
-            return "neu:/" + name;
         return name;
     }
 
     /**
-     * Name must follow the follwing rules:<br>
-     * Available Characters: <pre>a..zA..Z0..9_/.-</pre>      <br>
+     * <p>Verifies if a NEU URI is syntactically correct.
+     * </p>
      * <p/>
-     * Name starts with either URI prefix <tt>neu://</tt>
-     * or <tt>/</tt>
+     * The first URI must follow the following Syntax:
+     * </p>
+     * <table border="2" valign="top">
+     * <tr><th>Part</th><th>Required</th><th>Example</th><th>Description</th></tr>
+     * <tr><td>prefix</td><td>Y</td><td><b><tt>neu:</tt></b></td><td>The URI prefix</td></tr>
+     * <tr><td>scheme</td><td>N</td><td><tt><b>neuid<br/>pgp<br/>x509</td><td>short label identifying PKI Protocol. Must contain a maximum of 6 alphanumeric characters.
+     * If not used the default scheme of <b><tt>neuid</tt></b> is used.</td></tr>
+     * <tr><td>path prefix</td><td>Y</td><td><b><tt>:/</tt></b></td><td>Indicates the start of the Path segment.</td></tr>
+     * <tr><td>User ID</td><td>N</td><td><tt><b>joe.user@</b></tt></td>
+     * <td>Optional second level user id. Must start with an alphanumeric character and can contain 0 or more of either alpha
+     * numeric characters as well as the following symbols minus ('-'), underscore ('_') and period ('.'). The user id must terminate
+     * in with a '@' symbol.
+     * </td></tr>
+     * <tr><td>Top Level Identifier</td><td>N</td><td><tt><b>test<br/>neuclear.org<br/></b></tt></td>
+     * <td>Name of the top level identifier. Must start with an alphanumeric character and can contain 0 or more of either alpha
+     * numeric characters as well as the following symbols minus ('-'), underscore ('_') and period ('.'). If the name includes
+     * any periods this indicates that the name must follow the https authentication scheme. If not the Identity must be signed by
+     * the NeuClear.org root signer.</td></tr>
+     * <tr><td>Sub Level Identifiers</td><td>N</td><td><tt><b>/sales<br/>/dev/test<br/></b></tt></td>
+     * <td>Identifies Identity levels below a top level identity. This identifier can be repeated 0 or more times.
+     * Each identifier must start with a forward slash ('/') followed by an
+     * alphanumeric character and can contain 0 or more of either alpha
+     * numeric characters as well as the following symbols minus ('-') and underscore ('_'). Note that the sub levels may not contain periods.</td></tr>
+     * <tr><td>Transaction Identifier</td><td>N</td><td><tt><b>!12343onetwo</b></tt></td>
+     * <td>Identifies transactions signed by the preceding Identity. Must start with an exlamation mark ('!') followed by an
+     * alphanumeric character and can contain 0 or more of either alpha
+     * numeric characters as well as the following symbols period ('.'), minus ('-') and underscore ('_'). </td></tr>
+     * </table>
      * 
      * @param name to test
      * @return boolean
@@ -197,78 +231,115 @@ public final class NSTools {
     /**
      * Returns the URI of the parent Identity for a given NEU Name
      * 
-     * @param name a valid NEU Name
+     * @param uri a valid NEU Name
      * @return Parent URI or null if name is the root
      * @throws NeuClearException if name is invalid
      */
-    public static String getParentNSURI(final String name) throws NeuClearException {
-        final String uri = normalizeNameURI(name);
+    public static String getParentNSURI(final String uri) throws NeuClearException {
+        if (!isValidName(uri))
+            throw new InvalidNamedObject("Invalid Neu ID: " + uri);
+        final int bang = uri.indexOf('!');
+
+        // We hava a Transaction ID. We always return its signer
+        if (bang > -1)
+            return uri.substring(0, bang);
+
         final int slash = uri.lastIndexOf('/');
         final int at = uri.indexOf('@');
+        // We have a User ID
         if (slash < at)
             return uri.substring(0, slash + 1) + uri.substring(at + 1);
-        if (uri.equals("neu://") || (slash < 5))
-            return "neu://";
-        if (slash == 5)
+        // We have a top level
+        if (uri.charAt(slash - 1) == '/')
             return uri.substring(0, slash + 1);
+        //Regular
         return uri.substring(0, slash);
     }
 
-    public static String createUniqueNamedID(final String nameSpace, final String reqNameSpace) {
-        // Yeah, yeah there are better ways to do this
-        final String ms = new Long(System.currentTimeMillis() + new Random().nextLong()).toString(); //TODO seed the Random number generator
-        final byte[] ticketsrc = new byte[ms.length() + reqNameSpace.length()];
-        System.arraycopy(ms.getBytes(), 0, ticketsrc, 0, ms.length());
-        System.arraycopy(reqNameSpace.getBytes(), 0, ticketsrc, ms.length(), reqNameSpace.length());
-        final String ticket = CryptoTools.formatAsURLSafe(CryptoTools.digest256(ticketsrc));
-        //Lets reuse ticketsrc for memory reasons
-        int offset = ms.length() + 1;
-        if (reqNameSpace.startsWith("neu://"))
-            offset += 5;
+    /**
+     * Creates a Globally Unique ID using the following algorithm:
+     * <ol><li>Take given Identity URI</li>
+     * <li>Appends Timestamp in ms</li>
+     * <li>Appends large random number</li>
+     * <li>Appends base36 SHA1 of Requesting Identity URI</li>
+     * </ol>
+     * Note if there is no Requesting Identity. Place any kind of seed in this parameter
+     * 
+     * @param signer        N
+     * @param requester     
+     * @param isTransaction is the new Id supposed to be a transaction id?
+     * @return 
+     */
+    public static String createUniqueNamedID(final String signer, final String requester, final boolean isTransaction) {
+        final Digest dig = new SHA1Digest();
+        final StringBuffer buffy = new StringBuffer(signer);
+        buffy.append((isTransaction ? '!' : '/'));
+        buffy.append(System.currentTimeMillis());
+        buffy.append(CryptoTools.createRandomID());
+        final byte[] output = new byte[dig.getDigestSize()];
+        final byte reqbytes[] = requester.getBytes();
+        dig.update(reqbytes, 0, reqbytes.length);
+        //TODO Add some more stuff like IP addresses etc to digest
+        dig.doFinal(output, 0);
 
-
-        for (int i = offset; i < ticketsrc.length; i++) {
-            if (ticketsrc[i] == (byte) '/' || ticketsrc[i] == (byte) '@')
-                ticketsrc[i] = (byte) '.';
-        }
-/*
-        byte ticketName[]=new byte[userNameSpace.length()+33]; // Create new Name byte array to hold userNameSpace a '/' and the generated ticket (size 32)
-        System.arraycopy(userNameSpace.getBytes(),0,ticketName,0,userNameSpace.length());
-        ticketName[userNameSpace.length()]=(byte)'/';
-        System.arraycopy(ticket,0,ticketName,userNameSpace.length()+1,ticket.length);
-*/
-        return nameSpace + '/' + new String(ticketsrc, offset, ticketsrc.length - offset) + '.' + ticket;
+        buffy.append(CryptoTools.formatAsBase36(output));
+        System.out.println(buffy.toString());
+        return buffy.toString();
     }
 
-    public static String url2path(final String name) {
+    /**
+     * Creates a Globally Unique Transaction ID using the following algorithm:
+     * <ol><li>Take given Identity URI</li>
+     * <li>Appends Timestamp in ms</li>
+     * <li>Appends large random number</li>
+     * <li>Appends base36 SHA1 of Requesting Identity URI</li>
+     * </ol>
+     * Note if there is no Requesting Identity. Place any kind of seed in this parameter
+     * 
+     * @param signer    N
+     * @param requester 
+     * @return 
+     */
+    public static String createUniqueTransactionID(final String signer, final String requester) {
+        return createUniqueNamedID(signer, requester, true);
+    }
+
+    /**
+     * Convers a NEU Name URI into a path suitable for a filesystem or for inclusion as part of a web url.
+     * Essentially it strips the prefixes of the URI. If the URI is of the format <tt>neu://bob@test</tt> it returns it as
+     * /test/@bob as bob is essentially below test in the hierarchy.
+     * 
+     * @param name NEU Name URI
+     * @return Path
+     * @throws InvalidNamedObject If the URI is invalid
+     */
+    public static String name2path(final String name) throws InvalidNamedObject {
         if (!Utility.isEmpty(name)) {
             final Matcher matcher = STRIP_URI_ARROBA.matcher(name);
             if (matcher.matches()) {
-                return "/" + matcher.group(3) + "/@" + matcher.group(2) + Utility.denullString(matcher.group(4));
+                return "/" + Utility.denullString(matcher.group(3)) + (matcher.group(1) != null ? ("/@" + matcher.group(2)) : "") + Utility.denullString(matcher.group(4));
             }
-            final int loc = name.indexOf("://");
-            if (loc >= 0)
-                return name.substring(loc + 2); //leave in one '/'
-            else if (name.substring(0, 1).equals("/"))
-                return name;
-            else
-                return "/" + name;
         }
-        return "/";
+        throw new InvalidNamedObject("Invalid NEU ID: " + name);
     }
 
     public static final String NEUID_URI = "http://neuclear.org/neu/neuid";
     public static final Namespace NS_NEUID = DocumentHelper.createNamespace("neuid", NEUID_URI);
 
     public static final String NEUID_PREFIX = "neuid:";
-    private static final String VALID_TOKEN = "[\\w.-]+";
-    private static final String VALID_ID = "^(neu:\\/)?" +
-            "(\\/(" + VALID_TOKEN + "@" + VALID_TOKEN + ")?" +
-            "((\\/)|" + VALID_TOKEN + ")*)$";
+
+    public static final String SCHEME_PREFIX = "([\\w]{1,6}:)?";
+    private static final String VALID_TOKEN = "[\\w][\\w.-]*";
+    private static final String VALID_USER_TOKEN = "(([\\w][\\w.-]*)@)?";
+    private static final String VALID_TOP_TOKEN = VALID_USER_TOKEN + "[\\w]([\\w.-]*[\\w])?";
+    private static final String VALID_SUB_TOKEN = "(\\/[\\w][\\w-]*)*";
+    private static final String VALID_TRAN_TOKEN = "(\\![\\w][\\w.-]*)?";
+    private static final String VALID_ID = "^neu:" + SCHEME_PREFIX + "\\/\\/(" + VALID_TOP_TOKEN +
+            VALID_SUB_TOKEN + VALID_TRAN_TOKEN + ")?$";
 
     private static final Pattern VALID = Pattern.compile(VALID_ID);
-    private static final String STRIP_URI_ARROBA_EX = "^(neu:\\/)?" +
-            "\\/(" + VALID_TOKEN + ")@(" + VALID_TOKEN + ")([\\/\\w.-]*)$";
+
+    private static final String STRIP_URI_ARROBA_EX = "neu://((" + VALID_TOKEN + ")@)?(" + VALID_TOKEN + ")?(" + VALID_SUB_TOKEN + VALID_TRAN_TOKEN + ")$";
 
     private static final Pattern STRIP_URI_ARROBA = Pattern.compile(STRIP_URI_ARROBA_EX);
 
