@@ -1,6 +1,9 @@
 /*
- * $Id: Identity.java,v 1.13 2003/11/10 17:42:36 pelle Exp $
+ * $Id: Identity.java,v 1.14 2003/11/10 19:28:01 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.14  2003/11/10 19:28:01  pelle
+ * Mainly documentation.
+ *
  * Revision 1.13  2003/11/10 17:42:36  pelle
  * The AssetController interface has been more or less finalized.
  * CurrencyController fully implemented
@@ -273,9 +276,9 @@ public class Identity extends SignedNamedObject {
         return logger;
     }
 
-    public final void send(NamedObjectBuilder obj) throws NeuClearException {
+    public SignedNamedObject send(NamedObjectBuilder obj) throws NeuClearException {
         if (!Utility.isEmpty(receiver))
-            Sender.quickSend(receiver, obj);
+            return Sender.quickSend(receiver, obj);
         else
             throw new NeuClearException("Cant send object, " + getName() + " doesnt have a registered Receiver");
     }
