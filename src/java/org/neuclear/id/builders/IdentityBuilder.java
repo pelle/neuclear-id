@@ -1,6 +1,11 @@
 /*
- * $Id: IdentityBuilder.java,v 1.14 2003/12/16 15:04:59 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.15 2003/12/18 17:40:19 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.15  2003/12/18 17:40:19  pelle
+ * You can now create keys that get stored with a X509 certificate in the keystore. These can be saved as well.
+ * IdentityCreator has been modified to allow creation of keys.
+ * Note The actual Creation of Certificates still have a problem that will be resolved later today.
+ *
  * Revision 1.14  2003/12/16 15:04:59  pelle
  * Added SignedMessage contract for signing simple textual contracts.
  * Added NeuSender, updated SmtpSender and Sender to take plain email addresses (without the mailto:)
@@ -202,14 +207,18 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
+import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.crypto.CryptoException;
 import org.neuclear.id.NSTools;
+import org.neuclear.id.Identity;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
+import org.neuclear.xml.XMLException;
 
 import java.security.PublicKey;
+import java.security.cert.Certificate;
 
 public class IdentityBuilder extends NamedObjectBuilder {
-
     /**
      * It creates a Standard Identity document, but doesn't sign it.
      * 
@@ -222,7 +231,6 @@ public class IdentityBuilder extends NamedObjectBuilder {
 
     public IdentityBuilder(final String name, final PublicKey allow, final String repository, final String signer, final String logger, final String receiver) throws NeuClearException {
         this(createNEUIDQName(TAGNAME), name, allow, repository, signer, logger, receiver);
-
     }
 
     /**
@@ -249,13 +257,9 @@ public class IdentityBuilder extends NamedObjectBuilder {
         if (!Utility.isEmpty(receiver))
             createNEUIDAttribute("receiver", receiver);
 
-        if (allow != null) {
-            final QName allowName = DocumentHelper.createQName("allow", NSTools.NS_NEUID);
-            final Element pub = root.addElement(allowName);
-            pub.addText("\n");
-            pub.add(XMLSecTools.createKeyInfo(allow));
-        }
+        setPublicKey(allow);
     }
+
 
     public IdentityBuilder(final String name, final PublicKey allow, final String repository) throws XMLSecurityException, NeuClearException {
         this(name, allow, repository, null, null, null);
@@ -264,9 +268,22 @@ public class IdentityBuilder extends NamedObjectBuilder {
     public IdentityBuilder(final String name, final PublicKey allow) throws XMLSecurityException, NeuClearException {
         this(name, allow, null);
     }
+    private void setPublicKey(final PublicKey allow) {
+        if (allow != null) {
+            final QName allowName = DocumentHelper.createQName("allow", NSTools.NS_NEUID);
+            Element pub=getElement().element(allowName);
+            if (pub==null)
+                pub = getElement().addElement(allowName);
+            else
+                pub.clearContent();
+            pub.addText("\n");
+            pub.add(XMLSecTools.createKeyInfo(allow));
+        }
+    }
 
 
     private static final String TAGNAME = "Identity";
+
 
 
 }

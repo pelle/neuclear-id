@@ -1,5 +1,10 @@
-/* $Id: IdentityCreator.java,v 1.3 2003/12/11 16:16:14 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.4 2003/12/18 17:40:19 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.4  2003/12/18 17:40:19  pelle
+ * You can now create keys that get stored with a X509 certificate in the keystore. These can be saved as well.
+ * IdentityCreator has been modified to allow creation of keys.
+ * Note The actual Creation of Certificates still have a problem that will be resolved later today.
+ *
  * Revision 1.3  2003/12/11 16:16:14  pelle
  * Some changes to make the xml a bit more readable.
  * Also added some helper methods in AbstractElementProxy to make it easier to build objects.
@@ -205,7 +210,7 @@ import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public final class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(final String[] args) throws Exception {
@@ -242,11 +247,23 @@ public final class IdentityCreator extends CommandLineSigner {
         final String defaultsigner = Utility.denullString(cmd.getOptionValue("s"), "http://localhost:11870/Signer");
         final String defaultlogger = Utility.denullString(cmd.getOptionValue("l"), LogSender.LOGGER);
         final String defaultreceiver = cmd.getOptionValue("b");
+        if (!sig.canSignFor(allow)){
+            System.out.println("You do not currently have a key matching this name. Do you with to create one?");
+            if (!Utility.getAffirmative(true)) {
+                System.out.println("OK, Bye");
+                System.exit(0);
+            }
+            System.out.print("Generating Keys for "+allow+"... ");
+            PublicKey pub=sig.generateKey(allow);
+            System.out.println("DONE");
+            System.out.println("STORING Keys");
+            sig.save();
+
+        }
         final PublicKey newkid = pksource.getPublicKey(allow);
         if (newkid == null)
             throw new CryptoException("PublicKey not available for: " + allow);
         return new IdentityBuilder(identity, newkid, defaultstore, defaultsigner, defaultlogger, defaultreceiver);
-
     }
 
     public static void main(final String[] args) {

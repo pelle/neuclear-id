@@ -3,7 +3,10 @@ package org.neuclear.id.jce;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.passphraseagents.AlwaysTheSamePassphraseAgent;
 import org.neuclear.commons.crypto.signers.JCESigner;
+import org.neuclear.commons.crypto.CryptoException;
+import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.id.Identity;
+import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.id.builders.IdentityBuilder;
 import org.neuclear.tests.AbstractSigningTest;
@@ -36,8 +39,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearJCETest.java,v 1.8 2003/12/17 18:02:44 pelle Exp $
+$Id: NeuClearJCETest.java,v 1.9 2003/12/18 17:40:19 pelle Exp $
 $Log: NeuClearJCETest.java,v $
+Revision 1.9  2003/12/18 17:40:19  pelle
+You can now create keys that get stored with a X509 certificate in the keystore. These can be saved as well.
+IdentityCreator has been modified to allow creation of keys.
+Note The actual Creation of Certificates still have a problem that will be resolved later today.
+
 Revision 1.8  2003/12/17 18:02:44  pelle
 NeuClear JCE Certificates now work with KeyStore.
 We can now create JCE certificates based on NeuClear Identity's and store them in a keystore.
@@ -89,6 +97,8 @@ Moved the NeuClearCertificate class to be an inner class of Identity.
  * Time: 11:50:58 AM
  */
 public final class NeuClearJCETest extends AbstractSigningTest {
+    static final String IVAN = "neu://ivan@test";
+
     public NeuClearJCETest(final String string) throws NeuClearException, GeneralSecurityException {
         super(string);
         if (Security.getProvider("NeuClear") == null) {
@@ -179,5 +189,28 @@ public final class NeuClearJCETest extends AbstractSigningTest {
         //final AuthenticationTicketBuilder authb = new AuthenticationTicketBuilder("neu://eve@test", "neu://test", "http://users.neuclear.org:8080");
         //authb.sign(sig2);
 
+    }
+    public void testCreateAndUpdateCert() throws NeuClearException, XMLException {
+        PublicKey pub=getSigner().generateKey(IVAN);
+        assertNotNull(pub);
+        final IdentityBuilder id = new IdentityBuilder(IVAN,pub);
+        assertEquals(IVAN,id.getName());
+        assertTrue(signer.canSignFor(IVAN));
+        assertNotNull(signer.getPublicKey(IVAN));
+        assertEquals(pub,signer.getPublicKey(IVAN));
+        try {
+            final Identity ivan = (Identity) id.convert();
+            assertNotNull(ivan);
+            assertEquals(IVAN,ivan.getName());
+            assertNotNull(ivan.getPublicKey());
+            assertEquals(pub,ivan.getCertificate().getPublicKey());
+            assertEquals(ivan.getPublicKey(),signer.getPublicKey(IVAN));
+            final byte[] data = "this is a test".getBytes();
+            final byte[] sig = signer.sign(IVAN, data);
+            assertNotNull(sig);
+            assertTrue(CryptoTools.verify(ivan.getPublicKey(), data, sig));
+        } catch (InvalidNamedObjectException e) {
+            assertTrue("The Signature was invalid",false);
+        }
     }
 }

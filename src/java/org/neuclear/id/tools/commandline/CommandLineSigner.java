@@ -1,5 +1,10 @@
-/* $Id: CommandLineSigner.java,v 1.3 2003/12/12 00:13:11 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.4 2003/12/18 17:40:19 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.4  2003/12/18 17:40:19  pelle
+ * You can now create keys that get stored with a X509 certificate in the keystore. These can be saved as well.
+ * IdentityCreator has been modified to allow creation of keys.
+ * Note The actual Creation of Certificates still have a problem that will be resolved later today.
+ *
  * Revision 1.3  2003/12/12 00:13:11  pelle
  * This may actually work now. Need to put a few more test cases in to make sure.
  *
@@ -207,7 +212,7 @@ import java.security.GeneralSecurityException;
 
 /**
  * @author pelleb
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CommandLineSigner {
     public CommandLineSigner(final String[] args) throws ParseException, FileNotFoundException, GeneralSecurityException, NeuClearException {
@@ -283,7 +288,7 @@ public class CommandLineSigner {
                 if (!Utility.isEmpty(of))
                     of = subject.getLocalName() + ".xml";
                 System.err.println("Key with alias: " + alias + " doesnt exist in our keystore. \nSaving unsigned Identity as: " + of);
-            } else {
+            } else if(!subject.isSigned()) {
                 System.err.println("Signing by " + alias + " ...");
                 subject.sign(alias, sig);
             }

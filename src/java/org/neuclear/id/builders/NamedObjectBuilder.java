@@ -1,6 +1,11 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.18 2003/12/11 23:57:29 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.19 2003/12/18 17:40:19 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.19  2003/12/18 17:40:19  pelle
+ * You can now create keys that get stored with a X509 certificate in the keystore. These can be saved as well.
+ * IdentityCreator has been modified to allow creation of keys.
+ * Note The actual Creation of Certificates still have a problem that will be resolved later today.
+ *
  * Revision 1.18  2003/12/11 23:57:29  pelle
  * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
  * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -262,7 +267,7 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
         return convert();
     }
 
-    private SignedNamedObject convert() throws NeuClearException, XMLException {
+    final public SignedNamedObject convert() throws NeuClearException, XMLException {
 
         return VerifyingReader.getInstance().read(getElement());
     }
