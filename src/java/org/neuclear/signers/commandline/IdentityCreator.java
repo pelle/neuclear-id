@@ -1,5 +1,8 @@
-/* $Id: IdentityCreator.java,v 1.2 2003/10/29 21:16:27 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.3 2003/10/31 23:58:53 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.3  2003/10/31 23:58:53  pelle
+ * The IdentityCreator now fully works with the new Signer architecture.
+ *
  * Revision 1.2  2003/10/29 21:16:27  pelle
  * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
  * To use it you pass a byte array and an alias. The sign method then returns the signature.
@@ -142,7 +145,7 @@
 package org.neuclear.signers.commandline;
 
 import org.apache.commons.cli.Options;
-import org.neuclear.commons.configuration.Configuration;
+import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.builders.IdentityBuilder;
 import org.neuclear.id.builders.NamedObjectBuilder;
@@ -156,15 +159,18 @@ import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(String args[]) throws Exception {
         super(args);
+        if (!(sig instanceof PublicKeySource))
+            throw new NeuClearException("The default signer has to include public keys");
+        pksource = (PublicKeySource) sig;
         identity = cmd.getOptionValue("n");
         of = Utility.denullString(of, "." + NSTools.url2path(identity) + "/root.id");
         alias = Utility.denullString(alias, NSTools.getParentNSURI(identity));
-        pksource = (PublicKeySource) Configuration.getComponent(PublicKeySource.class, "neuclear-id");
+
 
     }
 
@@ -188,6 +194,7 @@ public class IdentityCreator extends CommandLineSigner {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.exit(0);
     }
 
     protected String getExtraHelp() {

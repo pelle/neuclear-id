@@ -22,8 +22,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: GuiDialogAgent.java,v 1.1 2003/10/29 21:16:27 pelle Exp $
+$Id: GuiDialogAgent.java,v 1.2 2003/10/31 23:58:53 pelle Exp $
 $Log: GuiDialogAgent.java,v $
+Revision 1.2  2003/10/31 23:58:53  pelle
+The IdentityCreator now fully works with the new Signer architecture.
+
 Revision 1.1  2003/10/29 21:16:27  pelle
 Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
 To use it you pass a byte array and an alias. The sign method then returns the signature.
@@ -42,7 +45,7 @@ The two Signer implementations both use it for the passphrase.
  * Date: Oct 27, 2003
  * Time: 5:49:14 PM
  */
-public final class GuiDialogAgent implements PassPhraseAgent {
+public final class GuiDialogAgent implements InteractiveAgent {
     public GuiDialogAgent() {
         frame = new Frame("Please Enter Passphrase...");
 
@@ -69,9 +72,8 @@ public final class GuiDialogAgent implements PassPhraseAgent {
             };
             canvas.setSize(50, 50);
             text.add(canvas);
-            System.out.println("Added image");
         } catch (InterruptedException ex) {
-            System.out.println("Couldn't load Image");
+            ;//System.out.println("Couldn't load Image");
         }
 
         text.add(new Label("Name: "));
@@ -131,8 +133,8 @@ public final class GuiDialogAgent implements PassPhraseAgent {
 
     public static void main(String args[]) {
         PassPhraseAgent dia = new GuiDialogAgent();
-        System.out.println("Getting passphrase... " + dia.getPassPhrase("neu://pelle@test"));
-        System.out.println("Getting passphrase... " + dia.getPassPhrase("neu://pelle@test"));
+        System.out.println("Getting passphrase... " + new String(dia.getPassPhrase("neu://pelle@test")));
+        System.out.println("Getting passphrase... " + new String(dia.getPassPhrase("neu://pelle@test")));
 
         System.exit(0);
     }

@@ -22,8 +22,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: CommandLineAgent.java,v 1.1 2003/10/29 21:16:27 pelle Exp $
+$Id: CommandLineAgent.java,v 1.2 2003/10/31 23:58:53 pelle Exp $
 $Log: CommandLineAgent.java,v $
+Revision 1.2  2003/10/31 23:58:53  pelle
+The IdentityCreator now fully works with the new Signer architecture.
+
 Revision 1.1  2003/10/29 21:16:27  pelle
 Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
 To use it you pass a byte array and an alias. The sign method then returns the signature.
@@ -38,7 +41,7 @@ as SmartCards for end user applications.
  * Date: Oct 29, 2003
  * Time: 11:53:29 AM
  */
-public class CommandLineAgent implements PassPhraseAgent {
+public class CommandLineAgent implements InteractiveAgent {
     public char[] getPassPhrase(String name) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Please enter passphrase for: " + name);

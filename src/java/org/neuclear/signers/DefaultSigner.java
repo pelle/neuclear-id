@@ -5,7 +5,6 @@ import org.neuclear.passphraseagents.PassPhraseAgent;
 import org.neudist.crypto.CryptoTools;
 
 import java.security.GeneralSecurityException;
-import java.security.KeyStore;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -25,8 +24,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: DefaultSigner.java,v 1.1 2003/10/29 21:16:28 pelle Exp $
+$Id: DefaultSigner.java,v 1.2 2003/10/31 23:58:53 pelle Exp $
 $Log: DefaultSigner.java,v $
+Revision 1.2  2003/10/31 23:58:53  pelle
+The IdentityCreator now fully works with the new Signer architecture.
+
 Revision 1.1  2003/10/29 21:16:28  pelle
 Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
 To use it you pass a byte array and an alias. The sign method then returns the signature.
@@ -44,7 +46,7 @@ as SmartCards for end user applications.
  */
 public class DefaultSigner extends JCESigner {
     public DefaultSigner(PassPhraseAgent agent) throws NeuClearException, GeneralSecurityException {
-        super(CryptoTools.DEFAULT_KEYSTORE, KeyStore.getDefaultType(), null, agent);
+        super(CryptoTools.DEFAULT_KEYSTORE, "jks", "SUN", agent);
 
     }
 

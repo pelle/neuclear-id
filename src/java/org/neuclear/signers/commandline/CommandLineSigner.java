@@ -1,5 +1,8 @@
-/* $Id: CommandLineSigner.java,v 1.10 2003/10/29 21:16:27 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.11 2003/10/31 23:58:53 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.11  2003/10/31 23:58:53  pelle
+ * The IdentityCreator now fully works with the new Signer architecture.
+ *
  * Revision 1.10  2003/10/29 21:16:27  pelle
  * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
  * To use it you pass a byte array and an alias. The sign method then returns the signature.
@@ -161,7 +164,7 @@ import java.io.*;
 
 /**
  * @author pelleb
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class CommandLineSigner {
     public CommandLineSigner(String args[]) throws ParseException, ConfigurationException {
@@ -212,9 +215,7 @@ public class CommandLineSigner {
             NamedObjectBuilder subject = build();
 
             if (!Utility.isEmpty(alias)) {
-                String password = Utility.denullString(cmd.getOptionValue("p"), cmd.getOptionValue("j")); // If we dont specify a password it defaults to ks password
-
-                if (sig.canSignFor(alias)) {
+                if (!sig.canSignFor(alias)) {
                     System.err.println("Key with alias: " + alias + " doesnt exist");
                     System.exit(1);
                 }
