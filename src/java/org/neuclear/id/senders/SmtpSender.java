@@ -5,8 +5,11 @@ package org.neuclear.id.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:52:38 AM
- * $Id: SmtpSender.java,v 1.4 2004/05/21 19:24:28 pelle Exp $
+ * $Id: SmtpSender.java,v 1.5 2004/09/08 16:55:49 pelle Exp $
  * $Log: SmtpSender.java,v $
+ * Revision 1.5  2004/09/08 16:55:49  pelle
+ * Fixes all around do to changes in Aspirin
+ *
  * Revision 1.4  2004/05/21 19:24:28  pelle
  * Changed name of Neuclear Personal Signer to NeuClear Personal Trader
  * More changes from Personality to Account
@@ -142,6 +145,7 @@ package org.neuclear.id.senders;
  *
  */
 
+import org.apache.mailet.MailAddress;
 import org.masukomi.aspirin.core.MailQue;
 import org.masukomi.aspirin.core.MailWatcher;
 import org.neuclear.commons.NeuClearException;
@@ -228,13 +232,23 @@ public final class SmtpSender extends Sender {
     }
 
     {
-        MailQue.addListener(new MailWatcher() {
+        MailQue.addWatcher(new MailWatcher() {
             public void deliverySuccess(MimeMessage message, Collection recepients) {
                 System.out.println("mail delivered successfully");
             }
 
             public void deliveryFailure(MimeMessage message, Collection recepients) {
                 System.out.println("mail delivery failed");
+
+            }
+
+            public void deliverySuccess(MimeMessage message, MailAddress recipient) {
+                System.out.println("mail delivered successfully to " + recipient.toString());
+
+            }
+
+            public void deliveryFailure(MimeMessage message, MailAddress recipient) {
+                System.out.println("mail delivery failed to " + recipient.toString());
 
             }
         });
