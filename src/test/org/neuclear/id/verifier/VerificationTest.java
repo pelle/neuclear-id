@@ -7,6 +7,7 @@ import org.dom4j.io.SAXReader;
 import org.neudist.utils.NeudistException;
 import org.neudist.utils.RegexFileNameFilter;
 import org.neudist.xml.xmlsec.XMLSecTools;
+import org.neudist.crypto.CryptoTools;
 import org.neuclear.id.SignedNamedObject;
 
 import java.io.*;
@@ -29,8 +30,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerificationTest.java,v 1.1 2003/09/27 19:23:11 pelle Exp $
+$Id: VerificationTest.java,v 1.2 2003/09/30 23:25:15 pelle Exp $
 $Log: VerificationTest.java,v $
+Revision 1.2  2003/09/30 23:25:15  pelle
+Added new JCE Provider and java Certificate implementation for NeuClear Identity.
+
 Revision 1.1  2003/09/27 19:23:11  pelle
 Added Builders to create named objects from scratch.
 
@@ -46,6 +50,7 @@ public class VerificationTest extends TestCase {
     public VerificationTest(String string) {
 
         super(string);
+        CryptoTools.ensureProvider();
         reader=VerifyingReader.getInstance();
     }
     public void testSimple() throws IOException, DocumentException, NeudistException {

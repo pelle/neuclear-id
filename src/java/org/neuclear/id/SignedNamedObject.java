@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedObject.java,v 1.2 2003/09/29 23:17:31 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.3 2003/09/30 23:25:14 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.3  2003/09/30 23:25:14  pelle
+ * Added new JCE Provider and java Certificate implementation for NeuClear Identity.
+ *
  * Revision 1.2  2003/09/29 23:17:31  pelle
  * Changes to the senders. Now the senders only work with NamedObjectBuilders
  * which are the only NamedObject representations that contain full XML.
@@ -188,10 +191,18 @@ public class SignedNamedObject implements SignedObject, Named {
 
     }
 
+    /**
+     * The Signatory of the current document
+     * @return
+     */
     public Identity getSignatory() {
         return signer;
     }
 
+    /**
+     * The SHA1 Digest of the full XML encoded document
+     * @return
+     */
     public String getDigest() {
         return digest;
     }
