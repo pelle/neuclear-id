@@ -1,6 +1,11 @@
 /*
-  $Id: NSToolsTest.java,v 1.5 2003/10/21 22:31:14 pelle Exp $
+  $Id: NSToolsTest.java,v 1.6 2003/10/22 22:12:33 pelle Exp $
   $Log: NSToolsTest.java,v $
+  Revision 1.6  2003/10/22 22:12:33  pelle
+  Replaced the dependency for the Apache Regex library with JDK1.4's Regex implementation.
+  Changed the valid format of NeuClear ID's to include neu://bob@hello/ formatted ids.
+  These ids are not identical to neu://hello/bob however in both cases neu://hello has to sign the Identity document.
+
   Revision 1.5  2003/10/21 22:31:14  pelle
   Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
   Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -76,14 +81,11 @@
 
 package org.neuclear.id;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import org.neuclear.commons.NeuClearException;
 
 
 /**
- *
  * @author Pelle Braendgaard
  */
 public class NSToolsTest extends TestCase {
@@ -107,7 +109,17 @@ public class NSToolsTest extends TestCase {
         assertValidName("neu://help");
         assertValidName("neu://help/abcdefg232Avc");
         assertValidName("/help/abcdefg232Avc");
-        //assertInvalidName("neu:/");// TODO Doesnt pass as invalid. Ignore short term, fix soon.
+
+        assertValidName("neu://pelle@help");
+        assertValidName("neu://pelle@help/abcdefg232Avc");
+
+        assertValidName("neu://pelle@neuclear.org");
+        assertValidName("neu://pelle@neuclear.org/abcdefg232Avc");
+
+        assertInvalidName("neu:/");
+        assertInvalidName("neu://test/pelle@help");
+        assertInvalidName("neu://test/pelle@help/abcdefg232Avc");
+
         assertInvalidName("neu");
         assertInvalidName("");
         assertInvalidName("neu://abcde%01&^");

@@ -1,6 +1,11 @@
 /*
- * $Id: NSTools.java,v 1.7 2003/10/21 22:31:13 pelle Exp $
+ * $Id: NSTools.java,v 1.8 2003/10/22 22:12:33 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.8  2003/10/22 22:12:33  pelle
+ * Replaced the dependency for the Apache Regex library with JDK1.4's Regex implementation.
+ * Changed the valid format of NeuClear ID's to include neu://bob@hello/ formatted ids.
+ * These ids are not identical to neu://hello/bob however in both cases neu://hello has to sign the Identity document.
+ *
  * Revision 1.7  2003/10/21 22:31:13  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
  * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -112,23 +117,31 @@
  */
 package org.neuclear.id;
 
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Namespace;
+import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.resolver.NSResolver;
 import org.neudist.crypto.CryptoTools;
-import org.neuclear.commons.NeuClearException;
 import org.neudist.utils.Utility;
 
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class NSTools {
+    private static final String VALID_TOKEN = "[\\w.]+";
+    private static final String VALID_ID = "^(neu:\\/)?" +
+            "(\\/(" + VALID_TOKEN + "@" + VALID_TOKEN + ")?" +
+            "((\\/)|" + VALID_TOKEN + ")*)$";
+
+    private static final Pattern VALID = Pattern.compile(VALID_ID);
+
     private NSTools() {
     };
 
     /**
      * Takes a valid NEU Name and Creates a URI
+     * 
      * @param name Valid NEU Name
      * @return Valid URI
      * @throws NeuClearException If name isn't a valid NEU Name
@@ -144,27 +157,23 @@ public final class NSTools {
     /**
      * Name must follow the follwing rules:<br>
      * Available Characters: <pre>a..zA..Z0..9_/.-</pre>      <br>
-     *
+     * <p/>
      * Name starts with either URI prefix <tt>neu://</tt>
      * or <tt>/</tt>
+     * 
      * @param name to test
      * @return boolean
      */
-    public static boolean isValidName(String name) throws NeuClearException {
-        try {
-            if (Utility.isEmpty(name))
-                return false;
-            RE re = new RE("^(neu:\\/)?((\\/)|(\\/[a-zA-Z0-9_\\-\\.]+)*)$");
-            return (re.match(name));
-        } catch (RESyntaxException e) {
-            e.printStackTrace();
-            Utility.rethrowException(e);
+    public static boolean isValidName(String name) {
+        if (Utility.isEmpty(name))
             return false;
-        }
+        Matcher matcher = VALID.matcher(name);
+        return (matcher.matches());
     }
 
     /**
      * Returns the URI of the parent Identity for a given NEU Name
+     * 
      * @param name a valid NEU Name
      * @return Parent URI or null if name is the root
      * @throws NeuClearException if name is invalid

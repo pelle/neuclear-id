@@ -105,14 +105,6 @@
       <name>junit</name>
       <version>3.8.1</version>
     </dependency>
-    <dependency>
-      <id>regexp</id>
-      <name>regexp</name>
-      <version>1.2</version>
-      <properties>
-            <war.bundle.jar>true</war.bundle.jar>
-      </properties>
-    </dependency>
    <dependency>
       <id>servletapi</id>
       <name>servletapi</name>
