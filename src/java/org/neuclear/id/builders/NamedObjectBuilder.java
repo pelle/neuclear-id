@@ -1,6 +1,12 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.13 2003/11/21 17:55:16 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.14 2003/11/22 00:23:46 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.14  2003/11/22 00:23:46  pelle
+ * All unit tests in commons, id and xmlsec now work.
+ * AssetController now successfully processes payments in the unit test.
+ * Payment Web App has working form that creates a TransferRequest presents it to the signer
+ * and forwards it to AssetControlServlet. (Which throws an XML Parser Exception) I think the XMLReaderServlet is bust.
+ *
  * Revision 1.13  2003/11/21 17:55:16  pelle
  * misc fixes
  *
@@ -202,7 +208,7 @@ import java.util.List;
 /**
  * This simple wrapper takes most of the contents of a NamedObject and puts it into a Serializable form that can be signed.
  */
-public class NamedObjectBuilder extends SignedElement implements Named,Cloneable {
+public class NamedObjectBuilder extends SignedElement implements Named, Cloneable {
     public NamedObjectBuilder(final String name, final String tagName, final String prefix, final String nsURI) throws NeuClearException {
         super(tagName, prefix, nsURI);
         createDocument();
@@ -432,18 +438,15 @@ public class NamedObjectBuilder extends SignedElement implements Named,Cloneable
      * <tt>Cloneable</tt>, so calling the <tt>clone</tt> method on an object
      * whose class is <tt>Object</tt> will result in throwing an
      * exception at run time.
-     *
+     * 
      * @return a clone of this instance.
-     * @throws CloneNotSupportedException if the object's class does not
-     *                                    support the <code>Cloneable</code> interface. Subclasses
-     *                                    that override the <code>clone</code> method can also
-     *                                    throw this exception to indicate that an instance cannot
-     *                                    be cloned.
      * @see Cloneable
      */
-    public Object clone() throws CloneNotSupportedException {
+    public Object clone() {
         try {
-            return new NamedObjectBuilder(getElement().c());
+            final Element elem = (Element) getElement().clone();
+            DocumentHelper.createDocument(elem);
+            return new NamedObjectBuilder(elem);
         } catch (XMLSecurityException e) {
             throw new RuntimeException(e);
         }

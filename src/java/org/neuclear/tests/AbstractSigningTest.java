@@ -2,11 +2,11 @@ package org.neuclear.tests;
 
 import junit.framework.TestCase;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.crypto.signers.Signer;
-import org.neuclear.commons.crypto.signers.TestCaseSigner;
-import org.neuclear.commons.crypto.signers.JCESigner;
 import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.commons.crypto.signers.JCESigner;
+import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.id.Identity;
+import org.neuclear.id.resolver.NSResolver;
 
 import java.security.GeneralSecurityException;
 
@@ -28,8 +28,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AbstractSigningTest.java,v 1.3 2003/11/21 04:45:16 pelle Exp $
+$Id: AbstractSigningTest.java,v 1.4 2003/11/22 00:23:47 pelle Exp $
 $Log: AbstractSigningTest.java,v $
+Revision 1.4  2003/11/22 00:23:47  pelle
+All unit tests in commons, id and xmlsec now work.
+AssetController now successfully processes payments in the unit test.
+Payment Web App has working form that creates a TransferRequest presents it to the signer
+and forwards it to AssetControlServlet. (Which throws an XML Parser Exception) I think the XMLReaderServlet is bust.
+
 Revision 1.3  2003/11/21 04:45:16  pelle
 EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
 Otherwise You will Finaliate.
@@ -56,8 +62,8 @@ public class AbstractSigningTest extends TestCase {
         super(string);
         CryptoTools.ensureProvider();
         signer = new TestCaseSigner();
-//        alice = NSResolver.resolveIdentity("neu://alice@test");
-//        bob = NSResolver.resolveIdentity("neu://bob@test");
+        alice = NSResolver.resolveIdentity("neu://alice@test");
+        bob = NSResolver.resolveIdentity("neu://bob@test");
     }
 
     /**

@@ -29,8 +29,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.13 2003/11/21 04:45:12 pelle Exp $
+$Id: VerifyingReader.java,v 1.14 2003/11/22 00:23:46 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.14  2003/11/22 00:23:46  pelle
+All unit tests in commons, id and xmlsec now work.
+AssetController now successfully processes payments in the unit test.
+Payment Web App has working form that creates a TransferRequest presents it to the signer
+and forwards it to AssetControlServlet. (Which throws an XML Parser Exception) I think the XMLReaderServlet is bust.
+
 Revision 1.13  2003/11/21 04:45:12  pelle
 EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
 Otherwise You will Finaliate.
@@ -117,6 +123,7 @@ public final class VerifyingReader {
     private VerifyingReader() {
         readers = new HashMap();
         readers.put("Identity", new Identity.Reader());
+        readers.put("Asset", new Identity.Reader());
         readers.put(AuthenticationTicket.TAG_NAME, new AuthenticationTicket.Reader());
         readers.put(SignatureRequest.SIGREQUEST_TAG, new SignatureRequest.Reader());
         defaultReader = new SignedNamedObject.Reader();
@@ -153,7 +160,7 @@ public final class VerifyingReader {
 
 
     public final void registerReader(final String name, final NamedObjectReader reader) {
-        System.out.println("Registering: "+name);
+        System.out.println("Registering: " + name);
         readers.put(name, reader);
     }
 

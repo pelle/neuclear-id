@@ -7,8 +7,6 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
-import java.sql.Timestamp;
-
 /*
 NeuClear Distributed Transaction Clearing Platform
 (C) 2003 Pelle Braendgaard
@@ -27,8 +25,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequest.java,v 1.7 2003/11/21 13:57:27 pelle Exp $
+$Id: SignatureRequest.java,v 1.8 2003/11/22 00:23:47 pelle Exp $
 $Log: SignatureRequest.java,v $
+Revision 1.8  2003/11/22 00:23:47  pelle
+All unit tests in commons, id and xmlsec now work.
+AssetController now successfully processes payments in the unit test.
+Payment Web App has working form that creates a TransferRequest presents it to the signer
+and forwards it to AssetControlServlet. (Which throws an XML Parser Exception) I think the XMLReaderServlet is bust.
+
 Revision 1.7  2003/11/21 13:57:27  pelle
 Changed some mutable fields in immutable classes, making them truely immutable. Thus safer.
 
@@ -75,8 +79,8 @@ Created SignatureRequest and friends to send unsigned NamedObjectBuilders to int
  * The SignatureRequest presents an object for signing to a signing service.
  * The SignatureRequest would typically be created using a SignatureRequestBuilder buy
  * the Requesting site. The Users Signature service would present it to the user who signs it.
- *
- *
+ * <p/>
+ * <p/>
  * User: pelleb
  * Date: Nov 6, 2003
  * Time: 12:23:52 PM
@@ -89,16 +93,12 @@ public final class SignatureRequest extends SignedNamedObject {
         this.description = description;
     }
 
-    public final  String getUserid() {
+    public final String getUserid() {
         return userid;
     }
 
     public final NamedObjectBuilder getUnsigned() {
-        try {
-            return (NamedObjectBuilder) unsigned.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
+        return (NamedObjectBuilder) unsigned.clone();
     }
 
     public final String getDescription() {

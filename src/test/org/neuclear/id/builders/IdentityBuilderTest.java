@@ -1,16 +1,12 @@
 package org.neuclear.id.builders;
 
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent;
-import org.neuclear.commons.crypto.signers.DefaultSigner;
 import org.neuclear.commons.crypto.signers.PublicKeySource;
-import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.tests.AbstractSigningTest;
 import org.neuclear.xml.XMLException;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.security.GeneralSecurityException;
 
@@ -32,8 +28,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: IdentityBuilderTest.java,v 1.7 2003/11/21 04:45:17 pelle Exp $
+$Id: IdentityBuilderTest.java,v 1.8 2003/11/22 00:23:47 pelle Exp $
 $Log: IdentityBuilderTest.java,v $
+Revision 1.8  2003/11/22 00:23:47  pelle
+All unit tests in commons, id and xmlsec now work.
+AssetController now successfully processes payments in the unit test.
+Payment Web App has working form that creates a TransferRequest presents it to the signer
+and forwards it to AssetControlServlet. (Which throws an XML Parser Exception) I think the XMLReaderServlet is bust.
+
 Revision 1.7  2003/11/21 04:45:17  pelle
 EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
 Otherwise You will Finaliate.
@@ -77,7 +79,6 @@ PaymentReceiverTest works, but needs a abit more work in its environment to succ
 public final class IdentityBuilderTest extends AbstractSigningTest {
     public IdentityBuilderTest(final String string) throws GeneralSecurityException, NeuClearException, FileNotFoundException {
         super(string);
-        rootsigner = new DefaultSigner(new GuiDialogAgent());
     }
 
     public final void createIdentities(final String name) throws NeuClearException, XMLException {
@@ -90,19 +91,11 @@ public final class IdentityBuilderTest extends AbstractSigningTest {
                     "http://logger.neuclear.org",
                     "mailto:pelle@neuclear.org");
 
-            final String parent = NSTools.getParentNSURI(id.getName());
-            final SignedNamedObject sec = null;
-            if (getSigner().canSignFor(parent)) {
-                id.sign(getSigner());
-            } else if (parent.equals("neu://")) {
-                id.sign(rootsigner);
-            }
+            assertEquals("neu://test", NSTools.getParentNSURI(id.getName()));
+            final SignedNamedObject sec = id.sign(getSigner());
             assertNotNull(sec);
-            final File file = new File(PATH + NSTools.url2path(id.getName()) + "/root.id");
-            file.getParentFile().mkdirs();
-            System.out.println("Wrote: " + file.getAbsolutePath());
             assertEquals(id.getName(), sec.getName());
-            assertTrue(true);
+
         } else {
 //            assertTrue(false);
             System.out.println("Couldnt sign for: " + name);
@@ -112,12 +105,9 @@ public final class IdentityBuilderTest extends AbstractSigningTest {
 
     public final void testBuild() throws NeuClearException, XMLException {
 //        createIdentities("neu://test");
-        createIdentities("neu://test/bux");
         createIdentities("neu://bob@test");
         createIdentities("neu://alice@test");
 
     }
 
-    private static final String PATH = "target/testdata/unsigned";
-    private final Signer rootsigner;
 }

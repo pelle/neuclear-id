@@ -1,9 +1,5 @@
 package org.neuclear.source;
 
-import junit.framework.TestCase;
-import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.SignedNamedObject;
-
 /*
 NeuClear Distributed Transaction Clearing Platform
 (C) 2003 Pelle Braendgaard
@@ -22,8 +18,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SourceTest.java,v 1.2 2003/11/21 04:45:17 pelle Exp $
-$Log: SourceTest.java,v $
+$Id: CachedSourceTest.java,v 1.1 2003/11/22 00:23:48 pelle Exp $
+$Log: CachedSourceTest.java,v $
+Revision 1.1  2003/11/22 00:23:48  pelle
+All unit tests in commons, id and xmlsec now work.
+AssetController now successfully processes payments in the unit test.
+Payment Web App has working form that creates a TransferRequest presents it to the signer
+and forwards it to AssetControlServlet. (Which throws an XML Parser Exception) I think the XMLReaderServlet is bust.
+
 Revision 1.2  2003/11/21 04:45:17  pelle
 EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
 Otherwise You will Finaliate.
@@ -39,26 +41,14 @@ Also added Unit tests to make sure it actually works and modified IdentityCreato
 /**
  * User: pelleb
  * Date: Nov 5, 2003
- * Time: 1:21:24 PM
+ * Time: 1:27:17 PM
  */
-public class SourceTest extends TestCase {
-    public SourceTest(final String name) {
+public final class CachedSourceTest extends AbstractSourceTest {
+    public CachedSourceTest(final String name) {
         super(name);
-        source = createSource();
     }
 
-    protected Source createSource() {
-        return Source.getInstance();
+    public final Source createSource() {
+        return new CachedSource(new HttpSource());
     }
-
-    public final void testFetch() throws NeuClearException {
-        final SignedNamedObject test = source.fetch("http://repository.neuclear.org", "neu://test");
-        assertNotNull(test);
-        assertEquals("neu://test", test.getName());
-        final SignedNamedObject root = source.fetch("http://repository.neuclear.org", "neu://");
-        assertNotNull(root);
-        assertEquals("neu://", root.getName());
-    }
-
-    private final Source source;
 }

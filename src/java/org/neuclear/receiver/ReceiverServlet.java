@@ -1,6 +1,12 @@
 /*
- * $Id: ReceiverServlet.java,v 1.7 2003/11/21 04:45:13 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.8 2003/11/22 00:23:47 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.8  2003/11/22 00:23:47  pelle
+ * All unit tests in commons, id and xmlsec now work.
+ * AssetController now successfully processes payments in the unit test.
+ * Payment Web App has working form that creates a TransferRequest presents it to the signer
+ * and forwards it to AssetControlServlet. (Which throws an XML Parser Exception) I think the XMLReaderServlet is bust.
+ *
  * Revision 1.7  2003/11/21 04:45:13  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -83,10 +89,11 @@ package org.neuclear.receiver;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.xml.soap.XMLInputStreamServlet;
+import org.neuclear.id.verifier.VerifyingReader;
+import org.neuclear.xml.ElementProxy;
 import org.neuclear.xml.XMLException;
+import org.neuclear.xml.soap.XMLInputStreamServlet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -94,6 +101,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 
 public abstract class ReceiverServlet extends XMLInputStreamServlet {
     public void init(final ServletConfig config) throws ServletException {
@@ -101,13 +109,27 @@ public abstract class ReceiverServlet extends XMLInputStreamServlet {
     }
 
     protected final void handleInputStream(final InputStream is, final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        try {
-            receiver.receive(VerifyingReader.getInstance().read(is));
-        } catch (NeuClearException e) {
-            e.printStackTrace();
-        } catch (XMLException e) {
-            e.printStackTrace();
+        PrintWriter writer = response.getWriter();
+        final boolean isXML = request.getContentType().equals("text/xml");
+        if (isXML) {
+            response.setContentType("text/xml");
+        } else {
+            response.setContentType("text/html");
+            writer.print("<html><head><title>ReceiverServler</title></head><body>");
         }
+        try {
+            ElementProxy receipt = receiver.receive(VerifyingReader.getInstance().read(is));
+            if (isXML)
+                writer.print(receipt.canonicalize());
+            else
+                writer.print(receipt.getTagName());
+
+        } catch (NeuClearException e) {
+            e.printStackTrace(writer);
+        } catch (XMLException e) {
+            e.printStackTrace(writer);
+        }
+        writer.close();
 
     }
 

@@ -1,5 +1,9 @@
 package org.neuclear.source;
 
+import junit.framework.TestCase;
+import org.neuclear.commons.NeuClearException;
+import org.neuclear.id.SignedNamedObject;
+
 /*
 NeuClear Distributed Transaction Clearing Platform
 (C) 2003 Pelle Braendgaard
@@ -18,9 +22,9 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: HttpSourceTest.java,v 1.3 2003/11/22 00:23:48 pelle Exp $
-$Log: HttpSourceTest.java,v $
-Revision 1.3  2003/11/22 00:23:48  pelle
+$Id: AbstractSourceTest.java,v 1.1 2003/11/22 00:23:48 pelle Exp $
+$Log: AbstractSourceTest.java,v $
+Revision 1.1  2003/11/22 00:23:48  pelle
 All unit tests in commons, id and xmlsec now work.
 AssetController now successfully processes payments in the unit test.
 Payment Web App has working form that creates a TransferRequest presents it to the signer
@@ -41,14 +45,24 @@ Also added Unit tests to make sure it actually works and modified IdentityCreato
 /**
  * User: pelleb
  * Date: Nov 5, 2003
- * Time: 1:27:17 PM
+ * Time: 1:21:24 PM
  */
-public final class HttpSourceTest extends AbstractSourceTest {
-    public HttpSourceTest(final String name) {
+public abstract class AbstractSourceTest extends TestCase {
+    public AbstractSourceTest(final String name) {
         super(name);
+        source = createSource();
     }
 
-    public final Source createSource() {
-        return new HttpSource();
+    abstract protected Source createSource();
+
+    public final void testFetch() throws NeuClearException {
+        final SignedNamedObject test = source.fetch("http://repository.neuclear.org", "neu://test");
+        assertNotNull(test);
+        assertEquals("neu://test", test.getName());
+        final SignedNamedObject root = source.fetch("http://repository.neuclear.org", "neu://");
+        assertNotNull(root);
+        assertEquals("neu://", root.getName());
     }
+
+    private final Source source;
 }
