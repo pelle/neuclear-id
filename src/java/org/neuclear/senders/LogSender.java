@@ -1,6 +1,6 @@
 package org.neuclear.senders;
 
-import org.neuclear.id.NamedObject;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.NamedObjectFactory;
 import org.neuclear.time.TimeTools;
 import org.neudist.crypto.Base64;
@@ -20,8 +20,17 @@ import java.sql.Timestamp;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 1:23:05 PM
- * $Id: LogSender.java,v 1.3 2003/09/23 19:16:28 pelle Exp $
+ * $Id: LogSender.java,v 1.4 2003/09/24 23:56:48 pelle Exp $
  * $Log: LogSender.java,v $
+ * Revision 1.4  2003/09/24 23:56:48  pelle
+ * Refactoring nearly done. New model for creating signed objects.
+ * With view for supporting the xmlpull api shortly for performance reasons.
+ * Currently still uses dom4j but that has been refactored out that it
+ * should now be very quick to implement a xmlpull implementation.
+ *
+ * A side benefit of this is that the API has been further simplified. I still have some work
+ * todo with regards to cleaning up some of the outlying parts of the code.
+ *
  * Revision 1.3  2003/09/23 19:16:28  pelle
  * Changed NameSpace to Identity.
  * To cause less confusion in the future.
@@ -45,13 +54,13 @@ import java.sql.Timestamp;
  *
  * Revision 1.1  2003/02/14 21:10:34  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
- * The NamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
+ * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
  * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  *
  */
 public class LogSender extends Sender {
-    public void send(String endpoint, NamedObject obj) throws NeudistException {
+    public void send(String endpoint, SignedNamedObject obj) throws NeudistException {
         try {
             String digest = URLEncoder.encode(Base64.encode(obj.getDigest()), "UTF-8");
             String name = URLEncoder.encode(obj.getName(), "UTF-8");
@@ -106,14 +115,14 @@ public class LogSender extends Sender {
         return null;
     }
 
-    public static Timestamp getTimeStamp(NamedObject obj) throws NeudistException {
+    public static Timestamp getTimeStamp(SignedNamedObject obj) throws NeudistException {
         return getTimeStamp(Utility.denullString(obj.getParent().getLogger(), LOGGER), obj.getDigest());
 
     }
 
     private static void logObject(String name) throws NeudistException {
         System.out.print("Fetching...");
-        NamedObject obj = NamedObjectFactory.fetchNamedObject(name);
+        SignedNamedObject obj = NamedObjectFactory.fetchNamedObject(name);
         System.out.println("Got " + obj.getName());
         Sender log = new LogSender();
         System.out.print("Logging...");

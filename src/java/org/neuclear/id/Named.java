@@ -1,6 +1,5 @@
-package org.neuclear.senders;
+package org.neuclear.id;
 
-import org.neuclear.id.SignedNamedObject;
 import org.neudist.utils.NeudistException;
 
 /*
@@ -21,17 +20,27 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+$Id: Named.java,v 1.1 2003/09/24 23:56:48 pelle Exp $
+$Log: Named.java,v $
+Revision 1.1  2003/09/24 23:56:48  pelle
+Refactoring nearly done. New model for creating signed objects.
+With view for supporting the xmlpull api shortly for performance reasons.
+Currently still uses dom4j but that has been refactored out that it
+should now be very quick to implement a xmlpull implementation.
+
+A side benefit of this is that the API has been further simplified. I still have some work
+todo with regards to cleaning up some of the outlying parts of the code.
+
 */
 
 /**
  * 
  * User: pelleb
- * Date: Sep 22, 2003
- * Time: 1:28:39 PM
+ * Date: Sep 23, 2003
+ * Time: 4:06:57 PM
  */
-public abstract class Sender {
-    public abstract void send(String endpoint, SignedNamedObject obj) throws NeudistException;
+public interface Named {
+    String getName() throws NeudistException;
 
-    public static void quickSend(String receiver, SignedNamedObject obj) {
-    }
+    String getLocalName() throws NeudistException;
 }

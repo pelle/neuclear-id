@@ -1,6 +1,15 @@
 /*
- * $Id: TargetReference.java,v 1.3 2003/09/23 19:16:27 pelle Exp $
+ * $Id: TargetReference.java,v 1.4 2003/09/24 23:56:48 pelle Exp $
  * $Log: TargetReference.java,v $
+ * Revision 1.4  2003/09/24 23:56:48  pelle
+ * Refactoring nearly done. New model for creating signed objects.
+ * With view for supporting the xmlpull api shortly for performance reasons.
+ * Currently still uses dom4j but that has been refactored out that it
+ * should now be very quick to implement a xmlpull implementation.
+ *
+ * A side benefit of this is that the API has been further simplified. I still have some work
+ * todo with regards to cleaning up some of the outlying parts of the code.
+ *
  * Revision 1.3  2003/09/23 19:16:27  pelle
  * Changed NameSpace to Identity.
  * To cause less confusion in the future.
@@ -25,7 +34,7 @@
  *
  * Revision 1.2  2003/02/14 21:10:33  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
- * The NamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
+ * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
  * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  *
@@ -54,35 +63,35 @@ package org.neuclear.id.targets;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
-import org.neuclear.id.NamedObject;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.senders.Sender;
 import org.neudist.utils.NeudistException;
 import org.neudist.utils.Utility;
 import org.neudist.xml.AbstractElementProxy;
 
 public class TargetReference extends AbstractElementProxy {
-    public TargetReference(NamedObject obj, Element elem) throws NeudistException {
+    public TargetReference(SignedNamedObject obj, Element elem) throws NeudistException {
         super(elem);
         if (!elem.getName().equals(TAG_NAME))
             throw new NeudistException("Element is not a <Target/> Element");
         owner = obj;
     }
 
-    public TargetReference(NamedObject obj, String href, String type) {
-        super(DocumentHelper.createQName(TAG_NAME, NamedObject.NS_NSDL));
+    public TargetReference(SignedNamedObject obj, String href, String type) {
+        super(DocumentHelper.createQName(TAG_NAME, SignedNamedObject.NS_NSDL));
         if (!Utility.isEmpty(href))
-            getElement().addAttribute(DocumentHelper.createQName("href", NamedObject.NS_NSDL), href);
+            getElement().addAttribute(DocumentHelper.createQName("href", SignedNamedObject.NS_NSDL), href);
         if (!Utility.isEmpty(type))
-            getElement().addAttribute(DocumentHelper.createQName("type", NamedObject.NS_NSDL), type);
+            getElement().addAttribute(DocumentHelper.createQName("type", SignedNamedObject.NS_NSDL), type);
         owner = obj;
     }
 
     public String getHref() {
-        return getElement().attributeValue(DocumentHelper.createQName("href", NamedObject.NS_NSDL));
+        return getElement().attributeValue(DocumentHelper.createQName("href", SignedNamedObject.NS_NSDL));
     }
 
     public String getType() {
-        return getElement().attributeValue(DocumentHelper.createQName("type", NamedObject.NS_NSDL));
+        return getElement().attributeValue(DocumentHelper.createQName("type", SignedNamedObject.NS_NSDL));
     }
 
     private static final String TAG_NAME = "Target";
@@ -92,12 +101,12 @@ public class TargetReference extends AbstractElementProxy {
     }
 
     public Namespace getNS() {
-        return NamedObject.NS_NSDL;
+        return SignedNamedObject.NS_NSDL;
     }
 
     public void send() throws NeudistException {
         Sender.quickSend(getHref(), owner);
     }
 
-    private NamedObject owner;
+    private SignedNamedObject owner;
 }

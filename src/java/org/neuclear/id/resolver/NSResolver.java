@@ -26,26 +26,21 @@ public final class NSResolver {
      * @param name
      * @return
      */
-    public final static Identity resolveNameSpace(String name) throws NeudistException, InvalidIdentityException {
+    public final static Identity resolveIdentity(String name) throws NeudistException, InvalidIdentityException {
         Identity ns = NSCACHE.fetchCached(name);
         if (ns != null)
             return ns;
 
         String parentname = NSTools.getParentNSURI(name);
         String store = NSROOTSTORE;
-        boolean isRootlevel = parentname == null || parentname.equals("neu://");
-        Identity parent = null;
-        if (!isRootlevel) {
-            parent = resolveNameSpace(parentname);
-            store = parent.getRepository();
-        }
+        if ( parentname == null || parentname.equals("neu://"))
+            return Identity.getRootIdentity();
+        Identity parent = resolveIdentity(parentname);
+        store = parent.getRepository();
         // fetches Identity from parent Identity's Default Store
         ns = (Identity) Source.getInstance().fetch(store, name);
         if (ns == null)
             throw new NeudistException("Identity: " + name + " was not resolved");
-        PublicKey parentkey = (isRootlevel) ? NSVerifier.getRootPK() : parent.getAllowed();
-        if (!ns.verifySignature(parentkey))
-            throw new InvalidIdentityException("Identity: " + name + " not allowed in " + parentname);
         NSCACHE.cache(ns);
         return ns; //This may not be null
     }

@@ -1,6 +1,15 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.3 2003/09/23 19:16:29 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.4 2003/09/24 23:56:49 pelle Exp $
   $Log: AbstractStoreTest.java,v $
+  Revision 1.4  2003/09/24 23:56:49  pelle
+  Refactoring nearly done. New model for creating signed objects.
+  With view for supporting the xmlpull api shortly for performance reasons.
+  Currently still uses dom4j but that has been refactored out that it
+  should now be very quick to implement a xmlpull implementation.
+
+  A side benefit of this is that the API has been further simplified. I still have some work
+  todo with regards to cleaning up some of the outlying parts of the code.
+
   Revision 1.3  2003/09/23 19:16:29  pelle
   Changed NameSpace to Identity.
   To cause less confusion in the future.
@@ -146,18 +155,18 @@ public abstract class AbstractStoreTest extends TestCase {
 //                System.out.println("Storing "+eveName);
 //                store.receive(new Identity(eveName,root,eve.getPublic()));
 //                System.out.println("Fetching "+rootName);
-//                NamedObject nobj1=store.fetch(rootName);
+//                SignedNamedObject nobj1=store.fetch(rootName);
 //                assertEquals(NSTools.normalizeNameURI(rootName),nobj1.getName());
 //                System.out.println("Fetching "+bobName);
-//                NamedObject nobj2=store.fetch(bobName);
+//                SignedNamedObject nobj2=store.fetch(bobName);
 //                assertEquals(NSTools.normalizeNameURI(bobName),nobj2.getName());
 //
 //                System.out.println("Fetching "+bobAliceName);
-//                NamedObject nobj3=store.fetch(bobAliceName);
+//                SignedNamedObject nobj3=store.fetch(bobAliceName);
 //                assertEquals(NSTools.normalizeNameURI(bobAliceName),nobj3.getName());
 //
 //                System.out.println("Fetching "+eveName);
-//                NamedObject nobj4=store.fetch(eveName);
+//                SignedNamedObject nobj4=store.fetch(eveName);
 //                assertEquals(NSTools.normalizeNameURI(eveName),nobj4.getName());
     }
 

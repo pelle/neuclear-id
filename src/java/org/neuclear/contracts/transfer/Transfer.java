@@ -1,6 +1,15 @@
 /*
- * $Id: Transfer.java,v 1.3 2003/09/23 19:16:26 pelle Exp $
+ * $Id: Transfer.java,v 1.4 2003/09/24 23:56:47 pelle Exp $
  * $Log: Transfer.java,v $
+ * Revision 1.4  2003/09/24 23:56:47  pelle
+ * Refactoring nearly done. New model for creating signed objects.
+ * With view for supporting the xmlpull api shortly for performance reasons.
+ * Currently still uses dom4j but that has been refactored out that it
+ * should now be very quick to implement a xmlpull implementation.
+ *
+ * A side benefit of this is that the API has been further simplified. I still have some work
+ * todo with regards to cleaning up some of the outlying parts of the code.
+ *
  * Revision 1.3  2003/09/23 19:16:26  pelle
  * Changed NameSpace to Identity.
  * To cause less confusion in the future.
@@ -20,7 +29,7 @@
  *
  * Revision 1.7  2003/02/14 21:10:32  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
- * The NamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
+ * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
  * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  *
@@ -31,7 +40,7 @@
  * Fixed things so they now compile with r_0.7 of XMLSig
  *
  * Revision 1.4  2002/12/17 21:40:56  pelle
- * First part of refactoring of NamedObject and SignedObject Interface/Class parings.
+ * First part of refactoring of SignedNamedObject and SignedObject Interface/Class parings.
  *
  * Revision 1.3  2002/12/04 13:52:47  pelle
  * Biggest change is a fix to the Canonicalization Writer It should be a lot more compliant with C14N now.
@@ -43,14 +52,14 @@ package org.neuclear.contracts.transfer;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
-import org.neuclear.id.NamedObject;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.NamedObjectFactory;
 import org.neudist.crypto.CryptoTools;
 import org.neudist.utils.NeudistException;
 
 import java.util.Date;
 
-public class Transfer extends NamedObject {
+public class Transfer extends SignedNamedObject {
 
     public Transfer(String userNameSpace, String recipient, String assetType, double amount) {//TODO Add validity fields
         super(createUniqueTransferName(userNameSpace, recipient), DocumentHelper.createQName(TAG_NAME, NS_NSASSET));

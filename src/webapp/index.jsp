@@ -1,7 +1,7 @@
 <%@ page import="org.neudist.utils.Utility,
                  com.opensymphony.util.TextUtils,
                  org.neuclear.receiver.ReceiverServlet,
-                 org.neuclear.id.NamedObject,
+                 org.neuclear.id.SignedNamedObject,
                  org.neuclear.contracts.nsauth.AuthenticationTicket,
                  org.neuclear.id.NSTools,
                  org.neudist.utils.ServletTools,
@@ -21,7 +21,7 @@
     AuthenticationTicket ticket=(AuthenticationTicket)sess.getAttribute("NSAuthTicket");
     String ticketname=(String)sess.getAttribute("nsauth");
         if (ticket==null&&!Utility.isEmpty(ticketname)) {
-            NamedObject named=NamedObjectFactory.fetchNamedObject(ticketname);
+            SignedNamedObject named=NamedObjectFactory.fetchNamedObject(ticketname);
             if (named!=null){
                 if (named instanceof AuthenticationTicket) {
                     ticket=(AuthenticationTicket)named;

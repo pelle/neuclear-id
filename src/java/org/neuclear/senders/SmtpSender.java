@@ -5,8 +5,17 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:52:38 AM
- * $Id: SmtpSender.java,v 1.3 2003/09/23 19:16:28 pelle Exp $
+ * $Id: SmtpSender.java,v 1.4 2003/09/24 23:56:48 pelle Exp $
  * $Log: SmtpSender.java,v $
+ * Revision 1.4  2003/09/24 23:56:48  pelle
+ * Refactoring nearly done. New model for creating signed objects.
+ * With view for supporting the xmlpull api shortly for performance reasons.
+ * Currently still uses dom4j but that has been refactored out that it
+ * should now be very quick to implement a xmlpull implementation.
+ *
+ * A side benefit of this is that the API has been further simplified. I still have some work
+ * todo with regards to cleaning up some of the outlying parts of the code.
+ *
  * Revision 1.3  2003/09/23 19:16:28  pelle
  * Changed NameSpace to Identity.
  * To cause less confusion in the future.
@@ -26,13 +35,13 @@ package org.neuclear.senders;
  *
  * Revision 1.1  2003/02/14 21:10:35  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
- * The NamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
+ * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
  * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  *
  */
 
-import org.neuclear.id.NamedObject;
+import org.neuclear.id.SignedNamedObject;
 import org.neudist.utils.NeudistException;
 import org.neudist.utils.Utility;
 
@@ -45,7 +54,7 @@ import java.util.Date;
 import java.util.Properties;
 
 public class SmtpSender extends Sender {
-    public void send(String endpoint, NamedObject obj) throws NeudistException {
+    public void send(String endpoint, SignedNamedObject obj) throws NeudistException {
         Properties props = System.getProperties();
         if (endpoint.startsWith("mailto:"))
             endpoint = endpoint.substring(7);

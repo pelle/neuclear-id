@@ -1,6 +1,15 @@
 /*
- * $Id: NSTools.java,v 1.3 2003/09/23 19:16:27 pelle Exp $
+ * $Id: NSTools.java,v 1.4 2003/09/24 23:56:48 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.4  2003/09/24 23:56:48  pelle
+ * Refactoring nearly done. New model for creating signed objects.
+ * With view for supporting the xmlpull api shortly for performance reasons.
+ * Currently still uses dom4j but that has been refactored out that it
+ * should now be very quick to implement a xmlpull implementation.
+ *
+ * A side benefit of this is that the API has been further simplified. I still have some work
+ * todo with regards to cleaning up some of the outlying parts of the code.
+ *
  * Revision 1.3  2003/09/23 19:16:27  pelle
  * Changed NameSpace to Identity.
  * To cause less confusion in the future.
@@ -20,7 +29,7 @@
  *
  * Revision 1.11  2003/02/14 21:10:28  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
- * The NamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
+ * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
  * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  *
@@ -41,16 +50,16 @@
  * Fixed things so they now compile with r_0.7 of XMLSig
  *
  * Revision 1.6  2002/12/17 21:40:53  pelle
- * First part of refactoring of NamedObject and SignedObject Interface/Class parings.
+ * First part of refactoring of SignedNamedObject and SignedObject Interface/Class parings.
  *
  * Revision 1.5  2002/12/17 20:34:39  pelle
  * Lots of changes to core functionality.
  * First of all I've refactored most of the Resolving and verification code. I have a few more things to do
  * on it before I'm happy.
  * There is now a NSResolver class, which handles all the namespace resolution. I took most of the functionality
- * for this out of NamedObject.
- * Then there is the veriifer, which verifies a given NamedObject using the NSResolver.
- * This has simplified the NamedObject classes drastically, leaving them as mainly data objects, which is what they
+ * for this out of SignedNamedObject.
+ * Then there is the veriifer, which verifies a given SignedNamedObject using the NSResolver.
+ * This has simplified the SignedNamedObject classes drastically, leaving them as mainly data objects, which is what they
  * should be.
  * I have also gone around and tightened up security on many different classes, making clases and/or methods final where appropriate.
  * NSCache now operates using http://www.waterken.com's fantastic ADT collections library.
@@ -194,7 +203,7 @@ public final class NSTools {
 
     public static void main(String args[]) {
         try {
-            NamedObject obj = NamedObjectFactory.fetchNamedObject("neu://free/pelle");
+            SignedNamedObject obj = NamedObjectFactory.fetchNamedObject("neu://free/pelle");
             System.out.println("Got: " + obj.getName());
             obj = NamedObjectFactory.fetchNamedObject("neu://pelle");
             System.out.println("Got: " + obj.getName());

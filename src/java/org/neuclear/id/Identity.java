@@ -1,6 +1,15 @@
 /*
- * $Id: Identity.java,v 1.1 2003/09/23 19:16:26 pelle Exp $
+ * $Id: Identity.java,v 1.2 2003/09/24 23:56:48 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.2  2003/09/24 23:56:48  pelle
+ * Refactoring nearly done. New model for creating signed objects.
+ * With view for supporting the xmlpull api shortly for performance reasons.
+ * Currently still uses dom4j but that has been refactored out that it
+ * should now be very quick to implement a xmlpull implementation.
+ *
+ * A side benefit of this is that the API has been further simplified. I still have some work
+ * todo with regards to cleaning up some of the outlying parts of the code.
+ *
  * Revision 1.1  2003/09/23 19:16:26  pelle
  * Changed NameSpace to Identity.
  * To cause less confusion in the future.
@@ -32,7 +41,7 @@
  *
  * Revision 1.8  2003/02/14 21:10:29  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
- * The NamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
+ * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
  * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  *
@@ -48,16 +57,16 @@
  * We also need a Ledger class and a Ledger Factory.
  *
  * Revision 1.4  2002/12/17 21:40:54  pelle
- * First part of refactoring of NamedObject and SignedObject Interface/Class parings.
+ * First part of refactoring of SignedNamedObject and SignedObject Interface/Class parings.
  *
  * Revision 1.3  2002/12/17 20:34:39  pelle
  * Lots of changes to core functionality.
  * First of all I've refactored most of the Resolving and verification code. I have a few more things to do
  * on it before I'm happy.
  * There is now a NSResolver class, which handles all the namespace resolution. I took most of the functionality
- * for this out of NamedObject.
- * Then there is the veriifer, which verifies a given NamedObject using the NSResolver.
- * This has simplified the NamedObject classes drastically, leaving them as mainly data objects, which is what they
+ * for this out of SignedNamedObject.
+ * Then there is the veriifer, which verifies a given SignedNamedObject using the NSResolver.
+ * This has simplified the SignedNamedObject classes drastically, leaving them as mainly data objects, which is what they
  * should be.
  * I have also gone around and tightened up security on many different classes, making clases and/or methods final where appropriate.
  * NSCache now operates using http://www.waterken.com's fantastic ADT collections library.
@@ -144,124 +153,49 @@ package org.neuclear.id;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.QName;
-import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.senders.LogSender;
-import org.neuclear.senders.Sender;
 import org.neudist.utils.NeudistException;
 import org.neudist.utils.Utility;
 import org.neudist.xml.xmlsec.KeyInfo;
 import org.neudist.xml.xmlsec.XMLSecTools;
+import org.neudist.xml.xmlsec.XMLSecurityException;
+import org.neudist.crypto.CryptoTools;
+import org.neudist.crypto.CryptoException;
+import org.neuclear.senders.Sender;
+import org.neuclear.id.resolver.NSResolver;
 
 import java.security.PublicKey;
 import java.util.Iterator;
 import java.util.List;
+import java.sql.Timestamp;
 
-public final class Identity extends NamedObject {
+public final class Identity extends SignedNamedObject {
+    private static final String NSROOTPKMOD = "AKbv1DrfQCj7fbcc/9U8mLHi9LzFGVw8ac9z26BN1+yeq9VG3wvW+OXjvUpQ9cD+dpwpFXeai9Hz DkFeJcT9Coi9A8Aj4nffWAlxJ/AVOIRCi1d4A/d9InhQ7UYYA5O7XBcwKneopYVa9zRDUoy0ZpVy t9Kj5i0Zw6oZsflAu4S4pIU+niYwwWrYmCuBEq9kecf7nSGiU0rHp1QNs7NYdhXCl2BMcSaz0AZt AF8YLlZYasviJkoxUFBB/Vjqa98xi7V7XIGsMbXWqUvJ8MW2N/CUdBz5aDlpBUwul8rqyq+03A0q 84AFJiUcudqVL7KhURXB8ZYy/hZb+YkEvE3IigU=";
+    private static final String NSROOTPKEXP = "AQAB";
+    private static PublicKey nsrootpk;
 
 
     /**
-     * This constructor should be used by subclasses of Identity. It creates a Standard Identity document, but doesn't sign it.
-     * The signing should be done as the last step of the constructor of the subclass.
      * @param name The Name of Identity
-     * @param allow PublicKey allowed to sign in here
+     * @param signatory The Signatory that signed this object
+     * @param timestamp The TimeStamp of the SignedNamedObject
      * @param repository URL of Default Store for Identity. (Note. A Identity object is stored in the default repository of it's parent namespace)
      * @param signer URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
      * @param receiver URL of default receiver for namespace
      * @throws NeudistException
      */
-    public Identity(String name, PublicKey allow, String repository, String signer, String logger, String receiver) throws NeudistException {
-        super(name, "Identity");
 
-        Element root = getElement();
-        // We have meaningful defaults for the following two
-        this.repository = Utility.denullString(repository, NSResolver.NSROOTSTORE);
-        this.logger = Utility.denullString(repository, LogSender.LOGGER);
-
+    Identity(String name, Identity signatory, Timestamp timestamp, String digest, String repository, String signer, String logger, String receiver, PublicKey[] pubs) throws NeudistException {
+        super(name, signatory, timestamp, digest);
+        this.repository = repository;
+        this.logger = logger;
         this.signer = signer;
         this.receiver = receiver;
-        root.addAttribute(DocumentHelper.createQName("repository", NamedObject.NS_NSDL), this.repository);
-        root.addAttribute(DocumentHelper.createQName("logger", NamedObject.NS_NSDL), receiver);
-        if (!Utility.isEmpty(signer))
-            root.addAttribute(DocumentHelper.createQName("signer", NamedObject.NS_NSDL), signer);
-
-        if (!Utility.isEmpty(receiver))
-            root.addAttribute(DocumentHelper.createQName("receiver", NamedObject.NS_NSDL), receiver);
-
-        if (allow != null) {
-            QName allowName = DocumentHelper.createQName("allow", NamedObject.NS_NSDL);
-            Element pub = root.addElement(allowName);
-            pubs = new PublicKey[1];
-            pubs[0] = allow;
-            pub.add(XMLSecTools.createKeyInfo(allow));
-        }
+        this.pubs = pubs;
     }
 
-    public Identity(String name, PublicKey allow, String repository) throws NeudistException {
-        this(name, allow, repository, null, null, null);
-    }
 
-    public Identity(String name, PublicKey allow) throws NeudistException {
-        this(name, allow, null);
-    }
 
-    /**
-     * This constructor should be used by subclasses of Identity. It creates a Standard Identity document, but doesn't sign it.
-     * The signing should be done as the last step of the constructor of the subclass.
-     */
-/*
-   protected Identity(String name) throws NeudistException {
-        super(name,"Identity");
-   }
-*/
 
-    /**
-     * Builds a Identity from an XML Document.
-     */
-    public Identity(Element nsElem) throws NeudistException/*,KeyResolverException*/ {
-        super(nsElem);
-        try {
-            Element ns = getElement();
-            repository = ns.attributeValue(DocumentHelper.createQName("store", NamedObject.NS_NSDL));
-            signer = ns.attributeValue(DocumentHelper.createQName("signer", NamedObject.NS_NSDL));
-            logger = ns.attributeValue(DocumentHelper.createQName("logger", NamedObject.NS_NSDL));
-            receiver = ns.attributeValue(DocumentHelper.createQName("receiver", NamedObject.NS_NSDL));
-
-            Element allowElement = ns.element(DocumentHelper.createQName("allow", NamedObject.NS_NSDL));
-            List keys = allowElement.elements(XMLSecTools.createQName("KeyInfo"));
-            pubs = new PublicKey[keys.size()];
-            int i = 0;
-            for (Iterator iter = keys.iterator(); iter.hasNext(); i++) {
-                KeyInfo ki = new KeyInfo((Element) iter.next());
-                pubs[i] = ki.getPublicKey();
-            }
-        } catch (Exception e) {
-            Utility.rethrowException(e);
-        }
-    }
-
-    /**
-     * Returns the first allowed public key
-     * @return the first allowed public key
-     */
-    public PublicKey getAllowed() {
-        if (pubs != null && pubs.length > 0)
-            return pubs[0];
-        else
-            return null;
-    }
-
-    public boolean postAllowed(NamedObject obj) throws NeudistException {
-        try {
-            for (int i = 0; i < pubs.length; i++) {
-                if (obj.verifySignature(pubs[i]))
-                    return true;
-            }
-        } catch (Exception e) {
-            Utility.rethrowException(e);
-        }
-        return false;
-    };
 
     public String getRepository() {
         return repository;
@@ -275,14 +209,14 @@ public final class Identity extends NamedObject {
         return logger;
     }
 
-    public final void send(NamedObject obj) throws NeudistException {
+    public final void send(SignedNamedObject obj) throws NeudistException {
         if (!Utility.isEmpty(receiver))
             Sender.quickSend(receiver, obj);
         else
             throw new NeudistException("Cant send object, " + getName() + " doesnt have a registered Receiver");
     }
 
-    void log(NamedObject obj) throws NeudistException {
+    void log(SignedNamedObject obj) throws NeudistException {
         if (!Utility.isEmpty(logger))
             Sender.quickSend(logger, obj);
     }
@@ -290,11 +224,60 @@ public final class Identity extends NamedObject {
     public String getTagName() {
         return "Identity";
     }
-
+    public PublicKey[] getPublicKeys(){
+        return pubs;
+    }
     private String repository;
     private String signer;
     private String logger;
     private String receiver;
 
     private PublicKey pubs[];
+
+
+    public final static Identity getRootIdentity() throws NeudistException {
+
+        PublicKey rootpk=CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
+        root=new Identity("neu://",null,new Timestamp(0),null,NSResolver.NSROOTSTORE,
+                null,null,null,new PublicKey[]{rootpk});
+        return root;
+    }
+    private static Identity root;
+
+    /**
+     *  Returns the fixed Root PublicKey
+     */
+    private final static PublicKey getRootPK() throws XMLSecurityException {
+        if (nsrootpk == null)
+            nsrootpk = CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
+        return nsrootpk;
+    }
+
+    //TODO I dont like this being public
+    final static class Reader implements NamedObjectReader {
+        /**
+         * Read object from Element and fill in its details
+         * @param elem
+         * @return
+         */
+        public SignedNamedObject read(Element elem, String name, Identity signatory, String digest, Timestamp timestamp) throws NeudistException {
+            String repository=elem.attributeValue(DocumentHelper.createQName("store",SignedNamedObject.NS_NSDL));
+            String signer=elem.attributeValue(DocumentHelper.createQName("signer",SignedNamedObject.NS_NSDL));
+            String logger=elem.attributeValue(DocumentHelper.createQName("logger",SignedNamedObject.NS_NSDL));
+            String receiver=elem.attributeValue(DocumentHelper.createQName("receiver",SignedNamedObject.NS_NSDL));
+
+            Element allowElement=elem.element(DocumentHelper.createQName("allow",SignedNamedObject.NS_NSDL));
+            List keys=allowElement.elements(XMLSecTools.createQName("KeyInfo"));
+            PublicKey pubs[]=new PublicKey[keys.size()];
+            int i=0;
+            for (Iterator iter=keys.iterator();iter.hasNext();i++) {
+                KeyInfo ki=new KeyInfo((Element)iter.next());
+                pubs[i]=ki.getPublicKey();
+            }
+
+            return new Identity(name,signatory,timestamp,digest,repository,signer,logger,receiver,pubs);
+        }
+
+    }
+
 }

@@ -1,6 +1,15 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.3 2003/09/23 19:16:29 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.4 2003/09/24 23:56:48 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.4  2003/09/24 23:56:48  pelle
+ * Refactoring nearly done. New model for creating signed objects.
+ * With view for supporting the xmlpull api shortly for performance reasons.
+ * Currently still uses dom4j but that has been refactored out that it
+ * should now be very quick to implement a xmlpull implementation.
+ *
+ * A side benefit of this is that the API has been further simplified. I still have some work
+ * todo with regards to cleaning up some of the outlying parts of the code.
+ *
  * Revision 1.3  2003/09/23 19:16:29  pelle
  * Changed NameSpace to Identity.
  * To cause less confusion in the future.
@@ -31,7 +40,7 @@
  *
  * Revision 1.5  2003/02/14 21:10:36  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
- * The NamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
+ * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
  * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  *
@@ -82,7 +91,7 @@
  * Revision 1.6  2002/09/25 19:20:15  pelle
  * Added various new schemas and updated most of the existing ones.
  * Added explanation interface for explaining the purpose of a
- * NamedObject to a user. We may want to use XSL instead.
+ * SignedNamedObject to a user. We may want to use XSL instead.
  * Also made the signing webapp look a bit nicer.
  *
  * Revision 1.5  2002/09/23 15:09:18  pelle

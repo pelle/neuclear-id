@@ -1,6 +1,15 @@
 /*
- * $Id: SigningServlet.java,v 1.3 2003/09/23 19:16:29 pelle Exp $
+ * $Id: SigningServlet.java,v 1.4 2003/09/24 23:56:49 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.4  2003/09/24 23:56:49  pelle
+ * Refactoring nearly done. New model for creating signed objects.
+ * With view for supporting the xmlpull api shortly for performance reasons.
+ * Currently still uses dom4j but that has been refactored out that it
+ * should now be very quick to implement a xmlpull implementation.
+ *
+ * A side benefit of this is that the API has been further simplified. I still have some work
+ * todo with regards to cleaning up some of the outlying parts of the code.
+ *
  * Revision 1.3  2003/09/23 19:16:29  pelle
  * Changed NameSpace to Identity.
  * To cause less confusion in the future.
@@ -28,7 +37,7 @@
  *
  * Revision 1.15  2003/02/14 21:10:36  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
- * The NamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
+ * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
  * The Identity object also has a new method send() which allows one to send a named object to the Identity's
  * default receiver.
  *
@@ -39,16 +48,16 @@
  * Fixed things so they now compile with r_0.7 of XMLSig
  *
  * Revision 1.12  2002/12/17 21:40:59  pelle
- * First part of refactoring of NamedObject and SignedObject Interface/Class parings.
+ * First part of refactoring of SignedNamedObject and SignedObject Interface/Class parings.
  *
  * Revision 1.11  2002/12/17 20:34:42  pelle
  * Lots of changes to core functionality.
  * First of all I've refactored most of the Resolving and verification code. I have a few more things to do
  * on it before I'm happy.
  * There is now a NSResolver class, which handles all the namespace resolution. I took most of the functionality
- * for this out of NamedObject.
- * Then there is the veriifer, which verifies a given NamedObject using the NSResolver.
- * This has simplified the NamedObject classes drastically, leaving them as mainly data objects, which is what they
+ * for this out of SignedNamedObject.
+ * Then there is the veriifer, which verifies a given SignedNamedObject using the NSResolver.
+ * This has simplified the SignedNamedObject classes drastically, leaving them as mainly data objects, which is what they
  * should be.
  * I have also gone around and tightened up security on many different classes, making clases and/or methods final where appropriate.
  * NSCache now operates using http://www.waterken.com's fantastic ADT collections library.
@@ -98,7 +107,7 @@
  * Revision 1.6  2002/09/25 19:20:15  pelle
  * Added various new schemas and updated most of the existing ones.
  * Added explanation interface for explaining the purpose of a
- * NamedObject to a user. We may want to use XSL instead.
+ * SignedNamedObject to a user. We may want to use XSL instead.
  * Also made the signing webapp look a bit nicer.
  *
  * Revision 1.5  2002/09/23 15:09:18  pelle
@@ -125,7 +134,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.NSTools;
-import org.neuclear.id.NamedObject;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.signrequest.SignatureRequest;
 import org.neuclear.receiver.ReceiverServlet;
 import org.neudist.crypto.signerstores.InvalidPassphraseException;
@@ -215,7 +224,7 @@ public class SigningServlet extends ReceiverServlet {
         String endpoint = request.getParameter("endpoint");
         String passphrase = request.getParameter("passphrase");
         SignatureRequest sigreq;
-        NamedObject named;
+        SignedNamedObject named;
         boolean isSigned = false;
         Element elem = null;
         try {
@@ -301,7 +310,7 @@ public class SigningServlet extends ReceiverServlet {
 
     }
 
-    public Element receiveNamedObject(NamedObject obj, String soapAction) throws SOAPException {
+    public Element receiveNamedObject(SignedNamedObject obj, String soapAction) throws SOAPException {
         try {
             signObject(obj, "hello".toCharArray());// TODO How do we get the passphrase here? Popup request?
             return obj.getElement();
@@ -316,7 +325,7 @@ public class SigningServlet extends ReceiverServlet {
         }
     }
 
-    protected static void signObject(NamedObject obj, char passphrase[]) throws NeudistException, InvalidIdentityException, InvalidPassphraseException, NonExistingSignerException {
+    protected static void signObject(SignedNamedObject obj, char passphrase[]) throws NeudistException, InvalidIdentityException, InvalidPassphraseException, NonExistingSignerException {
         if (!obj.isSigned()) {
             try {
                 String parentName = NSTools.getParentNSURI(obj.getName());

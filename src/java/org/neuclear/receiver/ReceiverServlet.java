@@ -1,6 +1,15 @@
 /*
- * $Id: ReceiverServlet.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.3 2003/09/24 23:56:48 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.3  2003/09/24 23:56:48  pelle
+ * Refactoring nearly done. New model for creating signed objects.
+ * With view for supporting the xmlpull api shortly for performance reasons.
+ * Currently still uses dom4j but that has been refactored out that it
+ * should now be very quick to implement a xmlpull implementation.
+ *
+ * A side benefit of this is that the API has been further simplified. I still have some work
+ * todo with regards to cleaning up some of the outlying parts of the code.
+ *
  * Revision 1.2  2003/09/22 19:24:02  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -54,7 +63,7 @@ package org.neuclear.receiver;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.neuclear.id.NamedObject;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.NamedObjectFactory;
 import org.neudist.utils.NeudistException;
 import org.neudist.xml.soap.SOAPException;
@@ -72,7 +81,7 @@ public abstract class ReceiverServlet extends SOAPServlet {
         try {
             System.out.println("NEUDIST: Got Storage Request " + soapAction);
             System.out.println(request.asXML());
-            NamedObject named = NamedObjectFactory.createNamedObject(request);
+            SignedNamedObject named = NamedObjectFactory.createNamedObject(request);
             receiver.receive(named);
             return OK;
         } catch (NeudistException e) {

@@ -1,7 +1,16 @@
 /*
  *
- * $Id: CachedSource.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
+ * $Id: CachedSource.java,v 1.3 2003/09/24 23:56:49 pelle Exp $
  * $Log: CachedSource.java,v $
+ * Revision 1.3  2003/09/24 23:56:49  pelle
+ * Refactoring nearly done. New model for creating signed objects.
+ * With view for supporting the xmlpull api shortly for performance reasons.
+ * Currently still uses dom4j but that has been refactored out that it
+ * should now be very quick to implement a xmlpull implementation.
+ *
+ * A side benefit of this is that the API has been further simplified. I still have some work
+ * todo with regards to cleaning up some of the outlying parts of the code.
+ *
  * Revision 1.2  2003/09/22 19:24:02  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -30,7 +39,7 @@ package org.neuclear.source;
 
 import org.apache.commons.collections.LRUMap;
 import org.neuclear.id.NSTools;
-import org.neuclear.id.NamedObject;
+import org.neuclear.id.SignedNamedObject;
 import org.neudist.utils.NeudistException;
 
 import java.util.Map;
@@ -46,9 +55,9 @@ public final class CachedSource extends Source {
     }
 
 
-    public NamedObject fetch(String endpoint, String name) throws NeudistException {
+    public SignedNamedObject fetch(String endpoint, String name) throws NeudistException {
         name = NSTools.normalizeNameURI(name);
-        NamedObject candidate = (NamedObject) cache.get(name);
+        SignedNamedObject candidate = (SignedNamedObject) cache.get(name);
         if (candidate != null)
             return candidate;
 
@@ -59,7 +68,7 @@ public final class CachedSource extends Source {
 
     }
 
-    private void storeInCache(NamedObject obj) throws NeudistException {
+    private void storeInCache(SignedNamedObject obj) throws NeudistException {
         cache.put(obj.getName(), obj);
     }
 

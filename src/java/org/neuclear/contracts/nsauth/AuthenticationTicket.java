@@ -12,8 +12,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.neuclear.id.Identity;
-import org.neuclear.id.NamedObject;
-import org.neuclear.id.NamedObjectFactory;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.signrequest.SignatureRequest;
 import org.neuclear.time.TimeTools;
 import org.neudist.crypto.CryptoTools;
@@ -28,49 +27,40 @@ import java.util.Date;
  * This Authentication Ticket is used by websites to authenticate a user.
  * It generates a unique Name in the users Identity, which the user then signs.
  */
-public class AuthenticationTicket extends NamedObject {
+public class AuthenticationTicket extends SignedNamedObject {
     /**
      * <p>Used by a website to create an authentication ticket for validation.</p>
      * <p>Eg.:<br>
-     * <tt>NamedObject ticket=new AuthenticationTicket("neu://test/bob","neu://site/neubay",36000,"http://neubay.com");</tt><br>
+     * <tt>SignedNamedObject ticket=new AuthenticationTicket("neu://test/bob","neu://site/neubay",36000,"http://neubay.com");</tt><br>
      * Would give you a namedobject containing the following xml:<br>
      * <pre>&lt;nsauth:AuthenticationTicket xmlns:nsauth="http://neuclear.org/neu/nsauth" xmlns:nsdl="http://neuclear.org/neu/nsdl" nsdl:name="/test/two/neu.testapp.-2o1qkqrvxyesyt7dae22ulvp56eju30zyys5t6nxjjie2gw3qq" nsauth:validto="20021002T084919848GMT+00:00" nsauth:href="http://localhost:8080/neudistframework/"&gt;
      * &lt;/nsauth:AuthenticationTicket&gt;
      *</pre>
-     *
-     * @param user The Users namespace eg: neu://test/bob
-     * @param requester The requesters Identity eg. neu://site/neubay
-     * @param validity The validity of the ticket in Milliseconds
-     * @param siteurl URL for interactive signing service to send user to after signing.
-     */
-    private AuthenticationTicket(String user, String requester, long validity, String siteurl) throws NeudistException {
-        super(createUniqueTicketName(user, requester), AuthenticationTicket.TAG_NAME, AuthenticationTicket.NS_NSAUTH);
+ *
+ * @param name
+ * @param signatory
+ * @param timestamp
+ * @param digest
+ * @param requester
+ * @param validto
+ * @param siteurl
+ * @throws NeudistException
+ */
+    private AuthenticationTicket(String name, Identity signatory,Timestamp timestamp,String digest, String requester, Timestamp validto, String siteurl) throws NeudistException {
+        super(name, signatory, timestamp, digest);
+        this.validTo=validto;
+        this.siteurl=siteurl;
+        this.requester=requester;
 
-        NamedObject userns = NamedObjectFactory.fetchNamedObject(user);
-
-        if (userns == null || (!(userns instanceof Identity)) || (Utility.isEmpty(((Identity) userns).getSigner())))
-            throw new NeudistException("The provided namespace: " + user + " doesnt exist or doesnt allow interactive signing");
-        Element root = getElement();
-        if (validity >= 0)
-            root.addAttribute(DocumentHelper.createQName("validto", NS_NSAUTH), TimeTools.formatTimeStamp(new Timestamp(new Date().getTime() + validity)));
-        if (!Utility.isEmpty(siteurl))
-            root.addAttribute(DocumentHelper.createQName("href", NS_NSAUTH), siteurl);
     }
 
-    /**
-     * This constructor is used to create a UserAuthenticationTicket from an XML Element
-     * @param elem AuthenticationTicket element
-     * @throws NeudistException
-     */
-    public AuthenticationTicket(Element elem) throws NeudistException {
-        super(elem);
-    }
-
+/*
     public static SignatureRequest createAuthenticationRequest(String user, String requester, long validity, String siteurl, String targeturl, PrivateKey signer) throws NeudistException {
         AuthenticationTicket ticket = new AuthenticationTicket(user, requester, validity, siteurl);
         return SignatureRequest.createRequest(requester, targeturl, ticket, signer);
 
     }
+*/
 
     /**
      * This is just used to create a unique ticket for use by the ticket
@@ -110,8 +100,7 @@ public class AuthenticationTicket extends NamedObject {
      * @throws NeudistException
      */
     public Timestamp getValidTo() throws NeudistException {
-        String ts = getElement().attributeValue(DocumentHelper.createQName("validto", NS_NSAUTH));
-        return TimeTools.parseTimeStamp(ts);
+        return validTo;
     }
 
     /**
@@ -119,19 +108,13 @@ public class AuthenticationTicket extends NamedObject {
      * @return the URL or null if unavailable.
      */
     public String getSiteHref() {
-        return getElement().attributeValue(DocumentHelper.createQName("href", NS_NSAUTH));
+        return siteurl;
     }
 
     public String getTagName() {
         return TAG_NAME;
     }
 
-    /**
-     * @return the XML Identity object
-     */
-    public Namespace getNS() {
-        return NS_NSAUTH;
-    }
 /*
 
     public Element explain() {
@@ -148,6 +131,9 @@ public class AuthenticationTicket extends NamedObject {
     }
 */
 
+        private String requester;
+    private String siteurl;
+    private Timestamp validTo;
     private static final String TAG_NAME = "AuthenticationTicket";
     public static final String URI_NSAUTH = "http://neuclear.org/neu/nsauth";
     public static final Namespace NS_NSAUTH = DocumentHelper.createNamespace("nsauth", URI_NSAUTH);

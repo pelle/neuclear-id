@@ -11,7 +11,7 @@ package org.neuclear.id.signrequest;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
-import org.neuclear.id.NamedObject;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.NamedObjectFactory;
 import org.neudist.crypto.CryptoTools;
 import org.neudist.utils.NeudistException;
@@ -24,11 +24,11 @@ import java.util.Date;
  * The Signature Request is a signed request for forwarding to a signing server. Its simply a signed wrapper around an unsigned
  * Named Object.
  */
-public class SignatureRequest extends NamedObject {
+public class SignatureRequest extends SignedNamedObject {
     /**
      * <p>Used by a website to create an authentication ticket for validation.</p>
      * <p>Eg.:<br>
-     * <tt>NamedObject ticket=new AuthenticationTicket("neu://test/bob","neu://site/neubay",36000,"http://neubay.com");</tt><br>
+     * <tt>SignedNamedObject ticket=new AuthenticationTicket("neu://test/bob","neu://site/neubay",36000,"http://neubay.com");</tt><br>
      * Would give you a namedobject containing the following xml:<br>
      * <pre>&lt;nsauth:AuthenticationTicket xmlns:nsauth="http://neuclear.org/neu/nsauth" xmlns:nsdl="http://neuclear.org/neu/nsdl" nsdl:name="/test/two/neu.testapp.-2o1qkqrvxyesyt7dae22ulvp56eju30zyys5t6nxjjie2gw3qq" nsauth:validto="20021002T084919848GMT+00:00" nsauth:href="http://localhost:8080/neudistframework/"&gt;
      * &lt;/nsauth:AuthenticationTicket&gt;
@@ -36,9 +36,9 @@ public class SignatureRequest extends NamedObject {
      *
      * @param reqNameSpace The requesters Identity eg. neu://site/neubay
      * @param target URL for interactive signing service to send user to after signing.
-     * @param payload the NamedObject to request signing
+     * @param payload the SignedNamedObject to request signing
      */
-    private SignatureRequest(String reqNameSpace, String target, NamedObject payload) throws NeudistException {
+    private SignatureRequest(String reqNameSpace, String target, SignedNamedObject payload) throws NeudistException {
         super(createUniqueTicketName(reqNameSpace, payload.getName()), SignatureRequest.TAG_NAME, SignatureRequest.NS_NSSIGREQ);
         addElement(payload);
         this.payload = payload;
@@ -59,7 +59,7 @@ public class SignatureRequest extends NamedObject {
             payload = NamedObjectFactory.createNamedObject(payloadElement);
     }
 
-    public static SignatureRequest createRequest(String requester, String targeturl, NamedObject payload, PrivateKey signer) throws NeudistException {
+    public static SignatureRequest createRequest(String requester, String targeturl, SignedNamedObject payload, PrivateKey signer) throws NeudistException {
         SignatureRequest req = new SignatureRequest(requester, targeturl, payload);
         req.sign(signer);
         return req;
@@ -116,11 +116,11 @@ public class SignatureRequest extends NamedObject {
         return NS_NSSIGREQ;
     }
 
-    public NamedObject getPayload() {
+    public SignedNamedObject getPayload() {
         return payload;
     }
 
-    private NamedObject payload;
+    private SignedNamedObject payload;
 
     private static final String TAG_NAME = "SignatureRequest";
     public static final String URI_NSSIGREQ = "http://neuclear.org/neu/nssigrequest";

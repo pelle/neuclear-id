@@ -86,8 +86,8 @@
     </dependency>
     <dependency>
       <id>dom4j</id>
-      <version>1.3</version>
-      <jar>dom4j-1.3.jar</jar>
+      <version>1.4</version>
+      <jar>dom4j-1.4.jar</jar>
       <properties>
             <war.bundle.jar>true</war.bundle.jar>
       </properties>

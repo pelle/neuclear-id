@@ -1,6 +1,15 @@
 /*
- * $Id: Store.java,v 1.3 2003/09/23 19:16:29 pelle Exp $
+ * $Id: Store.java,v 1.4 2003/09/24 23:56:49 pelle Exp $
  * $Log: Store.java,v $
+ * Revision 1.4  2003/09/24 23:56:49  pelle
+ * Refactoring nearly done. New model for creating signed objects.
+ * With view for supporting the xmlpull api shortly for performance reasons.
+ * Currently still uses dom4j but that has been refactored out that it
+ * should now be very quick to implement a xmlpull implementation.
+ *
+ * A side benefit of this is that the API has been further simplified. I still have some work
+ * todo with regards to cleaning up some of the outlying parts of the code.
+ *
  * Revision 1.3  2003/09/23 19:16:29  pelle
  * Changed NameSpace to Identity.
  * To cause less confusion in the future.
@@ -37,16 +46,16 @@
  * We also need a Ledger class and a Ledger Factory.
  *
  * Revision 1.5  2002/12/17 21:41:00  pelle
- * First part of refactoring of NamedObject and SignedObject Interface/Class parings.
+ * First part of refactoring of SignedNamedObject and SignedObject Interface/Class parings.
  *
  * Revision 1.4  2002/12/17 20:34:42  pelle
  * Lots of changes to core functionality.
  * First of all I've refactored most of the Resolving and verification code. I have a few more things to do
  * on it before I'm happy.
  * There is now a NSResolver class, which handles all the namespace resolution. I took most of the functionality
- * for this out of NamedObject.
- * Then there is the veriifer, which verifies a given NamedObject using the NSResolver.
- * This has simplified the NamedObject classes drastically, leaving them as mainly data objects, which is what they
+ * for this out of SignedNamedObject.
+ * Then there is the veriifer, which verifies a given SignedNamedObject using the NSResolver.
+ * This has simplified the SignedNamedObject classes drastically, leaving them as mainly data objects, which is what they
  * should be.
  * I have also gone around and tightened up security on many different classes, making clases and/or methods final where appropriate.
  * NSCache now operates using http://www.waterken.com's fantastic ADT collections library.
@@ -118,7 +127,7 @@
 package org.neuclear.store;
 
 import org.neuclear.id.InvalidIdentityException;
-import org.neuclear.id.NamedObject;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.verifier.NSVerifier;
 import org.neuclear.receiver.Receiver;
 import org.neudist.utils.NeudistException;
@@ -132,7 +141,7 @@ abstract public class Store implements Receiver {
     /**
      *  This handles the Identity checking on the object.
      */
-    public final void receive(NamedObject obj) throws InvalidIdentityException, NeudistException {
+    public final void receive(SignedNamedObject obj) throws InvalidIdentityException, NeudistException {
         try {
             // Dont allow overwrites
             //TODO: Implement versioning
@@ -160,7 +169,7 @@ abstract public class Store implements Receiver {
     /**
      * Override this for each specific Store type
      */
-    protected void rawStore(NamedObject obj) throws IOException, NeudistException {
+    protected void rawStore(SignedNamedObject obj) throws IOException, NeudistException {
         ;
     }
 

@@ -1,6 +1,15 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.3 2003/09/23 19:16:29 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.4 2003/09/24 23:56:49 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
+ * Revision 1.4  2003/09/24 23:56:49  pelle
+ * Refactoring nearly done. New model for creating signed objects.
+ * With view for supporting the xmlpull api shortly for performance reasons.
+ * Currently still uses dom4j but that has been refactored out that it
+ * should now be very quick to implement a xmlpull implementation.
+ *
+ * A side benefit of this is that the API has been further simplified. I still have some work
+ * todo with regards to cleaning up some of the outlying parts of the code.
+ *
  * Revision 1.3  2003/09/23 19:16:29  pelle
  * Changed NameSpace to Identity.
  * To cause less confusion in the future.
@@ -123,7 +132,7 @@ package org.neuclear.store;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.neuclear.id.NSTools;
-import org.neuclear.id.NamedObject;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.NamedObjectFactory;
 import org.neudist.crypto.CryptoTools;
 import org.neudist.utils.NeudistException;
@@ -143,7 +152,7 @@ public class EncryptedFileStore extends FileStore {
         super(base);
     }
 
-    protected void rawStore(NamedObject obj) throws IOException, NeudistException {
+    protected void rawStore(SignedNamedObject obj) throws IOException, NeudistException {
         String outputFilename = base + getFileName(obj);
         System.out.println("Outputting to: " + outputFilename);
         File outputFile = new File(outputFilename);
@@ -158,7 +167,7 @@ public class EncryptedFileStore extends FileStore {
         os.close();
     }
 
-    protected NamedObject fetch(String name) throws NeudistException {
+    protected SignedNamedObject fetch(String name) throws NeudistException {
         String deURLizedName = NSTools.normalizeNameURI(name);
         String inputFilename = base + getFileName(deURLizedName);
         System.out.println("Loading from: " + inputFilename);
@@ -166,7 +175,7 @@ public class EncryptedFileStore extends FileStore {
         if (!fin.exists())
             return null;
 
-        NamedObject ns = null;
+        SignedNamedObject ns = null;
         try {
             byte input[] = new byte[(int) fin.length()];
             FileInputStream fis = new FileInputStream(fin);
@@ -211,7 +220,7 @@ public class EncryptedFileStore extends FileStore {
         return new String(newName);
     }
 
-    protected static String getFileName(NamedObject obj) throws NeudistException {
+    protected static String getFileName(SignedNamedObject obj) throws NeudistException {
         return getFileName(obj.getName());
     }
 

@@ -1,6 +1,6 @@
 package org.neuclear.source;
 
-import org.neuclear.id.NamedObject;
+import org.neuclear.id.SignedNamedObject;
 import org.neudist.utils.NeudistException;
 import org.neudist.utils.Utility;
 
@@ -9,8 +9,17 @@ import org.neudist.utils.Utility;
  * User: pelleb
  * Date: Feb 10, 2003
  * Time: 8:26:04 PM
- * $Id: Source.java,v 1.2 2003/09/22 19:24:02 pelle Exp $
+ * $Id: Source.java,v 1.3 2003/09/24 23:56:49 pelle Exp $
  * $Log: Source.java,v $
+ * Revision 1.3  2003/09/24 23:56:49  pelle
+ * Refactoring nearly done. New model for creating signed objects.
+ * With view for supporting the xmlpull api shortly for performance reasons.
+ * Currently still uses dom4j but that has been refactored out that it
+ * should now be very quick to implement a xmlpull implementation.
+ *
+ * A side benefit of this is that the API has been further simplified. I still have some work
+ * todo with regards to cleaning up some of the outlying parts of the code.
+ *
  * Revision 1.2  2003/09/22 19:24:02  pelle
  * More fixes throughout to problems caused by renaming.
  *
@@ -41,7 +50,7 @@ import org.neudist.utils.Utility;
  *
  */
 public abstract class Source {
-    abstract public NamedObject fetch(String endpoint, String name) throws NeudistException;
+    abstract public SignedNamedObject fetch(String endpoint, String name) throws NeudistException;
 
     public static synchronized Source getInstance() {
         if (instance == null) {
