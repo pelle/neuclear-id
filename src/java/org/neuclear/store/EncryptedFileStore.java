@@ -1,6 +1,10 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.6 2003/09/26 23:53:10 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
+ * Revision 1.6  2003/09/26 23:53:10  pelle
+ * Changes mainly in receiver and related fun.
+ * First real neuclear stuff in the payment package. Added TransferContract and PaymentReceiver.
+ *
  * Revision 1.5  2003/09/26 00:22:07  pelle
  * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
  *
@@ -132,16 +136,7 @@
  */
 package org.neuclear.store;
 
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.neuclear.id.NSTools;
-import org.neuclear.id.SignedNamedObject;
-import org.neudist.crypto.CryptoTools;
-import org.neudist.utils.NeudistException;
-import org.neudist.utils.Utility;
-import org.neudist.xml.xmlsec.XMLSecTools;
 
-import java.io.*;
 
 /**
  * We need both a simple FileStore and an encrypted one. The encrypted one stores each object using a filename generated through
@@ -150,9 +145,11 @@ import java.io.*;
  *
  */
 public class EncryptedFileStore extends FileStore {
+
     public EncryptedFileStore(String base) {
         super(base);
     }
+/*
 
     protected void rawStore(SignedNamedObject obj) throws IOException, NeudistException {
         String outputFilename = base + getFileName(obj);
@@ -226,5 +223,6 @@ public class EncryptedFileStore extends FileStore {
         return getFileName(obj.getName());
     }
 
+*/
 
 }

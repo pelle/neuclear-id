@@ -1,15 +1,11 @@
 package org.neuclear.source;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.NamedObjectFactory;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neudist.utils.NeudistException;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -17,8 +13,12 @@ import java.net.URL;
  * User: pelleb
  * Date: Feb 10, 2003
  * Time: 8:35:33 PM
- * $Id: HttpSource.java,v 1.3 2003/09/24 23:56:49 pelle Exp $
+ * $Id: HttpSource.java,v 1.4 2003/09/26 23:53:10 pelle Exp $
  * $Log: HttpSource.java,v $
+ * Revision 1.4  2003/09/26 23:53:10  pelle
+ * Changes mainly in receiver and related fun.
+ * First real neuclear stuff in the payment package. Added TransferContract and PaymentReceiver.
+ *
  * Revision 1.3  2003/09/24 23:56:49  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.

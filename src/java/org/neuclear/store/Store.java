@@ -1,6 +1,10 @@
 /*
- * $Id: Store.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
+ * $Id: Store.java,v 1.6 2003/09/26 23:53:10 pelle Exp $
  * $Log: Store.java,v $
+ * Revision 1.6  2003/09/26 23:53:10  pelle
+ * Changes mainly in receiver and related fun.
+ * First real neuclear stuff in the payment package. Added TransferContract and PaymentReceiver.
+ *
  * Revision 1.5  2003/09/26 00:22:07  pelle
  * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
  *
@@ -129,9 +133,9 @@
  */
 package org.neuclear.store;
 
-import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.receiver.Receiver;
+import org.neuclear.receiver.UnsupportedTransaction;
 import org.neudist.utils.NeudistException;
 
 import java.io.IOException;
@@ -143,7 +147,7 @@ abstract public class Store implements Receiver {
     /**
      *  This handles the Identity checking on the object.
      */
-    public final void receive(SignedNamedObject obj) throws InvalidIdentityException, NeudistException {
+    public final void receive(SignedNamedObject obj) throws UnsupportedTransaction {
         try {
             // Dont allow overwrites
             //TODO: Implement versioning
@@ -151,10 +155,13 @@ abstract public class Store implements Receiver {
 //                throw new InvalidIdentityException("The name: "+obj.getName()+" already exists");
 
             rawStore(obj);
+
             if (next != null)
                 next.receive(obj);
 
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NeudistException e) {
             e.printStackTrace();
         }
 //            if (e instanceof InvalidIdentityException)

@@ -6,8 +6,12 @@ package org.neuclear.receiver;
  * Date: Oct 10, 2002
  * Time: 11:24:59 PM
  * To change this template use Options | File Templates.
- * $Id: Receiver.java,v 1.4 2003/09/24 23:56:48 pelle Exp $
+ * $Id: Receiver.java,v 1.5 2003/09/26 23:53:10 pelle Exp $
  * $Log: Receiver.java,v $
+ * Revision 1.5  2003/09/26 23:53:10  pelle
+ * Changes mainly in receiver and related fun.
+ * First real neuclear stuff in the payment package. Added TransferContract and PaymentReceiver.
+ *
  * Revision 1.4  2003/09/24 23:56:48  pelle
  * Refactoring nearly done. New model for creating signed objects.
  * With view for supporting the xmlpull api shortly for performance reasons.
@@ -41,9 +45,7 @@ package org.neuclear.receiver;
  *
  */
 
-import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.SignedNamedObject;
-import org.neudist.utils.NeudistException;
 
 /**
  * <p>The Receiver interface is the base interface for almost all applications based on the NeuDist Framework.
@@ -56,8 +58,7 @@ public interface Receiver {
      * Remember you must check the validity of the SignedNamedObject here. Until you do so
      * you can not trust it.
      * @param obj
-     * @throws InvalidIdentityException
-     * @throws NeudistException
+     * @throws UnsupportedTransaction
      */
-    void receive(SignedNamedObject obj) throws InvalidIdentityException, NeudistException;
+    void receive(SignedNamedObject obj) throws UnsupportedTransaction;
 }

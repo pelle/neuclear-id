@@ -1,7 +1,6 @@
 package org.neuclear.senders;
 
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.NamedObjectFactory;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.time.TimeTools;
 import org.neudist.crypto.Base64;
@@ -21,8 +20,12 @@ import java.sql.Timestamp;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 1:23:05 PM
- * $Id: LogSender.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
+ * $Id: LogSender.java,v 1.6 2003/09/26 23:53:10 pelle Exp $
  * $Log: LogSender.java,v $
+ * Revision 1.6  2003/09/26 23:53:10  pelle
+ * Changes mainly in receiver and related fun.
+ * First real neuclear stuff in the payment package. Added TransferContract and PaymentReceiver.
+ *
  * Revision 1.5  2003/09/26 00:22:07  pelle
  * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
  *

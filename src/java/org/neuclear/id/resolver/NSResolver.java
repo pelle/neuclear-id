@@ -1,14 +1,11 @@
 package org.neuclear.id.resolver;
 
+import org.neuclear.id.Identity;
 import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.NSTools;
-import org.neuclear.id.Identity;
 import org.neuclear.id.cache.NSCache;
-import org.neuclear.id.verifier.NSVerifier;
 import org.neuclear.source.Source;
 import org.neudist.utils.NeudistException;
-
-import java.security.PublicKey;
 
 /**
  * Secure Identity resolver
@@ -33,7 +30,7 @@ public final class NSResolver {
 
         String parentname = NSTools.getParentNSURI(name);
         String store = NSROOTSTORE;
-        if ( parentname == null || parentname.equals("neu://"))
+        if (parentname == null || parentname.equals("neu://"))
             return Identity.getRootIdentity();
         Identity parent = resolveIdentity(parentname);
         store = parent.getRepository();

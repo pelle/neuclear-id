@@ -6,9 +6,8 @@
                 org.neuclear.id.targets.TargetReference,
                 org.neudist.utils.ServletTools,
                 org.neuclear.id.Identity,
-                org.neuclear.id.NamedObjectFactory,
-                org.neudist.utils.NeudistException,
-                org.neuclear.id.signrequest.SignatureRequest"%>
+
+                org.neudist.utils.NeudistException"%>
 <%
     response.setHeader("Pragma","no-cache");
     response.setDateHeader("Expires",0);
@@ -23,10 +22,10 @@
     //usercookie.setSecure(true);
     usercookie.setMaxAge(2592000);
     response.addCookie(usercookie);
-    SignatureRequest auth=null;
+//    SignatureRequest auth=null;
     try {
         // TODO: This needs a signer and a targeturl
-        auth = AuthenticationTicket.createAuthenticationRequest(
+  /*      auth = AuthenticationTicket.createAuthenticationRequest(
                     userns,
                     "neu://neu/testapp",
                     360000, // Valid for about an hour
@@ -34,7 +33,7 @@
                     siteurl,
                     null
             );
-        // For this simple example we will fetch the object from the store later on.
+  */      // For this simple example we will fetch the object from the store later on.
 //        auth.addTarget(new TargetReference(auth,ServletTools.getAbsoluteURL(request,"/Store"),"store"));
         request.getSession(true).setAttribute("nsauth",auth.getPayload().getName());
     } catch (NeudistException e) {

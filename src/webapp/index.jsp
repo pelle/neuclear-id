@@ -4,8 +4,8 @@
                  org.neuclear.id.SignedNamedObject,
                  org.neuclear.contracts.nsauth.AuthenticationTicket,
                  org.neuclear.id.NSTools,
-                 org.neudist.utils.ServletTools,
-                 org.neuclear.id.NamedObjectFactory"%>
+                 org.neudist.utils.ServletTools
+                "%>
  <%
     response.setHeader("Pragma","no-cache");
     response.setDateHeader("Expires",0);
@@ -21,7 +21,7 @@
     AuthenticationTicket ticket=(AuthenticationTicket)sess.getAttribute("NSAuthTicket");
     String ticketname=(String)sess.getAttribute("nsauth");
         if (ticket==null&&!Utility.isEmpty(ticketname)) {
-            SignedNamedObject named=NamedObjectFactory.fetchNamedObject(ticketname);
+            SignedNamedObject named=null;//=NamedObjectFactory.fetchNamedObject(ticketname);
             if (named!=null){
                 if (named instanceof AuthenticationTicket) {
                     ticket=(AuthenticationTicket)named;
