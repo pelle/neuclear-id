@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.24 2003/12/16 23:17:07 pelle Exp $
+ * $Id: SigningServlet.java,v 1.25 2003/12/16 23:44:10 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.25  2003/12/16 23:44:10  pelle
+ * End of work day clean up
+ *
  * Revision 1.24  2003/12/16 23:17:07  pelle
  * Work done on the SigningServlet. The two phase web model is now only an option.
  * Allowing much quicker signing, using the GuiDialogueAgent.
@@ -309,8 +312,13 @@ public class SigningServlet extends XMLInputStreamServlet {
         ServletTools.printHeader(out, request, getTitle());
         final String endpoint = request.getParameter("endpoint");
         final NamedObjectBuilder named = sigreq.getUnsigned();
+        final String parent = NSTools.getSignatoryURI(named.getName());
         boolean isSigned = false;
-
+        if (!signer.canSignFor(parent)) {
+             out.println("<h3>Can not Sign for:");
+            out.println(parent);
+            out.println("</h3>");
+        }
         out.println("<table bgcolor=\"#708070\"><tr><td><h4 style=\"color: white\">");
         if (isSigned)
             out.println("Signed Item");
@@ -331,7 +339,6 @@ public class SigningServlet extends XMLInputStreamServlet {
 
         out.println("</td></tr></table>");
         if (isReadyToSign(request)) {
-            final String parent = NSTools.getSignatoryURI(named.getName());
 
             out.println("<div id=\"log\" style=\"background:#003;color:#EEE\"><tt><ul><li>Signing with " + parent + "...</li>");
             out.flush();
@@ -344,7 +351,8 @@ public class SigningServlet extends XMLInputStreamServlet {
                 isSigned = false;
             } catch (UserCancelsException e) {
 //                System.out.println("<br><font color=\"red\"><b>ERROR: User Cancellation</b></font><br>");
-                out.println("<li><font color=\"red\"><b>User Cancellation</b></font></li>");
+                out.println("<li><font color=\"red\"><b>You Cancelled</b></font></li>");
+                out.println("<li onclick=\"history.back(2)\"><b>Click to Go back</b></li>");
                 isSigned = false;
             } catch (NonExistingSignerException e) {
 //                System.out.println("<br><font color=\"red\"><b>ERROR: We Aren't Able to Sign for that Identity</b></font><br>");
@@ -380,7 +388,7 @@ public class SigningServlet extends XMLInputStreamServlet {
     private boolean sign(final NamedObjectBuilder named, final PrintWriter out) throws NeuClearException, XMLException {
         boolean isSigned;
         try {
-            context.log("SIGN: Signing with " + signer);
+            context.log("SIGN: Signing with " + named.getSignatory().getName());
             final SignedNamedObject signed = named.sign(signer);
             isSigned = true;
             out.println("<li>Signed</li>");
@@ -388,13 +396,14 @@ public class SigningServlet extends XMLInputStreamServlet {
             out.flush();
         } catch (InvalidPassphraseException e) {
             out.println("<li><font color=\"red\"><b>ERROR: Wrong Passphrase</b></font></li>");
+            out.flush();
             isSigned = sign(named,out);
         }
         return isSigned;
     }
 
     protected void printSecondStageForm(HttpServletRequest request, final PrintWriter out, SignatureRequest sigreq, final String endpoint) {
-        out.println("<table><tr><td ><h4>Do you wish to sign this?</h4></td></tr></table>");
+        //out.println("<table><tr><td ><h4>Do you wish to sign this?</h4></td></tr></table>");
     }
 
     /**

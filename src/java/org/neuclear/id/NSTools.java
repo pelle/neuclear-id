@@ -1,6 +1,9 @@
 /*
- * $Id: NSTools.java,v 1.21 2003/12/12 15:12:50 pelle Exp $
+ * $Id: NSTools.java,v 1.22 2003/12/16 23:44:10 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.22  2003/12/16 23:44:10  pelle
+ * End of work day clean up
+ *
  * Revision 1.21  2003/12/12 15:12:50  pelle
  * The ReceiverServletTest now passes.
  * Add first stab at a SigningServletTest which currently doesnt pass.
@@ -183,6 +186,7 @@ import org.dom4j.*;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.id.builders.NamedObjectBuilder;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -409,7 +413,6 @@ public final class NSTools {
             return false;
         return !Utility.isEmpty(elem.attributeValue(DocumentHelper.createQName("name", NS_NEUID)));
     }
-
     private static final String HTTP_SCHEME_EX = "^neu:(neuid:)?\\/\\/(([\\w-]+\\.)+[\\w-]+)$";
     private static final Pattern HTTP_SCHEME = Pattern.compile(HTTP_SCHEME_EX);
 
