@@ -90,15 +90,6 @@
         </dependency>
 
         <dependency>
-            <id>commons-collections</id>
-            <name>commons-collections</name>
-            <version>2.1</version>
-            <jar>commons-collections-2.1.jar</jar>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
             <id>dom4j</id>
             <version>1.4</version>
             <jar>dom4j-1.4.jar</jar>
@@ -153,20 +144,6 @@
             <jar>activation.jar</jar>
             <url>http://java.sun.com/products/javabeans/glasgow/jaf.html</url>
         </dependency>
-        <!--        <dependency>
-                    <id>picocontainer</id>
-                    <version>1.0-beta-1</version>
-                    <properties>
-                        <war.bundle>true</war.bundle>
-                    </properties>
-                </dependency>
-                <dependency>
-                    <id>nanocontainer</id>
-                    <version>1.0-alpha-PRESPLIT-1</version>
-                    <properties>
-                        <war.bundle>true</war.bundle>
-                    </properties>
-                </dependency>-->
     </dependencies>
     <build>
 

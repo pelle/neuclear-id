@@ -16,6 +16,27 @@
 
 			</p>
        </section>
+        <section name="[12th of December 2003] Milestone Release 0.8">
+            <p>
+                Panama City, 12th of December, 2003. We are happy to announce
+                the milestone 0.8 release of NeuClear ID. Major new features are:
+            </p>
+            <ul>
+                <li>HTTP/DNS based PKI</li>
+                <li>Developers Tools for creating ID's and certifying others</li>
+                <li>Web based Signing Application</li>
+                <li>Easy to integrate User Authentication filter for Web frameworks</li>
+                <li>Added Jakarta Cactus web unit tests</li>
+                <li>Major cleanup work has been done throughout the API. API changes should
+                only be minimal in the future.</li>
+            </ul>
+            <p>
+                The goal of this release has been in particular to make it easier
+                for application developers, to start providing support for NeuClear.
+                <a href="http://sourceforge.net/project/showfiles.php?group_id=90470">Download it today and join in the NeuClear revolution</a>.
+            </p>
+
+        </section>
         <section name="Busy Developer Guide">
             <p>
                 We are working on expanding our documentation now. Besides expanding our <a href="apidocs/index.html">API Documentation</a>,
@@ -24,10 +45,6 @@
             </p>
         </section>
         <section name="Road Map">
-            <p>
-                The current development version is 0.8-SNAPSHOT. Our aim for 0.8 FINAL is to stabilize and freeze the API.
-                Thus the goal is to acheive usability for application developers. This should be reached in mid December 2003.
-            </p>
             <p>
                 Our aim for the next version 0.9 is to stabilize and freeze the underlying xml formats and standards as well
                 as to create more userland tools. Thus the goal is to fix the underlying format making it easier for other implementations
