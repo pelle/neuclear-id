@@ -41,6 +41,8 @@ public class IdentityTests extends AbstractObjectCreationTest {
         assertEquals(new String(CryptoTools.digest(signer.getPublicKey(NAME).getEncoded())),
                 new String(Base32.decode(obj.getName().substring(4, 36))));
         assertNotNull(id.getSignatory().getPublicKey());
+        assertEquals("test", id.getNickname());
+        assertEquals("http://test.com", id.getURL());
     }
 
     protected Class getRequiredClass() {
@@ -48,7 +50,7 @@ public class IdentityTests extends AbstractObjectCreationTest {
     }
 
     protected Builder createBuilder() throws NeuClearException {
-        return new IdentityBuilder(SIGNER, null, null);
+        return new IdentityBuilder("test", "http://test.com", "mailto:test@test.com", "hello");
     }
 
     public void testAnonymous() throws NoSuchAlgorithmException {

@@ -1,6 +1,9 @@
 /*
- * $Id: Signatory.java,v 1.2 2004/04/02 23:05:03 pelle Exp $
+ * $Id: Signatory.java,v 1.3 2004/04/23 23:34:12 pelle Exp $
  * $Log: Signatory.java,v $
+ * Revision 1.3  2004/04/23 23:34:12  pelle
+ * Major update. Added an original url and nickname to Identity and friends.
+ *
  * Revision 1.2  2004/04/02 23:05:03  pelle
  * Got TransferOrder and Builder working with their test cases.
  * Working on TransferReceipt which is the first embedded receipt. This is causing some problems at the moment.

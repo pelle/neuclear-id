@@ -10,8 +10,11 @@ import org.neuclear.xml.xmlsec.KeyInfo;
 import java.security.PublicKey;
 
 /*
-$Id: ServiceBuilder.java,v 1.3 2004/04/20 23:33:07 pelle Exp $
+$Id: ServiceBuilder.java,v 1.4 2004/04/23 23:34:03 pelle Exp $
 $Log: ServiceBuilder.java,v $
+Revision 1.4  2004/04/23 23:34:03  pelle
+Major update. Added an original url and nickname to Identity and friends.
+
 Revision 1.3  2004/04/20 23:33:07  pelle
 All unit tests (junit and cactus) work. The AssetControllerServlet is operational.
 
@@ -33,8 +36,8 @@ Created new ServiceBuilder class for creating services. A service is an identity
  * Time: 9:28:55 AM
  */
 public class ServiceBuilder extends IdentityBuilder {
-    public ServiceBuilder(final String type, final String title, final String serviceUrl, PublicKey serviceKey) throws InvalidNamedObjectException {
-        super(type);
+    public ServiceBuilder(final String type, final String title, final String original, final String serviceUrl, PublicKey serviceKey) throws InvalidNamedObjectException {
+        super(type, original);
         addTarget(serviceUrl, "controller");
 
         Element style = head.addElement("style");
@@ -42,7 +45,10 @@ public class ServiceBuilder extends IdentityBuilder {
                 "table {background:#CCC;font-size:small;border:1px;}\n" +
                 "pre {font-size:xx-small}\n" +
                 "td {vertical-align:top;border:thin;background:#eee}\n");
-        body.addElement("h1").setText(title);
+        final Element nickelem = body.addElement("h1");
+        nickelem.setText(title);
+        nickelem.addAttribute("id", "nickname");
+
         description = body.addElement("div");
         description.addAttribute("id", "rules");
 

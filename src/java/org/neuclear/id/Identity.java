@@ -1,6 +1,9 @@
 /*
- * $Id: Identity.java,v 1.33 2004/04/17 19:28:22 pelle Exp $
+ * $Id: Identity.java,v 1.34 2004/04/23 23:34:11 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.34  2004/04/23 23:34:11  pelle
+ * Major update. Added an original url and nickname to Identity and friends.
+ *
  * Revision 1.33  2004/04/17 19:28:22  pelle
  * Identity is now fully html based as is the ServiceBuilder.
  * VerifyingReader correctly identifies html files and parses them as such.
@@ -330,9 +333,12 @@
  */
 package org.neuclear.id;
 
+import org.dom4j.Attribute;
 import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.id.resolver.Resolver;
 import org.neuclear.id.targets.Targets;
+import org.neuclear.xml.XMLTools;
 
 import java.security.Principal;
 
@@ -354,9 +360,11 @@ import java.security.Principal;
  * @see org.neuclear.id.builders.IdentityBuilder
  */
 public class Identity extends SignedNamedObject implements Principal {
-    protected Identity(final SignedNamedCore core, Targets targets) {
+    protected Identity(final SignedNamedCore core, final String nickname, final String original, Targets targets) {
         super(core);
         this.targets = (targets != null) ? targets : Targets.EMPTY;
+        this.nickname = nickname;
+        this.original = original;
     }
 
 
@@ -369,6 +377,32 @@ public class Identity extends SignedNamedObject implements Principal {
         targets.log(obj);
     }
 
+    public final Identity getLatestVersion() throws NameResolutionException, InvalidNamedObjectException {
+        return Resolver.resolveIdentity(original);
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public String getURL() {
+        return original;
+    }
+
+    protected static String extractNickName(final Element elem, final SignedNamedCore core) {
+        final Element namelement = XMLTools.getByID(elem, "nickname");
+        final String name = (namelement != null) ? namelement.getTextTrim() : core.getName();
+        return name;
+    }
+
+    protected static String extractOrginalUrl(final Element elem) {
+        final Attribute origattr = ((Attribute) elem.selectSingleNode("//html/head/link[starts-with(@rel,'original')]/@href"));
+        final String original = (origattr != null) ? origattr.getValue() : "";
+        return original;
+    }
+
+    private final String nickname;
+    private final String original;
     private final Targets targets;
 
     public static final String DEFAULT_SIGNER = "http://localhost:11870/Signer";
@@ -382,8 +416,12 @@ public class Identity extends SignedNamedObject implements Principal {
          */
         public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws InvalidNamedObjectException {
             final Targets targets = Targets.parseList(elem);
-            return new Identity(core, targets);
+            String name = extractNickName(elem, core);
+            String original = extractOrginalUrl(elem);
+
+            return new Identity(core, name, original, targets);
         }
+
 
     }
 

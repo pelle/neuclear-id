@@ -1,6 +1,8 @@
 package org.neuclear.id;
 
 import org.dom4j.Element;
+import org.neuclear.commons.NeuClearException;
+import org.neuclear.id.senders.Sender;
 import org.neuclear.id.targets.Targets;
 import org.neuclear.xml.xmlsec.KeyInfo;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
@@ -8,8 +10,11 @@ import org.neuclear.xml.xmlsec.XMLSecurityException;
 import java.security.PublicKey;
 
 /*
-$Id: Service.java,v 1.2 2004/04/17 19:28:22 pelle Exp $
+$Id: Service.java,v 1.3 2004/04/23 23:34:11 pelle Exp $
 $Log: Service.java,v $
+Revision 1.3  2004/04/23 23:34:11  pelle
+Major update. Added an original url and nickname to Identity and friends.
+
 Revision 1.2  2004/04/17 19:28:22  pelle
 Identity is now fully html based as is the ServiceBuilder.
 VerifyingReader correctly identifies html files and parses them as such.
@@ -28,8 +33,8 @@ Created new ServiceBuilder class for creating services. A service is an identity
  * Time: 9:24:06 AM
  */
 public class Service extends Identity {
-    public Service(final SignedNamedCore core, String serviceUrl, PublicKey serviceKey, Targets targets) {
-        super(core, targets);
+    public Service(final SignedNamedCore core, String nickname, String original, String serviceUrl, PublicKey serviceKey, Targets targets) {
+        super(core, nickname, original, targets);
         this.serviceKey = serviceKey;
         this.serviceUrl = serviceUrl;
     }
@@ -40,6 +45,10 @@ public class Service extends Identity {
 
     public final String getServiceUrl() {
         return serviceUrl;
+    }
+
+    public final SignedNamedObject service(SignedNamedObject obj) throws NeuClearException {
+        return Sender.quickSend(serviceUrl, obj);
     }
 
     protected static PublicKey extractPublicKey(Element kiElem) throws XMLSecurityException {

@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.9 2004/04/22 18:29:34 pelle Exp $
+ * $Id: SigningServlet.java,v 1.10 2004/04/23 23:34:03 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.10  2004/04/23 23:34:03  pelle
+ * Major update. Added an original url and nickname to Identity and friends.
+ *
  * Revision 1.9  2004/04/22 18:29:34  pelle
  * Minor cosmetic changes
  *
@@ -366,25 +369,56 @@ public class SigningServlet extends XMLInputStreamServlet {
 //            out.println(username);
 //            out.println("</h3>");
 //        }
-        out.println("<table bgcolor=\"#708070\"><tr><td><h4 style=\"color: white\">");
+//        out.println("<table bgcolor=\"#708070\"><tr><td><h4 style=\"color: white\">");
         if (isSigned)
             out.println("Signed Item");
         else
             out.println("Item to Sign:");
-        out.println("</h4>");
+//        out.println("</h4>");
         out.println("<b>Requesting Site:</b><br/>");
-        out.println(sigreq.getSignatory().getName());
+        final String referrer = request.getHeader("Referer");
+        Matcher sitematcher = siteextract.matcher(referrer);
+        if (sitematcher.matches()) {
+            out.println(sitematcher.group(1) + sitematcher.group(3) + "<br/>");
+//        } else {
+//            out.println("<h4 style=\"color='red'\">The site requesting a signature a strange url. We recommend Cancelling the signature!!</h4>");
+
+        }
+        out.println("<b>Requesting Page:</b><br/>");
+        out.println(referrer);
+//        out.println("</td></tr><tr><td style=\"background:lightgrey;color:black\"><tt>");
         out.println("<br><b>Type:</b><br/>");
-        out.println(named.getElement().getName());
+        if (named.getElement().getName().equals("AuthenticationTicket")) {
+            String site = named.getElement().attributeValue("sitehref");
+            String validto = named.getElement().attributeValue("validto");
+            out.println("<h3>Authentication Request</h3>");
+            out.println("<p>The site: " + site + " is requesting that you log into their web site.</p>");
+        } else if (named.getElement().getName().equals("TransferOrder")) {
+            String asset = named.getElement().element("Asset").getTextTrim();
+            String recipient = named.getElement().element("Recipient").getTextTrim();
+            String amount = named.getElement().element("Amount").getTextTrim();
+            String comment = named.getElement().element("Comment").getTextTrim();
+            out.println("<h3>Transfer Order</h3>");
+            out.println("<p>The site: " + referrer + " is requesting that you transfer" +
+                    amount + " units of the asset <a href=\"" + asset +
+                    "\">" + asset + "</a> to the account " + recipient +
+                    "</p>");
+            if (!Utility.isEmpty(comment)) {
+                out.println("<b>Transaction Comment:</b><br/>");
+                out.println(comment);
+            }
+        }
+
         if (!Utility.isEmpty(sigreq.getDescription())) {
-            out.println("<br><b>Description:</b><br/>");
+            out.println("<br><b>Signature Request Comment:</b><br/>");
             out.println(sigreq.getDescription());
         }
-        out.println("</td></tr><tr><td style=\"background:lightgrey;color:black\"><tt>");
+
+        out.print("<hr/><h5 onclick=\"if (message.style.display=='none')message.style.display='block'; else message.style.display='none'\">Click to toggle raw message</h5><tt id=\"message\" style=\"display:none\">");
         Matcher matcher = xmlescape.matcher(named.asXML());
         out.println(matcher.replaceAll("&lt;"));
 
-        out.println("</td></tr></table>");
+        out.println("</tt><hr/>");
         if (isReadyToSign(request)) {
 
             out.println("<div id=\"log\" style=\"background:#003;color:#EEE\"><tt><ul><li>Signing ...</li>");
@@ -420,10 +454,10 @@ public class SigningServlet extends XMLInputStreamServlet {
 //                    context.log("Signing Servlet: ");
             out.print(XMLSecTools.encodeElementBase64(named));
             out.println("\" type=\"hidden\"/>");
-//                    out.write("<input type=\"submit\">");
+            out.write("<input type=\"submit\">");
             out.write("</form>\n");
             out.write("<script language=\"javascript\">\n");
-            out.write("<!--\n   document.forms[0].submit();\n-->\n");
+//            out.write("<!--\n   document.forms[0].submit();\n-->\n");
             out.write("</script>\n");
 
 
@@ -472,4 +506,5 @@ public class SigningServlet extends XMLInputStreamServlet {
     private BrowsableSigner signer;
     private String title;
     static private Pattern xmlescape = Pattern.compile("(\\<)");
+    static private Pattern siteextract = Pattern.compile("^(https?:\\/\\/)(.*@)?([^\\/]*)");
 }

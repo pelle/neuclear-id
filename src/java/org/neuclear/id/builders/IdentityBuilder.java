@@ -1,6 +1,9 @@
 /*
- * $Id: IdentityBuilder.java,v 1.24 2004/04/19 18:44:16 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.25 2004/04/23 23:34:03 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.25  2004/04/23 23:34:03  pelle
+ * Major update. Added an original url and nickname to Identity and friends.
+ *
  * Revision 1.24  2004/04/19 18:44:16  pelle
  * Stores a cache on disk
  *
@@ -251,8 +254,8 @@ import org.neuclear.commons.Utility;
 
 public class IdentityBuilder extends Builder {
 
-    public IdentityBuilder() {
-        this(TYPENAME);
+    public IdentityBuilder(final String url) {
+        this(TYPENAME, url);
     }
 
 
@@ -261,13 +264,15 @@ public class IdentityBuilder extends Builder {
      *
      * @param receiver URL of default receiver for namespace
      */
-    public IdentityBuilder(final String name, final String receiver, final String message) {
-        this();
+    public IdentityBuilder(final String name, final String url, final String receiver, final String message) {
+        this(url);
         if (receiver != null)
             addTarget(receiver, "receiver");
         if (name != null) {
             head.addElement("title").setText(name);
-            body.addElement("h1").setText(name);
+            final Element nameelement = body.addElement("h1");
+            nameelement.setText(name);
+            nameelement.addAttribute("id", "nickname");
         }
         if (message != null)
             body.addElement("p").setText(message);
@@ -279,7 +284,7 @@ public class IdentityBuilder extends Builder {
      *
      * @param type The type identifier
      */
-    protected IdentityBuilder(String type) {
+    protected IdentityBuilder(String type, String url) {
         super("html");
 
         head = getElement().addElement("head");
@@ -288,15 +293,20 @@ public class IdentityBuilder extends Builder {
         meta.addAttribute("name", "neu:type");
         meta.addAttribute("content", type);
 
+        addLink("original", url);
     }
 
 
     protected final void addTarget(final String href, final String type) {
         if (!Utility.isEmpty(href)) {
-            final Element target = head.addElement("link");
-            target.addAttribute("rel", "neu:" + type);
-            target.addAttribute("href", href);
+            addLink("neu:" + type, href);
         }
+    }
+
+    protected void addLink(final String type, final String href) {
+        final Element target = head.addElement("link");
+        target.addAttribute("rel", type);
+        target.addAttribute("href", href);
     }
 
 
