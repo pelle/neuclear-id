@@ -1,14 +1,10 @@
 package org.neuclear.id.cache;
 
-import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.Identity;
-import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.InvalidNamedObjectException;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The Idea of the NSCache is to have a quick cache of verified public NameSpaces. This is not stored, but is created from scratch
@@ -22,7 +18,6 @@ public final class NSCache {
     }
 
 
-
     /**
      * Attempts to get a verified PublicKey for the given name from the cache
      * 
@@ -31,21 +26,15 @@ public final class NSCache {
      */
     public SignedNamedObject fetchCached(final String name) {
         final WeakReference ref = (WeakReference) spaces.get(name);
-        if (ref==null)
+        if (ref == null)
             return null;
         return (SignedNamedObject) ref.get();
     }
 
-    public void cache(final SignedNamedObject ns)  {
-        // Only store if it's parent is already here
-        try {
-            final String parentName = NSTools.getSignatoryURI(ns.getName());
-            if ((fetchCached(parentName) != null) || (parentName.equals("neu://")||NSTools.isHttpScheme(ns.getName())!=null)) {
-                spaces.put(ns.getName(),new WeakReference(ns));
-            }
-        } catch (InvalidNamedObjectException e) {
-            ;// If we have an issue here we will silently ignore it.
-        }
+    public SignedNamedObject cache(final SignedNamedObject obj) {
+        if (!spaces.containsKey(obj.getDigest()))
+            spaces.put(obj.getDigest(), new WeakReference(obj));
+        return obj;
     }
 
     private final Map spaces;

@@ -3,6 +3,7 @@ package org.neuclear.id.verifier;
 import org.dom4j.Element;
 import org.neuclear.id.*;
 import org.neuclear.id.auth.AuthenticationTicket;
+import org.neuclear.id.resolver.Resolver;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
 
@@ -28,8 +29,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.22 2004/03/22 20:09:49 pelle Exp $
+$Id: VerifyingReader.java,v 1.23 2004/04/02 17:33:31 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.23  2004/04/02 17:33:31  pelle
+Added automatic caching of SignedNamedObject
+
 Revision 1.22  2004/03/22 20:09:49  pelle
 Added simple ledger for unit testing and in memory use
 
@@ -194,7 +198,7 @@ public final class VerifyingReader {
     }
 
     public final SignedNamedObject read(final Element elem) throws InvalidNamedObjectException {
-        return resolveReader(elem).read(SignedNamedCore.read(elem), elem);
+        return Resolver.cache(resolveReader(elem).read(SignedNamedCore.read(elem), elem));
     }
 
 
