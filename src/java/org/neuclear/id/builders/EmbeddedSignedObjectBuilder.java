@@ -33,16 +33,4 @@ public class EmbeddedSignedObjectBuilder extends Builder {
         return "#";  //To change body of implemented methods use Options | File Templates.
     }
 
-    public final SignedNamedObject convert(String name,Signer signer) throws NameResolutionException, InvalidNamedObjectException {
-        try {
-            sign(name,signer);
-        } catch (XMLSecurityException e) {
-            throw new InvalidNamedObjectException("Problem in XML Sig",e);
-        } catch (NonExistingSignerException e) {
-            throw new InvalidNamedObjectException("Can not Sign",e);
-        } catch (UserCancellationException e) {
-            throw new InvalidNamedObjectException("User Cancelled Signing",e);
-        }
-        return convert();
-    }
 }

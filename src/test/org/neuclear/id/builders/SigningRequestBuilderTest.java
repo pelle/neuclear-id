@@ -27,8 +27,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningRequestBuilderTest.java,v 1.6 2003/12/11 23:57:29 pelle Exp $
+$Id: SigningRequestBuilderTest.java,v 1.7 2004/01/13 15:11:35 pelle Exp $
 $Log: SigningRequestBuilderTest.java,v $
+Revision 1.7  2004/01/13 15:11:35  pelle
+Now builds.
+Now need to do unit tests
+
 Revision 1.6  2003/12/11 23:57:29  pelle
 Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
 Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -77,17 +81,17 @@ public final class SigningRequestBuilderTest extends AbstractSigningTest {
     public final void testSignatureRequest() throws NeuClearException, XMLException {
         final AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://users.neuclear.org:8080");
         final SignatureRequestBuilder sigreq = new SignatureRequestBuilder("neu://test", "neu://bob@test", authreq, "For testing purposes");
-        assertEquals(sigreq.getSignatory().getName(), "neu://test");
+//        assertEquals(sigreq.getSignatory().getName(), "neu://test");
         try {
             final SignatureRequest tosign = (SignatureRequest) sigreq.sign(signer);
             assertTrue(sigreq.isSigned());
             assertEquals(tosign.getName(), sigreq.getName());
 
-            final NamedObjectBuilder auth2 = tosign.getUnsigned();
-            assertEquals(auth2.getSignatory().getName(), "neu://bob@test");
+            final Builder auth2 = tosign.getUnsigned();
+//            assertEquals(auth2.getSignatory().getName(), "neu://bob@test");
             assertNotNull(auth2);
             assertNotNull(auth2.getElement());
-            final AuthenticationTicket auth = (AuthenticationTicket) auth2.sign(signer);
+            final AuthenticationTicket auth = (AuthenticationTicket) auth2.convert("neu://bob@test",signer);
             assertTrue(auth2.isSigned());
             assertEquals(auth.getName(), authreq.getName());
             assertEquals(auth.getSiteHref(), "http://users.neuclear.org:8080");

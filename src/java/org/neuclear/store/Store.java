@@ -1,6 +1,10 @@
 /*
- * $Id: Store.java,v 1.17 2003/12/19 18:03:35 pelle Exp $
+ * $Id: Store.java,v 1.18 2004/01/13 15:11:35 pelle Exp $
  * $Log: Store.java,v $
+ * Revision 1.18  2004/01/13 15:11:35  pelle
+ * Now builds.
+ * Now need to do unit tests
+ *
  * Revision 1.17  2003/12/19 18:03:35  pelle
  * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
  * - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -210,7 +214,7 @@ abstract public class Store implements Receiver {
     /**
      * This handles the Identity checking on the object.
      */
-    public final org.neuclear.xml.ElementProxy receive(final SignedNamedObject obj) throws NeuClearException {
+    public final SignedNamedObject receive(final SignedNamedObject obj) throws NeuClearException {
         rawStore(obj);
         return null;
     }

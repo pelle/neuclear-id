@@ -29,8 +29,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationTicketBuilder.java,v 1.8 2003/12/22 13:45:31 pelle Exp $
+$Id: AuthenticationTicketBuilder.java,v 1.9 2004/01/13 15:11:35 pelle Exp $
 $Log: AuthenticationTicketBuilder.java,v $
+Revision 1.9  2004/01/13 15:11:35  pelle
+Now builds.
+Now need to do unit tests
+
 Revision 1.8  2003/12/22 13:45:31  pelle
 Added a naive benchmarking tool.
 Fixed a bug in AskAtStartupAgent

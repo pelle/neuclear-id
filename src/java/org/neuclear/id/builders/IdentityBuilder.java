@@ -1,6 +1,10 @@
 /*
- * $Id: IdentityBuilder.java,v 1.17 2004/01/07 23:12:20 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.18 2004/01/13 15:11:35 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.18  2004/01/13 15:11:35  pelle
+ * Now builds.
+ * Now need to do unit tests
+ *
  * Revision 1.17  2004/01/07 23:12:20  pelle
  * XMLSig now has various added features:
  * -  KeyInfo supports X509v3 (untested)

@@ -8,6 +8,9 @@ import org.neuclear.id.NameResolutionException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.commons.time.TimeTools;
+import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
+import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
 import org.dom4j.QName;
 import org.dom4j.Namespace;
 import org.dom4j.Element;
@@ -48,5 +51,27 @@ public class Builder extends SignedElement {
     protected final void preSign() throws XMLSecurityException {
         // We need to timestamp it before we sign it
         getElement().addAttribute(DocumentHelper.createQName("timestamp", NSTools.NS_NEUID), TimeTools.createTimeStamp());
+    }
+     public Object clone() {
+        try {
+            final Element elem = (Element) getElement().clone();
+            DocumentHelper.createDocument(elem);
+            return new NamedObjectBuilder(elem);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public final SignedNamedObject convert(String name,Signer signer) throws NameResolutionException, InvalidNamedObjectException {
+        try {
+            sign(name,signer);
+        } catch (XMLSecurityException e) {
+            throw new InvalidNamedObjectException("Problem in XML Sig",e);
+        } catch (NonExistingSignerException e) {
+            throw new InvalidNamedObjectException("Can not Sign",e);
+        } catch (UserCancellationException e) {
+            throw new InvalidNamedObjectException("User Cancelled Signing",e);
+        }
+        return convert();
     }
 }

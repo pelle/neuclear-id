@@ -1,6 +1,10 @@
 /*
- * $Id: SigningServlet.java,v 1.27 2003/12/19 18:03:35 pelle Exp $
+ * $Id: SigningServlet.java,v 1.28 2004/01/13 15:11:35 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.28  2004/01/13 15:11:35  pelle
+ * Now builds.
+ * Now need to do unit tests
+ *
  * Revision 1.27  2003/12/19 18:03:35  pelle
  * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
  * - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -262,6 +266,7 @@ import org.neuclear.id.NSTools;
 import org.neuclear.id.SignatureRequest;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.id.builders.Builder;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.soap.XMLInputStreamServlet;
@@ -322,12 +327,12 @@ public class SigningServlet extends XMLInputStreamServlet {
         final PrintWriter out = response.getWriter();
         ServletTools.printHeader(out, request, getTitle());
         final String endpoint = request.getParameter("endpoint");
-        final NamedObjectBuilder named = sigreq.getUnsigned();
-        final String parent = NSTools.getSignatoryURI(named.getName());
+        final Builder named = sigreq.getUnsigned();
+        final String username = sigreq.getUserid();
         boolean isSigned = false;
-        if (!signer.canSignFor(parent)) {
+        if (!signer.canSignFor(username)) {
              out.println("<h3>Can not Sign for:");
-            out.println(parent);
+            out.println(username);
             out.println("</h3>");
         }
         out.println("<table bgcolor=\"#708070\"><tr><td><h4 style=\"color: white\">");
@@ -351,10 +356,10 @@ public class SigningServlet extends XMLInputStreamServlet {
         out.println("</td></tr></table>");
         if (isReadyToSign(request)) {
 
-            out.println("<div id=\"log\" style=\"background:#003;color:#EEE\"><tt><ul><li>Signing with " + parent + "...</li>");
+            out.println("<div id=\"log\" style=\"background:#003;color:#EEE\"><tt><ul><li>Signing with " + username + "...</li>");
             out.flush();
             try {
-                isSigned = sign(named, out);
+                isSigned = sign(named,username, out);
 
             } catch (InvalidNamedObjectException e) {
 //                System.out.println("<br><font color=\"red\"><b>ERROR: Invalid Identity</b></font><br>");
@@ -396,10 +401,10 @@ public class SigningServlet extends XMLInputStreamServlet {
 
     }
 
-    private boolean sign(final NamedObjectBuilder named, final PrintWriter out) throws NeuClearException, XMLException {
+    private boolean sign(final Builder named, String username,final PrintWriter out) throws NeuClearException, XMLException {
         boolean isSigned;
-        context.log("SIGN: Signing with " + named.getSignatory().getName());
-        final SignedNamedObject signed = named.sign(signer);
+        context.log("SIGN: Signing with " + username);
+        final SignedNamedObject signed = named.convert(username,signer);
         isSigned = true;
         out.println("<li>Signed</li>");
         out.println("<li>" + signed.getName() + " Verified</li>");

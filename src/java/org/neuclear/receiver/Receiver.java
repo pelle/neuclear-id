@@ -6,8 +6,12 @@ package org.neuclear.receiver;
  * Date: Oct 10, 2002
  * Time: 11:24:59 PM
  * To change this template use Options | File Templates.
- * $Id: Receiver.java,v 1.13 2003/12/10 23:58:51 pelle Exp $
+ * $Id: Receiver.java,v 1.14 2004/01/13 15:11:35 pelle Exp $
  * $Log: Receiver.java,v $
+ * Revision 1.14  2004/01/13 15:11:35  pelle
+ * Now builds.
+ * Now need to do unit tests
+ *
  * Revision 1.13  2003/12/10 23:58:51  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -117,8 +121,8 @@ public interface Receiver {
      * Remember you must check the validity of the SignedNamedObject here. Until you do so
      * you can not trust it.
      * 
-     * @param obj 
-     * @throws UnsupportedTransaction 
+     * @param obj
+     * @throws UnsupportedTransaction
      */
-    org.neuclear.xml.ElementProxy receive(SignedNamedObject obj) throws UnsupportedTransaction, NeuClearException;
+    SignedNamedObject receive(SignedNamedObject obj) throws UnsupportedTransaction, NeuClearException;
 }

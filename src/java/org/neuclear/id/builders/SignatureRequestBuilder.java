@@ -24,8 +24,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestBuilder.java,v 1.8 2004/01/12 22:39:26 pelle Exp $
+$Id: SignatureRequestBuilder.java,v 1.9 2004/01/13 15:11:35 pelle Exp $
 $Log: SignatureRequestBuilder.java,v $
+Revision 1.9  2004/01/13 15:11:35  pelle
+Now builds.
+Now need to do unit tests
+
 Revision 1.8  2004/01/12 22:39:26  pelle
 Completed all the builders and contracts.
 Added a new abstract Value class to contain either an amount or a list of serial numbers.

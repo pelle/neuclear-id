@@ -1,6 +1,10 @@
 /*
- * $Id: ReceiverServlet.java,v 1.15 2003/12/15 23:33:04 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.16 2004/01/13 15:11:35 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.16  2004/01/13 15:11:35  pelle
+ * Now builds.
+ * Now need to do unit tests
+ *
  * Revision 1.15  2003/12/15 23:33:04  pelle
  * added ServletTools.getInitParam() which first tries the ServletConfig, then the context config.
  * All the web.xml's have been updated to support this. Also various further generalizations have been done throughout
@@ -167,12 +171,12 @@ public class ReceiverServlet extends XMLInputStreamServlet {
             throw new NeuClearException("Missing Request");
         ctx.log("NeuClear: Got Request " + obj.getName());
         ctx.log(obj.getEncoded());
-        ElementProxy receipt = receiver.receive(obj);
+        SignedNamedObject receipt = receiver.receive(obj);
         if (isXML)
-            writer.print(receipt.canonicalize());
+            writer.print(receipt.getEncoded());
         else{
             writer.print("<h1>");
-            writer.print(receipt.getElement().getName());
+            writer.print(receipt.getName());
             writer.print("</h1>");
         }
 

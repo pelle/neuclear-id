@@ -66,7 +66,7 @@
     <option name="PUT_FOCUS_INTO_COMMENT" value="false" />
     <option name="SHOW_CHECKIN_OPTIONS" value="true" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cleaned up the schemas even more they now all verifiy.&#10;The Order/Receipt pairs for neuclear pay, should now work. They all have Readers using the latest&#10;Schema.&#10;The TransferBuilders are done and the ExchangeBuilders are nearly there.&#10;&#10;The new EmbeddedSignedNamedObject builder is useful for creating new Receipts. The new ReceiptBuilder uses&#10;this to create the embedded transaction.&#10;&#10;ExchangeOrders now have the concept of BidItem's, you could create an ExchangeOrder bidding on various items at the same time, to be exchanged as one atomic multiparty exchange.&#10;&#10;Still doesnt build yet, but very close now ;-)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Completed all the builders and contracts.&#10;Added a new abstract Value class to contain either an amount or a list of serial numbers.&#10;Now ready to finish off the AssetControllers." />
     <option name="SAVE_LAST_COMMIT_MESSAGE" value="true" />
     <option name="CHECKIN_DIALOG_SPLITTER_PROPORTION" value="0.8" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
@@ -80,7 +80,21 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
-    <line_breakpoints />
+    <line_breakpoints>
+      <breakpoint url="file:///home/pelleb/code/neuclear-xmlsig/src/java/org/neuclear/xml/xmlsec/XMLSignature.java" line="279">
+        <option name="ENABLED" value="true" />
+        <option name="SUSPEND_VM" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="LOG_MESSAGE" value="" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+      </breakpoint>
+    </line_breakpoints>
     <exception_breakpoints>
       <breakpoint_any>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -106,75 +120,73 @@
     <option name="HIDE_WARNINGS" value="false" />
   </component>
   <component name="FileEditorManager" split-orientation="vertical" split-proportion="0.5">
-    <first-group selected-file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/exchange/orders/builders/ExchangeOrderBuilder.java">
-      <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/orders/SerialNumbers.java" pinned="false">
+    <first-group selected-file="file:///home/pelleb/code/neuclear-commons/src/java/carol.properties">
+      <entry file="file://$PROJECT_DIR$-sample/src/java/org/neuclear/id/sample/MessageSenderReceiver.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="22" column="26" selection-start="649" selection-end="649" vertical-scroll-proportion="0.4177215">
+          <state line="47" column="75" selection-start="1919" selection-end="1919" vertical-scroll-proportion="0.71370965">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/orders/TransferGlobals.java" pinned="false">
+      <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/sql/statements/SimpleStatementFactory.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="241" column="41" selection-start="10747" selection-end="10761" vertical-scroll-proportion="0.20645161">
+          <state line="46" column="32" selection-start="1648" selection-end="1648" vertical-scroll-proportion="0.4717742">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/exchange/orders/ExchangeOrder.java" pinned="false">
+      <entry file="file:///home/pelleb/code/neuclear-commons/src/java/carol.properties" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="21" column="19" selection-start="544" selection-end="544" vertical-scroll-proportion="-0.6967742">
+          <state line="12" column="0" selection-start="258" selection-end="258" vertical-scroll-proportion="0.36290324">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/exchange/orders/BidItem.java" pinned="false">
+      <entry file="file:///home/pelleb/code/neuclear-xmlsig/src/test/org/neuclear/xml/xmlsec/SimpleXMLSigTest.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="27" column="57" selection-start="606" selection-end="606" vertical-scroll-proportion="0.49367088">
+          <state line="191" column="74" selection-start="9845" selection-end="9845" vertical-scroll-proportion="1.004158">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file:///home/pelleb/code/neuclear-pay/src/schemas/exch.xsd" pinned="false">
+      <entry file="file:///home/pelleb/code/neuclear-xmlsig/src/java/org/neuclear/xml/xmlsec/XMLSecTools.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="90" column="12" selection-start="4348" selection-end="4348" vertical-scroll-proportion="0.66451615">
+          <state line="325" column="28" selection-start="14964" selection-end="14964" vertical-scroll-proportion="1.3471934">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/exchange/orders/builders/ExchangeOrderBuilder.java" pinned="false">
+      <entry file="file:///home/pelleb/code/neuclear-xmlsig/src/java/org/neuclear/xml/xmlsec/XMLSignature.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="142" column="74" selection-start="7346" selection-end="7346" vertical-scroll-proportion="0.70064515">
+          <state line="279" column="0" selection-start="13454" selection-end="13454" vertical-scroll-proportion="0.5675676">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/exchange/orders/builders/ExchangeCompletionOrderBuilder.java" pinned="false">
+      <entry file="file:///home/pelleb/code/neuclear-commons/src/test/org/neuclear/commons/sql/entities/TableDefinitionTest.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="28" column="36" selection-start="1249" selection-end="1249" vertical-scroll-proportion="0.42967743">
-            <folding>
-              <element signature="imports" expanded="true" />
-            </folding>
-          </state>
-        </provider>
-      </entry>
-      <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/orders/builders/TransferOrderBuilder.java" pinned="false">
-        <provider selected="true" editor-type-id="text-editor">
-          <state line="134" column="0" selection-start="6747" selection-end="6808" vertical-scroll-proportion="0.54580647">
+          <state line="139" column="18" selection-start="5745" selection-end="5745" vertical-scroll-proportion="0.3326613">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/NegativeTransferException.java" pinned="false">
+      <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/sql/entities/EntityModel.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="19" column="22" selection-start="404" selection-end="404" vertical-scroll-proportion="0.3227848">
+          <state line="68" column="35" selection-start="2666" selection-end="2666" vertical-scroll-proportion="0.5302419">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/orders/TransferOrder.java" pinned="false">
+      <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/sql/SQLContext.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="24" column="22" selection-start="689" selection-end="689" vertical-scroll-proportion="0.3483871">
+          <state line="68" column="7" selection-start="2594" selection-end="2594" vertical-scroll-proportion="0.98991936">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/sql/ConnectionSource.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="12" column="17" selection-start="208" selection-end="208" vertical-scroll-proportion="0.30241936">
             <folding />
           </state>
         </provider>
@@ -195,31 +207,21 @@
   <component name="J2EEProjectPane" />
   <component name="PackagesPane" />
   <component name="ProjectPane">
+    <expanded_node url="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/controllers/currency" module="neuclear-pay" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/src/schemas" module="neuclear" type="directory" />
     <expanded_node url="file:///home/pelleb/code/neuclear-pay/src" module="neuclear-pay" type="directory" />
-    <expanded_node url="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/crypto" module="neuclear-commons" type="directory" />
+    <expanded_node url="file:///home/pelleb/code/neuclear-xmlsig/src/test" module="NeuClear XMLSig" type="directory" />
+    <expanded_node url="file:///home/pelleb/code/neuclear-xmlsig/src/test/org/neuclear/xml/xmlsec" module="NeuClear XMLSig" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/src" module="neuclear" type="directory" />
-    <expanded_node url="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/exchange/orders" module="neuclear-pay" type="directory" />
     <expanded_node url="file:///home/pelleb/code/neuclear-pay" module="neuclear-pay" type="directory" />
-    <expanded_node url="file:///home/pelleb/code/neuclear-commons/src" module="neuclear-commons" type="directory" />
     <expanded_node url="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset" module="neuclear-pay" type="directory" />
-    <expanded_node url="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/contracts" module="neuclear-pay" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/src/java/org/neuclear/id/builders" module="neuclear" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$-sample" module="neuclear-id-sample" type="directory" />
-    <expanded_node url="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/orders" module="neuclear-pay" type="directory" />
-    <expanded_node url="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/exchange/orders/builders" module="neuclear-pay" type="directory" />
-    <expanded_node url="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/orders/builders" module="neuclear-pay" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$" module="neuclear" type="directory" />
-    <expanded_node url="file:///home/pelleb/code/neuclear-commons" module="neuclear-commons" type="directory" />
-    <expanded_node url="file:///home/pelleb/code/neuclear-pay/src/schemas" module="neuclear-pay" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$-sample/src/webapp/WEB-INF" module="neuclear-id-sample" type="directory" />
-    <expanded_node url="file:///home/pelleb/code/neuclear-commons/src/java" module="neuclear-commons" type="directory" />
+    <expanded_node url="file:///home/pelleb/code/neuclear-xmlsig/src" module="NeuClear XMLSig" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/src/java/org/neuclear/id" module="neuclear" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$-sample/src/webapp" module="neuclear-id-sample" type="directory" />
     <expanded_node url="file:///home/pelleb/code/neuclear-pay/src/java" module="neuclear-pay" type="directory" />
+    <expanded_node url="file:///home/pelleb/code/neuclear-xmlsig" module="NeuClear XMLSig" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/src/java" module="neuclear" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$-sample/src" module="neuclear-id-sample" type="directory" />
-    <expanded_node url="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/contracts/builders" module="neuclear-pay" type="directory" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" flattenPackages="true" showMembers="false" showModules="true" showLibraryContents="false" hideEmptyPackages="false" showStructure="false" autoscrollToSource="false" splitterProportion="0.5" />
@@ -236,7 +238,7 @@
     <option name="SHOW_SETTINGS_BEFORE_RUNNING" value="true" />
     <option name="COMPILE_BEFORE_RUNNING" value="true" />
     <option name="USE_LAUNCHER_FOR_RUNNING" value="false" />
-    <activeType name="Application" />
+    <activeType name="JUnit" />
     <configuration name="&lt;template&gt;" type="Application" default="true" selected="false">
       <option name="MAIN_CLASS_NAME" />
       <option name="VM_PARAMETERS" />
@@ -282,6 +284,18 @@
     </configuration>
     <configuration name="&lt;template&gt;" type="WebLogic Instance" default="true" selected="false">
       <option name="WEBLOGIC_INSTANCE_CONFIGURATION_NAME" />
+    </configuration>
+    <configuration name="SimpleXML" type="JUnit" default="false" selected="true">
+      <module name="NeuClear XMLSig" />
+      <option name="PACKAGE_NAME" value="org.neuclear.xml.xmlsec" />
+      <option name="MAIN_CLASS_NAME" value="org.neuclear.xml.xmlsec.SimpleXMLSigTest" />
+      <option name="METHOD_NAME" value="" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="/home/pelleb/code/neuclear-xmlsig" />
+      <option name="ADDITIONAL_CLASS_PATH" />
+      <option name="INCLUDE_DEPENDENCIES" value="false" />
     </configuration>
   </component>
   <component name="SelectInManager" />
@@ -330,14 +344,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="4" y="25" width="1392" height="965" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.33026466" order="8" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="7" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.27380952" order="0" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33026466" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.33026466" order="8" />
+      <window_info id="Messages" active="true" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="true" weight="0.33026466" order="8" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
       <window_info id="Aspects" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
@@ -418,113 +432,109 @@
     <webview flattenPackages="false" showMembers="false" autoscrollToSource="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/exchange/orders/builders/ExchangeOrderReceiptBuilder.java">
+    <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/crypto/signers/TestCaseSigner.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="89" column="56" selection-start="4440" selection-end="4440" vertical-scroll-proportion="0.32387096">
+        <state line="90" column="54" selection-start="4100" selection-end="4100" vertical-scroll-proportion="0.40129033">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/servlet/AssetControllerServlet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="108" column="36" selection-start="5144" selection-end="5144" vertical-scroll-proportion="0.75225806">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/orders/builders/ReceiptBuilder.java">
+    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/controllers/currency/CurrencyController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="1" selection-start="663" selection-end="753" vertical-scroll-proportion="0.39873418">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/orders/Amount.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="21" selection-start="209" selection-end="209" vertical-scroll-proportion="0.17088607">
+        <state line="154" column="98" selection-start="7845" selection-end="7845" vertical-scroll-proportion="0.33290324">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/schemas/xfer.xsd">
+    <entry file="file:///home/pelleb/code/neuclear-pay/src/test/org/neuclear/asset/receiver/PaymentReceiverTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.23225807">
+        <state line="242" column="47" selection-start="11800" selection-end="11800" vertical-scroll-proportion="0.59354836">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/orders/Value.java">
+    <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/receiver/SimpleReceipt.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="9" selection-start="240" selection-end="240" vertical-scroll-proportion="0.20886075">
+        <state line="12" column="42" selection-start="382" selection-end="382" vertical-scroll-proportion="0.1329114">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/orders/SerialNumbers.java">
+    <entry file="file://$PROJECT_DIR$-sample/src/java/org/neuclear/id/sample/MessageSenderReceiver.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="26" selection-start="649" selection-end="649" vertical-scroll-proportion="0.4177215">
+        <state line="47" column="75" selection-start="1919" selection-end="1919" vertical-scroll-proportion="0.71370965">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/orders/TransferOrder.java">
+    <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/sql/ConnectionSource.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="22" selection-start="689" selection-end="689" vertical-scroll-proportion="0.3483871">
+        <state line="12" column="17" selection-start="208" selection-end="208" vertical-scroll-proportion="0.30241936">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/NegativeTransferException.java">
+    <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/sql/SQLContext.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="22" selection-start="404" selection-end="404" vertical-scroll-proportion="0.3227848">
+        <state line="68" column="7" selection-start="2594" selection-end="2594" vertical-scroll-proportion="0.98991936">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/orders/TransferGlobals.java">
+    <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/sql/entities/EntityModel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="241" column="41" selection-start="10747" selection-end="10761" vertical-scroll-proportion="0.20645161">
+        <state line="68" column="35" selection-start="2666" selection-end="2666" vertical-scroll-proportion="0.5302419">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/asset/orders/builders/TransferOrderBuilder.java">
+    <entry file="file:///home/pelleb/code/neuclear-commons/src/test/org/neuclear/commons/sql/entities/TableDefinitionTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="134" column="0" selection-start="6747" selection-end="6808" vertical-scroll-proportion="0.54580647">
+        <state line="139" column="18" selection-start="5745" selection-end="5745" vertical-scroll-proportion="0.3326613">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/exchange/orders/builders/ExchangeCompletionOrderBuilder.java">
+    <entry file="file:///home/pelleb/code/neuclear-commons/src/java/carol.properties">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="36" selection-start="1249" selection-end="1249" vertical-scroll-proportion="0.42967743">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/exchange/orders/BidItem.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="57" selection-start="606" selection-end="606" vertical-scroll-proportion="0.49367088">
+        <state line="12" column="0" selection-start="258" selection-end="258" vertical-scroll-proportion="0.36290324">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/exchange/orders/ExchangeOrder.java">
+    <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/sql/statements/SimpleStatementFactory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="19" selection-start="544" selection-end="544" vertical-scroll-proportion="-0.6967742">
+        <state line="46" column="32" selection-start="1648" selection-end="1648" vertical-scroll-proportion="0.4717742">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/java/org/neuclear/exchange/orders/builders/ExchangeOrderBuilder.java">
+    <entry file="file:///home/pelleb/code/neuclear-xmlsig/src/test/org/neuclear/xml/xmlsec/SimpleXMLSigTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="142" column="74" selection-start="7346" selection-end="7346" vertical-scroll-proportion="0.70064515">
+        <state line="191" column="74" selection-start="9845" selection-end="9845" vertical-scroll-proportion="1.004158">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///home/pelleb/code/neuclear-pay/src/schemas/exch.xsd">
+    <entry file="file:///home/pelleb/code/neuclear-xmlsig/src/java/org/neuclear/xml/xmlsec/XMLSecTools.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="90" column="12" selection-start="4348" selection-end="4348" vertical-scroll-proportion="0.66451615">
+        <state line="325" column="28" selection-start="14964" selection-end="14964" vertical-scroll-proportion="1.3471934">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///home/pelleb/code/neuclear-xmlsig/src/java/org/neuclear/xml/xmlsec/XMLSignature.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="279" column="0" selection-start="13454" selection-end="13454" vertical-scroll-proportion="0.5675676">
           <folding />
         </state>
       </provider>
