@@ -30,21 +30,26 @@
 
   <siteAddress>neuclear.org</siteAddress>
   <siteDirectory>/home/sites/neuclear.org/public_html/</siteDirectory>
-  <issueTrackingUrl>http://neuclear.org:8080/jira/secure/BrowseProject.jspa</issueTrackingUrl>
+  <issueTrackingUrl>http://devone.veraxpay.com:9090/</issueTrackingUrl>
   <mailingLists>
     <mailingList>
-      <name>Neuclear Announce</name>
+      <name>NeuClear Announce</name>
       <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-announce</subscribe>
       <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-announce</unsubscribe>
       <archive>http://www.geocrawler.com/redir-sf.php3?list=neuclear-announce</archive>
     </mailingList>
     <mailingList>
-      <name>Neuclear Discuss</name>
-      <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-discuss</subscribe>
-      <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-discuss</unsubscribe>
-      <archive>http://www.geocrawler.com/redir-sf.php3?list=neuclear-discuss</archive>
+      <name>NeuClear General</name>
+      <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-general</subscribe>
+      <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-general</unsubscribe>
+      <archive>http://www.geocrawler.com/redir-sf.php3?list=neuclear-general</archive>
     </mailingList>
-  </mailingLists>
+      <mailingList>
+        <name>NeuClear Develop</name>
+        <subscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-develop</subscribe>
+        <unsubscribe>http://lists.sourceforge.net/lists/listinfo/neuclear-develop</unsubscribe>
+        <archive>http://www.geocrawler.com/redir-sf.php3?list=neuclear-develop</archive>
+      </mailingList>  </mailingLists>
 
   <developers>
 
@@ -123,7 +128,7 @@
             <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
-<!--    <dependency>
+    <dependency>
       <id>javamail</id>
       <version>1.3</version>
       <jar>mail.jar</jar>
@@ -134,7 +139,7 @@
       <version>1.0.2</version>
       <jar>activation.jar</jar>
       <url>http://java.sun.com/products/javabeans/glasgow/jaf.html</url>
-   </dependency>-->
+   </dependency>
   </dependencies>
   <build>
 
@@ -142,8 +147,7 @@
       <sourceDirectory>src/java</sourceDirectory>
 <!--    </sourceDirectories>-->
 
-<!--    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
--->
+    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
     <integrationUnitTestSourceDirectory/>
 
     <aspectSourceDirectory/>
