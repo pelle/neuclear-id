@@ -1,5 +1,9 @@
-/* $Id: CommandLineSigner.java,v 1.8 2003/10/25 00:39:54 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.9 2003/10/28 23:44:35 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.9  2003/10/28 23:44:35  pelle
+ * The PassPhraseDialogue now works. It simply presents itself as a simple modal dialog box asking for a passphrase.
+ * The two SignerStore implementations both use it for the passphrase.
+ *
  * Revision 1.8  2003/10/25 00:39:54  pelle
  * Fixed SmtpSender it now sends the messages.
  * Refactored CommandLineSigner. Now it simply signs files read from command line. However new class IdentityCreator
@@ -149,7 +153,7 @@ import java.security.cert.CertificateException;
 
 /**
  * @author pelleb
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class CommandLineSigner {
     public CommandLineSigner(String args[]) throws ParseException, NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException {
@@ -289,7 +293,7 @@ public class CommandLineSigner {
 
     protected CommandLine cmd;
     protected Options options;
-    protected final static String keystore = System.getProperty("user.home") + "/.keystore";
+    public final static String keystore = System.getProperty("user.home") + "/.keystore";
     protected final KeyStore ks;
     protected String alias;
     protected String of;
