@@ -1,6 +1,10 @@
 /*
- * $Id: SignedNamedCore.java,v 1.13 2004/01/14 06:42:15 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.14 2004/01/16 23:42:09 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.14  2004/01/16 23:42:09  pelle
+ * Added Base32 class. The Base32 encoding used wasnt following the standards.
+ * Added user creatable Identity for Public Keys
+ *
  * Revision 1.13  2004/01/14 06:42:15  pelle
  * Got rid of the verifyXXX() methods
  *
@@ -258,9 +262,9 @@ package org.neuclear.id;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
+import org.neuclear.commons.LowLevelException;
 import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.time.TimeTools;
-import org.neuclear.commons.LowLevelException;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.xml.xmlsec.*;
 
@@ -286,7 +290,7 @@ public final class SignedNamedCore {
      * SignedNamedCore for use in creating Identities for anonymous keys
      * @param pub
      */
-    private SignedNamedCore(final PublicKey pub){
+    public SignedNamedCore(final PublicKey pub){
         this.digest=CryptoTools.encodeBase32(CryptoTools.digest(pub.getEncoded()));
         this.name="neu:sha1://"+digest;
         this.timestamp=System.currentTimeMillis();
@@ -300,7 +304,7 @@ public final class SignedNamedCore {
      * @param encoded
      */
     private SignedNamedCore(final PublicKey pub, final String encoded){
-        this.signer = new Identity(new SignedNamedCore(pub),pub);
+        this.signer = new Identity(pub);
         this.digest=CryptoTools.encodeBase32(CryptoTools.digest(encoded.getBytes()));
         this.name=signer.getName()+"!"+digest;
         this.timestamp=System.currentTimeMillis();

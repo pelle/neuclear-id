@@ -1,6 +1,10 @@
 /*
- * $Id: Identity.java,v 1.28 2004/01/08 23:39:06 pelle Exp $
+ * $Id: Identity.java,v 1.29 2004/01/16 23:42:09 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.29  2004/01/16 23:42:09  pelle
+ * Added Base32 class. The Base32 encoding used wasnt following the standards.
+ * Added user creatable Identity for Public Keys
+ *
  * Revision 1.28  2004/01/08 23:39:06  pelle
  * XMLSignature can now give you the Signing key and the id of the signer.
  * SignedElement can now self verify using embedded public keys as well as KeyName's
@@ -307,14 +311,10 @@
  */
 package org.neuclear.id;
 
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.CryptoException;
 import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.senders.Sender;
 import org.neuclear.xml.xmlsec.KeyInfo;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
@@ -323,8 +323,6 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * The Identity class is one of the most important concepts in <a href="http://neuclear.org">NeuClear</a>.
@@ -350,6 +348,13 @@ public class Identity extends SignedNamedObject implements Principal {
     private static PublicKey nsrootpk;
 
 
+    /**
+     * Constructor for creating an Identity object for a "Nymous" Identity.
+     * @param pub
+     */
+    public Identity(final PublicKey pub){
+        this(new SignedNamedCore(pub),pub);
+    }
 
     protected Identity(final SignedNamedCore core, final PublicKey pub)  {
         super(core);
@@ -358,11 +363,11 @@ public class Identity extends SignedNamedObject implements Principal {
 
 
     public final String getRepository() {
-        return null;
+        return "http://repository.neuclear.org";
     }
 
     public final String getSigner() {
-        return null;
+        return "http://localhost:11870/Signer";
     }
 
     public final String getLogger() {

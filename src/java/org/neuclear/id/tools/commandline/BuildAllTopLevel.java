@@ -1,8 +1,10 @@
 package org.neuclear.id.tools.commandline;
 
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent;
-import org.neuclear.commons.crypto.signers.*;
+import org.neuclear.commons.crypto.signers.JCESigner;
+import org.neuclear.commons.crypto.signers.PublicKeySource;
+import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.IdentityBuilder;
 import org.neuclear.store.FileStore;
@@ -27,8 +29,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: BuildAllTopLevel.java,v 1.4 2004/01/15 00:02:08 pelle Exp $
+$Id: BuildAllTopLevel.java,v 1.5 2004/01/16 23:42:09 pelle Exp $
 $Log: BuildAllTopLevel.java,v $
+Revision 1.5  2004/01/16 23:42:09  pelle
+Added Base32 class. The Base32 encoding used wasnt following the standards.
+Added user creatable Identity for Public Keys
+
 Revision 1.4  2004/01/15 00:02:08  pelle
 Problem fixed with Enveloping signatures.
 
@@ -88,10 +94,11 @@ public final class BuildAllTopLevel {
 
     public static void main(final String[] args) {
         try {
-            final JCESigner rootsig = new DefaultSigner(new GuiDialogAgent());
+//            final JCESigner rootsig = new DefaultSigner(new GuiDialogAgent());
             final JCESigner testsig = new TestCaseSigner();
             final Store store = new FileStore("target/testdata/repository");
-            store.receive(createIdentities("neu://test", rootsig, testsig));
+//            store.receive(createIdentities("neu://", rootsig, rootsig));
+//            store.receive(createIdentities("neu://test", rootsig, testsig));
             store.receive(createIdentities("neu://bob@test", testsig, testsig));
             store.receive(createIdentities("neu://alice@test", testsig, testsig));
 
