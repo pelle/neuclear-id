@@ -1,6 +1,11 @@
 /*
- * $Id: SignedNamedCore.java,v 1.25 2004/04/23 19:10:12 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.26 2004/05/11 16:00:31 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.26  2004/05/11 16:00:31  pelle
+ * Changed the way hashCode works. Now hashCode is created during instantiation as the integer value of the first 4 bytes of the raw digest.
+ * equals has been fixed
+ * SignedNamedObject uses the above changes.
+ *
  * Revision 1.25  2004/04/23 19:10:12  pelle
  * Lots of cleanups and improvements to the userinterface and look of the bux application.
  *
@@ -329,10 +334,12 @@ public final class SignedNamedCore {
      */
     private SignedNamedCore(final PublicKey pub, final String encoded) {
         this.signer = new Signatory(pub);
-        this.digest = CryptoTools.encodeBase32(CryptoTools.digest(encoded.getBytes()));
+        final byte[] sha = CryptoTools.digest(encoded.getBytes());
+        this.digest = CryptoTools.encodeBase32(sha);
         this.name = "neu:" + signer.getName() + "!" + digest;
         this.timestamp = System.currentTimeMillis();
         this.encoded = encoded;
+        this.hashcode = sha[0] | sha[1] << 8 | sha[2] << 16 | sha[3] << 24;
     }
 
     /**
@@ -442,7 +449,7 @@ public final class SignedNamedCore {
     }
 
     public final int hashCode() {
-        return encoded.hashCode();
+        return hashcode;
     }
 
     public final String toString() {
@@ -450,11 +457,14 @@ public final class SignedNamedCore {
     }
 
     public final boolean equals(Object object) {
+        if (object == null)
+            return false;
         if (object == this)
             return true;
         if (!(object instanceof SignedNamedCore))
             return false;
-        return encoded.equals(((SignedNamedCore) object).getEncoded());    //To change body of overriden methods use Options | File Templates.
+
+        return digest.equals(((SignedNamedCore) object).getDigest());    //To change body of overriden methods use Options | File Templates.
     }
 
     // Disable Serialization
@@ -472,6 +482,7 @@ public final class SignedNamedCore {
     private final long timestamp;
     private final String encoded;
     private final String digest;
+    private final int hashcode;
 
 
 }

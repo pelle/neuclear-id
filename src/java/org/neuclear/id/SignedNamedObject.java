@@ -1,6 +1,11 @@
 /*
- * $Id: SignedNamedObject.java,v 1.22 2004/04/23 19:10:13 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.23 2004/05/11 16:00:32 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.23  2004/05/11 16:00:32  pelle
+ * Changed the way hashCode works. Now hashCode is created during instantiation as the integer value of the first 4 bytes of the raw digest.
+ * equals has been fixed
+ * SignedNamedObject uses the above changes.
+ *
  * Revision 1.22  2004/04/23 19:10:13  pelle
  * Lots of cleanups and improvements to the userinterface and look of the bux application.
  *
@@ -335,7 +340,7 @@ public class SignedNamedObject {
     }
 
     public final int hashCode() {
-        return getClass().hashCode() + core.hashCode();
+        return core.hashCode();
     }
 
     public String toString() {
@@ -345,9 +350,11 @@ public class SignedNamedObject {
     public final boolean equals(Object object) {
         if (object == this)
             return true;
-        if (object.getClass() == getClass())
-            return true;
-        return getEncoded().equals(((SignedNamedObject) object).getEncoded());
+        if (object == null)
+            return false;
+        if (!object.getClass().equals(getClass()))
+            return false;
+        return core.equals(((SignedNamedObject) object).core);
     }
 
     private final SignedNamedCore core;
