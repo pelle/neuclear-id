@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.4 2004/04/12 15:00:54 pelle Exp $
+ * $Id: SigningServlet.java,v 1.5 2004/04/12 15:28:08 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.5  2004/04/12 15:28:08  pelle
+ * Added Hibernate and Prevalent tests for Currency Controllers
+ *
  * Revision 1.4  2004/04/12 15:00:54  pelle
  * Now have a slightly better way of handling the waiting for input using the WaitForInput class.
  * This will later be put into a command queue for execution.
@@ -370,10 +373,10 @@ public class SigningServlet extends XMLInputStreamServlet {
         out.println("</td></tr></table>");
         if (isReadyToSign(request)) {
 
-            out.println("<div id=\"log\" style=\"background:#003;color:#EEE\"><tt><ul><li>Signing with " + username + "...</li>");
+            out.println("<div id=\"log\" style=\"background:#003;color:#EEE\"><tt><ul><li>Signing ...</li>");
             out.flush();
             try {
-                isSigned = sign(named, out);
+                isSigned = sign(named, "test", out);
 
             } catch (InvalidNamedObjectException e) {
 //                System.out.println("<br><font color=\"red\"><b>ERROR: Invalid Identity</b></font><br>");
