@@ -1,5 +1,8 @@
-/* $Id: SimpleSignerStoreTest.java,v 1.3 2003/10/21 22:31:15 pelle Exp $
+/* $Id: SimpleSignerStoreTest.java,v 1.4 2003/10/28 23:56:04 pelle Exp $
  * $Log: SimpleSignerStoreTest.java,v $
+ * Revision 1.4  2003/10/28 23:56:04  pelle
+ * Fixed the SimpleSignerStore unit test to verify the next functionality of the SignerStore interface.
+ *
  * Revision 1.3  2003/10/21 22:31:15  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
  * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -58,22 +61,28 @@
 package org.neuclear.signers;
 
 import junit.framework.TestCase;
-import org.neudist.crypto.signerstores.SimpleSignerStore;
 import org.neuclear.commons.NeuClearException;
+import org.neudist.crypto.CryptoException;
+import org.neudist.crypto.CryptoTools;
+import org.neudist.crypto.signerstores.SimpleSignerStore;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.*;
+import java.security.GeneralSecurityException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.SecureRandom;
 
 
 /**
  * @author pelleb
- * @version $Revision: 1.3 $
- **/
+ * @version $Revision: 1.4 $
+ */
 public class SimpleSignerStoreTest extends TestCase {
     public SimpleSignerStoreTest(String name) throws GeneralSecurityException, NeuClearException {
         super(name);
-        setUp();
+        store = getSignerStoreInstance();
+        generateKeys();
     }
 
     /**
@@ -83,10 +92,6 @@ public class SimpleSignerStoreTest extends TestCase {
         return new SimpleSignerStore(new File("target/tests/keystores"));
     }
 
-    protected void setUp() throws NeuClearException, GeneralSecurityException {
-        store = getSignerStoreInstance();
-        generateKeys();
-    }
 
     protected static synchronized void generateKeys() throws GeneralSecurityException {
         if (kg == null) {
@@ -100,9 +105,6 @@ public class SimpleSignerStoreTest extends TestCase {
         }
     }
 
-    protected void tearDown() {
-        store = null;
-    }
 
     public void testAddKey() throws NeuClearException, GeneralSecurityException, IOException {
         boolean success = false;
@@ -117,38 +119,24 @@ public class SimpleSignerStoreTest extends TestCase {
         assertTrue("Managed to add a key", success);
     }
 
-    public void testGetKey() throws NeuClearException, GeneralSecurityException, IOException {
+    public void testSignData() throws NeuClearException, GeneralSecurityException, IOException, CryptoException {
         boolean success = false;
-        PrivateKey key = null;
+        byte data[] = null;
         try {
             store.addKey("bob", "bob".toCharArray(), bob.getPrivate());
-            key = store.getKey("bob", "bob".toCharArray());
+            data = store.sign("bob", "test".getBytes());
+            assertTrue(CryptoTools.verify(bob.getPublic(), "test".getBytes(), data));
             success = true;
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        assertTrue("Managed to add and Fetch a  key", success);
-        assertNotNull("Key wasn't null", key);
-        assertEquals("Gotten Key was the same as Stored Key", bob.getPrivate(), key);
+        assertTrue("Managed to add and sign some data", success);
+        assertNotNull("Key wasn't null", data);
+        //assertEquals("Gotten Key was the same as Stored Key", bob.getPrivate(), key);
     }
 
-    public static void main(String[] args) {
-        try {
-            SimpleSignerStoreTest test = new SimpleSignerStoreTest("SimpleSignerStoreTest");
-            test.setUp();
-            test.testGetKey();
-        } catch (Exception e) {
-//            if (e instanceof NeuClearException) {
-//                ((NeuClearException)e).getParcel().printStackTrace();
-//            } else
-            e.printStackTrace();
-
-        }
-
-//		junit.textui.TestRunner.run (suite());
-    }
 
     private SimpleSignerStore store;
     private static KeyPairGenerator kg;
