@@ -1,6 +1,9 @@
 /*
- * $Id: IdentityBuilder.java,v 1.28 2004/05/26 19:28:54 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.29 2004/05/27 19:51:48 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.29  2004/05/27 19:51:48  pelle
+ * The beginnings of the Create Account Page
+ *
  * Revision 1.28  2004/05/26 19:28:54  pelle
  * Updated IdentityBuilder to change the html title
  * Changed the way url's are displayed.
@@ -263,6 +266,7 @@
  */
 package org.neuclear.id.builders;
 
+import org.dom4j.Attribute;
 import org.dom4j.Element;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.passphraseagents.swing.SwingAgent;
@@ -294,9 +298,9 @@ public class IdentityBuilder extends Builder {
             addTarget(receiver, "receiver");
         if (name != null) {
             head.addElement("title").setText("NeuClear Account Page for " + name);
-            final Element nameelement = body.addElement("h1");
-            nameelement.setText(name);
-            nameelement.addAttribute("id", "nickname");
+            nickname = body.addElement("h1");
+            nickname.setText(name);
+            nickname.addAttribute("id", "nickname");
         }
         if (message != null)
             body.addElement("p").setText(message);
@@ -317,7 +321,11 @@ public class IdentityBuilder extends Builder {
         meta.addAttribute("name", "neu:type");
         meta.addAttribute("content", type);
 
-        addLink("original", url);
+        original = addLink("original", url).attribute("href");
+
+        Element csselem = addLink("stylesheet", "/styles.css");
+        csselem.addAttribute("type", "text/css");
+        stylesheet = csselem.attribute("href");
     }
 
 
@@ -327,12 +335,52 @@ public class IdentityBuilder extends Builder {
         }
     }
 
-    protected void addLink(final String type, final String href) {
+    public Element addLink(final String type, final String href) {
         final Element target = head.addElement("link");
         target.addAttribute("rel", type);
         target.addAttribute("href", href);
+        return target;
     }
 
+    public void setStylesheet(String href) {
+        stylesheet.setValue(href);
+    }
+
+    public String getStylesheet() {
+        return stylesheet.getValue();
+    }
+
+    public void setOriginal(String href) {
+        original.setValue(href);
+    }
+
+    public String getOriginal() {
+        return original.getValue();
+    }
+
+    public String getNickname() {
+        if (nickname == null) {
+            nickname = XMLTools.getByID(getElement(), "nickname");
+            if (nickname == null)
+                return "";
+        }
+        return nickname.getTextTrim();
+    }
+
+    public void setNickname(Element nickname) {
+        if (this.nickname != null) {
+            this.nickname.remove(this.nickname.attribute("id"));
+        }
+        this.nickname = nickname;
+    }
+
+    public void setNickname(String name) {
+        if (this.nickname == null) {
+            nickname = body.addElement("h1");
+            nickname.addAttribute("id", "nickname");
+        }
+        nickname.setText(name);
+    }
 
     public static void main(final String[] args) {
         try {
@@ -359,6 +407,9 @@ public class IdentityBuilder extends Builder {
 
     protected final Element head;
     protected final Element body;
+    protected Element nickname;
+    protected Attribute stylesheet;
+    protected Attribute original;
 
     private static final String TYPENAME = "identity";
 
