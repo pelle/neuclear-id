@@ -1,6 +1,7 @@
 package org.neuclear.senders;
 
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neudist.utils.NeudistException;
 
 /*
@@ -30,8 +31,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Time: 1:28:39 PM
  */
 public abstract class Sender {
-    public abstract void send(String endpoint, SignedNamedObject obj) throws NeudistException;
+    public abstract void send(String endpoint, NamedObjectBuilder obj) throws NeudistException;
 
-    public static void quickSend(String receiver, SignedNamedObject obj) {
+    public static void quickSend(String receiver, NamedObjectBuilder obj) {
     }
 }
