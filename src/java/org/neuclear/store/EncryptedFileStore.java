@@ -1,6 +1,9 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.10 2003/11/11 21:18:44 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.11 2003/11/18 19:23:58 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
+ * Revision 1.11  2003/11/18 19:23:58  pelle
+ * Missed this in latest checkin
+ *
  * Revision 1.10  2003/11/11 21:18:44  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -157,68 +160,58 @@
  */
 package org.neuclear.store;
 
+import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.id.NSTools;
+import org.neuclear.id.SignedNamedObject;
+import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.commons.NeuClearException;
+
+import javax.crypto.CipherOutputStream;
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import java.io.*;
+import java.security.NoSuchAlgorithmException;
+
 
 /**
- * We need both a simple FileStore and an encrypted one. The encrypted one stores each object using a filename generated through
- * a Hashing system of some sort. The files themselves are encrypted using perhaps their name and a store specific code. The filetimes would also be set to a
- * uniform time, so if the operator was sopeanad(Spelling) i
+ * This EncryptedFileStore stores the objects en encrypted format in a file name based on its path
  */
 public class EncryptedFileStore extends FileStore {
 
     public EncryptedFileStore(String base) {
         super(base);
     }
-/*
 
-    protected void rawStore(SignedNamedObject obj) throws IOException, NeuClearException {
+    protected OutputStream getOutputStream(NamedObjectBuilder obj) throws NeuClearException, FileNotFoundException {
         String outputFilename = base + getFileName(obj);
         System.out.println("Outputting to: " + outputFilename);
         File outputFile = new File(outputFilename);
         outputFile.getParentFile().mkdirs();
+        try {
+            Cipher cipher = Cipher.getInstance("AES");
+            //TODO Initialise cipher with key
+            return new CipherOutputStream(new FileOutputStream(outputFile),cipher);
 
-        // Quick and dirty encryption for now.
-//        String xmlData=obj.getElement().asXML();
-//TODO Find alternative        byte encrypted[] = CryptoTools.encrypt(obj.getName(), XMLSecTools.getElementBytes(obj.getElement()));
 
-        BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(outputFile));
-//TODO Find alternative        os.write(encrypted);
-        os.close();
+        } catch (NoSuchAlgorithmException e) {
+            throw new NeuClearException(e);
+        } catch (NoSuchPaddingException e) {
+            throw new NeuClearException(e);
+        }
+
     }
-
-    protected SignedNamedObject fetch(String name) throws NeuClearException {
-        String deURLizedName = NSTools.normalizeNameURI(name);
-        String inputFilename = base + getFileName(deURLizedName);
+    protected FileInputStream getInputStream(String name) throws FileNotFoundException, NeuClearException {
+        String inputFilename = base + getFileName(name);
         System.out.println("Loading from: " + inputFilename);
         File fin = new File(inputFilename);
         if (!fin.exists())
-            return null;
-
-        SignedNamedObject ns = null;
-        try {
-            byte input[] = new byte[(int) fin.length()];
-            FileInputStream fis = new FileInputStream(fin);
-            fis.read(input, 0, input.length);
-            byte clear[] = CryptoTools.decrypt(deURLizedName.getBytes(), input);
-            int last = clear.length;
-            for (last = clear.length; clear[last - 1] != (byte) '>'; last--) ;
-            String clearString = new String(clear, 0, last);
-//            System.out.print("Read: ");
-//            System.out.println(clearString);
-            org.dom4j.Document doc = DocumentHelper.parseText(clearString);
-//TODO Find alternative            ns = NamedObjectFactory.createNamedObject(doc);
-//            Utility.rethrowException(e);
-        } catch (IOException e) {
-            Utility.rethrowException(e);
-        } catch (DocumentException e) {
-            Utility.rethrowException(e);
-//        } catch (FileNotFoundException e) {
-//            Utility.rethrowException(e);
-        }
-
-        return ns;
+            throw new NeuClearException("NeuClear: "+name+" doesnt exist");
+        //TODO add CipherInputStream
+        return new FileInputStream(fin);
     }
 
-    protected static String getFileName(String name) throws NeuClearException {
+
+     protected String getFileName(String name) throws NeuClearException {
         String deURLizedName = NSTools.normalizeNameURI(name);
         byte hash[] = CryptoTools.formatAsURLSafe(CryptoTools.digest512(deURLizedName.getBytes())).getBytes();
         //if (true) return new String(hash);
@@ -237,11 +230,5 @@ public class EncryptedFileStore extends FileStore {
         }
         return new String(newName);
     }
-
-    protected static String getFileName(SignedNamedObject obj) throws NeuClearException {
-        return getFileName(obj.getName());
-    }
-
-*/
 
 }

@@ -1,6 +1,9 @@
 /*
- * $Id: FileStore.java,v 1.11 2003/11/18 15:45:09 pelle Exp $
+ * $Id: FileStore.java,v 1.12 2003/11/18 19:23:58 pelle Exp $
  * $Log: FileStore.java,v $
+ * Revision 1.12  2003/11/18 19:23:58  pelle
+ * Missed this in latest checkin
+ *
  * Revision 1.11  2003/11/18 15:45:09  pelle
  * FileStoreTest now passes. FileStore works again.
  *
@@ -171,13 +174,18 @@ public class FileStore extends Store {
     }
 
     protected void rawStore(NamedObjectBuilder obj) throws IOException, NeuClearException, XMLException {
+        OutputStream out = getOutputStream(obj);
+        out.write(obj.canonicalize());
+        out.close();
+    }
+
+    protected OutputStream getOutputStream(NamedObjectBuilder obj) throws NeuClearException, FileNotFoundException {
         String outputFilename = base + getFileName(obj);
         System.out.println("Outputting to: " + outputFilename);
         File outputFile = new File(outputFilename);
         outputFile.getParentFile().mkdirs();
         OutputStream out=new FileOutputStream(outputFile);
-        out.write(obj.canonicalize());
-        out.close();
+        return out;
     }
 
 //    public void store(Document doc) throws InvalidNamedObject,IOException {
@@ -185,14 +193,9 @@ public class FileStore extends Store {
 //    }
 
     SignedNamedObject fetch(String name) throws NeuClearException {
-        String inputFilename = base + getFileName(name);
-        System.out.println("Loading from: " + inputFilename);
-        File fin = new File(inputFilename);
-        if (!fin.exists())
-            return null;
 
         try {
-            return VerifyingReader.getInstance().read(new FileInputStream(fin));
+            return VerifyingReader.getInstance().read(getInputStream(name));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (XMLException e) {
@@ -201,12 +204,22 @@ public class FileStore extends Store {
         return null;
     }
 
+    protected FileInputStream getInputStream(String name) throws FileNotFoundException, NeuClearException {
+        String inputFilename = base + getFileName(name);
+        System.out.println("Loading from: " + inputFilename);
+        File fin = new File(inputFilename);
+        if (!fin.exists())
+            throw new NeuClearException("NeuClear: "+name+" doesnt exist");
 
-    protected static String getFileName(String name) throws NeuClearException {
+        return new FileInputStream(fin);
+    }
+
+
+    protected String getFileName(String name) throws NeuClearException {
         return NSTools.url2path(name)+"/root.id";
     }
 
-    protected static String getFileName(NamedObjectBuilder obj) throws NeuClearException {
+    protected String getFileName(NamedObjectBuilder obj) throws NeuClearException {
         return getFileName(obj.getName());
 //        if (! (obj instanceof Identity))
 //            return obj.getName();
