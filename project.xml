@@ -78,7 +78,7 @@
        <dependency>
           <id>neuclear-commons</id>
        <name>neuclear-commons</name>
-       <version>0.4</version>
+       <version>0.5-SNAPSHOT</version>
            <properties>
                  <war.bundle.jar>true</war.bundle.jar>
            </properties>

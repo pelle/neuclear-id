@@ -1,15 +1,15 @@
 package org.neuclear.tests;
 
-import junit.framework.TestCase;
-import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.xml.XMLException;
-import org.neuclear.id.verifier.VerifyingReader;
-import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.InvalidIdentityException;
-import org.neuclear.receiver.Receiver;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.id.InvalidIdentityException;
+import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.verifier.VerifyingReader;
+import org.neuclear.receiver.Receiver;
+import org.neuclear.xml.XMLException;
 
 import java.io.*;
+import java.security.GeneralSecurityException;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -29,8 +29,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AbstractReceiverTest.java,v 1.2 2003/11/11 21:18:44 pelle Exp $
+$Id: AbstractReceiverTest.java,v 1.3 2003/11/12 23:48:14 pelle Exp $
 $Log: AbstractReceiverTest.java,v $
+Revision 1.3  2003/11/12 23:48:14  pelle
+Much work done in creating good test environment.
+PaymentReceiverTest works, but needs a abit more work in its environment to succeed testing.
+
 Revision 1.2  2003/11/11 21:18:44  pelle
 Further vital reshuffling.
 org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -55,45 +59,46 @@ Several problems with configuration. Trying to solve at the moment. Updated Pico
  * Date: Oct 24, 2003
  * Time: 11:09:16 AM
  */
-public abstract class AbstractReceiverTest extends TestCase {
+public abstract class AbstractReceiverTest extends AbstractSigningTest {
 
-    protected AbstractReceiverTest(String string) {
+    protected AbstractReceiverTest(String string) throws GeneralSecurityException, NeuClearException {
         super(string);
         CryptoTools.ensureProvider();
         reader = VerifyingReader.getInstance();
+
     }
 
     /**
      * The receiver to test. This would probably be initialized by the constructor
      * of the implementing class.
-     *
-     * @return
+     * 
+     * @return 
      */
     public abstract Receiver getReceiver();
 
     /**
      * The extension of files to verify, eg. ".xml"
-     *
-     * @return
+     * 
+     * @return 
      */
     public abstract String getExtension();
 
     /**
      * Verify the effect of the transaction based on the given state.
-     *
+     * 
      * @param obj   The Transaction Object to test
      * @param state An object created first from the matching getPreTransactionState() method.
-     * @return
+     * @return 
      */
     public abstract boolean verifyTransaction(SignedNamedObject obj, Object state) throws Exception;
 
     /**
      * Should return an object identifying the state of the system prior to the transaction.
      * The object should be meaningful to the matching verifyTransaction method.
-     *
-     * @param obj
-     * @return
-     * @throws Exception
+     * 
+     * @param obj 
+     * @return 
+     * @throws Exception 
      */
     public abstract Object getPreTransactionState(SignedNamedObject obj) throws Exception;
 
@@ -132,6 +137,6 @@ public abstract class AbstractReceiverTest extends TestCase {
 
     }
 
-    private VerifyingReader reader;
+    private final VerifyingReader reader;
 
 }

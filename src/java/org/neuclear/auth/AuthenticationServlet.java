@@ -1,14 +1,12 @@
 package org.neuclear.auth;
 
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.Utility;
+import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.crypto.signers.TestCaseSigner;
+import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.id.builders.SignatureRequestBuilder;
-import org.neuclear.commons.crypto.passphraseagents.AskAtStartupAgent;
-import org.neuclear.commons.crypto.passphraseagents.CommandLineAgent;
-import org.neuclear.commons.crypto.signers.DefaultSigner;
-import org.neuclear.commons.crypto.signers.Signer;
-import org.neuclear.commons.servlets.ServletTools;
-import org.neuclear.commons.Utility;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import javax.servlet.ServletConfig;
@@ -38,8 +36,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServlet.java,v 1.2 2003/11/11 21:18:42 pelle Exp $
+$Id: AuthenticationServlet.java,v 1.3 2003/11/12 23:48:14 pelle Exp $
 $Log: AuthenticationServlet.java,v $
+Revision 1.3  2003/11/12 23:48:14  pelle
+Much work done in creating good test environment.
+PaymentReceiverTest works, but needs a abit more work in its environment to succeed testing.
+
 Revision 1.2  2003/11/11 21:18:42  pelle
 Further vital reshuffling.
 org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -62,7 +64,7 @@ public class AuthenticationServlet extends HttpServlet {
         super.init(servletConfig);
         serviceid = servletConfig.getInitParameter("serviceid");
         try {
-            signer = new DefaultSigner(new AskAtStartupAgent(new CommandLineAgent(), serviceid));
+            signer = new TestCaseSigner();
         } catch (NeuClearException e) {
             throw new ServletException(e);
         } catch (GeneralSecurityException e) {

@@ -1,6 +1,10 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.8 2003/11/11 21:18:46 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.9 2003/11/12 23:48:14 pelle Exp $
   $Log: AbstractStoreTest.java,v $
+  Revision 1.9  2003/11/12 23:48:14  pelle
+  Much work done in creating good test environment.
+  PaymentReceiverTest works, but needs a abit more work in its environment to succeed testing.
+
   Revision 1.8  2003/11/11 21:18:46  pelle
   Further vital reshuffling.
   org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -139,7 +143,7 @@ public abstract class AbstractStoreTest extends TestCase {
     public AbstractStoreTest(String name) throws GeneralSecurityException {
         super(name);
         store = getStoreInstance();
-        generateKeys();
+        //generateKeys();
     }
 
     /**
