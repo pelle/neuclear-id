@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedCore.java,v 1.17 2004/01/19 23:49:45 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.18 2004/01/20 17:39:12 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.18  2004/01/20 17:39:12  pelle
+ * Further updates to unit tests
+ *
  * Revision 1.17  2004/01/19 23:49:45  pelle
  * Unit testing uncovered further issues with Base32
  * NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
@@ -303,7 +306,7 @@ public final class SignedNamedCore {
      */
     public SignedNamedCore(final PublicKey pub){
         this.digest=CryptoTools.encodeBase32(CryptoTools.digest(pub.getEncoded()));
-        this.name="sha1://"+digest;
+        this.name="sha1:"+digest;
         this.timestamp=System.currentTimeMillis();
         this.encoded=new String(pub.getEncoded());
         this.signer = null;//new Identity(this,pub);

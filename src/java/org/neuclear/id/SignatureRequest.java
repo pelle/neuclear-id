@@ -26,8 +26,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequest.java,v 1.12 2004/01/13 15:11:35 pelle Exp $
+$Id: SignatureRequest.java,v 1.13 2004/01/20 17:39:12 pelle Exp $
 $Log: SignatureRequest.java,v $
+Revision 1.13  2004/01/20 17:39:12  pelle
+Further updates to unit tests
+
 Revision 1.12  2004/01/13 15:11:35  pelle
 Now builds.
 Now need to do unit tests
@@ -144,7 +147,7 @@ public final class SignatureRequest extends SignedNamedObject {
             final Element uelem = ((Element) request.elements().get(0)).createCopy();
             final Document doc = DocumentHelper.createDocument(uelem);
             try {
-                final Builder unsigned = new NamedObjectBuilder(uelem);
+                final Builder unsigned = new Builder(uelem);
                 String description = null;
                 final Element descrelem = elem.element(DocumentHelper.createQName("Description", NSTools.NS_NEUID));
                 if (descrelem != null)

@@ -27,8 +27,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningRequestBuilderTest.java,v 1.9 2004/01/19 23:49:45 pelle Exp $
+$Id: SigningRequestBuilderTest.java,v 1.10 2004/01/20 17:39:13 pelle Exp $
 $Log: SigningRequestBuilderTest.java,v $
+Revision 1.10  2004/01/20 17:39:13  pelle
+Further updates to unit tests
+
 Revision 1.9  2004/01/19 23:49:45  pelle
 Unit testing uncovered further issues with Base32
 NSTools is now uptodate as are many other classes. All transactional builders habe been updated.
@@ -103,6 +106,7 @@ public final class SigningRequestBuilderTest extends AbstractSigningTest {
 //            assertEquals(auth.getName(), authreq.getName());
             assertEquals(auth.getSiteHref(), "http://users.neuclear.org:8080");
         } catch (InvalidNamedObjectException e) {
+            e.printStackTrace();
             assertTrue(false);
         }
 

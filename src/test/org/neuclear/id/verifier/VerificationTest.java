@@ -28,8 +28,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerificationTest.java,v 1.10 2003/12/11 23:57:30 pelle Exp $
+$Id: VerificationTest.java,v 1.11 2004/01/20 17:39:13 pelle Exp $
 $Log: VerificationTest.java,v $
+Revision 1.11  2004/01/20 17:39:13  pelle
+Further updates to unit tests
+
 Revision 1.10  2003/12/11 23:57:30  pelle
 Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
 Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -92,6 +95,7 @@ public final class VerificationTest extends TestCase {
         reader = VerifyingReader.getInstance();
     }
 
+/*  TODO Create new samples
     public final void testSimple() throws IOException, DocumentException, NeuClearException, XMLException {
         runDirectoryTest("src/testdata/simple", true);
     }
@@ -100,6 +104,7 @@ public final class VerificationTest extends TestCase {
         runDirectoryTest("src/testdata/simple", true);
     }
 
+*/
     public final void testFakes() throws IOException, DocumentException, NeuClearException, XMLException {
         runDirectoryTest("src/testdata/fakes", false);
     }

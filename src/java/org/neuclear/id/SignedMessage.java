@@ -44,9 +44,9 @@ public class SignedMessage extends SignedNamedObject{
          * @return
          */
         public final SignedNamedObject read(final SignedNamedCore core, final Element elem) {
-            final String to=elem.attributeValue("recipient");
-            final String subject=elem.element("subject").getText();
-            final String message=elem.element("message").getText();
+            final String to=elem.element("Recipient").getText();
+            final String subject=elem.element("Subject").getText();
+            final String message=elem.element("Message").getText();
             return new SignedMessage(core, to,subject,message);
         }
 

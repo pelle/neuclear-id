@@ -17,7 +17,7 @@
     <option name="ON_FILE_ADDING" value="1" />
     <option name="ON_FILE_REMOVING" value="1" />
     <option name="PRUNE_EMPTY_DIRECTORIES" value="true" />
-    <option name="SHOW_UPDATE_OPTIONS" value="true" />
+    <option name="SHOW_UPDATE_OPTIONS" value="false" />
     <option name="SHOW_ADD_OPTIONS" value="true" />
     <option name="SHOW_REMOVE_OPTIONS" value="true" />
     <option name="MERGING_MODE" value="0" />
@@ -81,7 +81,7 @@
   </component>
   <component name="DebuggerManager">
     <line_breakpoints>
-      <breakpoint url="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/crypto/Base32.java" line="148">
+      <breakpoint url="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/crypto/Base32.java" line="153">
         <option name="ENABLED" value="true" />
         <option name="SUSPEND_VM" value="true" />
         <option name="LOG_ENABLED" value="false" />
@@ -120,73 +120,73 @@
     <option name="HIDE_WARNINGS" value="false" />
   </component>
   <component name="FileEditorManager" split-orientation="vertical" split-proportion="0.5">
-    <first-group selected-file="file://$PROJECT_DIR$/src/test/org/neuclear/id/NSToolsTest.java">
-      <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/SignedNamedCoreTest.java" pinned="false">
+    <first-group selected-file="file://$PROJECT_DIR$/src/java/org/neuclear/id/SignatureRequest.java">
+      <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/crypto/signers/JCESigner.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="112" column="32" selection-start="4794" selection-end="4794" vertical-scroll-proportion="1.1144068">
+          <state line="395" column="0" selection-start="17882" selection-end="17882" vertical-scroll-proportion="0.33262712">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/builders/Builder.java" pinned="false">
+      <entry file="file:///home/pelleb/code/neuclear-xmlsig/src/java/org/neuclear/xml/xmlsec/XMLSignature.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="43" column="4" selection-start="1412" selection-end="1412" vertical-scroll-proportion="0.7309322">
+          <state line="266" column="0" selection-start="13306" selection-end="13306" vertical-scroll-proportion="0.33262712">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/builders/IdentityBuilderTest.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="101" column="52" selection-start="4575" selection-end="4575" vertical-scroll-proportion="0.33262712">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/builders/SigningRequestBuilderTest.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="93" column="0" selection-start="4226" selection-end="4226" vertical-scroll-proportion="0.33262712">
             <folding />
           </state>
         </provider>
       </entry>
       <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/builders/NamedObjectBuilder.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="376" column="11" selection-start="16072" selection-end="16072" vertical-scroll-proportion="1.6991526">
+          <state line="265" column="0" selection-start="12792" selection-end="12792" vertical-scroll-proportion="0.30084747">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file:///home/pelleb/code/neuclear-xmlsig/src/java/org/neuclear/xml/xmlsec/SignedElement.java" pinned="false">
+      <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/SignatureRequest.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="158" column="22" selection-start="8699" selection-end="8699" vertical-scroll-proportion="0.04661017">
+          <state line="151" column="12" selection-start="7239" selection-end="7239" vertical-scroll-proportion="0.4915254">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/tests/AbstractObjectCreationTest.java" pinned="false">
+      <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/crypto/signers/PublicKeySource.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="27" column="0" selection-start="941" selection-end="941" vertical-scroll-proportion="0.61601645">
+          <state line="56" column="14" selection-start="2535" selection-end="2535" vertical-scroll-proportion="1.3572896">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/crypto/signers/JCESigner.java" pinned="false">
+      <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/jce/NeuClearJCETest.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="391" column="0" selection-start="17667" selection-end="17667" vertical-scroll-proportion="0.4470339">
+          <state line="204" column="21" selection-start="9533" selection-end="9533" vertical-scroll-proportion="0.33262712">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/IdentityTests.java" pinned="false">
+      <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/SignedMessage.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="60" column="0" selection-start="2474" selection-end="2474" vertical-scroll-proportion="0.8601695">
+          <state line="48" column="48" selection-start="1410" selection-end="1410" vertical-scroll-proportion="1.0800822">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/verifier/VerificationTest.java" pinned="false">
+      <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/builders/SignedMessageBuilder.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="132" column="0" selection-start="5899" selection-end="5899" vertical-scroll-proportion="1.1144068">
-            <folding />
-          </state>
-        </provider>
-      </entry>
-      <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/NSTools.java" pinned="false">
-        <provider selected="true" editor-type-id="text-editor">
-          <state line="281" column="48" selection-start="14596" selection-end="14596" vertical-scroll-proportion="0.7457627">
-            <folding />
-          </state>
-        </provider>
-      </entry>
-      <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/NSToolsTest.java" pinned="false">
-        <provider selected="true" editor-type-id="text-editor">
-          <state line="266" column="23" selection-start="11810" selection-end="11810" vertical-scroll-proportion="0.8601695">
+          <state line="12" column="13" selection-start="287" selection-end="287" vertical-scroll-proportion="0.33880904">
             <folding />
           </state>
         </provider>
@@ -209,6 +209,7 @@
   <component name="ProjectPane">
     <expanded_node url="file:///home/pelleb/code/neuclear-commons" module="neuclear-commons" type="directory" />
     <expanded_node url="file:///home/pelleb/code/neuclear-commons/src/test" module="neuclear-commons" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/src/java/org/neuclear/id/builders" module="neuclear" type="directory" />
     <expanded_node url="file:///home/pelleb/code/neuclear-commons/src/java" module="neuclear-commons" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/src/test/org/neuclear/id" module="neuclear" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/src/test" module="neuclear" type="directory" />
@@ -241,10 +242,10 @@
   </component>
   <component name="RunManager">
     <activeType name="JUnit" />
-    <tempConfiguration name="Base32Tests" type="JUnit" default="false" selected="false">
-      <module name="neuclear-commons" />
-      <option name="PACKAGE_NAME" value="org.neuclear.commons.crypto" />
-      <option name="MAIN_CLASS_NAME" value="org.neuclear.commons.crypto.Base32Tests" />
+    <tempConfiguration name="IdentityTests" type="JUnit" default="false" selected="false">
+      <module name="neuclear" />
+      <option name="PACKAGE_NAME" value="org.neuclear.id" />
+      <option name="MAIN_CLASS_NAME" value="org.neuclear.id.IdentityTests" />
       <option name="METHOD_NAME" value="" />
       <option name="TEST_OBJECT" value="class" />
       <option name="VM_PARAMETERS" value="" />
@@ -373,10 +374,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="4" y="25" width="1392" height="965" extended-state="6" />
-    <editor active="false" />
+    <frame x="4" y="45" width="1392" height="965" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="CVS" active="true" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="true" weight="0.33026466" order="8" />
+      <window_info id="CVS" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.33026466" order="8" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="7" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.26860118" order="0" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33026466" order="1" />
@@ -384,7 +385,7 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.33026466" order="8" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33026466" order="2" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.33026466" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
       <window_info id="CVS File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.4004603" order="4" />
@@ -466,107 +467,107 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/crypto/Base32.java">
+    <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/SignedMessageTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="63" column="58" selection-start="2041" selection-end="2041" vertical-scroll-proportion="0.3634497">
+        <state line="16" column="13" selection-start="436" selection-end="436" vertical-scroll-proportion="0.33880904">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/crypto/CryptoTools.java">
+    <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/resolver/ResolverTests.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="262" column="19" selection-start="12696" selection-end="12696" vertical-scroll-proportion="-12.266949">
+        <state line="18" column="0" selection-start="577" selection-end="577" vertical-scroll-proportion="0.523614">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/Identity.java">
+    <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/SignedNamedCore.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="364" column="15" selection-start="19120" selection-end="19120" vertical-scroll-proportion="0.34203655">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///home/pelleb/code/neuclear-xmlsig/src/java/org/neuclear/xml/xmlsec/Reference.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="253" column="0" selection-start="11356" selection-end="11356" vertical-scroll-proportion="0.33262712">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/builders/AuthenticationTicketBuilder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="86" column="59" selection-start="3579" selection-end="3579" vertical-scroll-proportion="0.9237288">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///home/pelleb/code/neuclear-xmlsig/src/java/org/neuclear/xml/xmlsec/SignedElement.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="158" column="22" selection-start="8699" selection-end="8699" vertical-scroll-proportion="0.04661017">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/builders/Builder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="4" selection-start="1412" selection-end="1412" vertical-scroll-proportion="0.7309322">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/builders/NamedObjectBuilder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="376" column="11" selection-start="16072" selection-end="16072" vertical-scroll-proportion="1.6991526">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/SignedNamedCoreTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="112" column="32" selection-start="4794" selection-end="4794" vertical-scroll-proportion="1.1144068">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/tests/AbstractObjectCreationTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="0" selection-start="941" selection-end="941" vertical-scroll-proportion="0.61601645">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/crypto/signers/JCESigner.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="391" column="0" selection-start="17667" selection-end="17667" vertical-scroll-proportion="0.4470339">
+        <state line="343" column="24" selection-start="16317" selection-end="16317" vertical-scroll-proportion="0.9364407">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/IdentityTests.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="60" column="0" selection-start="2474" selection-end="2474" vertical-scroll-proportion="0.8601695">
+        <state line="41" column="71" selection-start="1679" selection-end="1679" vertical-scroll-proportion="0.33262712">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/verifier/VerificationTest.java">
+    <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/tests/AbstractObjectCreationTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="132" column="0" selection-start="5899" selection-end="5899" vertical-scroll-proportion="1.1144068">
+        <state line="18" column="22" selection-start="523" selection-end="523" vertical-scroll-proportion="0.33880904">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/NSToolsTest.java">
+    <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/builders/SignedMessageBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="266" column="23" selection-start="11810" selection-end="11810" vertical-scroll-proportion="0.8601695">
+        <state line="12" column="13" selection-start="287" selection-end="287" vertical-scroll-proportion="0.33880904">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/NSTools.java">
+    <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/SignedMessage.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="281" column="48" selection-start="14596" selection-end="14596" vertical-scroll-proportion="0.7457627">
+        <state line="48" column="48" selection-start="1410" selection-end="1410" vertical-scroll-proportion="1.0800822">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/crypto/signers/PublicKeySource.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="56" column="14" selection-start="2535" selection-end="2535" vertical-scroll-proportion="1.3572896">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/jce/NeuClearJCETest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="204" column="21" selection-start="9533" selection-end="9533" vertical-scroll-proportion="0.33262712">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///home/pelleb/code/neuclear-commons/src/java/org/neuclear/commons/crypto/signers/JCESigner.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="395" column="0" selection-start="17882" selection-end="17882" vertical-scroll-proportion="0.33262712">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/builders/IdentityBuilderTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="101" column="52" selection-start="4575" selection-end="4575" vertical-scroll-proportion="0.33262712">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///home/pelleb/code/neuclear-xmlsig/src/java/org/neuclear/xml/xmlsec/XMLSignature.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="266" column="0" selection-start="13306" selection-end="13306" vertical-scroll-proportion="0.33262712">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/org/neuclear/id/builders/SigningRequestBuilderTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="93" column="0" selection-start="4226" selection-end="4226" vertical-scroll-proportion="0.33262712">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/SignatureRequest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="151" column="12" selection-start="7239" selection-end="7239" vertical-scroll-proportion="0.4915254">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/org/neuclear/id/builders/NamedObjectBuilder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="265" column="0" selection-start="12792" selection-end="12792" vertical-scroll-proportion="0.30084747">
           <folding />
         </state>
       </provider>

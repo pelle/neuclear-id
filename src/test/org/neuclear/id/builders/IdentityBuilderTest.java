@@ -28,8 +28,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: IdentityBuilderTest.java,v 1.9 2003/12/10 23:58:52 pelle Exp $
+$Id: IdentityBuilderTest.java,v 1.10 2004/01/20 17:39:13 pelle Exp $
 $Log: IdentityBuilderTest.java,v $
+Revision 1.10  2004/01/20 17:39:13  pelle
+Further updates to unit tests
+
 Revision 1.9  2003/12/10 23:58:52  pelle
 Did some cleaning up in the builders
 Fixed some stuff in IdentityCreator
@@ -99,7 +102,7 @@ public final class IdentityBuilderTest extends AbstractSigningTest {
                     "mailto:pelle@neuclear.org");
 
             assertEquals("neu://test", NSTools.getSignatoryURI(id.getName()));
-            final SignedNamedObject sec = id.sign(getSigner());
+            final SignedNamedObject sec = id.convert(name,getSigner());
             assertNotNull(sec);
             assertEquals(id.getName(), sec.getName());
 

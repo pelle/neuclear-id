@@ -37,8 +37,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearJCETest.java,v 1.11 2004/01/19 17:55:00 pelle Exp $
+$Id: NeuClearJCETest.java,v 1.12 2004/01/20 17:39:13 pelle Exp $
 $Log: NeuClearJCETest.java,v $
+Revision 1.12  2004/01/20 17:39:13  pelle
+Further updates to unit tests
+
 Revision 1.11  2004/01/19 17:55:00  pelle
 Updated the NeuClear ID naming scheme to support various levels of semantics
 
@@ -122,7 +125,7 @@ public final class NeuClearJCETest extends AbstractSigningTest {
 
     public final void testGetCertificate() throws NeuClearException, XMLException {
         final IdentityBuilder id = new IdentityBuilder("neu://bob@test", signer.getPublicKey("neu://bob@test"));
-        final Identity bob = (Identity) id.sign(signer);
+        final Identity bob = (Identity) id.convert("neu://bob@test",signer);
         final Certificate cert = bob.getCertificate();
         assertNotNull(cert);
         assertEquals(cert.getPublicKey(), bob.getPublicKey());
@@ -137,7 +140,7 @@ public final class NeuClearJCETest extends AbstractSigningTest {
         final KeyPair kp = kpg.generateKeyPair();
         final JCESigner sig2 = new JCESigner(ks, new AlwaysTheSamePassphraseAgent("neuclear"));
         final IdentityBuilder id = new IdentityBuilder("neu://eve@test", kp.getPublic());
-        final Identity eve = (Identity) id.sign(signer);
+        final Identity eve = (Identity) id.convert("neu://eve@test",signer);
 
         ks.setKeyEntry("neu://eve@test", kp.getPrivate(), "neuclear".toCharArray(), eve.getCertificateChain());
         assertTrue(ks.containsAlias("neu://eve@test"));
@@ -202,7 +205,7 @@ public final class NeuClearJCETest extends AbstractSigningTest {
         assertTrue(signer.canSignFor(IVAN));
         assertNotNull(signer.getPublicKey(IVAN));
         assertEquals(pub,signer.getPublicKey(IVAN));
-        id.sign(signer);
+        id.sign(IVAN,signer);
         try {
             final Identity ivan = (Identity) id.convert();
             assertNotNull(ivan);
