@@ -1,6 +1,9 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.1 2004/03/02 18:59:10 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.2 2004/04/14 15:30:41 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.2  2004/04/14 15:30:41  pelle
+ * Added splash screen and java web start support (try "maven jnlp")
+ *
  * Revision 1.1  2004/03/02 18:59:10  pelle
  * Further cleanups in neuclear-id. Moved everything under id.
  *
@@ -193,16 +196,14 @@ package org.neuclear.id.signers;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
-import org.neuclear.commons.crypto.passphraseagents.PassPhraseAgent;
-import org.neuclear.commons.crypto.passphraseagents.ServletPassPhraseAgent;
-import org.neuclear.commons.crypto.signers.Signer;
-import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.commons.crypto.Base64;
-import org.neuclear.xml.XMLException;
+import org.neuclear.commons.crypto.passphraseagents.ServletPassPhraseAgent;
+import org.neuclear.commons.crypto.signers.BrowsableSigner;
+import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.id.SignatureRequest;
+import org.neuclear.xml.XMLException;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.SingleThreadModel;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -211,10 +212,11 @@ import java.io.PrintWriter;
 import java.security.GeneralSecurityException;
 
 public final class DemoSigningServlet extends SigningServlet {
-    public DemoSigningServlet(){
-        agent=new ServletPassPhraseAgent();
+    public DemoSigningServlet() {
+        agent = new ServletPassPhraseAgent();
     }
-    protected Signer createSigner(ServletConfig config) throws GeneralSecurityException, NeuClearException {
+
+    protected BrowsableSigner createSigner(ServletConfig config) throws GeneralSecurityException, NeuClearException {
         agent.set("neuclear");
         final TestCaseSigner signerd = new TestCaseSigner(agent);
         agent.clear();
@@ -226,9 +228,11 @@ public final class DemoSigningServlet extends SigningServlet {
         super.handleInputStream(is, request, response);
         agent.clear();
     }
+
     protected boolean isReadyToSign(HttpServletRequest request) {
         return !Utility.isEmpty(request.getParameter("sign"));
     }
+
     protected void printSecondStageForm(HttpServletRequest request, final PrintWriter out, SignatureRequest sigreq, final String endpoint) {
         out.println("<table><tr><td ><h4>Do you wish to sign this?</h4></td></tr>");
         out.print("<tr><td><form action=\"");
@@ -242,5 +246,5 @@ public final class DemoSigningServlet extends SigningServlet {
         out.println(" <input type=\"submit\" name=\"sign\" value=\"Sign\"></form></td></tr></table>");
     }
 
-     private final ServletPassPhraseAgent agent;
+    private final ServletPassPhraseAgent agent;
 }
