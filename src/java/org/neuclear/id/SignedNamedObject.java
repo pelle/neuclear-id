@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedObject.java,v 1.21 2004/04/15 15:33:40 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.22 2004/04/23 19:10:13 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.22  2004/04/23 19:10:13  pelle
+ * Lots of cleanups and improvements to the userinterface and look of the bux application.
+ *
  * Revision 1.21  2004/04/15 15:33:40  pelle
  * Made the SignedNamedCore and SignedNamedObject unserializable for security reasons.
  *
@@ -348,6 +351,11 @@ public class SignedNamedObject {
     }
 
     private final SignedNamedCore core;
+
+    //Disable Cloning
+    public final Object clone() throws java.lang.CloneNotSupportedException {
+        throw new java.lang.CloneNotSupportedException();
+    }
 
     // Disable Serialization
     private final void writeObject(ObjectInputStream in) throws IOException {

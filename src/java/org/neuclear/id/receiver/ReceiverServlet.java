@@ -1,6 +1,9 @@
 /*
- * $Id: ReceiverServlet.java,v 1.4 2004/04/21 23:27:18 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.5 2004/04/23 19:10:12 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.5  2004/04/23 19:10:12  pelle
+ * Lots of cleanups and improvements to the userinterface and look of the bux application.
+ *
  * Revision 1.4  2004/04/21 23:27:18  pelle
  * Integrated Browser with the asset controller
  * Updated look and feel
@@ -191,10 +194,10 @@ public class ReceiverServlet extends XMLInputStreamServlet {
         if (isXML)
             writer.print(receipt.getEncoded());
         else {
-            writer.print("<h1>Successful</h1><div style=\"font-size:small\">Receipt:</br>");
+            writer.print("<h1>Transaction Successful</h1><div style=\"font-size:small\" onclick=\"receipt.style.display=block;\">View Receipt</div></br>");
             writer.print(receipt.getName());
             writer.print("</div>");
-            writer.println("<form><textarea rows=\"30\" cols=\"80\">");
+            writer.println("<form><textarea id=\"receipt\" rows=\"30\" cols=\"80\" style=\"display:none\">");
             writer.println(receipt.getEncoded());
             writer.println("</textarea></form><hr><a href=\"");
             writer.println(ServletTools.getAbsoluteURL(request, "/"));

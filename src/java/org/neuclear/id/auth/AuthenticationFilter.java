@@ -32,8 +32,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationFilter.java,v 1.2 2004/04/01 23:19:47 pelle Exp $
+$Id: AuthenticationFilter.java,v 1.3 2004/04/23 19:10:12 pelle Exp $
 $Log: AuthenticationFilter.java,v $
+Revision 1.3  2004/04/23 19:10:12  pelle
+Lots of cleanups and improvements to the userinterface and look of the bux application.
+
 Revision 1.2  2004/04/01 23:19:47  pelle
 Split Identity into Signatory and Identity class.
 Identity remains a signed named object and will in the future just be used for self declared information.
@@ -73,6 +76,7 @@ public final class AuthenticationFilter implements Filter {
         if (!Utility.isEmpty(request.getParameter("logout"))) {
             ctx.log("AUTH: Logging out");
             sess.removeAttribute("NeuClearAuthTicket");
+            sess.invalidate();
         }
         try {
             AuthenticationTicket ticket = null;
