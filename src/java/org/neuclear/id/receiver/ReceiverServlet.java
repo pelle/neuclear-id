@@ -1,6 +1,9 @@
 /*
- * $Id: ReceiverServlet.java,v 1.2 2004/04/20 23:33:08 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.3 2004/04/21 00:10:28 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.3  2004/04/21 00:10:28  pelle
+ * Index page looks a bit nicer.
+ *
  * Revision 1.2  2004/04/20 23:33:08  pelle
  * All unit tests (junit and cactus) work. The AssetControllerServlet is operational.
  *
@@ -186,7 +189,7 @@ public class ReceiverServlet extends XMLInputStreamServlet {
             writer.println("<form><textarea rows=\"30\" cols=\"80\">");
             writer.println(receipt.getEncoded());
             writer.println("</textarea></form><hr><a href=\"");
-            writer.println(ServletTools.getAbsoluteURL(request, "/SECURE/"));
+            writer.println(ServletTools.getAbsoluteURL(request, "/"));
             writer.println("\">Go to Menu</a>");
         }
 
