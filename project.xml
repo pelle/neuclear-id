@@ -3,7 +3,7 @@
 
     <name>NeuClear Identity Framework</name>
     <id>neuclear-id</id>
-    <currentVersion>1.0-beta13</currentVersion>
+    <currentVersion>1.0-beta14</currentVersion>
     <inceptionYear>2002</inceptionYear>
     <package>org.neuclear</package>
     <logo>/images/logo.gif</logo>
@@ -227,12 +227,8 @@
         <report>maven-changes-plugin</report>
         <report>maven-developer-activity-plugin</report>
         <report>maven-file-activity-plugin</report>
-        <report>maven-jdepend-plugin</report>
         <report>maven-junit-report-plugin</report>
         <report>maven-license-plugin</report>
-        <report>maven-linkcheck-plugin</report>
-        <report>maven-pmd-plugin</report>
-        <report>maven-tasklist-plugin</report>
     </reports>
 </project>
 

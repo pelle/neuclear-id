@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.16 2004/06/13 19:28:39 pelle Exp $
+ * $Id: SigningServlet.java,v 1.17 2004/06/17 15:10:31 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.17  2004/06/17 15:10:31  pelle
+ * Added support for the account url reference in recipient. It displays the url and also verifies that the referenced account page has the same account id as is specified to disallow spoofing.
+ *
  * Revision 1.16  2004/06/13 19:28:39  pelle
  * Fixed NPE in SigningServlet
  * Added neuclear-id taglibrary with a <id:login/> tag for displaying the NeuClear login button.
@@ -327,10 +330,12 @@ import org.neuclear.commons.crypto.signers.BrowsableSigner;
 import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.ServletSignerFactory;
 import org.neuclear.commons.servlets.ServletTools;
+import org.neuclear.id.Identity;
 import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.SignatureRequest;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.Builder;
+import org.neuclear.id.resolver.Resolver;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.soap.XMLInputStreamServlet;
@@ -458,7 +463,17 @@ public class SigningServlet extends XMLInputStreamServlet {
             out.println("<p>The site: <b>" + site + "</b> is requesting that you log into their web site.</p>");
         } else if (named.getElement().getName().equals("TransferOrder")) {
             String asset = named.getElement().element("Asset").getTextTrim();
-            String recipient = named.getElement().element("Recipient").getTextTrim();
+            final Element recipElem = named.getElement().element("Recipient");
+            String recipient = recipElem.getTextTrim();
+            String recipientURL = recipElem.attributeValue("href");
+            String nickname = null;
+            if (!Utility.isEmpty(recipientURL)) {
+                Identity recipientId = Resolver.resolveIdentity(recipientURL);
+                if (!recipientId.getSignatory().getName().equals(recipient)) {
+                    throw new InvalidNamedObjectException("The Identity at: " + recipientURL + " does not have the account number: " + recipient + " possible fraud detected");
+                }
+                nickname = recipientId.getNickname();
+            }
             String amount = named.getElement().element("Amount").getTextTrim();
             final Element comelem = named.getElement().element("Comment");
             String comment = comelem != null ? comelem.getTextTrim() : "";
@@ -466,7 +481,11 @@ public class SigningServlet extends XMLInputStreamServlet {
             out.println("<p>The site: <b>" + referrer + "</b><br/> is requesting that you transfer <b>" +
                     amount + "</b><br/> units of the asset <b><a href=\"" + asset +
                     "\">" + asset + "</a></b><br/> to the account <b>" + recipient +
-                    "</b></p>");
+                    "</b>");
+            if (!Utility.isEmpty(recipientURL)) {
+                out.print(" <a href=\"" + recipientURL + "\">" + nickname + "</a>(" + recipientURL + ")");
+            }
+            out.println("</p>");
             if (!Utility.isEmpty(comment)) {
                 out.println("<h3>Transaction Comment:</h3>");
                 out.println(comment);
