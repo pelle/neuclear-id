@@ -1,8 +1,15 @@
-/* $Id: CommandLineSigner.java,v 1.9 2003/10/28 23:44:35 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.10 2003/10/29 21:16:27 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.10  2003/10/29 21:16:27  pelle
+ * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
+ * To use it you pass a byte array and an alias. The sign method then returns the signature.
+ * If a Signer needs a passphrase it uses a PassPhraseAgent to present a dialogue box, read it from a command line etc.
+ * This new Signer pattern allows us to use secure signing hardware such as N-Cipher in the future for server applications as well
+ * as SmartCards for end user applications.
+ *
  * Revision 1.9  2003/10/28 23:44:35  pelle
- * The PassPhraseDialogue now works. It simply presents itself as a simple modal dialog box asking for a passphrase.
- * The two SignerStore implementations both use it for the passphrase.
+ * The GuiDialogAgent now works. It simply presents itself as a simple modal dialog box asking for a passphrase.
+ * The two Signer implementations both use it for the passphrase.
  *
  * Revision 1.8  2003/10/25 00:39:54  pelle
  * Fixed SmtpSender it now sends the messages.
@@ -56,7 +63,7 @@
  * The whole API is now very simple.
  *
  * Revision 1.12  2003/02/18 00:06:15  pelle
- * Moved the SignerStore's into xml-sig
+ * Moved the Signer's into xml-sig
  *
  * Revision 1.11  2003/02/16 00:26:18  pelle
  * Changed the hardcoded logger default to pick it up from LogSender
@@ -104,7 +111,7 @@
  *
  * Revision 1.3  2002/10/06 00:39:29  pelle
  * I have now expanded support for different types of Signers.
- * There is now a JCESignerStore which uses a JCE KeyStore for signing.
+ * There is now a JCESigner which uses a JCE KeyStore for signing.
  * I have refactored the SigningServlet a bit, eliminating most of the demo code.
  * This has been moved into DemoSigningServlet.
  * I have expanded the CommandLineSigner, so it now also has an option for specifying a default signing service.
@@ -140,23 +147,24 @@ package org.neuclear.signers.commandline;
 
 import org.apache.commons.cli.*;
 import org.dom4j.Document;
+import org.neuclear.commons.configuration.Configuration;
+import org.neuclear.commons.configuration.ConfigurationException;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neudist.crypto.CryptoTools;
+import org.neudist.crypto.Signer;
 import org.neudist.utils.Utility;
 import org.neudist.xml.XMLException;
 import org.neudist.xml.XMLTools;
 
 import java.io.*;
-import java.security.*;
-import java.security.cert.CertificateException;
 
 /**
  * @author pelleb
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class CommandLineSigner {
-    public CommandLineSigner(String args[]) throws ParseException, NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException {
+    public CommandLineSigner(String args[]) throws ParseException, ConfigurationException {
         CryptoTools.ensureProvider();
 
         options = createOptions();
@@ -164,7 +172,8 @@ public class CommandLineSigner {
 
         cmd = clparser.parse(options, args);
         checkArguments();
-        ks = loadKeyStore();
+//        agent=(PassPhraseAgent)Configuration.getComponent(PassPhraseAgent.class,"neuclear-id");
+        sig = (Signer) Configuration.getComponent(Signer.class, "neuclear-id");
         alias = cmd.getOptionValue("a");
         of = cmd.getOptionValue("o");
     }
@@ -205,21 +214,13 @@ public class CommandLineSigner {
             if (!Utility.isEmpty(alias)) {
                 String password = Utility.denullString(cmd.getOptionValue("p"), cmd.getOptionValue("j")); // If we dont specify a password it defaults to ks password
 
-                KeyPair kp = CryptoTools.getKeyPair(ks, alias, password.toCharArray());
-
-                if (kp == null) {
+                if (sig.canSignFor(alias)) {
                     System.err.println("Key with alias: " + alias + " doesnt exist");
                     System.exit(1);
                 }
-                PrivateKey key = kp.getPrivate();
 
                 System.err.println("Signing by " + alias + " ...");
-                subject.sign(key);
-                System.err.print("Verifying...");
-                if (subject.verifySignature(kp.getPublic()))
-                    System.err.println("ok");
-                else
-                    System.err.println("FAIL");
+                subject.sign(alias, sig);
             }
 
             OutputStream dest = System.out;
@@ -237,16 +238,6 @@ public class CommandLineSigner {
             e.printStackTrace(System.err);
         }
 
-    }
-
-    private KeyStore loadKeyStore() throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
-        String ksf = cmd.getOptionValue("s");
-        String kstype = cmd.getOptionValue("t");
-        String kspassword = cmd.getOptionValue("j");
-        File keystoreFile = new File(Utility.denullString(ksf, keystore));
-        KeyStore ks = KeyStore.getInstance(Utility.denullString(kstype, KeyStore.getDefaultType()));
-        ks.load(new FileInputStream(keystoreFile), Utility.denullString(kspassword).toCharArray());
-        return ks;
     }
 
     protected NamedObjectBuilder build() throws Exception {
@@ -274,11 +265,11 @@ public class CommandLineSigner {
         Options options = new Options();
 
         // add t option
-        options.addOption("s", "keystore", true, "specify KeyStore");
-        options.addOption("t", "keystoretype", true, "specify KeyStore Type");
-        options.addOption("j", "keystorepassword", true, "specify KeyStore Password");
+//        options.addOption("s", "keystore", true, "specify KeyStore");
+//        options.addOption("t", "keystoretype", true, "specify KeyStore Type");
+//        options.addOption("j", "keystorepassword", true, "specify KeyStore Password");
         options.addOption("a", "alias", true, "specify Key Alias in KeyStore");
-        options.addOption("p", "password", true, "specify Alias Password");
+//        options.addOption("p", "password", true, "specify Alias Password");
         options.addOption("o", "outputfile", true, "specify Output File");
 
         getLocalOptions(options);
@@ -294,7 +285,9 @@ public class CommandLineSigner {
     protected CommandLine cmd;
     protected Options options;
     public final static String keystore = System.getProperty("user.home") + "/.keystore";
-    protected final KeyStore ks;
+    protected final Signer sig;
+//    protected final PassPhraseAgent agent;
     protected String alias;
     protected String of;
+
 }

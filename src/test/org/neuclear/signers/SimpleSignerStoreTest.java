@@ -1,7 +1,14 @@
-/* $Id: SimpleSignerStoreTest.java,v 1.4 2003/10/28 23:56:04 pelle Exp $
+/* $Id: SimpleSignerStoreTest.java,v 1.5 2003/10/29 21:16:28 pelle Exp $
  * $Log: SimpleSignerStoreTest.java,v $
+ * Revision 1.5  2003/10/29 21:16:28  pelle
+ * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
+ * To use it you pass a byte array and an alias. The sign method then returns the signature.
+ * If a Signer needs a passphrase it uses a PassPhraseAgent to present a dialogue box, read it from a command line etc.
+ * This new Signer pattern allows us to use secure signing hardware such as N-Cipher in the future for server applications as well
+ * as SmartCards for end user applications.
+ *
  * Revision 1.4  2003/10/28 23:56:04  pelle
- * Fixed the SimpleSignerStore unit test to verify the next functionality of the SignerStore interface.
+ * Fixed the SimpleSigner unit test to verify the next functionality of the Signer interface.
  *
  * Revision 1.3  2003/10/21 22:31:15  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
@@ -22,7 +29,7 @@
  *
  *
  * Revision 1.4  2003/02/18 00:06:15  pelle
- * Moved the SignerStore's into xml-sig
+ * Moved the Signer's into xml-sig
  *
  * Revision 1.3  2003/02/10 22:30:24  pelle
  * Got rid of even further dependencies. In Particular OSCore
@@ -40,7 +47,7 @@
  *
  * Revision 1.2  2002/10/06 00:39:26  pelle
  * I have now expanded support for different types of Signers.
- * There is now a JCESignerStore which uses a JCE KeyStore for signing.
+ * There is now a JCESigner which uses a JCE KeyStore for signing.
  * I have refactored the SigningServlet a bit, eliminating most of the demo code.
  * This has been moved into DemoSigningServlet.
  * I have expanded the CommandLineSigner, so it now also has an option for specifying a default signing service.
@@ -52,7 +59,7 @@
  * So to play with this you must install the webapp on your own local machine.
  *
  * Revision 1.1  2002/09/23 15:09:11  pelle
- * Got the SimpleSignerStore working properly.
+ * Got the SimpleSigner working properly.
  * I couldn't get SealedObjects working with BouncyCastle's Symmetric keys.
  * Don't know what I was doing, so I reimplemented it. Encrypting
  * and decrypting it my self.
@@ -62,11 +69,12 @@ package org.neuclear.signers;
 
 import junit.framework.TestCase;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.configuration.Configuration;
+import org.neuclear.commons.configuration.ConfigurationException;
+import org.neuclear.passphraseagents.PassPhraseAgent;
 import org.neudist.crypto.CryptoException;
 import org.neudist.crypto.CryptoTools;
-import org.neudist.crypto.signerstores.SimpleSignerStore;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -76,10 +84,10 @@ import java.security.SecureRandom;
 
 /**
  * @author pelleb
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SimpleSignerStoreTest extends TestCase {
-    public SimpleSignerStoreTest(String name) throws GeneralSecurityException, NeuClearException {
+    public SimpleSignerStoreTest(String name) throws GeneralSecurityException, NeuClearException, ConfigurationException {
         super(name);
         store = getSignerStoreInstance();
         generateKeys();
@@ -87,9 +95,10 @@ public class SimpleSignerStoreTest extends TestCase {
 
     /**
      */
-    public static SimpleSignerStore getSignerStoreInstance() throws NeuClearException, GeneralSecurityException {
+    public static SimpleSigner getSignerStoreInstance() throws NeuClearException, GeneralSecurityException, ConfigurationException {
 
-        return new SimpleSignerStore(new File("target/tests/keystores"));
+        return new SimpleSigner("target/tests/keystores",
+                (PassPhraseAgent) Configuration.getComponent(PassPhraseAgent.class, "neuclear-id"));
     }
 
 
@@ -138,7 +147,7 @@ public class SimpleSignerStoreTest extends TestCase {
     }
 
 
-    private SimpleSignerStore store;
+    private SimpleSigner store;
     private static KeyPairGenerator kg;
     protected static KeyPair root;
     protected static KeyPair bob;

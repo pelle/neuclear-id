@@ -1,5 +1,12 @@
-/* $Id: IdentityCreator.java,v 1.1 2003/10/25 00:39:54 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.2 2003/10/29 21:16:27 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.2  2003/10/29 21:16:27  pelle
+ * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
+ * To use it you pass a byte array and an alias. The sign method then returns the signature.
+ * If a Signer needs a passphrase it uses a PassPhraseAgent to present a dialogue box, read it from a command line etc.
+ * This new Signer pattern allows us to use secure signing hardware such as N-Cipher in the future for server applications as well
+ * as SmartCards for end user applications.
+ *
  * Revision 1.1  2003/10/25 00:39:54  pelle
  * Fixed SmtpSender it now sends the messages.
  * Refactored CommandLineSigner. Now it simply signs files read from command line. However new class IdentityCreator
@@ -52,7 +59,7 @@
  * The whole API is now very simple.
  *
  * Revision 1.12  2003/02/18 00:06:15  pelle
- * Moved the SignerStore's into xml-sig
+ * Moved the Signer's into xml-sig
  *
  * Revision 1.11  2003/02/16 00:26:18  pelle
  * Changed the hardcoded logger default to pick it up from LogSender
@@ -100,7 +107,7 @@
  *
  * Revision 1.3  2002/10/06 00:39:29  pelle
  * I have now expanded support for different types of Signers.
- * There is now a JCESignerStore which uses a JCE KeyStore for signing.
+ * There is now a JCESigner which uses a JCE KeyStore for signing.
  * I have refactored the SigningServlet a bit, eliminating most of the demo code.
  * This has been moved into DemoSigningServlet.
  * I have expanded the CommandLineSigner, so it now also has an option for specifying a default signing service.
@@ -135,19 +142,21 @@
 package org.neuclear.signers.commandline;
 
 import org.apache.commons.cli.Options;
+import org.neuclear.commons.configuration.Configuration;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.builders.IdentityBuilder;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.LogSender;
+import org.neuclear.signers.PublicKeySource;
+import org.neudist.crypto.CryptoException;
 import org.neudist.utils.Utility;
 
 import java.security.PublicKey;
-import java.security.cert.Certificate;
 
 /**
  * @author pelleb
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(String args[]) throws Exception {
@@ -155,6 +164,8 @@ public class IdentityCreator extends CommandLineSigner {
         identity = cmd.getOptionValue("n");
         of = Utility.denullString(of, "." + NSTools.url2path(identity) + "/root.id");
         alias = Utility.denullString(alias, NSTools.getParentNSURI(identity));
+        pksource = (PublicKeySource) Configuration.getComponent(PublicKeySource.class, "neuclear-id");
+
     }
 
     public NamedObjectBuilder build() throws Exception {
@@ -163,17 +174,11 @@ public class IdentityCreator extends CommandLineSigner {
         String defaultsigner = Utility.denullString(cmd.getOptionValue("i"), "http://localhost:11870/signer");
         String defaultlogger = Utility.denullString(cmd.getOptionValue("l"), LogSender.LOGGER);
         String defaultreceiver = cmd.getOptionValue("b");
-        PublicKey newkid;
-        if (!Utility.isEmpty(allow)) {
-            Certificate cert = ks.getCertificate(allow);
-            if (cert == null) {
-                System.err.println("PublicKey: " + allow + " doesnt exist in key store");
-                System.exit(1);
-            }
-            newkid = cert.getPublicKey();
-        } else
-            newkid = ks.getCertificate(alias).getPublicKey(); //Self Sign
+        final PublicKey newkid = pksource.getPublicKey(allow);
+        if (newkid == null)
+            throw new CryptoException("PublicKey not available for: " + allow);
         return new IdentityBuilder(identity, newkid, defaultstore, defaultsigner, defaultlogger, defaultreceiver);
+
     }
 
     public static void main(String args[]) {
@@ -202,5 +207,6 @@ public class IdentityCreator extends CommandLineSigner {
         options.addOption("b", "defaultreceiver", true, "Identity's default Receiver");
     }
 
-    private String identity;
+    private final String identity;
+    private final PublicKeySource pksource;
 }

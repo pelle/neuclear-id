@@ -1,6 +1,13 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.6 2003/10/21 22:31:13 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.7 2003/10/29 21:16:27 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.7  2003/10/29 21:16:27  pelle
+ * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
+ * To use it you pass a byte array and an alias. The sign method then returns the signature.
+ * If a Signer needs a passphrase it uses a PassPhraseAgent to present a dialogue box, read it from a command line etc.
+ * This new Signer pattern allows us to use secure signing hardware such as N-Cipher in the future for server applications as well
+ * as SmartCards for end user applications.
+ *
  * Revision 1.6  2003/10/21 22:31:13  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
  * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -44,7 +51,7 @@
  * *** empty log message ***
  *
  * Revision 1.6  2003/02/18 00:06:15  pelle
- * Moved the SignerStore's into xml-sig
+ * Moved the Signer's into xml-sig
  *
  * Revision 1.5  2003/02/14 21:10:36  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
@@ -65,7 +72,7 @@
  *
  * Revision 1.1  2002/10/06 00:39:29  pelle
  * I have now expanded support for different types of Signers.
- * There is now a JCESignerStore which uses a JCE KeyStore for signing.
+ * There is now a JCESigner which uses a JCE KeyStore for signing.
  * I have refactored the SigningServlet a bit, eliminating most of the demo code.
  * This has been moved into DemoSigningServlet.
  * I have expanded the CommandLineSigner, so it now also has an option for specifying a default signing service.
@@ -103,7 +110,7 @@
  * Also made the signing webapp look a bit nicer.
  *
  * Revision 1.5  2002/09/23 15:09:18  pelle
- * Got the SimpleSignerStore working properly.
+ * Got the SimpleSigner working properly.
  * I couldn't get SealedObjects working with BouncyCastle's Symmetric keys.
  * Don't know what I was doing, so I reimplemented it. Encrypting
  * and decrypting it my self.
@@ -119,20 +126,7 @@
  */
 package org.neuclear.signers.servlet;
 
-import org.neuclear.id.InvalidIdentityException;
-import org.neuclear.id.NSTools;
-import org.neuclear.id.Identity;
-import org.neudist.crypto.signerstores.SignerStore;
-import org.neudist.crypto.signerstores.SimpleSignerStore;
-import org.neuclear.commons.NeuClearException;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.security.*;
-import java.security.interfaces.RSAPrivateKey;
+import java.security.KeyPairGenerator;
 
 public class DemoSigningServlet extends SigningServlet {
 /*
@@ -158,7 +152,7 @@ public class DemoSigningServlet extends SigningServlet {
         name = NSTools.normalizeNameURI(name);
         System.out.println("NEUDIST: Generating key and Identity for: " + name);
         KeyPair kp = kpg.generateKeyPair();
-        ((SimpleSignerStore) getKeyStore()).addKey(name, newPassword.toCharArray(), kp.getPrivate());
+        ((SimpleSigner) getKeyStore()).addKey(name, newPassword.toCharArray(), kp.getPrivate());
         System.out.println("NEUDIST: Creating Identity");
         Identity ns = new Identity(name, kp.getPublic(), "http://neuclear.org:8080/neudistframework/Store", "http://neuclear.org:8080/neudistframework/Signer", "http://neuclear.org:8080/neudistframework/Logger", "");//TODO Fix these values
 //        id.addTarget(new TargetReference(id,,"store"));
@@ -188,8 +182,8 @@ public class DemoSigningServlet extends SigningServlet {
         }
     }
 
-    protected static SignerStore getKeyStore(File keyStoreFile, Object kspassword) throws GeneralSecurityException, IOException, NeuClearException {
-        return new SimpleSignerStore(keyStoreFile);
+    protected static Signer getKeyStore(File keyStoreFile, Object kspassword) throws GeneralSecurityException, IOException, NeuClearException {
+        return new SimpleSigner(keyStoreFile);
     }
 
 */

@@ -1,6 +1,13 @@
 /*
- * $Id: SigningServlet.java,v 1.6 2003/10/21 22:31:13 pelle Exp $
+ * $Id: SigningServlet.java,v 1.7 2003/10/29 21:16:27 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.7  2003/10/29 21:16:27  pelle
+ * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
+ * To use it you pass a byte array and an alias. The sign method then returns the signature.
+ * If a Signer needs a passphrase it uses a PassPhraseAgent to present a dialogue box, read it from a command line etc.
+ * This new Signer pattern allows us to use secure signing hardware such as N-Cipher in the future for server applications as well
+ * as SmartCards for end user applications.
+ *
  * Revision 1.6  2003/10/21 22:31:13  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
  * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -41,7 +48,7 @@
  * The whole API is now very simple.
  *
  * Revision 1.16  2003/02/18 00:06:15  pelle
- * Moved the SignerStore's into xml-sig
+ * Moved the Signer's into xml-sig
  *
  * Revision 1.15  2003/02/14 21:10:36  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
@@ -81,7 +88,7 @@
  *
  * Revision 1.9  2002/10/06 00:39:29  pelle
  * I have now expanded support for different types of Signers.
- * There is now a JCESignerStore which uses a JCE KeyStore for signing.
+ * There is now a JCESigner which uses a JCE KeyStore for signing.
  * I have refactored the SigningServlet a bit, eliminating most of the demo code.
  * This has been moved into DemoSigningServlet.
  * I have expanded the CommandLineSigner, so it now also has an option for specifying a default signing service.
@@ -119,7 +126,7 @@
  * Also made the signing webapp look a bit nicer.
  *
  * Revision 1.5  2002/09/23 15:09:18  pelle
- * Got the SimpleSignerStore working properly.
+ * Got the SimpleSigner working properly.
  * I couldn't get SealedObjects working with BouncyCastle's Symmetric keys.
  * Don't know what I was doing, so I reimplemented it. Encrypting
  * and decrypting it my self.
@@ -135,37 +142,20 @@
  */
 package org.neuclear.signers.servlet;
 
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.XMLWriter;
-import org.neuclear.id.InvalidIdentityException;
-import org.neuclear.id.NSTools;
+import org.neuclear.commons.configuration.Configuration;
+import org.neuclear.commons.configuration.ConfigurationException;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.receiver.ReceiverServlet;
-import org.neudist.crypto.signerstores.InvalidPassphraseException;
-import org.neudist.crypto.signerstores.JCESignerStore;
-import org.neudist.crypto.signerstores.NonExistingSignerException;
-import org.neudist.crypto.signerstores.SignerStore;
-import org.neuclear.commons.NeuClearException;
+import org.neudist.crypto.Signer;
 import org.neudist.utils.ServletTools;
 import org.neudist.utils.Utility;
-import org.neudist.xml.soap.SOAPException;
-import org.neudist.xml.xmlsec.XMLSecTools;
-import org.neudist.xml.xmlsec.XMLSecurityException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.security.GeneralSecurityException;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
 
 public class SigningServlet extends ReceiverServlet {
     public void init(ServletConfig config) throws ServletException {
@@ -175,43 +165,21 @@ public class SigningServlet extends ReceiverServlet {
         try {
             System.out.println("NEUDIST: Initialising SigningServlet");
             title = Utility.denullString(config.getInitParameter("title").toString(), "NeuDist Signing Service");
-            File keyStoreFile = new File(config.getServletContext().getRealPath(Utility.denullString(config.getInitParameter("keystore"), System.getProperty("user.home") + "/.neuclear/signers.ks")));
-            System.out.println("NEUDIST: Using KeyStore: " + keyStoreFile.getAbsolutePath());
-//           ks=KeyStore.getInstance("JKS");
-//           char password[]=Utility.denullString(config.getInitParameter("keystore.passphrase"),"SuperDuper").toCharArray();
-//           if (!keyStoreFile.exists()) {
-//               System.out.println("NEUDIST: Creating KeyStore ");
-//               ks.load(null,password);
-            if (ks == null) {
-                ks = getKeyStore(keyStoreFile, config.getInitParameter("keystore.password"));
+            if (signer == null) {
+                signer = (Signer) Configuration.getComponent(Signer.class, "neuclear-id");
             }
-//               if (keyStoreFile.getParent()!=null)
-//                    keyStoreFile.getParentFile().mkdirs();
-//               ks.store(new FileOutputStream(keyStoreFile),password);
-//           } else {
-//               System.out.println("NEUDIST: Loading KeyStore: ");
-//               ks.load(new FileInputStream(keyStoreFile),password);
-//           }
             System.out.println("NEUDIST: Finished SigningServlet Init ");
 
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace(System.out);
-        } catch (IOException e) {
-            e.printStackTrace(System.out);
-        } catch (NeuClearException e) {
-            e.printStackTrace(System.out);
+        } catch (ConfigurationException e) {
+            e.printStackTrace();
         }
 
 
     }
 
-    protected static SignerStore getKeyStore(File keyStoreFile, String kspassword) throws GeneralSecurityException, IOException, NeuClearException {
-        return new JCESignerStore(keyStoreFile, kspassword.toCharArray());
-    }
 
-
-    protected static final SignerStore getKeyStore() {
-        return ks;
+    protected static final Signer getSigner() {
+        return signer;
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -338,7 +306,7 @@ public class SigningServlet extends ReceiverServlet {
         if (!obj.isSigned()) {
             try {
                 String parentName = NSTools.getParentNSURI(obj.getName());
-                PrivateKey pk = ks.getKey(parentName, passphrase);
+                PrivateKey pk = signer.getKey(parentName, passphrase);
                 if (pk == null)
                     throw new NonExistingSignerException("Signing Service doesn't contain Signing keys for: " + parentName);
                 obj.sign(pk);
@@ -356,8 +324,7 @@ public class SigningServlet extends ReceiverServlet {
 
 */
     protected javax.servlet.ServletContext context;
-    private static SignerStore ks;
-    private KeyPairGenerator kpg;
+    private static Signer signer;
 
     private String title;
 }

@@ -1,6 +1,13 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.6 2003/10/21 22:31:15 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.7 2003/10/29 21:16:28 pelle Exp $
   $Log: AbstractStoreTest.java,v $
+  Revision 1.7  2003/10/29 21:16:28  pelle
+  Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
+  To use it you pass a byte array and an alias. The sign method then returns the signature.
+  If a Signer needs a passphrase it uses a PassPhraseAgent to present a dialogue box, read it from a command line etc.
+  This new Signer pattern allows us to use secure signing hardware such as N-Cipher in the future for server applications as well
+  as SmartCards for end user applications.
+
   Revision 1.6  2003/10/21 22:31:15  pelle
   Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
   Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -109,9 +116,8 @@
 package org.neuclear.store;
 
 import junit.framework.TestCase;
-import org.neuclear.id.InvalidIdentityException;
-import org.neuclear.id.builders.IdentityBuilder;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.id.InvalidIdentityException;
 import org.neudist.xml.xmlsec.XMLSecurityException;
 
 import java.security.GeneralSecurityException;
@@ -154,15 +160,15 @@ public abstract class AbstractStoreTest extends TestCase {
 
 
     public void testStore() throws NeuClearException, InvalidIdentityException, XMLSecurityException {
-        System.out.println("\nTesting " + this.getClass().getName());
-        System.out.println("Storing " + rootName);
-        store.receive(new IdentityBuilder(rootName, root.getPrivate(), root.getPublic()));
-        System.out.println("Storing " + bobName);
-        store.receive(new IdentityBuilder(bobName, root.getPrivate(), bob.getPublic()));
-        System.out.println("Storing " + bobAliceName);
-        store.receive(new IdentityBuilder(bobAliceName, bob.getPrivate(), alice.getPublic()));
-        System.out.println("Storing " + eveName);
-        store.receive(new IdentityBuilder(eveName, root.getPrivate(), eve.getPublic()));
+//        System.out.println("\nTesting " + this.getClass().getName());
+//        System.out.println("Storing " + rootName);
+//        store.receive(new IdentityBuilder(rootName, root.getPrivate(), root.getPublic()));
+//        System.out.println("Storing " + bobName);
+//        store.receive(new IdentityBuilder(bobName, root.getPrivate(), bob.getPublic()));
+//        System.out.println("Storing " + bobAliceName);
+//        store.receive(new IdentityBuilder(bobAliceName, bob.getPrivate(), alice.getPublic()));
+//        System.out.println("Storing " + eveName);
+//        store.receive(new IdentityBuilder(eveName, root.getPrivate(), eve.getPublic()));
 /* TODO: To complete this part I need to have a parent testkey in a keystore that is signed by root.
                 System.out.println("Fetching "+rootName);
                 SignedNamedObject nobj1=store.fetch(rootName);

@@ -1,6 +1,13 @@
 /*
- * $Id: IdentityBuilder.java,v 1.4 2003/10/21 22:31:12 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.5 2003/10/29 21:16:27 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.5  2003/10/29 21:16:27  pelle
+ * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
+ * To use it you pass a byte array and an alias. The sign method then returns the signature.
+ * If a Signer needs a passphrase it uses a PassPhraseAgent to present a dialogue box, read it from a command line etc.
+ * This new Signer pattern allows us to use secure signing hardware such as N-Cipher in the future for server applications as well
+ * as SmartCards for end user applications.
+ *
  * Revision 1.4  2003/10/21 22:31:12  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
  * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -27,7 +34,7 @@
  * The whole API is now very simple.
  *
  * Revision 1.10  2003/02/18 00:06:15  pelle
- * Moved the SignerStore's into xml-sig
+ * Moved the Signer's into xml-sig
  *
  * Revision 1.9  2003/02/16 00:22:59  pelle
  * LogSender now works and there is a corresponding server side cgi script to do the logging in
@@ -150,13 +157,11 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.neuclear.id.Identity;
 import org.neuclear.id.NSTools;
-import org.neuclear.commons.NeuClearException;
 import org.neudist.utils.Utility;
+import org.neudist.xml.XMLException;
 import org.neudist.xml.xmlsec.XMLSecTools;
 import org.neudist.xml.xmlsec.XMLSecurityException;
-import org.neudist.xml.XMLException;
 
-import java.security.PrivateKey;
 import java.security.PublicKey;
 
 public final class IdentityBuilder extends NamedObjectBuilder {
@@ -165,13 +170,14 @@ public final class IdentityBuilder extends NamedObjectBuilder {
     /**
      * This constructor should be used by subclasses of NameSpace. It creates a Standard NameSpace document, but doesn't sign it.
      * The signing should be done as the last step of the constructor of the subclass.
-     * @param name The Name of NameSpace
-     * @param allow PublicKey allowed to sign in here
+     * 
+     * @param name       The Name of NameSpace
+     * @param allow      PublicKey allowed to sign in here
      * @param repository URL of Default Store for NameSpace. (Note. A NameSpace object is stored in the default repository of it's parent namespace)
-     * @param signer URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
-     * @param receiver URL of default receiver for namespace
+     * @param signer     URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
+     * @param receiver   URL of default receiver for namespace
      */
-    public IdentityBuilder(String name, PublicKey allow, String repository, String signer, String logger, String receiver)  {
+    public IdentityBuilder(String name, PublicKey allow, String repository, String signer, String logger, String receiver) {
         super(name, "Identity");
 
         Element root = getElement();
@@ -199,10 +205,6 @@ public final class IdentityBuilder extends NamedObjectBuilder {
         this(name, allow, null);
     }
 
-    public IdentityBuilder(String name, PrivateKey signer, PublicKey allow) throws XMLSecurityException {
-        this(name, allow);
-        sign(signer);
-    }
 
     public String getTagName() {
         return "Identity";

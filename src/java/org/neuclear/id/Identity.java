@@ -1,6 +1,13 @@
 /*
- * $Id: Identity.java,v 1.9 2003/10/25 00:39:54 pelle Exp $
+ * $Id: Identity.java,v 1.10 2003/10/29 21:16:27 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.10  2003/10/29 21:16:27  pelle
+ * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
+ * To use it you pass a byte array and an alias. The sign method then returns the signature.
+ * If a Signer needs a passphrase it uses a PassPhraseAgent to present a dialogue box, read it from a command line etc.
+ * This new Signer pattern allows us to use secure signing hardware such as N-Cipher in the future for server applications as well
+ * as SmartCards for end user applications.
+ *
  * Revision 1.9  2003/10/25 00:39:54  pelle
  * Fixed SmtpSender it now sends the messages.
  * Refactored CommandLineSigner. Now it simply signs files read from command line. However new class IdentityCreator
@@ -66,7 +73,7 @@
  * The whole API is now very simple.
  *
  * Revision 1.10  2003/02/18 00:06:15  pelle
- * Moved the SignerStore's into xml-sig
+ * Moved the Signer's into xml-sig
  *
  * Revision 1.9  2003/02/16 00:22:59  pelle
  * LogSender now works and there is a corresponding server side cgi script to do the logging in
