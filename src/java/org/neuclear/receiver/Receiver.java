@@ -6,8 +6,17 @@ package org.neuclear.receiver;
  * Date: Oct 10, 2002
  * Time: 11:24:59 PM
  * To change this template use Options | File Templates.
- * $Id: Receiver.java,v 1.5 2003/09/26 23:53:10 pelle Exp $
+ * $Id: Receiver.java,v 1.6 2003/10/03 23:48:51 pelle Exp $
  * $Log: Receiver.java,v $
+ * Revision 1.6  2003/10/03 23:48:51  pelle
+ * Did various security related updates in the pay package with regards to immutability of fields etc.
+ * PaymentReceiver should now be operational. Real testing needs to be done including in particular setting the
+ * private key of the Receiver.
+ * A new class TransferGlobals contains usefull settings for making life easier in the other contract based classes.
+ * TransferContract the signed contract is functional and has a matching TransferRequestBuilder class for programmatically creating
+ * TransferRequests for signing.
+ * TransferReceiptBuilder has been created for use by Payment processors. It is used in the PaymentReceiver.
+ *
  * Revision 1.5  2003/09/26 23:53:10  pelle
  * Changes mainly in receiver and related fun.
  * First real neuclear stuff in the payment package. Added TransferContract and PaymentReceiver.
@@ -60,5 +69,5 @@ public interface Receiver {
      * @param obj
      * @throws UnsupportedTransaction
      */
-    void receive(SignedNamedObject obj) throws UnsupportedTransaction;
+    org.neudist.xml.ElementProxy receive(SignedNamedObject obj) throws UnsupportedTransaction;
 }
