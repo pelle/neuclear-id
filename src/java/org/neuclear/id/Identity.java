@@ -1,6 +1,13 @@
 /*
- * $Id: Identity.java,v 1.26 2003/12/19 18:03:34 pelle Exp $
+ * $Id: Identity.java,v 1.27 2004/01/07 23:12:20 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.27  2004/01/07 23:12:20  pelle
+ * XMLSig now has various added features:
+ * -  KeyInfo supports X509v3 (untested)
+ * -  KeyInfo supports KeyName
+ * -  When creating a XMLSignature and signing it with a Signer, it adds the alias to the KeyName
+ * Added KeyResolver interface and KeyResolverFactory Class. At the moment no implementations.
+ *
  * Revision 1.26  2003/12/19 18:03:34  pelle
  * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
  * - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -503,7 +510,7 @@ public class Identity extends SignedNamedObject implements Principal {
             final String logger = elem.attributeValue(createNEUIDQName("logger"));
             final String receiver = elem.attributeValue(createNEUIDQName("receiver"));
 
-            final Element allowElement = InvalidNamedObjectException.assertContainsElementQName(core,elem,createNEUIDQName("allow"));
+            final Element allowElement = InvalidNamedObjectException.assertContainsElementQName(core,elem,createNEUIDQName("Allow"));
             try {
                 final KeyInfo ki = new KeyInfo(InvalidNamedObjectException.assertContainsElementQName(allowElement, XMLSecTools.createQName("KeyInfo")));
                 final PublicKey pub = ki.getPublicKey();

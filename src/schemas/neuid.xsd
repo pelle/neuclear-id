@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- By Pelle Braendgaard (Antilles Software Ventures SA) -->
-<!--$Id: neuid.xsd,v 1.2 2004/01/07 16:16:02 pelle Exp $
+<!--$Id: neuid.xsd,v 1.3 2004/01/07 23:12:20 pelle Exp $
 $Log: neuid.xsd,v $
+Revision 1.3  2004/01/07 23:12:20  pelle
+XMLSig now has various added features:
+-  KeyInfo supports X509v3 (untested)
+-  KeyInfo supports KeyName
+-  When creating a XMLSignature and signing it with a Signer, it adds the alias to the KeyName
+Added KeyResolver interface and KeyResolverFactory Class. At the moment no implementations.
+
 Revision 1.2  2004/01/07 16:16:02  pelle
 I have updated all the current schemas, cleaned out the defunct ones and "completed"
 the xfer and exch schemas.
@@ -11,12 +18,14 @@ Started restructuring the original xml schemas.
 Updated the Exchange and transfer orders.
 
 -->
-<xs:schema targetNamespace="http://neuclear.org/neu/neuid.xsd" xmlns:nsdl="http://neuclear.org/neu/neuid.xsd"
+<xs:schema targetNamespace="http://neuclear.org/neu/neuid.xsd"
+    xmlns:id="http://neuclear.org/neu/neuid.xsd"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
-    xmlns="http://neuclear.org/neu/neuid.xsd" elementFormDefault="qualified" version="0.9" id="neuid">
-    <xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd"/>
+    xmlns="http://neuclear.org/neu/neuid.xsd"
+    elementFormDefault="qualified" version="0.9" id="id">
 
+    <xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd"/>
 
     <xs:simpleType name="sha1">
         <xs:restriction base="xs:string">
@@ -24,15 +33,22 @@ Updated the Exchange and transfer orders.
             <xs:whiteSpace value="collapse"/>
         </xs:restriction>
     </xs:simpleType>
+
     <xs:simpleType name="neuri">
         <xs:restriction base="xs:string">
-            <xs:pattern value="^neu:([\w]{1,6}:)?//(([\w][\w.-]*)@)?[\w]([\w.-]*[\w])?(/[\w][\w-]*)*(![\w][\w.-]*)?$"/>
+            <xs:pattern value="neu:([\w]{1,6}:)?//(([\w][\w.-]*)@)?[\w]([\w.-]*[\w])?(/[\w][\w-]*)*(![\w][\w.-]*)?"/>
             <xs:whiteSpace value="collapse"/>
         </xs:restriction>
     </xs:simpleType>
+
     <xs:simpleType name="NamedObjectReference">
         <xs:union memberTypes="neuri sha1"/>
     </xs:simpleType>
+
+    <xs:attributeGroup name="NamedObject.attributes" >
+        <xs:attribute name="name" type="neuri"/>
+        <xs:attribute name="timestamp" type="xs:dateTime" />
+    </xs:attributeGroup>
 
 	<xs:complexType name="NamedObjectType">
 		<xs:sequence>
@@ -41,14 +57,14 @@ Updated the Exchange and transfer orders.
             <xs:element name="Targets" type="TargetList"/>
 			<xs:element ref="ds:Signature" maxOccurs="1" minOccurs="1"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="neuri"/>
-        <xs:attribute name="timestamp" type="xs:dateTime" />
+        <xs:attributeGroup ref="NamedObject.attributes"/>
 	</xs:complexType>
 
 	<xs:complexType name="TargetType">
         <xs:attribute name="href" type="xs:anyURI"/>
         <xs:attribute name="type" type="xs:string"/>
 	</xs:complexType>
+
     <xs:element name="Target" type= "TargetType"/>
 	<xs:complexType name="KeyHolder">
 		<xs:sequence>
@@ -57,36 +73,36 @@ Updated the Exchange and transfer orders.
         <xs:attribute name="ns" type="xs:string"/>
 	</xs:complexType>
 
+    <xs:attributeGroup name="Identity.attributes">
+        <!--
+        The Repository for this NameSpace
+        -->
+        <xs:attribute name="repository" type="xs:anyURI"/>
+        <!--
+        The Receiver for this NameSpace
+        -->
+        <xs:attribute name="receiver" type="xs:anyURI"/>
+        <!--
+        The store for this NameSpace
+        -->
+        <xs:attribute name="store" type="xs:anyURI"/>
+        <!-- The interactive signer for this NameSpace.
+        If Empty the NameSpace doesn't allow interactive signing.
+        -->
+        <xs:attribute name="signer" type="xs:anyURI"/>
+        <!--
+        The Logging Service for this NameSpace
+        -->
+        <xs:attribute name="logger" type="xs:anyURI"/>
+    </xs:attributeGroup>
+
 	<xs:complexType name="IdentityType">
 		<xs:complexContent>
 			<xs:extension base="NamedObjectType">
 				<xs:sequence>
 					<xs:element name="Allow" type="KeyHolder" maxOccurs="unbounded"/>
 				</xs:sequence>
-                <!--
-                   Default WebServices for this namespace. These can be specified using either HTTP to a SOAP web port or
-                   given a neu://etc/etc... URI they can read the definition from a public definition.
-                -->
-                <!--
-                The Repository for this NameSpace
-                -->
-                <xs:attribute name="repository" type="xs:anyURI"/>
-                <!--
-                The Receiver for this NameSpace
-                -->
-                <xs:attribute name="receiver" type="xs:anyURI"/>
-                <!--
-                The store for this NameSpace
-                -->
-                <xs:attribute name="store" type="xs:anyURI"/>
-                <!-- The interactive signer for this NameSpace.
-                If Empty the NameSpace doesn't allow interactive signing.
-                -->
-                <xs:attribute name="signer" type="xs:anyURI"/>
-                <!--
-                The Logging Service for this NameSpace
-                -->
-                <xs:attribute name="logger" type="xs:anyURI"/>
+                <xs:attributeGroup ref="Identity.attributes"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

@@ -1,6 +1,13 @@
 /*
- * $Id: IdentityBuilder.java,v 1.16 2003/12/19 18:03:34 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.17 2004/01/07 23:12:20 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.17  2004/01/07 23:12:20  pelle
+ * XMLSig now has various added features:
+ * -  KeyInfo supports X509v3 (untested)
+ * -  KeyInfo supports KeyName
+ * -  When creating a XMLSignature and signing it with a Signer, it adds the alias to the KeyName
+ * Added KeyResolver interface and KeyResolverFactory Class. At the moment no implementations.
+ *
  * Revision 1.16  2003/12/19 18:03:34  pelle
  * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
  * - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -279,7 +286,7 @@ public class IdentityBuilder extends NamedObjectBuilder {
     }
     private void setPublicKey(final PublicKey allow) {
         if (allow != null) {
-            final QName allowName = DocumentHelper.createQName("allow", NSTools.NS_NEUID);
+            final QName allowName = DocumentHelper.createQName("Allow", NSTools.NS_NEUID);
             Element pub=getElement().element(allowName);
             if (pub==null)
                 pub = getElement().addElement(allowName);

@@ -1,6 +1,13 @@
 /*
- * $Id: NSTools.java,v 1.24 2003/12/19 18:03:34 pelle Exp $
+ * $Id: NSTools.java,v 1.25 2004/01/07 23:12:20 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.25  2004/01/07 23:12:20  pelle
+ * XMLSig now has various added features:
+ * -  KeyInfo supports X509v3 (untested)
+ * -  KeyInfo supports KeyName
+ * -  When creating a XMLSignature and signing it with a Signer, it adds the alias to the KeyName
+ * Added KeyResolver interface and KeyResolverFactory Class. At the moment no implementations.
+ *
  * Revision 1.24  2003/12/19 18:03:34  pelle
  * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
  * - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -442,9 +449,8 @@ public final class NSTools {
     private static final Pattern HTTP_SCHEME = Pattern.compile(HTTP_SCHEME_EX);
 
     private static final String NEUID_URI = "http://neuclear.org/neu/neuid";
-    public static final Namespace NS_NEUID = DocumentHelper.createNamespace("neuid", NEUID_URI);
-
-    public static final String NEUID_PREFIX = "neuid:";
+    public static final String NEUID_PREFIX = "id";
+    public static final Namespace NS_NEUID = DocumentHelper.createNamespace(NEUID_PREFIX, NEUID_URI);
 
     private static final String SCHEME_PREFIX = "([\\w]{1,6}:)?";
     private static final String VALID_TOKEN = "[\\w][\\w.-]*";
