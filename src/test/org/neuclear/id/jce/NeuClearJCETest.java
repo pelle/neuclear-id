@@ -1,21 +1,19 @@
 package org.neuclear.id.jce;
 
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.crypto.passphraseagents.AlwaysTheSamePassphraseAgent;
 import org.neuclear.commons.crypto.signers.JCESigner;
-import org.neuclear.commons.crypto.CryptoException;
-import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.id.Identity;
 import org.neuclear.id.InvalidNamedObjectException;
-import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.id.builders.IdentityBuilder;
 import org.neuclear.tests.AbstractSigningTest;
 import org.neuclear.xml.XMLException;
 
-import java.io.IOException;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -39,8 +37,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearJCETest.java,v 1.10 2003/12/19 00:31:31 pelle Exp $
+$Id: NeuClearJCETest.java,v 1.11 2004/01/19 17:55:00 pelle Exp $
 $Log: NeuClearJCETest.java,v $
+Revision 1.11  2004/01/19 17:55:00  pelle
+Updated the NeuClear ID naming scheme to support various levels of semantics
+
 Revision 1.10  2003/12/19 00:31:31  pelle
 Lots of usability changes through out all the passphrase agents and end user tools.
 

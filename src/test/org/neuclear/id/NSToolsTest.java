@@ -1,6 +1,9 @@
 /*
-  $Id: NSToolsTest.java,v 1.17 2004/01/15 00:02:08 pelle Exp $
+  $Id: NSToolsTest.java,v 1.18 2004/01/19 17:55:00 pelle Exp $
   $Log: NSToolsTest.java,v $
+  Revision 1.18  2004/01/19 17:55:00  pelle
+  Updated the NeuClear ID naming scheme to support various levels of semantics
+
   Revision 1.17  2004/01/15 00:02:08  pelle
   Problem fixed with Enveloping signatures.
 
@@ -159,6 +162,13 @@ public final class NSToolsTest extends TestCase {
     private static void assertInvalidName(final String name) throws NeuClearException {
         assertTrue("Should be invalid='" + name + "'", !NSTools.isValidName(name));
     }
+    private static void assertValidTransaction(final String name) throws NeuClearException {
+        assertTrue("Should be valid='" + name + "'", NSTools.isValidTransactionName(name));
+    }
+
+    private static void assertInvalidTransaction(final String name) throws NeuClearException {
+        assertTrue("Should be invalid='" + name + "'", !NSTools.isValidTransactionName(name));
+    }
 
     public final void testValidName() throws NeuClearException {
         assertValidName("neu://");
@@ -172,13 +182,11 @@ public final class NSToolsTest extends TestCase {
         assertValidName("neu://pelle@neuclear.org/abcdefg232Avc");
 
         assertValidName("neu://help!aasfdasdf3_.-243");
-        assertValidName("neu://help/abcdefg232Avc!aasfdasdf3_.-243");
 
         assertValidName("neu://pelle@help!aasfdasdf3_.-243");
-        assertValidName("neu://pelle@help/abcdefg232Avc!aasfdasdf3_.-243");
 
         assertValidName("neu://pelle@neuclear.org!aasfdasdf3_.-243");
-        assertValidName("neu://pelle@neuclear.org/abcdefg232Avc!aasfdasdf3_.-243");
+        assertValidName("sha1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
         assertInvalidName("neu:/");
         assertInvalidName("neu://pelle@");
@@ -202,6 +210,16 @@ public final class NSToolsTest extends TestCase {
         assertInvalidName("");
         assertInvalidName("neu://abcde%01&^");
         assertInvalidName("/help/test@test/");
+    }
+
+    public final void testValidTransaction() throws NeuClearException {
+        assertValidTransaction("sha1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!7777774l77777oab7777775a7777777t");
+        assertValidTransaction("pet:bill!7777774l77777oab7777775a7777777t");
+        assertValidTransaction("neu://heybob!7777774l77777oab7777775a7777777t");
+        assertInvalidTransaction("sha1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!shoes");
+        assertInvalidTransaction("pet:bill!7777774l77777oab7777775a7777777t3");
+        assertInvalidTransaction("neu://heybob!7777774l77777oab7777775a77771t");
+
     }
 
     public static void testNormalize() throws NeuClearException {

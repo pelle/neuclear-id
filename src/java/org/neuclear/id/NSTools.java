@@ -1,6 +1,9 @@
 /*
- * $Id: NSTools.java,v 1.26 2004/01/09 16:34:40 pelle Exp $
+ * $Id: NSTools.java,v 1.27 2004/01/19 17:54:59 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.27  2004/01/19 17:54:59  pelle
+ * Updated the NeuClear ID naming scheme to support various levels of semantics
+ *
  * Revision 1.26  2004/01/09 16:34:40  pelle
  * changed use of base36 encoding to base32 to ensure compatibility with other schemes.
  *
@@ -227,7 +230,7 @@ public final class NSTools {
     public static String normalizeNameURI(String name) throws InvalidNamedObjectException {
         if (name == null)
             return "neu://";
-        if (!name.startsWith("neu://"))
+        if (!name.startsWith("neu:"))
             name = "neu:/" + name;
         if (!isValidName(name))
             throw new InvalidNamedObjectException("Name: '" + name + "' is not valid");
@@ -271,6 +274,12 @@ public final class NSTools {
      * @return boolean
      */
     public static boolean isValidName(final String name) {
+        if (Utility.isEmpty(name))
+            return false;
+        final Matcher matcher = VALID.matcher(name);
+        return (matcher.matches());
+    }
+    public static boolean isValidTransactionName(final String name) {
         if (Utility.isEmpty(name))
             return false;
         final Matcher matcher = VALID.matcher(name);
@@ -460,11 +469,17 @@ public final class NSTools {
     private static final String VALID_USER_TOKEN = "(([\\w][\\w.-]*)@)?";
     private static final String VALID_TOP_TOKEN = VALID_USER_TOKEN + "[\\w]([\\w.-]*[\\w])?";
     private static final String VALID_SUB_TOKEN = "(\\/[\\w][\\w-]*)*";
-    private static final String VALID_TRAN_TOKEN = "(\\![\\w][\\w.-]*)?";
-    private static final String VALID_ID = "^neu:" + SCHEME_PREFIX + "\\/\\/(" + VALID_TOP_TOKEN +
-            VALID_SUB_TOKEN + VALID_TRAN_TOKEN + ")?$";
+    private static final String SHA1="[a-zA-Z2-7]{32}";
+    private static final String VALID_TRAN_TOKEN = "!"+SHA1+"$";
+    private static final String VALID_SHA1ID="^sha1:"+SHA1;
 
+    private static final String VALID_PETNAME="pet:"+VALID_TOKEN+VALID_TRAN_TOKEN;
+    private static final String VALID_NEU_ID = "neu:\\/\\/(" + VALID_TOP_TOKEN + VALID_SUB_TOKEN+")?";
+    private static final String VALID_ID="^"+VALID_SHA1ID+"|"+VALID_NEU_ID+"|"+VALID_PETNAME+"$";
+
+    private static final String VALID_XACT="^"+VALID_SHA1ID+"|"+VALID_NEU_ID+"|"+VALID_PETNAME+VALID_TRAN_TOKEN+"$";
     private static final Pattern VALID = Pattern.compile(VALID_ID);
+    private static final Pattern VALIDX = Pattern.compile(VALID_XACT);
 
     private static final String STRIP_URI_ARROBA_EX = "neu://((" + VALID_TOKEN + ")@)?(" + VALID_TOKEN + ")?(" + VALID_SUB_TOKEN + VALID_TRAN_TOKEN + ")$";
 

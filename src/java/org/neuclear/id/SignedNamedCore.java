@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedCore.java,v 1.15 2004/01/18 21:20:29 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.16 2004/01/19 17:54:59 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.16  2004/01/19 17:54:59  pelle
+ * Updated the NeuClear ID naming scheme to support various levels of semantics
+ *
  * Revision 1.15  2004/01/18 21:20:29  pelle
  * Created Base32 encoder that now fully complies with Tyler's spec.
  *
@@ -267,6 +270,7 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.neuclear.commons.LowLevelException;
 import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.commons.crypto.CryptoException;
 import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.xml.xmlsec.*;
@@ -345,6 +349,12 @@ public final class SignedNamedCore {
      * @throws InvalidNamedObjectException
      */
     public final static SignedNamedCore read(final Element elem) throws InvalidNamedObjectException, NameResolutionException {
+        try {
+            return readUnnamed(elem);
+        } catch (XMLSecurityException e) {
+            throw new InvalidNamedObjectException("Failed Verification");
+        }
+/*
         final String name = getSignatoryName(elem);
         try {
             if (name==null){ // We have an unnamed object
@@ -361,7 +371,7 @@ public final class SignedNamedCore {
                 final KeyInfo ki = new KeyInfo(InvalidNamedObjectException.assertContainsElementQName(allowElement, XMLSecTools.createQName("KeyInfo")));
                 publicKey = ki.getPublicKey();
             }
-            if (XMLSecTools.verifySignature(elem, publicKey)) {
+            if (XMLSecTools.verifySignature(elem)) {
                 final Timestamp timestamp = TimeTools.parseTimeStamp(InvalidNamedObjectException.assertAttributeQName(elem,createQName("timestamp")));
                 return new SignedNamedCore(name, signatory, timestamp, encodeElement(elem));
             } else
@@ -370,7 +380,10 @@ public final class SignedNamedCore {
             throw new InvalidNamedObjectException(name);
         } catch (ParseException e) {
             throw new InvalidNamedObjectException(name,"invalid timestamp");
+        } catch (CryptoException e) {
+             throw new InvalidNamedObjectException(name,"invalid timestamp");
         }
+*/
     }
 
     private static String encodeElement(final Element elem) {

@@ -1,11 +1,9 @@
 package org.neuclear.id;
 
-import org.neuclear.tests.AbstractSigningTest;
-import org.neuclear.tests.AbstractObjectCreationTest;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.builders.SignedMessageBuilder;
 import org.neuclear.id.builders.NamedObjectBuilder;
-import org.neuclear.xml.XMLException;
+import org.neuclear.id.builders.SignedMessageBuilder;
+import org.neuclear.tests.AbstractObjectCreationTest;
 
 import java.security.GeneralSecurityException;
 

@@ -11,10 +11,7 @@ import org.neuclear.commons.time.TimeTools;
 import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
-import org.dom4j.QName;
-import org.dom4j.Namespace;
-import org.dom4j.Element;
-import org.dom4j.DocumentHelper;
+import org.dom4j.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,25 +23,33 @@ import org.dom4j.DocumentHelper;
 public class Builder extends SignedElement {
     public Builder(final QName qname) {
         super(qname);
+        createDocument();
     }
 
     public Builder(final String name, final Namespace ns) {
         super(name, ns);
+        createDocument();
     }
 
     public Builder(final Element elem) throws XMLSecurityException {
         super(elem);
-    }
+        createDocument();    }
 
     public Builder(final String name, final String prefix, final String nsURI) {
         super(name, prefix, nsURI);
+        createDocument();
     }
 
     final public SignedNamedObject convert() throws InvalidNamedObjectException, NameResolutionException{
 
         return VerifyingReader.getInstance().read(getElement());
     }
-
+    private void createDocument() {
+        final Element elem = getElement();
+        if (elem.getDocument() == null) {
+            final Document doc = DocumentHelper.createDocument(elem);
+        }
+    }
     /**
      * Sign NamedObject using given PrivateKey. This also adds a timestamp to the root element prior to signing
      */

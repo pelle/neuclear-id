@@ -1,6 +1,9 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.24 2004/01/13 23:38:26 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.25 2004/01/19 17:55:00 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.25  2004/01/19 17:55:00  pelle
+ * Updated the NeuClear ID naming scheme to support various levels of semantics
+ *
  * Revision 1.24  2004/01/13 23:38:26  pelle
  * Refactoring parts of the core of XMLSignature. There shouldnt be any real API changes.
  *
@@ -252,21 +255,21 @@ public class NamedObjectBuilder extends Builder implements  Cloneable {
     }
 */
 
+/*
     protected NamedObjectBuilder(final String name, final String tagName, final Namespace ns) throws InvalidNamedObjectException {
         super(tagName, ns);
         createDocument();
         setName(name);
     }
+*/
 
     protected NamedObjectBuilder(final String name, final String tagName) throws InvalidNamedObjectException {
         super(tagName, NSTools.NS_NEUID);
-        createDocument();
         setName(name);
     }
 
     protected NamedObjectBuilder(final String name, final QName qname) throws InvalidNamedObjectException {
         super(qname);
-        createDocument();
         setName(name);
     }
 
@@ -343,12 +346,7 @@ public class NamedObjectBuilder extends Builder implements  Cloneable {
         return DocumentHelper.createQName(name, NSTools.NS_NEUID);
     }
 
-    private void createDocument() {
-        final Element elem = getElement();
-        if (elem.getDocument() == null) {
-            final Document doc = DocumentHelper.createDocument(elem);
-        }
-    }
+
 
 
     /**
