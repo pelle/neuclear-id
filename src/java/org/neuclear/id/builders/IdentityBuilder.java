@@ -1,6 +1,9 @@
 /*
- * $Id: IdentityBuilder.java,v 1.11 2003/12/11 16:16:14 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.12 2003/12/11 16:29:26 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.12  2003/12/11 16:29:26  pelle
+ * Updated various builders to use the new helper methods in AbstractElementProxy hopefully making them more readable.
+ *
  * Revision 1.11  2003/12/11 16:16:14  pelle
  * Some changes to make the xml a bit more readable.
  * Also added some helper methods in AbstractElementProxy to make it easier to build objects.
@@ -225,13 +228,13 @@ public class IdentityBuilder extends NamedObjectBuilder {
         final Element root = getElement();
         addLineBreak();
         // We have meaningful defaults for the following two
-        root.addAttribute(DocumentHelper.createQName("repository", NSTools.NS_NEUID), repository);
-        root.addAttribute(DocumentHelper.createQName("logger", NSTools.NS_NEUID), receiver);
+        createNEUIDAttribute("repository", repository);
+        createNEUIDAttribute("logger", receiver);
         if (!Utility.isEmpty(signer))
-            root.addAttribute(DocumentHelper.createQName("signer", NSTools.NS_NEUID), signer);
+            createNEUIDAttribute("signer",signer);
 
         if (!Utility.isEmpty(receiver))
-            root.addAttribute(DocumentHelper.createQName("receiver", NSTools.NS_NEUID), receiver);
+            createNEUIDAttribute("receiver",receiver);
 
         if (allow != null) {
             final QName allowName = DocumentHelper.createQName("allow", NSTools.NS_NEUID);

@@ -25,8 +25,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestBuilder.java,v 1.5 2003/12/10 23:58:51 pelle Exp $
+$Id: SignatureRequestBuilder.java,v 1.6 2003/12/11 16:29:26 pelle Exp $
 $Log: SignatureRequestBuilder.java,v $
+Revision 1.6  2003/12/11 16:29:26  pelle
+Updated various builders to use the new helper methods in AbstractElementProxy hopefully making them more readable.
+
 Revision 1.5  2003/12/10 23:58:51  pelle
 Did some cleaning up in the builders
 Fixed some stuff in IdentityCreator
@@ -67,11 +70,11 @@ Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to 
 public final class SignatureRequestBuilder extends NamedObjectBuilder {
     public SignatureRequestBuilder(final String requestor, final String userid, final NamedObjectBuilder unsigned, final String description) throws NeuClearException {
         super(NSTools.createUniqueTransactionID(requestor, userid), SignatureRequest.SIGREQUEST_TAG);
-        final Element unsignedElem = getElement().addElement(DocumentHelper.createQName("Unsigned", NSTools.NS_NEUID));
+        final Element unsignedElem = addElement("Unsigned");
         unsignedElem.add(unsigned.getElement());
-        getElement().addAttribute(DocumentHelper.createQName("userid", NSTools.NS_NEUID), userid);
+        createAttribute("userid",  userid);
         if (!Utility.isEmpty(description))
-            getElement().addElement(DocumentHelper.createQName("Description")).setText(description);
+            addElement("Description").setText(description);
 
     }
 

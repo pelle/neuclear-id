@@ -28,8 +28,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationTicketBuilder.java,v 1.6 2003/12/11 16:16:14 pelle Exp $
+$Id: AuthenticationTicketBuilder.java,v 1.7 2003/12/11 16:29:26 pelle Exp $
 $Log: AuthenticationTicketBuilder.java,v $
+Revision 1.7  2003/12/11 16:29:26  pelle
+Updated various builders to use the new helper methods in AbstractElementProxy hopefully making them more readable.
+
 Revision 1.6  2003/12/11 16:16:14  pelle
 Some changes to make the xml a bit more readable.
 Also added some helper methods in AbstractElementProxy to make it easier to build objects.
@@ -78,14 +81,11 @@ public final class AuthenticationTicketBuilder extends NamedObjectBuilder {
 
     public AuthenticationTicketBuilder(final String user, final String requester, final Date validto, final String site) throws NeuClearException {
         super(NSTools.createUniqueTransactionID(user, requester), AuthenticationTicket.TAG_NAME, AuthenticationTicket.NS_NSAUTH);
-        getElement().addAttribute(createQName("requester"), NSTools.normalizeNameURI(requester));
-        getElement().addAttribute(createQName("validto"), TimeTools.formatTimeStamp(validto));
-        getElement().addAttribute(createQName("sitehref"), site);
+        createAttribute("requester", NSTools.normalizeNameURI(requester));
+        createAttribute("validto", TimeTools.formatTimeStamp(validto));
+        createAttribute("sitehref", site);
     }
 
 
-    public final String getTagName() {
-        return AuthenticationTicket.TAG_NAME;
-    }
 
 }

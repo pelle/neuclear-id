@@ -1,6 +1,9 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.16 2003/12/10 23:58:51 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.17 2003/12/11 16:29:26 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.17  2003/12/11 16:29:26  pelle
+ * Updated various builders to use the new helper methods in AbstractElementProxy hopefully making them more readable.
+ *
  * Revision 1.16  2003/12/10 23:58:51  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -252,7 +255,7 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
 
     public String getTagName() {
         if (getElement() == null)
-            return "Object";
+            return "Invalid";
         return getElement().getName();
     }
 
@@ -289,8 +292,24 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
     }
 
     private static QName getNameAttrQName() {
-        return DocumentHelper.createQName("name", NSTools.NS_NEUID);
+        return createNEUIDQName("name");
 
+    }
+
+    /**
+     * Helper method to create and add an attribute to this element within the NEUID namespace
+     * @param name
+     */
+    protected final void createNEUIDAttribute(String name,String value){
+        getElement().addAttribute(createNEUIDQName(name),value);
+    }
+    /**
+     * Helper method to create a QName within the NEUID namespace
+     * @param name
+     * @return
+     */
+    protected static QName createNEUIDQName(String name) {
+        return DocumentHelper.createQName(name, NSTools.NS_NEUID);
     }
 
     private void createDocument() {
@@ -312,10 +331,6 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
      */
     public final Namespace getNS() {
         return NSTools.NS_NEUID;
-    }
-
-    protected final void addElement(final NamedObjectBuilder child) throws XMLException {
-        addElement((AbstractElementProxy) child);
     }
 
 
