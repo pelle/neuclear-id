@@ -8,10 +8,14 @@ import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.id.builders.SignatureRequestBuilder;
+import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
+import org.neuclear.id.Identity;
+import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
+import org.neuclear.signers.servlet.SignatureRequestServlet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -42,8 +46,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServlet.java,v 1.11 2003/12/16 15:04:59 pelle Exp $
+$Id: AuthenticationServlet.java,v 1.12 2003/12/17 23:53:50 pelle Exp $
 $Log: AuthenticationServlet.java,v $
+Revision 1.12  2003/12/17 23:53:50  pelle
+Added SignatureRequestServlet which is abstract and can be used for building SignatureRequests for various applications.
+
 Revision 1.11  2003/12/16 15:04:59  pelle
 Added SignedMessage contract for signing simple textual contracts.
 Added NeuSender, updated SmtpSender and Sender to take plain email addresses (without the mailto:)
@@ -107,89 +114,12 @@ Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to 
  * Date: Nov 6, 2003
  * Time: 2:04:31 PM
  */
-public class AuthenticationServlet extends HttpServlet {
-    public final void init(final ServletConfig servletConfig) throws ServletException {
-        super.init(servletConfig);
-        serviceid = ServletTools.getInitParam("serviceid",servletConfig);
-        title = ServletTools.getInitParam("title",servletConfig);
+public class AuthenticationServlet extends SignatureRequestServlet {
 
-        try {
-            signer = createSigner(servletConfig);
-        } catch (NeuClearException e) {
-            throw new ServletException(e);
-        } catch (GeneralSecurityException e) {
-            throw new ServletException(e);
-        } catch (FileNotFoundException e) {
-            throw new ServletException(e);
-        }
-
-    }
-    protected Signer createSigner(ServletConfig config) throws FileNotFoundException, GeneralSecurityException, NeuClearException {
-        return ServletSignerFactory.getInstance().createSigner(config);
-    }
-    protected final void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-
-    }
-
-    protected final void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        response.setHeader("Pragma", "no-cache");
-        response.setDateHeader("Expires", 0);
-        response.setContentType("text/html");
-
-        final String siteurl = ServletTools.getAbsoluteURL(request, "/");
+    protected NamedObjectBuilder createBuilder(final HttpServletRequest request) throws NeuClearException {
         final String userns = request.getParameter("identity");
-        if (Utility.isEmpty(userns)) {
-            response.sendError(500, "No Identity");
-            response.flushBuffer();
-            return;
-        }
-        final Cookie usercookie = new Cookie("identity", userns);
-        //usercookie.setSecure(true);
-        usercookie.setMaxAge(2592000);
-        response.addCookie(usercookie);
-        final PrintWriter out = response.getWriter();
-        out.write("\n ");
-        out.write("<html>\n");
-        out.write("<head>");
-        out.write("<title>\n");
-        out.write(title);
-        out.write("</title>");
-        out.write("</head>\n");
-        out.write("<body>\n");
-        out.write("<h3>contacting signing service...");
-        out.write("</h3>\n");
-        out.flush();
-
-        try {
-            final AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder(userns, serviceid, request.getRequestURI());
-            final SignatureRequestBuilder sigreq = new SignatureRequestBuilder(serviceid, userns, authreq, "Login to Site");
-            sigreq.sign(serviceid, signer);
-            request.getSession(true).setAttribute("auth", userns);
-            out.write("<form action=\"");
-            out.print(NSResolver.resolveIdentity(userns).getSigner());
-            out.write("\" method=\"POST\">\n    ");
-            out.write("<input name=\"neuclear-request\" value=\"");
-            out.print(XMLSecTools.encodeElementBase64(sigreq));
-            out.write("\" type=\"hidden\">\n    ");
-            out.write("<input name=\"endpoint\" value=\"");
-            out.print(siteurl);
-            out.write("\" type=\"hidden\"/>\n");
-//            out.write("<input type=\"submit\">");
-            out.write("</form>\n");
-            out.write("<script language=\"javascript\">\n");
-            out.write("<!--\n   document.forms[0].submit();\n-->\n");
-            out.write("</script>\n");
-
-        } catch (NeuClearException e) {
-            e.printStackTrace(out);
-        } catch (XMLSecurityException e) {
-            e.printStackTrace(out);
-        } catch (XMLException e) {
-            e.printStackTrace(out);
-        }
+        request.getSession(true).setAttribute("auth", userns);
+        return new AuthenticationTicketBuilder(userns, getServiceid(), request.getRequestURI());
     }
 
-    private Signer signer;
-    private String serviceid;
-    private String title;
 }
