@@ -1,6 +1,9 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.9 2003/11/12 23:48:14 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.10 2003/11/15 01:58:19 pelle Exp $
   $Log: AbstractStoreTest.java,v $
+  Revision 1.10  2003/11/15 01:58:19  pelle
+  More work all around on web applications.
+
   Revision 1.9  2003/11/12 23:48:14  pelle
   Much work done in creating good test environment.
   PaymentReceiverTest works, but needs a abit more work in its environment to succeed testing.
@@ -127,7 +130,7 @@ package org.neuclear.store;
 
 import junit.framework.TestCase;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.InvalidIdentityException;
+import org.neuclear.id.InvalidNamedObject;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.security.GeneralSecurityException;
@@ -169,7 +172,7 @@ public abstract class AbstractStoreTest extends TestCase {
     }
 
 
-    public void testStore() throws NeuClearException, InvalidIdentityException, XMLSecurityException {
+    public void testStore() throws NeuClearException, InvalidNamedObject, XMLSecurityException {
 //        System.out.println("\nTesting " + this.getClass().getName());
 //        System.out.println("Storing " + rootName);
 //        store.receive(new IdentityBuilder(rootName, root.getPrivate(), root.getPublic()));

@@ -1,6 +1,9 @@
 /*
- * $Id: InvalidIdentityException.java,v 1.4 2003/11/11 21:18:43 pelle Exp $
- * $Log: InvalidIdentityException.java,v $
+ * $Id: InvalidNamedObject.java,v 1.1 2003/11/15 01:58:16 pelle Exp $
+ * $Log: InvalidNamedObject.java,v $
+ * Revision 1.1  2003/11/15 01:58:16  pelle
+ * More work all around on web applications.
+ *
  * Revision 1.4  2003/11/11 21:18:43  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -84,8 +87,8 @@ package org.neuclear.id;
 
 import org.neuclear.commons.NeuClearException;
 
-public class InvalidIdentityException extends NeuClearException {
-    public InvalidIdentityException(String msg) {
+public class InvalidNamedObject extends NeuClearException {
+    public InvalidNamedObject(String msg) {
         super(msg);
     }
 

@@ -6,8 +6,11 @@ package org.neuclear.receiver;
  * Date: Oct 10, 2002
  * Time: 11:24:59 PM
  * To change this template use Options | File Templates.
- * $Id: RawReceiver.java,v 1.6 2003/11/11 21:18:43 pelle Exp $
+ * $Id: RawReceiver.java,v 1.7 2003/11/15 01:58:16 pelle Exp $
  * $Log: RawReceiver.java,v $
+ * Revision 1.7  2003/11/15 01:58:16  pelle
+ * More work all around on web applications.
+ *
  * Revision 1.6  2003/11/11 21:18:43  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -87,7 +90,7 @@ package org.neuclear.receiver;
  *
  */
 
-import org.neuclear.id.InvalidIdentityException;
+import org.neuclear.id.InvalidNamedObject;
 import org.neuclear.id.builders.NamedObjectBuilder;
 
 /**
@@ -104,5 +107,5 @@ public interface RawReceiver {
      * @param obj 
      * @throws UnsupportedTransaction 
      */
-    void receive(NamedObjectBuilder obj) throws UnsupportedTransaction, InvalidIdentityException;
+    void receive(NamedObjectBuilder obj) throws UnsupportedTransaction, InvalidNamedObject;
 }

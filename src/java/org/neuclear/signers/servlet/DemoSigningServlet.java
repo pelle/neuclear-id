@@ -1,6 +1,9 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.8 2003/11/11 21:18:44 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.9 2003/11/15 01:58:16 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.9  2003/11/15 01:58:16  pelle
+ * More work all around on web applications.
+ *
  * Revision 1.8  2003/11/11 21:18:44  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -170,7 +173,7 @@ public class DemoSigningServlet extends SigningServlet {
 //            id.store();
 //            getStore().receive(id);//Test locally first
             ns.sendObject();
-        } catch (InvalidIdentityException e) {
+        } catch (InvalidNamedObject e) {
             System.out.println("NEUDIST: Identity Error: " + e.getLocalizedMessage());
         }
     }

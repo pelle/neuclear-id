@@ -72,7 +72,7 @@
            <name>neuclear-xmlsig</name>
            <version>0.10</version>
            <properties>
-                 <war.bundle.jar>true</war.bundle.jar>
+                 <war.bundle>true</war.bundle>
            </properties>
        </dependency>
        <dependency>
@@ -80,7 +80,7 @@
        <name>neuclear-commons</name>
        <version>0.5-SNAPSHOT</version>
            <properties>
-                 <war.bundle.jar>true</war.bundle.jar>
+                 <war.bundle>true</war.bundle>
            </properties>
        </dependency>
 
@@ -90,7 +90,7 @@
       <version>2.1</version>
       <jar>commons-collections-2.1.jar</jar>
       <properties>
-            <war.bundle.jar>true</war.bundle.jar>
+            <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -98,7 +98,7 @@
       <version>1.4</version>
       <jar>dom4j-1.4.jar</jar>
       <properties>
-            <war.bundle.jar>true</war.bundle.jar>
+            <war.bundle>true</war.bundle>
       </properties>
     </dependency>
    <dependency>
@@ -106,7 +106,7 @@
       <name>bouncycastle</name>
       <jar>bouncycastle-jce-jdk13-112.jar</jar>
       <properties>
-            <war.bundle.jar>true</war.bundle.jar>
+            <war.bundle>true</war.bundle>
       </properties>
     </dependency>
    <dependency>
@@ -117,7 +117,7 @@
    <dependency>
       <id>servletapi</id>
       <name>servletapi</name>
-      <version>2.2</version>
+      <version>2.3</version>
     </dependency>
        <dependency>
           <id>commons-cli</id>
@@ -128,7 +128,7 @@
       <id>waterken-adt</id>
       <version>2.0-beta13</version>
       <properties>
-            <war.bundle.jar>true</war.bundle.jar>
+            <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
@@ -147,14 +147,14 @@
        <id>picocontainer</id>
        <version>1.0-beta-1</version>
        <properties>
-             <war.bundle.jar>true</war.bundle.jar>
+             <war.bundle>true</war.bundle>
        </properties>
    </dependency>
    <dependency>
        <id>nanocontainer</id>
        <version>1.0-alpha-PRESPLIT-1</version>
        <properties>
-             <war.bundle.jar>true</war.bundle.jar>
+             <war.bundle>true</war.bundle>
        </properties>
    </dependency>
   </dependencies>

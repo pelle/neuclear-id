@@ -2,7 +2,7 @@ package org.neuclear.tests;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.id.InvalidIdentityException;
+import org.neuclear.id.InvalidNamedObject;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.receiver.Receiver;
@@ -29,8 +29,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AbstractReceiverTest.java,v 1.3 2003/11/12 23:48:14 pelle Exp $
+$Id: AbstractReceiverTest.java,v 1.4 2003/11/15 01:58:18 pelle Exp $
 $Log: AbstractReceiverTest.java,v $
+Revision 1.4  2003/11/15 01:58:18  pelle
+More work all around on web applications.
+
 Revision 1.3  2003/11/12 23:48:14  pelle
 Much work done in creating good test environment.
 PaymentReceiverTest works, but needs a abit more work in its environment to succeed testing.
@@ -129,7 +132,7 @@ public abstract class AbstractReceiverTest extends AbstractSigningTest {
                 getReceiver().receive(obj);
                 assertTrue(verifyTransaction(obj, prestate));
 
-            } catch (InvalidIdentityException e) {
+            } catch (InvalidNamedObject e) {
                 System.out.println("INVALID  " + e.getMessage());
                 assertTrue(false);
             }

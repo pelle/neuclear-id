@@ -3,9 +3,9 @@ package org.neuclear.id.verifier;
 import junit.framework.TestCase;
 import org.dom4j.DocumentException;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.InvalidIdentityException;
-import org.neuclear.id.SignedNamedObject;
 import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.id.InvalidNamedObject;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.xml.XMLException;
 
 import java.io.*;
@@ -28,8 +28,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerificationTest.java,v 1.6 2003/11/11 21:18:45 pelle Exp $
+$Id: VerificationTest.java,v 1.7 2003/11/15 01:58:19 pelle Exp $
 $Log: VerificationTest.java,v $
+Revision 1.7  2003/11/15 01:58:19  pelle
+More work all around on web applications.
+
 Revision 1.6  2003/11/11 21:18:45  pelle
 Further vital reshuffling.
 org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -108,7 +111,7 @@ public class VerificationTest extends TestCase {
                 System.out.println("Name : " + obj.getName() + " VERIFIED");
                 assertTrue(wantValid);
 
-            } catch (InvalidIdentityException e) {
+            } catch (InvalidNamedObject e) {
                 System.out.println("INVALID  " + e.getMessage());
                 assertTrue(!wantValid);
             }

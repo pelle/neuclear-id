@@ -1,6 +1,9 @@
 /*
- * $Id: FileStore.java,v 1.9 2003/11/11 21:18:44 pelle Exp $
+ * $Id: FileStore.java,v 1.10 2003/11/15 01:58:16 pelle Exp $
  * $Log: FileStore.java,v $
+ * Revision 1.10  2003/11/15 01:58:16  pelle
+ * More work all around on web applications.
+ *
  * Revision 1.9  2003/11/11 21:18:44  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -173,7 +176,7 @@ public class FileStore extends Store {
 //TODO Find alternative        XMLTools.writeFile(outputFile, obj.getElement());
     }
 
-//    public void store(Document doc) throws InvalidIdentityException,IOException {
+//    public void store(Document doc) throws InvalidNamedObject,IOException {
 //        store(new NSDLObject(doc));
 //    }
 

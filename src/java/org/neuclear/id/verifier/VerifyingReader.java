@@ -5,10 +5,10 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.neuclear.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.*;
 import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.commons.time.TimeTools;
-import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
 import org.neuclear.xml.xmlsec.XMLSecTools;
@@ -37,8 +37,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.7 2003/11/11 21:18:43 pelle Exp $
+$Id: VerifyingReader.java,v 1.8 2003/11/15 01:58:16 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.8  2003/11/15 01:58:16  pelle
+More work all around on web applications.
+
 Revision 1.7  2003/11/11 21:18:43  pelle
 Further vital reshuffling.
 org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -118,7 +121,7 @@ public class VerifyingReader {
             Timestamp timestamp = TimeTools.parseTimeStamp(elem.attributeValue("timestamp"));
             return resolveReader(elem).read(elem, name, signatory, digest, timestamp);
         } else
-            throw new InvalidIdentityException(name + " isnt valid");
+            throw new InvalidNamedObject(name + " isnt valid");
     }
 
     private NamedObjectReader resolveReader(Element elem) {

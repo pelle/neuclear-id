@@ -1,6 +1,9 @@
 /*
- * $Id: Store.java,v 1.10 2003/11/11 21:18:44 pelle Exp $
+ * $Id: Store.java,v 1.11 2003/11/15 01:58:17 pelle Exp $
  * $Log: Store.java,v $
+ * Revision 1.11  2003/11/15 01:58:17  pelle
+ * More work all around on web applications.
+ *
  * Revision 1.10  2003/11/11 21:18:44  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -153,12 +156,11 @@
  */
 package org.neuclear.store;
 
-import org.neuclear.id.InvalidIdentityException;
+import org.neuclear.commons.NeuClearException;
+import org.neuclear.id.InvalidNamedObject;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.receiver.RawReceiver;
-import org.neuclear.commons.NeuClearException;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.io.IOException;
 
@@ -168,9 +170,9 @@ abstract public class Store implements RawReceiver {
     //protected Store(Store store)
 
     /**
-     *  This handles the Identity checking on the object.
+     * This handles the Identity checking on the object.
      */
-    public final void receive(NamedObjectBuilder obj) throws InvalidIdentityException {
+    public final void receive(NamedObjectBuilder obj) throws InvalidNamedObject {
         try {
             // Dont allow overwrites
             //TODO: Implement versioning
@@ -178,7 +180,7 @@ abstract public class Store implements RawReceiver {
 //            if (obj.verifySignature(obj.getParent().getPublicKey()))
             rawStore(obj);
 //            else
-//                throw new InvalidIdentityException("INVALID Signature");
+//                throw new InvalidNamedObject("INVALID Signature");
             if (next != null)
                 next.receive(obj);
 
@@ -186,11 +188,11 @@ abstract public class Store implements RawReceiver {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NeuClearException e) {
-            if (e instanceof InvalidIdentityException)
-                throw (InvalidIdentityException) e;
+            if (e instanceof InvalidNamedObject)
+                throw (InvalidNamedObject) e;
         }
-//            if (e instanceof InvalidIdentityException)
-//                throw (InvalidIdentityException)e;
+//            if (e instanceof InvalidNamedObject)
+//                throw (InvalidNamedObject)e;
 //            else if(e instanceof NeuClearException)
 //                throw (NeuClearException)e;
 //            else

@@ -9,7 +9,9 @@
                 org.neuclear.commons.NeuClearException,
                 org.neuclear.id.builders.SignatureRequestBuilder,
                 org.neuclear.id.builders.AuthenticationTicketBuilder,
-                org.neuclear.id.resolver.NSResolver"%>
+                org.neuclear.id.resolver.NSResolver,
+                java.net.URLEncoder,
+                org.neuclear.xml.XMLTools"%>
 <%
     try{
        response.setHeader("Pragma","no-cache");
@@ -37,7 +39,7 @@ NeuDist Login
 <body>
 <h3>contacting signing service...</h3>
 <form action="<%=NSResolver.resolveIdentity(userns).getSigner()%>" method="POST">
-    <input name="base64xml" value="<%=XMLSecTools.encodeElementBase64(sigreq.getElement())%>" type="hidden">
+    <input name="xml" value="<%=URLEncoder.encode(sigreq.asXML(),"UTF-8")%>)" type="hidden">
     <input name="endpoint" value="<%=siteurl%>" type="hidden"/>
 </form>
 <script language="javascript">

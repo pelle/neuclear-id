@@ -1,6 +1,9 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.7 2003/11/11 21:18:42 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.8 2003/11/15 01:58:16 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.8  2003/11/15 01:58:16  pelle
+ * More work all around on web applications.
+ *
  * Revision 1.7  2003/11/11 21:18:42  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -149,21 +152,21 @@
 package org.neuclear.id.builders;
 
 import org.dom4j.*;
-import org.neuclear.id.Identity;
-import org.neuclear.id.NSTools;
-import org.neuclear.id.Named;
-import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.senders.Sender;
-import org.neuclear.commons.time.TimeTools;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
+import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.time.TimeTools;
+import org.neuclear.id.*;
+import org.neuclear.id.resolver.NSResolver;
+import org.neuclear.id.verifier.VerifyingReader;
+import org.neuclear.senders.Sender;
 import org.neuclear.xml.AbstractElementProxy;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.xmlsec.SignedElement;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
-import org.neuclear.commons.crypto.signers.Signer;
 
+import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -212,11 +215,19 @@ public class NamedObjectBuilder extends SignedElement implements Named {
         super(doc.getRootElement());
     }
 
-    final public void  sign(Signer signer) throws NeuClearException, XMLSecurityException {
-        sign(getParent().getName(),signer);
+    final public void sign(Signer signer) throws NeuClearException, XMLSecurityException {
+        sign(getParent().getName(), signer);
     }
+
+    public final SignedNamedObject verify() throws NeuClearException, XMLException {
+        if (!isSigned())
+            throw new InvalidNamedObject("Invalid: " + this.getName());
+        return VerifyingReader.getInstance().read(new ByteArrayInputStream(canonicalize()));
+    }
+
     /**
      * The full name (URI) of an object
+     * 
      * @return String containing the fully qualified URI of an object
      */
     public String getName() {
@@ -229,6 +240,7 @@ public class NamedObjectBuilder extends SignedElement implements Named {
 
     /**
      * The Name of an object within it's parent NameSpace
+     * 
      * @return Parent Name
      */
     public String getLocalName() {
@@ -282,7 +294,8 @@ public class NamedObjectBuilder extends SignedElement implements Named {
 
     /**
      * This is called after signing to handle any post signing tasks such as logging
-     * @throws XMLSecurityException
+     * 
+     * @throws XMLSecurityException 
      */
     protected void postSign() throws XMLSecurityException {
         try {
@@ -295,6 +308,7 @@ public class NamedObjectBuilder extends SignedElement implements Named {
     /**
      * Adds a TargetReference to a NamedObject.<br>
      * This can only be done if the object isn't signed.
+     * 
      * @param target object
      */
     public void addTarget(TargetReference target) throws NeuClearException {
@@ -318,6 +332,7 @@ public class NamedObjectBuilder extends SignedElement implements Named {
 
     /**
      * Lists the targets within an object
+     * 
      * @return Iterator of targets
      */
     public Iterator listTargets() throws NeuClearException {
@@ -325,7 +340,7 @@ public class NamedObjectBuilder extends SignedElement implements Named {
     }
 
     /**
-     *   Sends copy of object to all targets within
+     * Sends copy of object to all targets within
      */
     public void sendObject() throws NeuClearException {
         System.out.println("NEUDIST: Sending Object " + getName());

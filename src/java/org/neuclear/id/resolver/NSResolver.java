@@ -2,7 +2,7 @@ package org.neuclear.id.resolver;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.Identity;
-import org.neuclear.id.InvalidIdentityException;
+import org.neuclear.id.InvalidNamedObject;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.cache.NSCache;
@@ -17,19 +17,20 @@ public final class NSResolver {
     public static final String NSROOTSTORE = "http://repository.neuclear.org";
 
     /**
-         * Retrieves the Identity object of the given name
-         * defaultstore for the given namespace.
-         * This is guaranteed to be valid as it checks the signatures on each level.
-         *
-         * @param name
-         * @return
-         */
-    public final static Identity resolveIdentity(String name) throws NeuClearException, InvalidIdentityException {
-       SignedNamedObject id=resolve(name);
+     * Retrieves the Identity object of the given name
+     * defaultstore for the given namespace.
+     * This is guaranteed to be valid as it checks the signatures on each level.
+     * 
+     * @param name 
+     * @return 
+     */
+    public final static Identity resolveIdentity(String name) throws NeuClearException, InvalidNamedObject {
+        SignedNamedObject id = resolve(name);
         if (id instanceof Identity)
-            return (Identity)id;
-        throw new InvalidIdentityException(name +" is not a valid Identity");
+            return (Identity) id;
+        throw new InvalidNamedObject(name + " is not a valid Identity");
     }
+
     /**
      * Retrieves the Identity object of the given name
      * defaultstore for the given namespace.
@@ -38,7 +39,7 @@ public final class NSResolver {
      * @param name 
      * @return 
      */
-    public final static SignedNamedObject resolve(String name) throws NeuClearException, InvalidIdentityException {
+    public final static SignedNamedObject resolve(String name) throws NeuClearException, InvalidNamedObject {
         SignedNamedObject obj = NSCACHE.fetchCached(name);
         if (obj != null)
             return obj;

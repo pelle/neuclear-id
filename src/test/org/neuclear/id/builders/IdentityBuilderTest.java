@@ -28,8 +28,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: IdentityBuilderTest.java,v 1.2 2003/11/13 23:26:42 pelle Exp $
+$Id: IdentityBuilderTest.java,v 1.3 2003/11/15 01:58:18 pelle Exp $
 $Log: IdentityBuilderTest.java,v $
+Revision 1.3  2003/11/15 01:58:18  pelle
+More work all around on web applications.
+
 Revision 1.2  2003/11/13 23:26:42  pelle
 The signing service and web authentication application is now almost working.
 
@@ -58,10 +61,10 @@ public class IdentityBuilderTest extends AbstractSigningTest {
                     "http://repository.neuclear.org",
                     "http://users.neuclear.org:8080/Signer",
                     "http://logger.neuclear.org",
-                    "neuclear-develop@lists.sourceforge.net");
+                    "mailto:pelle@neuclear.org");
 
-//            if (signer.canSignFor(NSTools.getParentNSURI(id.getName())))
-//                id.sign(signer);
+            if (signer.canSignFor(NSTools.getParentNSURI(id.getName())))
+                id.sign(signer);
             File file = new File(PATH + NSTools.url2path(id.getName()) + "/root.id");
             file.getParentFile().mkdirs();
             XMLTools.writeFile(file, id.getElement());
@@ -74,7 +77,7 @@ public class IdentityBuilderTest extends AbstractSigningTest {
     }
 
     public void testBuild() throws NeuClearException, XMLException {
-        createIdentities("neu://test");
+//        createIdentities("neu://test");
         createIdentities("neu://test/bux");
         createIdentities("neu://bob@test");
         createIdentities("neu://alice@test");
