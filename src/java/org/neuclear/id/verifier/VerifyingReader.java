@@ -1,19 +1,13 @@
 package org.neuclear.id.verifier;
 
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.QName;
 import org.neuclear.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.*;
-import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
-import org.neuclear.xml.xmlsec.XMLSecTools;
 
 import java.io.InputStream;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,8 +29,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.11 2003/11/20 16:01:25 pelle Exp $
+$Id: VerifyingReader.java,v 1.12 2003/11/20 23:42:24 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.12  2003/11/20 23:42:24  pelle
+Getting all the tests to work in id
+Removing usage of BC in CryptoTools as it was causing issues.
+First version of EntityLedger that will use OFB's EntityEngine. This will allow us to support a vast amount databases without
+writing SQL. (Yipee)
+
 Revision 1.11  2003/11/20 16:01:25  pelle
 Did a security review of the basic Verification process and needed to make changes.
 I've introduced the SignedNamedCore which all subclasses of SignedNamedObject need to include in their constructor.
@@ -128,9 +128,13 @@ public class VerifyingReader {
      * @return 
      * @throws NeuClearException 
      */
-    public final  SignedNamedObject read(InputStream is) throws XMLException, NeuClearException {
+    public final SignedNamedObject read(InputStream is) throws XMLException, NeuClearException {
         Element elem = XMLTools.loadDocument(is).getRootElement();
-        return resolveReader(elem).read(SignedNamedCore.read(elem),elem);
+        return read(elem);
+    }
+
+    public final SignedNamedObject read(Element elem) throws NeuClearException, XMLException {
+        return resolveReader(elem).read(SignedNamedCore.read(elem), elem);
     }
 
 

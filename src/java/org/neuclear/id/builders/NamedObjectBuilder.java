@@ -1,6 +1,12 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.9 2003/11/19 23:33:58 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.10 2003/11/20 23:42:24 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.10  2003/11/20 23:42:24  pelle
+ * Getting all the tests to work in id
+ * Removing usage of BC in CryptoTools as it was causing issues.
+ * First version of EntityLedger that will use OFB's EntityEngine. This will allow us to support a vast amount databases without
+ * writing SQL. (Yipee)
+ *
  * Revision 1.9  2003/11/19 23:33:58  pelle
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
@@ -165,7 +171,10 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.time.TimeTools;
-import org.neuclear.id.*;
+import org.neuclear.id.Identity;
+import org.neuclear.id.NSTools;
+import org.neuclear.id.Named;
+import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.AbstractElementProxy;
@@ -173,7 +182,6 @@ import org.neuclear.xml.XMLException;
 import org.neuclear.xml.xmlsec.SignedElement;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
-import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -224,13 +232,7 @@ public class NamedObjectBuilder extends SignedElement implements Named {
 
     final public SignedNamedObject sign(Signer signer) throws NeuClearException, XMLException {
         sign(getParent().getName(), signer);
-        return verify();
-    }
-
-    private final SignedNamedObject verify() throws NeuClearException, XMLException {
-        if (!isSigned())
-            throw new InvalidNamedObject("Invalid: " + this.getName());
-        return VerifyingReader.getInstance().read(new ByteArrayInputStream(canonicalize()));
+        return VerifyingReader.getInstance().read(getElement());
     }
 
     /**
@@ -239,11 +241,7 @@ public class NamedObjectBuilder extends SignedElement implements Named {
      * @return String containing the fully qualified URI of an object
      */
     public String getName() {
-        try {
-            return NSTools.normalizeNameURI(getElement().attributeValue(getNameAttrQName()));
-        } catch (NeuClearException e) {
-            return "Unknown";
-        }
+        return getElement().attributeValue(getNameAttrQName());
     }
 
     /**

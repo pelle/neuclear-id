@@ -1,6 +1,12 @@
 /*
- * $Id: Identity.java,v 1.20 2003/11/20 16:01:25 pelle Exp $
+ * $Id: Identity.java,v 1.21 2003/11/20 23:42:24 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.21  2003/11/20 23:42:24  pelle
+ * Getting all the tests to work in id
+ * Removing usage of BC in CryptoTools as it was causing issues.
+ * First version of EntityLedger that will use OFB's EntityEngine. This will allow us to support a vast amount databases without
+ * writing SQL. (Yipee)
+ *
  * Revision 1.20  2003/11/20 16:01:25  pelle
  * Did a security review of the basic Verification process and needed to make changes.
  * I've introduced the SignedNamedCore which all subclasses of SignedNamedObject need to include in their constructor.
@@ -267,8 +273,8 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * The Identity class is one of the most important concepts in <a href="http://neuclear.org">NeuClear</a>.
@@ -289,7 +295,7 @@ import java.util.ArrayList;
  */
 public class Identity extends SignedNamedObject implements Principal {
     private static final String NSROOTPKMOD = "pu/UOt9AKPt9txz/1TyYseL0vMUZXDxpz3PboE3X7J6r1UbfC9b45eO9SlD1wP52nCkVd5qL0fMOQV4lxP0KiL0DwCPid99YCXEn8BU4hEKLV3gD930ieFDtRhgDk7tcFzAqd6ilhVr3NENSjLRmlXK30qPmLRnDqhmx+UC7hLikhT6eJjDBatiYK4ESr2R5x/udIaJTSsenVA2zs1h2FcKXYExxJrPQBm0AXxguVlhqy+ImSjFQUEH9WOpr3zGLtXtcgawxtdapS8nwxbY38JR0HPloOWkFTC6XyurKr7TcDSrzgAUmJRy52pUvsqFRFcHxljL+Flv5iQS8TciKBQ==";
-    //private static final String NSROOTPKMOD = "AKbv1DrfQCj7fbcc/9U8mLHi9LzFGVw8ac9z26BN1+yeq9VG3wvW+OXjvUpQ9cD+dpwpFXeai9Hz DkFeJcT9Coi9A8Aj4nffWAlxJ/AVOIRCi1d4A/d9InhQ7UYYA5O7XBcwKneopYVa9zRDUoy0ZpVy t9Kj5i0Zw6oZsflAu4S4pIU+niYwwWrYmCuBEq9kecf7nSGiU0rHp1QNs7NYdhXCl2BMcSaz0AZt AF8YLlZYasviJkoxUFBB/Vjqa98xi7V7XIGsMbXWqUvJ8MW2N/CUdBz5aDlpBUwul8rqyq+03A0q 84AFJiUcudqVL7KhURXB8ZYy/hZb+YkEvE3IigU=";
+//    private static final String NSROOTPKMOD = "AKbv1DrfQCj7fbcc/9U8mLHi9LzFGVw8ac9z26BN1+yeq9VG3wvW+OXjvUpQ9cD+dpwpFXeai9Hz DkFeJcT9Coi9A8Aj4nffWAlxJ/AVOIRCi1d4A/d9InhQ7UYYA5O7XBcwKneopYVa9zRDUoy0ZpVy t9Kj5i0Zw6oZsflAu4S4pIU+niYwwWrYmCuBEq9kecf7nSGiU0rHp1QNs7NYdhXCl2BMcSaz0AZt AF8YLlZYasviJkoxUFBB/Vjqa98xi7V7XIGsMbXWqUvJ8MW2N/CUdBz5aDlpBUwul8rqyq+03A0q 84AFJiUcudqVL7KhURXB8ZYy/hZb+YkEvE3IigU=";
     private static final String NSROOTPKEXP = "AQAB";
     private static PublicKey nsrootpk;
 
@@ -315,22 +321,22 @@ public class Identity extends SignedNamedObject implements Principal {
         return repository;
     }
 
-    public final  String getSigner() {
+    public final String getSigner() {
         return signer;
     }
 
-    public final  String getLogger() {
+    public final String getLogger() {
         return logger;
     }
 
-    public  SignedNamedObject send(SignedNamedObject obj) throws NeuClearException {
+    public SignedNamedObject send(SignedNamedObject obj) throws NeuClearException {
         if (!Utility.isEmpty(receiver))
             return Sender.quickSend(receiver, obj);
         else
             throw new NeuClearException("Cant send object, " + getName() + " doesnt have a registered Receiver");
     }
 
-     final void log(SignedNamedObject obj) throws NeuClearException {
+    final void log(SignedNamedObject obj) throws NeuClearException {
         if (!Utility.isEmpty(logger))
             Sender.quickSend(logger, obj);
     }
@@ -339,7 +345,7 @@ public class Identity extends SignedNamedObject implements Principal {
         return pub;
     }
 
-    public final Certificate getCertificate() {
+    public final java.security.cert.Certificate getCertificate() {
         return new NeuClearCertificate();
     }
 
@@ -364,22 +370,29 @@ public class Identity extends SignedNamedObject implements Principal {
 
     public static final Identity NEUROOT = createRootIdentity();
 
-    public final Certificate[] getCertificateChain() {
+    public final java.security.cert.Certificate[] getCertificateChain() {
         ArrayList certs = new ArrayList(3);
         Identity id = this;
-        while (id != null || id.getName().equals("neu://")) {
+        while (id != null) {
             certs.add(id.getCertificate());
             id = id.getSignatory();
         }
-        certs.add(NEUROOT);
+        certs.add(NEUROOT.getCertificate());
         certs.trimToSize();
-        return (Certificate[]) certs.toArray();
+        Certificate cert[] = new Certificate[certs.size()];
+        Iterator iter = certs.iterator();
+        int i = 0;
+        while (iter.hasNext()) {
+            Certificate certificate = (java.security.cert.Certificate) iter.next();
+            cert[i++] = certificate;
+        }
+        return cert;
     }
 
     /**
      * Returns the fixed Root PublicKey
      */
-    private final static PublicKey getRootPK() throws CryptoException {
+    final static PublicKey getRootPK() throws CryptoException {
         if (nsrootpk == null)
             nsrootpk = CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
         return nsrootpk;
@@ -408,11 +421,15 @@ public class Identity extends SignedNamedObject implements Principal {
          * TODO: This almost certainly has bad security implications and needs to be though through
          * 
          * @param publicKey 
-         * @throws CertificateException     
-         * @throws NoSuchAlgorithmException 
-         * @throws InvalidKeyException      
-         * @throws NoSuchProviderException  
-         * @throws SignatureException       
+         * @throws CertificateException 
+         * @throws java.security.NoSuchAlgorithmException
+         *                              
+         * @throws java.security.InvalidKeyException
+         *                              
+         * @throws java.security.NoSuchProviderException
+         *                              
+         * @throws java.security.SignatureException
+         *                              
          */
         public final void verify(PublicKey publicKey) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
             if (!getSignatory().getPublicKey().equals(publicKey))
@@ -423,7 +440,7 @@ public class Identity extends SignedNamedObject implements Principal {
             verify(publicKey);
         }
 
-        public final  PublicKey getPublicKey() {
+        public final PublicKey getPublicKey() {
             return pub;
         }
 
@@ -450,7 +467,8 @@ public class Identity extends SignedNamedObject implements Principal {
             Element allowElement = elem.element(DocumentHelper.createQName("allow", NSTools.NS_NEUID));
             KeyInfo ki = new KeyInfo(allowElement.element(XMLSecTools.createQName("KeyInfo")));
             PublicKey pub = ki.getPublicKey();
-            return new Identity(core, repository, signer, logger, receiver, pub);        }
+            return new Identity(core, repository, signer, logger, receiver, pub);
+        }
 
     }
 
