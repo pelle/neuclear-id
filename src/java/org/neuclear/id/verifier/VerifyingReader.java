@@ -6,6 +6,7 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.*;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
+import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -29,8 +30,16 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.16 2003/12/16 15:05:00 pelle Exp $
+$Id: VerifyingReader.java,v 1.17 2003/12/19 18:03:34 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.17  2003/12/19 18:03:34  pelle
+Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+- For most cases the main exception to worry about now is InvalidNamedObjectException.
+- Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+  runtime exception.
+- Source and Store patterns each now have their own exceptions that generalizes the various physical
+  exceptions that can happen in that area.
+
 Revision 1.16  2003/12/16 15:05:00  pelle
 Added SignedMessage contract for signing simple textual contracts.
 Added NeuSender, updated SmtpSender and Sender to take plain email addresses (without the mailto:)
@@ -156,14 +165,18 @@ public final class VerifyingReader {
      * 
      * @param is 
      * @return 
-     * @throws NeuClearException 
+     * @throws InvalidNamedObjectException
      */
-    public final SignedNamedObject read(final InputStream is) throws XMLException, NeuClearException {
-        final Element elem = XMLTools.loadDocument(is).getRootElement();
-        return read(elem);
+    public final SignedNamedObject read(final InputStream is) throws InvalidNamedObjectException, NameResolutionException {
+        try {
+            final Element elem = XMLTools.loadDocument(is).getRootElement();
+            return read(elem);
+        } catch (XMLException e) {
+            throw new InvalidNamedObjectException("unknown", e.getLocalizedMessage());
+        }
     }
 
-    public final SignedNamedObject read(final Element elem) throws NeuClearException, XMLException {
+    public final SignedNamedObject read(final Element elem) throws InvalidNamedObjectException, NameResolutionException{
         return resolveReader(elem).read(SignedNamedCore.read(elem), elem);
     }
 

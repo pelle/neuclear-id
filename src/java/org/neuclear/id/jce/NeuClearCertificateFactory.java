@@ -32,8 +32,16 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearCertificateFactory.java,v 1.8 2003/12/17 12:45:57 pelle Exp $
+$Id: NeuClearCertificateFactory.java,v 1.9 2003/12/19 18:03:34 pelle Exp $
 $Log: NeuClearCertificateFactory.java,v $
+Revision 1.9  2003/12/19 18:03:34  pelle
+Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+- For most cases the main exception to worry about now is InvalidNamedObjectException.
+- Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+  runtime exception.
+- Source and Store patterns each now have their own exceptions that generalizes the various physical
+  exceptions that can happen in that area.
+
 Revision 1.8  2003/12/17 12:45:57  pelle
 NeuClear JCE Certificates now work with KeyStore.
 We can now create JCE certificates based on NeuClear Identity's and store them in a keystore.
@@ -90,8 +98,6 @@ public final class NeuClearCertificateFactory extends CertificateFactorySpi {
             final BufferedReader d = new BufferedReader(new InputStreamReader(inputStream));
             return ((Identity)VerifyingReader.getInstance().read(inputStream)).getCertificate();
         } catch (NeuClearException e) {
-            throw new CertificateException("NeuClear: Problem reading Certificate:"+e.getMessage());
-        } catch (XMLException e) {
             throw new CertificateException("NeuClear: Problem reading Certificate:"+e.getMessage());
         }
     }

@@ -1,6 +1,14 @@
 /*
- * $Id: Identity.java,v 1.25 2003/12/17 12:45:57 pelle Exp $
+ * $Id: Identity.java,v 1.26 2003/12/19 18:03:34 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.26  2003/12/19 18:03:34  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.25  2003/12/17 12:45:57  pelle
  * NeuClear JCE Certificates now work with KeyStore.
  * We can now create JCE certificates based on NeuClear Identity's and store them in a keystore.
@@ -330,10 +338,9 @@ public class Identity extends SignedNamedObject implements Principal {
      * @param repository URL of Default Store for Identity. (Note. A Identity object is stored in the default repository of it's parent namespace)
      * @param signer     URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
      * @param receiver   URL of default receiver for namespace
-     * @throws NeuClearException 
      */
 
-    protected Identity(final SignedNamedCore core, final String repository, final String signer, final String logger, final String receiver, final PublicKey pub) throws NeuClearException {
+    protected Identity(final SignedNamedCore core, final String repository, final String signer, final String logger, final String receiver, final PublicKey pub)  {
         super(core);
         this.repository = repository;
         this.logger = logger;
@@ -490,16 +497,20 @@ public class Identity extends SignedNamedObject implements Principal {
          * @param elem 
          * @return 
          */
-        public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws NeuClearException, XMLSecurityException {
-            final String repository = elem.attributeValue(DocumentHelper.createQName("repository", NSTools.NS_NEUID));
-            final String signer = elem.attributeValue(DocumentHelper.createQName("signer", NSTools.NS_NEUID));
-            final String logger = elem.attributeValue(DocumentHelper.createQName("logger", NSTools.NS_NEUID));
-            final String receiver = elem.attributeValue(DocumentHelper.createQName("receiver", NSTools.NS_NEUID));
+        public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws InvalidNamedObjectException {
+            final String repository = elem.attributeValue(createNEUIDQName("repository"));
+            final String signer = elem.attributeValue(createNEUIDQName("signer"));
+            final String logger = elem.attributeValue(createNEUIDQName("logger"));
+            final String receiver = elem.attributeValue(createNEUIDQName("receiver"));
 
-            final Element allowElement = elem.element(DocumentHelper.createQName("allow", NSTools.NS_NEUID));
-            final KeyInfo ki = new KeyInfo(allowElement.element(XMLSecTools.createQName("KeyInfo")));
-            final PublicKey pub = ki.getPublicKey();
-            return new Identity(core, repository, signer, logger, receiver, pub);
+            final Element allowElement = InvalidNamedObjectException.assertContainsElementQName(core,elem,createNEUIDQName("allow"));
+            try {
+                final KeyInfo ki = new KeyInfo(InvalidNamedObjectException.assertContainsElementQName(allowElement, XMLSecTools.createQName("KeyInfo")));
+                final PublicKey pub = ki.getPublicKey();
+                return new Identity(core, repository, signer, logger, receiver, pub);
+            } catch (XMLSecurityException e) {
+                throw new InvalidNamedObjectException(core.getName(),e);
+            }
         }
 
     }

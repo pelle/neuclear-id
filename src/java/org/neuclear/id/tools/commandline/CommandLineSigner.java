@@ -1,5 +1,13 @@
-/* $Id: CommandLineSigner.java,v 1.5 2003/12/19 00:31:30 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.6 2003/12/19 18:03:34 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.6  2003/12/19 18:03:34  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.5  2003/12/19 00:31:30  pelle
  * Lots of usability changes through out all the passphrase agents and end user tools.
  *
@@ -198,6 +206,7 @@ import org.apache.commons.cli.*;
 import org.dom4j.Document;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
+import org.neuclear.commons.LowLevelException;
 import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.crypto.passphraseagents.ConsoleAgent;
 import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
@@ -206,6 +215,7 @@ import org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent;
 import org.neuclear.commons.crypto.signers.DefaultSigner;
 import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.Identity;
 import org.neuclear.id.NSTools;
@@ -225,12 +235,12 @@ import java.util.regex.Matcher;
 
 /**
  * @author pelleb
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class CommandLineSigner {
     private final String EXECUTABLE ;
 
-    public CommandLineSigner(final String[] args) throws ParseException, UserCancellationException {
+    public CommandLineSigner(final String[] args) throws UserCancellationException {
         CryptoTools.ensureProvider();
         EXECUTABLE=Utility.getExecutable(getClass());
         options = createOptions();
@@ -266,11 +276,11 @@ public class CommandLineSigner {
         }
     }
 
-    private final CommandLine parseOptions(final String[] args) throws ParseException {
-        final CommandLineParser clparser = CommandLineParserFactory.newParser();
+    private final CommandLine parseOptions(final String[] args) {
+        final CommandLineParser clparser = new GnuParser();
         try {
             return clparser.parse(options, args);
-        } catch (UnrecognizedOptionException e) {
+        } catch (ParseException e) {
             System.out.println(e.getLocalizedMessage());
             printHelp();
             System.exit(1);
@@ -307,7 +317,7 @@ public class CommandLineSigner {
 
     private void printHelp() {
         final HelpFormatter help = new HelpFormatter();
-
+        help.setDescPadding(10);
         help.printHelp("\n"+EXECUTABLE +getExtraHelp()+
                 "  [--outputfile signed/test.id] \n" +
                 EXECUTABLE+" --verify neu://neuclear.org\n" +
@@ -322,11 +332,10 @@ public class CommandLineSigner {
         return cmd.hasOption("i") || cmd.hasOption('v');
     }
 
-    public final void execute() {
-
-        try {
+    public final void execute() throws UserCancellationException {
             final NamedObjectBuilder subject = build();
 
+        try {
             if (!sig.canSignFor(alias)) {
                 if (!Utility.isEmpty(of))
                     of = subject.getLocalName() + ".xml";
@@ -366,15 +375,23 @@ public class CommandLineSigner {
                 }
             }
 */
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            e.printStackTrace(System.err);
+        } catch (InvalidNamedObjectException e) {
+            throw new LowLevelException(e);
+        } catch (NonExistingSignerException e) {
+            throw new LowLevelException(e);
+        } catch (FileNotFoundException e) {
+            System.err.println("Couldnt find file: " + of);
+            System.exit(1);
+        } catch (XMLException e) {
+            System.err.println("Error generatoing xml file: " + of + "\n" + e.getLocalizedMessage());
+            System.exit(1);
         }
 
     }
 
-    protected NamedObjectBuilder build() throws Exception {
+    protected NamedObjectBuilder build() throws UserCancellationException {
         final String sf = cmd.getOptionValue("i");
+        NamedObjectBuilder subject=null;
         try {
             InputStream source = System.in;
             if (!Utility.isEmpty(sf)) {
@@ -385,11 +402,10 @@ public class CommandLineSigner {
                 }
             }
             final Document doc = XMLTools.loadDocument(source);
-            final NamedObjectBuilder subject = new NamedObjectBuilder(doc);
+            subject = new NamedObjectBuilder(doc);
 
             if (Utility.isEmpty(alias)) {
                 alias = Utility.denullString(NSTools.isHttpScheme(subject.getName()), NSTools.getSignatoryURI(subject.getName()));
-
             }
             if (!sig.canSignFor(alias)) {
                 System.err.println("You can not sign as " + alias + " with your current keystore.");
@@ -402,13 +418,16 @@ public class CommandLineSigner {
             System.out.println("Raw XML:\n===================");
             System.out.println(subject.asXML());
             System.out.print("===================\nAre you shure you wish to sign this? (y/N) ");
-            String answer = new jline.ConsoleReader().readLine();
-            if (!answer.toLowerCase().equals("y")) {
+
+            if (!Utility.getAffirmative(false)) {
                 System.out.println("Aborted Signing Process");
                 System.exit(0);
             }
 
             return subject;
+        } catch (InvalidNamedObjectException e) {
+                System.err.println("The name: "+e.getName()+" is not valid. \nplease check the xml attribute \"neuid:name\" in the xml element: "+ subject.getElement().getQualifiedName()+" in your input file: "+sf);
+                System.exit(1);
         } catch (FileNotFoundException e) {
             System.err.println("Couldnt find file: " + sf);
             System.exit(1);
@@ -422,12 +441,11 @@ public class CommandLineSigner {
     private Options createOptions() {
         // create Options object
         final Options options = new Options();
-
-        options.addOption("o", "outputfile", true, "specify output file \n[ --outputfile bob.id ]");
-        options.addOption("i", "inputfile", true, "specify Input File \n[ --inputfile bob.xml ]");
-        options.addOption("v", "verify", true, "Specify NEU ID to verify \n[ --verify neu://bob@yourdomain.com ]");
-        options.addOption("h","help",false,"Help");
-        options.addOption("g","gui",false,"Use GUI Passphrase Dialog");
+        options.addOption(new Option("o", "outputfile", true, "specify output file \n[ --outputfile bob.id ]"));
+        options.addOption(new Option("i", "inputfile", true, "specify Input File \n[ --inputfile bob.xml ]"));
+        options.addOption(new Option("v", "verify", true, "Specify NEU ID to verify \n[ --verify neu://bob@yourdomain.com ]"));
+        options.addOption(new Option("h","help",false,"Help"));
+        options.addOption(new Option("g","gui",false,"Use GUI Passphrase Dialog"));
         getLocalOptions(options);
 
 

@@ -1,6 +1,14 @@
 /*
- * $Id: FileStore.java,v 1.18 2003/12/11 23:57:29 pelle Exp $
+ * $Id: FileStore.java,v 1.19 2003/12/19 18:03:35 pelle Exp $
  * $Log: FileStore.java,v $
+ * Revision 1.19  2003/12/19 18:03:35  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.18  2003/12/11 23:57:29  pelle
  * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
  * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -191,6 +199,8 @@ package org.neuclear.store;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.InvalidNamedObjectException;
+import org.neuclear.id.NameResolutionException;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.XMLException;
 
@@ -206,53 +216,57 @@ public class FileStore extends Store {
         this.base = base;
     }
 
-    protected final void rawStore(final SignedNamedObject obj) throws IOException, NeuClearException, XMLException {
+    protected final void rawStore(final SignedNamedObject obj) throws StorageException, InvalidNamedObjectException {
         final OutputStream out = getOutputStream(obj);
-        out.write(obj.getEncoded().getBytes("UTF-8"));
-        out.close();
+        try {
+            out.write(obj.getEncoded().getBytes("UTF-8"));
+            out.close();
+        } catch (IOException e) {
+            throw new StorageException(this,e);
+        }
     }
 
-    protected OutputStream getOutputStream(final SignedNamedObject obj) throws NeuClearException, FileNotFoundException {
+    protected OutputStream getOutputStream(final SignedNamedObject obj) throws  StorageException, InvalidNamedObjectException {
         final String outputFilename = base + getFileName(obj);
         System.out.println("Outputting to: " + outputFilename);
         final File outputFile = new File(outputFilename);
         outputFile.getParentFile().mkdirs();
-        final OutputStream out = new FileOutputStream(outputFile);
-        return out;
+        try {
+            final OutputStream out = new FileOutputStream(outputFile);
+            return out;
+        } catch (FileNotFoundException e) {
+            throw new StorageException(this,e);
+        }
     }
 
 //    public void store(Document doc) throws InvalidNamedObjectException,IOException {
 //        store(new NSDLObject(doc));
 //    }
 
-    final SignedNamedObject fetch(final String name) throws NeuClearException {
-
-        try {
-            return VerifyingReader.getInstance().read(getInputStream(name));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (XMLException e) {
-            e.printStackTrace();
-        }
-        return null;
+    final SignedNamedObject fetch(final String name) throws StorageException, InvalidNamedObjectException, NameResolutionException {
+        return VerifyingReader.getInstance().read(getInputStream(name));
     }
 
-    protected InputStream getInputStream(final String name) throws FileNotFoundException, NeuClearException {
+    protected InputStream getInputStream(final String name) throws InvalidNamedObjectException, StorageException {
         final String inputFilename = base + getFileName(name);
         System.out.println("Loading from: " + inputFilename);
         final File fin = new File(inputFilename);
         if (!fin.exists())
-            throw new NeuClearException("NeuClear: " + name + " doesnt exist");
+            throw new InvalidNamedObjectException(name);
 
-        return new FileInputStream(fin);
+        try {
+            return new FileInputStream(fin);
+        } catch (FileNotFoundException e) {
+            throw new StorageException(this,e);
+        }
     }
 
 
-    protected String getFileName(final String name) throws NeuClearException {
+    protected String getFileName(final String name) throws InvalidNamedObjectException {
         return NSTools.name2path(name) + "/root.id";
     }
 
-    protected final String getFileName(final SignedNamedObject obj) throws NeuClearException {
+    protected final String getFileName(final SignedNamedObject obj) throws InvalidNamedObjectException {
         return getFileName(obj.getName());
 //        if (! (obj instanceof Identity))
 //            return obj.getName();

@@ -25,8 +25,16 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequest.java,v 1.9 2003/12/10 23:58:51 pelle Exp $
+$Id: SignatureRequest.java,v 1.10 2003/12/19 18:03:34 pelle Exp $
 $Log: SignatureRequest.java,v $
+Revision 1.10  2003/12/19 18:03:34  pelle
+Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+- For most cases the main exception to worry about now is InvalidNamedObjectException.
+- Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+  runtime exception.
+- Source and Store patterns each now have their own exceptions that generalizes the various physical
+  exceptions that can happen in that area.
+
 Revision 1.9  2003/12/10 23:58:51  pelle
 Did some cleaning up in the builders
 Fixed some stuff in IdentityCreator
@@ -93,7 +101,7 @@ Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to 
  * Time: 12:23:52 PM
  */
 public final class SignatureRequest extends SignedNamedObject {
-    private SignatureRequest(final SignedNamedCore core, final String userid, final NamedObjectBuilder unsigned, final String description) throws NeuClearException {
+    private SignatureRequest(final SignedNamedCore core, final String userid, final NamedObjectBuilder unsigned, final String description)  {
         super(core);
         this.userid = userid;
         this.unsigned = unsigned;
@@ -119,18 +127,23 @@ public final class SignatureRequest extends SignedNamedObject {
          * @param elem 
          * @return 
          */
-        public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws NeuClearException, XMLSecurityException {
-            final Element request = elem.element(DocumentHelper.createQName("Unsigned", NSTools.NS_NEUID));
-            final String userid = elem.attributeValue(DocumentHelper.createQName("userid", NSTools.NS_NEUID));
+        public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws InvalidNamedObjectException {
+            InvalidNamedObjectException.assertElementQName(core,elem,createNEUIDQName(SIGREQUEST_TAG));
+            final Element request = InvalidNamedObjectException.assertContainsElementQName(core,elem,createNEUIDQName("Unsigned"));
+            final String userid = InvalidNamedObjectException.assertAttributeQName(core,elem,createNEUIDQName("userid"));
             final Element uelem = ((Element) request.elements().get(0)).createCopy();
             final Document doc = DocumentHelper.createDocument(uelem);
-            final NamedObjectBuilder unsigned = new NamedObjectBuilder(uelem);
-            String description = null;
-            final Element descrelem = elem.element(DocumentHelper.createQName("Description", NSTools.NS_NEUID));
-            if (descrelem != null)
-                description = descrelem.getText();
+            try {
+                final NamedObjectBuilder unsigned = new NamedObjectBuilder(uelem);
+                String description = null;
+                final Element descrelem = elem.element(DocumentHelper.createQName("Description", NSTools.NS_NEUID));
+                if (descrelem != null)
+                    description = descrelem.getText();
 
-            return new SignatureRequest(core, userid, unsigned, description);
+                return new SignatureRequest(core, userid, unsigned, description);
+            } catch (XMLSecurityException e) {
+                throw new InvalidNamedObjectException(core.getName(),e);
+            }
         }
 
 

@@ -4,6 +4,7 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.*;
 import org.neuclear.id.cache.NSCache;
 import org.neuclear.source.Source;
+import org.neuclear.source.SourceException;
 
 /**
  * Secure Identity resolver. To get an Identity object simply do:
@@ -28,7 +29,7 @@ public final class NSResolver {
      * @param name 
      * @return 
      */
-    public final static Identity resolveIdentity(final String name) throws NameResolutionException, NeuClearException,InvalidNamedObjectException {
+    public final static Identity resolveIdentity(final String name) throws NameResolutionException, InvalidNamedObjectException {
         final SignedNamedObject id = resolve(name);
         if (id instanceof Identity)
             return (Identity) id;
@@ -43,7 +44,7 @@ public final class NSResolver {
      * @param name 
      * @return 
      */
-    public final static SignedNamedObject resolve(final String name) throws NameResolutionException,NeuClearException, InvalidNamedObjectException {
+    public final static SignedNamedObject resolve(final String name) throws NameResolutionException, InvalidNamedObjectException {
         SignedNamedObject obj = NSCACHE.fetchCached(name);
         if (obj != null)
             return obj;
@@ -58,7 +59,11 @@ public final class NSResolver {
             final Identity parent = resolveIdentity(parentname);
             store = parent.getRepository();
         }
-        obj = Source.getInstance().fetch(store, name);
+        try {
+            obj = Source.getInstance().fetch(store, name);
+        } catch (SourceException e) {
+            throw new NameResolutionException(name,e.getLocalizedMessage());
+        }
         if (obj == null)
             throw new NameResolutionException(name);
         NSCACHE.cache(obj);

@@ -1,6 +1,14 @@
 /*
- * $Id: Store.java,v 1.16 2003/12/10 23:58:52 pelle Exp $
+ * $Id: Store.java,v 1.17 2003/12/19 18:03:35 pelle Exp $
  * $Log: Store.java,v $
+ * Revision 1.17  2003/12/19 18:03:35  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.16  2003/12/10 23:58:52  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -187,6 +195,8 @@ package org.neuclear.store;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.InvalidNamedObjectException;
+import org.neuclear.id.NameResolutionException;
 import org.neuclear.receiver.Receiver;
 import org.neuclear.xml.XMLException;
 
@@ -201,23 +211,17 @@ abstract public class Store implements Receiver {
      * This handles the Identity checking on the object.
      */
     public final org.neuclear.xml.ElementProxy receive(final SignedNamedObject obj) throws NeuClearException {
-        try {
-            rawStore(obj);
-        } catch (IOException e) {
-            throw new NeuClearException(e);
-        } catch (XMLException e) {
-            throw new NeuClearException(e);
-        }
+        rawStore(obj);
         return null;
     }
 
     /**
      * Override this for each specific Store type
      */
-    protected void rawStore(final SignedNamedObject obj) throws IOException, NeuClearException, XMLException {
+    protected void rawStore(final SignedNamedObject obj) throws StorageException, InvalidNamedObjectException {
         ;
     }
 
 
-    abstract SignedNamedObject fetch(String name) throws NeuClearException;
+    abstract SignedNamedObject fetch(String name) throws StorageException, InvalidNamedObjectException, NameResolutionException;
 }

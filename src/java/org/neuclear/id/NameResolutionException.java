@@ -12,6 +12,10 @@ import org.neuclear.commons.NeuClearException;
 public class NameResolutionException extends NeuClearException{
     private final String name;
 
+    public NameResolutionException(final String name,final String cause) {
+        super(name+" couldnt be resolved\nCause:"+cause);
+        this.name=name;
+    }
     public NameResolutionException(final String name) {
         super(name+" couldnt be resolved");
         this.name=name;

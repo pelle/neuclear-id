@@ -13,14 +13,23 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
+import java.text.ParseException;
 
 /**
  * (C) 2003 Antilles Software Ventures SA
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 1:23:05 PM
- * $Id: LogSender.java,v 1.13 2003/12/10 23:58:52 pelle Exp $
+ * $Id: LogSender.java,v 1.14 2003/12/19 18:03:35 pelle Exp $
  * $Log: LogSender.java,v $
+ * Revision 1.14  2003/12/19 18:03:35  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.13  2003/12/10 23:58:52  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -157,6 +166,8 @@ public final class LogSender extends Sender {
         } catch (MalformedURLException e) {
             Utility.rethrowException(e);  //To change body of catch statement use Options | File Templates.
         } catch (IOException e) {
+            Utility.rethrowException(e);  //To change body of catch statement use Options | File Templates.
+        } catch (ParseException e) {
             Utility.rethrowException(e);  //To change body of catch statement use Options | File Templates.
         }
 

@@ -1,6 +1,14 @@
 /*
- * $Id: SignedNamedCore.java,v 1.6 2003/12/11 23:57:29 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.7 2003/12/19 18:03:34 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.7  2003/12/19 18:03:34  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.6  2003/12/11 23:57:29  pelle
  * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
  * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -226,9 +234,11 @@ import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.xmlsec.KeyInfo;
 import org.neuclear.xml.xmlsec.XMLSecTools;
+import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.security.PublicKey;
 import java.sql.Timestamp;
+import java.text.ParseException;
 
 /**
  * The SignedNamedObject is a <i>secure</i> object normally encapsulating a Digitally signed contract of some
@@ -265,26 +275,31 @@ public final class SignedNamedCore {
      * 
      * @param elem 
      * @return 
-     * @throws XMLException      
-     * @throws NeuClearException 
+     * @throws InvalidNamedObjectException
      */
-    public final static SignedNamedCore read(final Element elem) throws XMLException, NeuClearException {
-        final String name = NSTools.normalizeNameURI(elem.attributeValue(getNameAttrQName()));
-        final String signatoryName = NSTools.getSignatoryURI(name);
-        final Identity signatory = NSResolver.resolveIdentity(signatoryName);
-        PublicKey publicKey = signatory.getPublicKey();
-        if (NSTools.isHttpScheme(name) != null) {
-            // We have a self signed http authenticated certificate and need to extract
-            // the PublicKey from the xml
-            final Element allowElement = elem.element(DocumentHelper.createQName("allow", NSTools.NS_NEUID));
-            final KeyInfo ki = new KeyInfo(allowElement.element(XMLSecTools.createQName("KeyInfo")));
-            publicKey = ki.getPublicKey();
+    public final static SignedNamedCore read(final Element elem) throws InvalidNamedObjectException, NameResolutionException {
+        final String name = NSTools.normalizeNameURI(InvalidNamedObjectException.assertAttributeQName(elem,getNameAttrQName()));
+        try {
+            final String signatoryName = NSTools.getSignatoryURI(name);
+            final Identity signatory = NSResolver.resolveIdentity(signatoryName);
+            PublicKey publicKey = signatory.getPublicKey();
+            if (NSTools.isHttpScheme(name) != null) {
+                // We have a self signed http authenticated certificate and need to extract
+                // the PublicKey from the xml
+                final Element allowElement = InvalidNamedObjectException.assertContainsElementQName(elem,createQName("allow"));
+                final KeyInfo ki = new KeyInfo(InvalidNamedObjectException.assertContainsElementQName(allowElement, XMLSecTools.createQName("KeyInfo")));
+                publicKey = ki.getPublicKey();
+            }
+            if (XMLSecTools.verifySignature(elem, publicKey)) {
+                final Timestamp timestamp = TimeTools.parseTimeStamp(InvalidNamedObjectException.assertAttributeQName(elem,createQName("timestamp")));
+                return new SignedNamedCore(name, signatory, timestamp, new String(XMLSecTools.canonicalize(elem)));
+            } else
+                throw new InvalidNamedObjectException(name);
+        } catch (XMLSecurityException e) {
+            throw new InvalidNamedObjectException(name);
+        } catch (ParseException e) {
+            throw new InvalidNamedObjectException(name,"invalid timestamp");
         }
-        if (XMLSecTools.verifySignature(elem, publicKey)) {
-            final Timestamp timestamp = TimeTools.parseTimeStamp(elem.attributeValue("timestamp"));
-            return new SignedNamedCore(name, signatory, timestamp, new String(XMLSecTools.canonicalize(elem)));
-        } else
-            throw new InvalidNamedObjectException(name + " isnt valid");
     }
 
     /**
@@ -298,8 +313,11 @@ public final class SignedNamedCore {
 
     private static QName getNameAttrQName() {
         return DocumentHelper.createQName("name", NSTools.NS_NEUID);
-
     }
+    private static QName createQName(String name) {
+        return DocumentHelper.createQName(name, NSTools.NS_NEUID);
+    }
+
 
     /**
      * The full name (URI) of an object

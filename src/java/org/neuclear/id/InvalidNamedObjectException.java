@@ -1,6 +1,14 @@
 /*
- * $Id: InvalidNamedObjectException.java,v 1.2 2003/12/19 00:31:30 pelle Exp $
+ * $Id: InvalidNamedObjectException.java,v 1.3 2003/12/19 18:03:34 pelle Exp $
  * $Log: InvalidNamedObjectException.java,v $
+ * Revision 1.3  2003/12/19 18:03:34  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.2  2003/12/19 00:31:30  pelle
  * Lots of usability changes through out all the passphrase agents and end user tools.
  *
@@ -106,8 +114,21 @@
 package org.neuclear.id;
 
 import org.neuclear.commons.NeuClearException;
+import org.dom4j.Element;
+import org.dom4j.QName;
 
+/**
+ * Thrown if an object is invalid. Also contains various helper methods for validating named objects
+ */
 public final class InvalidNamedObjectException extends NeuClearException {
+    public InvalidNamedObjectException(final String name,final String message) {
+        super(name+" is an invalid Identity\nCause: "+message);
+         this.name=name;
+    }
+    public InvalidNamedObjectException(final String name,Throwable e) {
+        super(name+" is an invalid Identity\nCause: "+e.getLocalizedMessage(),e);
+         this.name=name;
+    }
     public InvalidNamedObjectException(final String name) {
         super(name+" is an invalid Identity");
          this.name=name;
@@ -115,6 +136,41 @@ public final class InvalidNamedObjectException extends NeuClearException {
 
     public String getName() {
         return name;
+    }
+
+    public static void assertElementQName(SignedNamedCore core,Element elem,QName qname) throws InvalidNamedObjectException{
+        if (!elem.getQName().equals(qname))
+            throw new InvalidNamedObjectException(core.getName(),"Element: "+elem.getQualifiedName()+ " should be: "+qname.getQualifiedName());
+    }
+
+    public static Element assertContainsElementQName(SignedNamedCore core,Element elem,QName qname) throws InvalidNamedObjectException{
+        final Element sub = elem.element(qname);
+        if (sub==null)
+            throw new InvalidNamedObjectException(core.getName(),"Element: "+elem.getQualifiedName()+ " should be: "+qname.getQualifiedName());
+        return sub;
+    }
+
+    public static String assertAttributeQName(SignedNamedCore core,Element elem,QName qname) throws InvalidNamedObjectException{
+        if (elem.attribute(qname)==null)
+            throw new InvalidNamedObjectException(core.getName(),"Element: "+elem.getQualifiedName()+ " should contain attribute: "+qname.getQualifiedName());
+        return elem.attributeValue(qname);
+    }
+    public static void assertElementQName(Element elem,QName qname) throws InvalidNamedObjectException{
+        if (!elem.getQName().equals(qname))
+            throw new InvalidNamedObjectException("unknown","Element: "+elem.getQualifiedName()+ " should be: "+qname.getQualifiedName());
+    }
+
+    public static Element assertContainsElementQName(Element elem,QName qname) throws InvalidNamedObjectException{
+        final Element sub = elem.element(qname);
+        if (sub==null)
+            throw new InvalidNamedObjectException("unknown","Element: "+elem.getQualifiedName()+ " should be: "+qname.getQualifiedName());
+        return sub;
+    }
+
+    public static String assertAttributeQName(Element elem,QName qname) throws InvalidNamedObjectException{
+        if (elem.attribute(qname)==null)
+            throw new InvalidNamedObjectException("unknown","Element: "+elem.getQualifiedName()+ " should contain attribute: "+qname.getQualifiedName());
+        return elem.attributeValue(qname);
     }
     private final String name;
 }

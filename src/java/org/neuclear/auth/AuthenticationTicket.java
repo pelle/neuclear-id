@@ -11,15 +11,15 @@ package org.neuclear.auth;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
+import org.dom4j.QName;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.Utility;
 import org.neuclear.commons.time.TimeTools;
-import org.neuclear.id.Identity;
-import org.neuclear.id.NamedObjectReader;
-import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.SignedNamedCore;
+import org.neuclear.id.*;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 
 /**
  * This Authentication Ticket is used by websites to authenticate a user.
@@ -39,9 +39,8 @@ public final class AuthenticationTicket extends SignedNamedObject {
      * @param requester
      * @param validto   
      * @param siteurl   
-     * @throws NeuClearException 
      */
-    private AuthenticationTicket(final SignedNamedCore core, final String requester, final Timestamp validto, final String siteurl) throws NeuClearException {
+    private AuthenticationTicket(final SignedNamedCore core, final String requester, final Timestamp validto, final String siteurl)  {
         super(core);
         this.validTo = validto.getTime();
         this.siteurl = siteurl;
@@ -76,12 +75,20 @@ public final class AuthenticationTicket extends SignedNamedObject {
          * @param elem 
          * @return 
          */
-        public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws NeuClearException, XMLSecurityException {
-            final String requester = elem.attributeValue(DocumentHelper.createQName("requester", NS_NSAUTH));
-            final String sitehref = elem.attributeValue(DocumentHelper.createQName("sitehref", NS_NSAUTH));
-            final Timestamp validto = TimeTools.parseTimeStamp(elem.attributeValue(DocumentHelper.createQName("validto", NS_NSAUTH)));
-
-            return new AuthenticationTicket(core, requester, validto, sitehref);
+        public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws InvalidNamedObjectException {
+            final QName qelem=DocumentHelper.createQName(TAG_NAME,NS_NSAUTH);
+            InvalidNamedObjectException.assertElementQName(core,elem,qelem);
+            final QName qreq = DocumentHelper.createQName("requester", NS_NSAUTH);
+            final String requester = InvalidNamedObjectException.assertAttributeQName(core,elem,qreq);
+            final QName qsite = DocumentHelper.createQName("sitehref", NS_NSAUTH);
+            final String sitehref = InvalidNamedObjectException.assertAttributeQName(core,elem,qsite);
+            try {
+                final QName qtime = DocumentHelper.createQName("validto", NS_NSAUTH);
+                final Timestamp validto = TimeTools.parseTimeStamp(InvalidNamedObjectException.assertAttributeQName(core,elem,qtime));
+                return new AuthenticationTicket(core, requester, validto, sitehref);
+            } catch (ParseException e) {
+                throw new InvalidNamedObjectException(core.getName(),e.getLocalizedMessage());
+            }
         }
 
     }

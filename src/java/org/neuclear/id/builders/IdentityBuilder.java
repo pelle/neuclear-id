@@ -1,6 +1,14 @@
 /*
- * $Id: IdentityBuilder.java,v 1.15 2003/12/18 17:40:19 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.16 2003/12/19 18:03:34 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.16  2003/12/19 18:03:34  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.15  2003/12/18 17:40:19  pelle
  * You can now create keys that get stored with a X509 certificate in the keystore. These can be saved as well.
  * IdentityCreator has been modified to allow creation of keys.
@@ -211,6 +219,7 @@ import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.crypto.CryptoException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.Identity;
+import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 import org.neuclear.xml.XMLException;
@@ -229,7 +238,7 @@ public class IdentityBuilder extends NamedObjectBuilder {
      * @param receiver   URL of default receiver for namespace
      */
 
-    public IdentityBuilder(final String name, final PublicKey allow, final String repository, final String signer, final String logger, final String receiver) throws NeuClearException {
+    public IdentityBuilder(final String name, final PublicKey allow, final String repository, final String signer, final String logger, final String receiver) throws InvalidNamedObjectException {
         this(createNEUIDQName(TAGNAME), name, allow, repository, signer, logger, receiver);
     }
 
@@ -243,7 +252,7 @@ public class IdentityBuilder extends NamedObjectBuilder {
      * @param signer     URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
      * @param receiver   URL of default receiver for namespace
      */
-    protected IdentityBuilder(final QName tag, final String name, final PublicKey allow, final String repository, final String signer, final String logger, final String receiver) throws NeuClearException {
+    protected IdentityBuilder(final QName tag, final String name, final PublicKey allow, final String repository, final String signer, final String logger, final String receiver) throws InvalidNamedObjectException {
         super(name, tag);
 
         final Element root = getElement();

@@ -6,6 +6,7 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.Identity;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.InvalidNamedObjectException;
 
 /**
  * The Idea of the NSCache is to have a quick cache of verified public NameSpaces. This is not stored, but is created from scratch
@@ -36,11 +37,15 @@ public final class NSCache {
         }
     }
 
-    public void cache(final SignedNamedObject ns) throws NeuClearException {
+    public void cache(final SignedNamedObject ns)  {
         // Only store if it's parent is already here
-        final String parentName = NSTools.getSignatoryURI(ns.getName());
-        if ((fetchCached(parentName) != null) || (parentName.equals("neu://"))) {
-            spaces.put(ns.getName(), ns);
+        try {
+            final String parentName = NSTools.getSignatoryURI(ns.getName());
+            if ((fetchCached(parentName) != null) || (parentName.equals("neu://")||NSTools.isHttpScheme(ns.getName())!=null)) {
+                spaces.put(ns.getName(), ns);
+            }
+        } catch (InvalidNamedObjectException e) {
+            ;// If we have an issue here we will silently ignore it.
         }
     }
 

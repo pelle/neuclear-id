@@ -1,6 +1,14 @@
 /*
- * $Id: SigningServlet.java,v 1.26 2003/12/19 00:31:31 pelle Exp $
+ * $Id: SigningServlet.java,v 1.27 2003/12/19 18:03:35 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.27  2003/12/19 18:03:35  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.26  2003/12/19 00:31:31  pelle
  * Lots of usability changes through out all the passphrase agents and end user tools.
  *
@@ -390,18 +398,17 @@ public class SigningServlet extends XMLInputStreamServlet {
 
     private boolean sign(final NamedObjectBuilder named, final PrintWriter out) throws NeuClearException, XMLException {
         boolean isSigned;
-        try {
-            context.log("SIGN: Signing with " + named.getSignatory().getName());
-            final SignedNamedObject signed = named.sign(signer);
-            isSigned = true;
-            out.println("<li>Signed</li>");
-            out.println("<li>" + signed.getName() + " Verified</li>");
-            out.flush();
-        } catch (InvalidPassphraseException e) {
-            out.println("<li><font color=\"red\"><b>ERROR: Wrong Passphrase</b></font></li>");
-            out.flush();
-            isSigned = sign(named,out);
-        }
+        context.log("SIGN: Signing with " + named.getSignatory().getName());
+        final SignedNamedObject signed = named.sign(signer);
+        isSigned = true;
+        out.println("<li>Signed</li>");
+        out.println("<li>" + signed.getName() + " Verified</li>");
+        out.flush();
+//        } catch (InvalidPassphraseException e) {
+//            out.println("<li><font color=\"red\"><b>ERROR: Wrong Passphrase</b></font></li>");
+//            out.flush();
+//            isSigned = sign(named,out);
+//        }
         return isSigned;
     }
 

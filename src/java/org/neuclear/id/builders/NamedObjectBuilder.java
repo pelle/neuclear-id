@@ -1,6 +1,14 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.19 2003/12/18 17:40:19 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.20 2003/12/19 18:03:34 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.20  2003/12/19 18:03:34  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.19  2003/12/18 17:40:19  pelle
  * You can now create keys that get stored with a X509 certificate in the keystore. These can be saved as well.
  * IdentityCreator has been modified to allow creation of keys.
@@ -210,11 +218,10 @@ import org.dom4j.*;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
+import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
 import org.neuclear.commons.time.TimeTools;
-import org.neuclear.id.Identity;
-import org.neuclear.id.NSTools;
-import org.neuclear.id.Named;
-import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.*;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.XMLException;
@@ -222,52 +229,60 @@ import org.neuclear.xml.xmlsec.SignedElement;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 
 /**
  * This simple wrapper takes most of the contents of a NamedObject and puts it into a Serializable form that can be signed.
  */
 public class NamedObjectBuilder extends SignedElement implements Named, Cloneable {
-    protected NamedObjectBuilder(final String name, final String tagName, final String prefix, final String nsURI) throws NeuClearException {
+    protected NamedObjectBuilder(final String name, final String tagName, final String prefix, final String nsURI) throws InvalidNamedObjectException {
         super(tagName, prefix, nsURI);
         createDocument();
         setName(name);
     }
 
-    protected NamedObjectBuilder(final String name, final String tagName, final Namespace ns) throws NeuClearException {
+    protected NamedObjectBuilder(final String name, final String tagName, final Namespace ns) throws InvalidNamedObjectException {
         super(tagName, ns);
         createDocument();
         setName(name);
     }
 
-    protected NamedObjectBuilder(final String name, final String tagName) throws NeuClearException {
+    protected NamedObjectBuilder(final String name, final String tagName) throws InvalidNamedObjectException {
         super(tagName, NSTools.NS_NEUID);
         createDocument();
         setName(name);
     }
 
-    protected NamedObjectBuilder(final String name, final QName qname) throws NeuClearException {
+    protected NamedObjectBuilder(final String name, final QName qname) throws InvalidNamedObjectException {
         super(qname);
         createDocument();
         setName(name);
     }
 
-    public NamedObjectBuilder(final Element elem) throws XMLSecurityException {
+    public NamedObjectBuilder(final Element elem) throws XMLSecurityException,InvalidNamedObjectException {
         super(elem);
+        final String name=getName();
+        if (!NSTools.isValidName(name))
+            throw new InvalidNamedObjectException(name);
 
     }
 
 
-    public NamedObjectBuilder(final Document doc) throws XMLSecurityException {
+    public NamedObjectBuilder(final Document doc) throws XMLSecurityException,InvalidNamedObjectException {
         super(doc.getRootElement());
     }
 
 
-    final public SignedNamedObject sign(final Signer signer) throws NeuClearException, XMLException {
-        sign(getSignatory().getName(), signer); //Sign with parent key
-        return convert();
+    final public SignedNamedObject sign(final Signer signer) throws InvalidNamedObjectException,  NonExistingSignerException, UserCancellationException, NameResolutionException {
+        try {
+            sign(getSignatory().getName(), signer); //Sign with parent key
+            return convert();
+        } catch (XMLSecurityException e) {
+            throw new InvalidNamedObjectException(getName(),e);
+        }
     }
 
-    final public SignedNamedObject convert() throws NeuClearException, XMLException {
+    final public SignedNamedObject convert() throws InvalidNamedObjectException, NameResolutionException{
 
         return VerifyingReader.getInstance().read(getElement());
     }
@@ -278,7 +293,11 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
      * @return String containing the fully qualified URI of an object
      */
     public final String getName() {
-        return getElement().attributeValue(getNameAttrQName());
+        QName q=getNameAttrQName();
+        if (getElement()!=null&&getElement().attribute(q)!=null)
+            return getElement().attributeValue(q);
+        return null;
+
     }
 
     /**
@@ -286,11 +305,11 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
      * 
      * @return Parent Name
      */
-    public final String getLocalName() throws NeuClearException {
+    public final String getLocalName() throws InvalidNamedObjectException {
         return NSTools.getLocalName(getName());
     }
 
-    private void setName(final String name) throws NeuClearException {
+    private void setName(final String name) throws InvalidNamedObjectException {
         getElement().addAttribute(getNameAttrQName(), NSTools.normalizeNameURI(name));
     }
 
@@ -413,12 +432,12 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
     }
 */
 
-    public final Timestamp getTimeStamp() throws NeuClearException {
+    public final Timestamp getTimeStamp()  {
         final String timeString = getElement().attributeValue(DocumentHelper.createQName("timestamp", NSTools.NS_NEUID));
         if (isSigned() && !Utility.isEmpty(timeString)) {
             try {
                 return TimeTools.parseTimeStamp(timeString);
-            } catch (NeuClearException e) {
+            } catch (ParseException e) {
                 return null;
             }
         }
@@ -429,7 +448,7 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
     }
 
 
-    public final Identity getSignatory() throws NeuClearException {
+    public final Identity getSignatory() throws InvalidNamedObjectException, NameResolutionException  {
         return NSResolver.resolveIdentity(NSTools.getSignatoryURI(getName()));
     }
 
@@ -491,7 +510,7 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
             final Element elem = (Element) getElement().clone();
             DocumentHelper.createDocument(elem);
             return new NamedObjectBuilder(elem);
-        } catch (XMLSecurityException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

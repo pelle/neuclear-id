@@ -1,5 +1,13 @@
-/* $Id: IdentityCreator.java,v 1.5 2003/12/19 00:31:30 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.6 2003/12/19 18:03:34 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.6  2003/12/19 18:03:34  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.5  2003/12/19 00:31:30  pelle
  * Lots of usability changes through out all the passphrase agents and end user tools.
  *
@@ -201,6 +209,8 @@ package org.neuclear.id.tools.commandline;
 
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.CryptoException;
@@ -216,7 +226,7 @@ import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public final class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(final String[] args) throws UserCancellationException, ParseException, InvalidNamedObjectException {
@@ -237,40 +247,45 @@ public final class IdentityCreator extends CommandLineSigner {
         }
     }
 
-    public final NamedObjectBuilder build() throws Exception {
+    protected NamedObjectBuilder build() throws UserCancellationException {
         NamedObjectBuilder subject = null;
         if (cmd.hasOption('i')) {//If we have an input file we load that instead of creating a new one
             subject = super.build();
             identity = subject.getName();
         }
-        String store = NSTools.isHttpScheme(identity);
-        boolean isTopLevel = !Utility.isEmpty(store);
-        if (!isTopLevel) {
-            // If this isn't a top level we will derive the repository from its parent.
-            store = NSTools.isHttpScheme(NSTools.getSignatoryURI(identity));
-        }
-        alias = (isTopLevel) ? identity : NSTools.getSignatoryURI(identity);
-       final String defaultstore = Utility.denullString(cmd.getOptionValue("r"), store);
-        final String defaultsigner = Utility.denullString(cmd.getOptionValue("s"), "http://localhost:11870/Signer");
-        final String defaultlogger = Utility.denullString(cmd.getOptionValue("l"), LogSender.LOGGER);
-        final String defaultreceiver = cmd.getOptionValue("b");
-        if (!sig.canSignFor(identity)){
-            System.out.println("You do not currently have a key matching this name. Do you with to create one?");
-            if (!Utility.getAffirmative(true)) {
-                System.out.println("OK, Bye");
-                System.exit(0);
+        try {
+            String store = NSTools.isHttpScheme(identity);
+            boolean isTopLevel = !Utility.isEmpty(store);
+            if (!isTopLevel) {
+                // If this isn't a top level we will derive the repository from its parent.
+                store = NSTools.isHttpScheme(NSTools.getSignatoryURI(identity));
             }
-            System.out.println("Generating Keys for "+identity+"... ");
-            PublicKey pub=sig.generateKey(identity);
-            System.out.println("DONE");
-            System.out.println("STORING Keys");
-            sig.save();
+            alias = (isTopLevel) ? identity : NSTools.getSignatoryURI(identity);
+            final String defaultstore = Utility.denullString(cmd.getOptionValue("r"), store);
+            final String defaultsigner = Utility.denullString(cmd.getOptionValue("s"), "http://localhost:11870/Signer");
+            final String defaultlogger = Utility.denullString(cmd.getOptionValue("l"), LogSender.LOGGER);
+            final String defaultreceiver = cmd.getOptionValue("b");
+            if (!sig.canSignFor(identity)){
+                System.out.println("You do not currently have a key matching this name. Do you with to create one?");
+                if (!Utility.getAffirmative(true)) {
+                    System.out.println("OK, Bye");
+                    System.exit(0);
+                }
+                System.out.println("Generating Keys for "+identity+"... ");
+                PublicKey pub=sig.generateKey(identity);
+                System.out.println("DONE");
+                System.out.println("STORING Keys");
+                sig.save();
 
+            }
+            final PublicKey newkid = pksource.getPublicKey(identity);
+
+            return new IdentityBuilder(identity, newkid, defaultstore, defaultsigner, defaultlogger, defaultreceiver);
+        } catch (InvalidNamedObjectException e) {
+            System.err.println("The name: "+e.getName()+" is not valid. ");
+            System.exit(1);
         }
-        final PublicKey newkid = pksource.getPublicKey(identity);
-        if (newkid == null)
-            throw new CryptoException("PublicKey not available for: " + identity);
-        return new IdentityBuilder(identity, newkid, defaultstore, defaultsigner, defaultlogger, defaultreceiver);
+        return null;
     }
 
     public static void main(final String[] args) {
@@ -294,11 +309,11 @@ public final class IdentityCreator extends CommandLineSigner {
     }
 
     protected final void getLocalOptions(final Options options) {
-        options.addOption("n", "name", true, "specify name of new Identity \n[ --name neu://bob@yourdomain.com ]");
-        options.addOption("r", "repository", true, "Identity's default Repository \n[ --repository http://repository.neuclear.org ] ");
-        options.addOption("s", "signer", true, "Identity's default Interactive Signer \n[ --signer http://localhost:11870 ]");
-        options.addOption("l", "logger", true, "Identity's default Logging Service \n[ --logger http://logger.neuclear.org ]");
-        options.addOption("b", "receiver", true, "Identity's default Receiver \n[ --receiver mailto:bob@yourdomain.com ]");
+        options.addOption(new Option("n", "name", true, "specify name of new Identity \n[ --name neu://bob@yourdomain.com ]"));
+        options.addOption(new Option("r", "repository", true, "Identity's default Repository \n[ --repository http://repository.neuclear.org ] "));
+        options.addOption(new Option("s", "signer", true, "Identity's default Interactive Signer \n[ --signer http://localhost:11870 ]"));
+        options.addOption(new Option("l", "logger", true, "Identity's default Logging Service \n[ --logger http://logger.neuclear.org ]"));
+        options.addOption(new Option("b", "receiver", true, "Identity's default Receiver \n[ --receiver mailto:bob@yourdomain.com ]"));
     }
 
 

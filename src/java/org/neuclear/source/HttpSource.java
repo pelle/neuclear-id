@@ -5,8 +5,16 @@ package org.neuclear.source;
  * User: pelleb
  * Date: Feb 10, 2003
  * Time: 8:35:33 PM
- * $Id: HttpSource.java,v 1.12 2003/12/08 19:32:32 pelle Exp $
+ * $Id: HttpSource.java,v 1.13 2003/12/19 18:03:35 pelle Exp $
  * $Log: HttpSource.java,v $
+ * Revision 1.13  2003/12/19 18:03:35  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.12  2003/12/08 19:32:32  pelle
  * Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
  *
@@ -84,6 +92,7 @@ package org.neuclear.source;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.InvalidNamedObjectException;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -109,14 +118,14 @@ import java.net.URL;
  */
 public final class HttpSource extends Source {
 
-    protected final InputStream getStream(final String endpoint, final String name) throws NeuClearException {
+    protected final InputStream getStream(final String endpoint, final String name) throws SourceException, InvalidNamedObjectException {
         try {
             final String urlstring = endpoint + NSTools.name2path(name)+"/root.id";
             final URL url = new URL(urlstring);
 
             return url.openStream();
         } catch (java.io.IOException e) {
-            throw new NeuClearException(e);
+            throw new SourceException(this,e);
         }
     }
 

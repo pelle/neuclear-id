@@ -1,6 +1,14 @@
 /*
- * $Id: NSTools.java,v 1.23 2003/12/19 00:31:30 pelle Exp $
+ * $Id: NSTools.java,v 1.24 2003/12/19 18:03:34 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.24  2003/12/19 18:03:34  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.23  2003/12/19 00:31:30  pelle
  * Lots of usability changes through out all the passphrase agents and end user tools.
  *
@@ -204,9 +212,9 @@ public final class NSTools {
      * 
      * @param name Valid NEU Name
      * @return Valid URI
-     * @throws NeuClearException If name isn't a valid NEU Name
+     * @throws InvalidNamedObjectException If name isn't a valid NEU Name
      */
-    public static String normalizeNameURI(String name) throws NeuClearException {
+    public static String normalizeNameURI(String name) throws InvalidNamedObjectException {
         if (name == null)
             return "neu://";
         if (!name.startsWith("neu://"))
@@ -292,9 +300,9 @@ public final class NSTools {
      * 
      * @param uri a valid NEU Name
      * @return Parent URI or null if name is the root
-     * @throws NeuClearException if name is invalid
+     * @throws InvalidNamedObjectException if name is invalid
      */
-    public static String getLocalName(final String uri) throws NeuClearException {
+    public static String getLocalName(final String uri) throws InvalidNamedObjectException {
         if (!isValidName(uri))
             throw new InvalidNamedObjectException("Invalid Neu ID: " + uri);
         final int bang = uri.indexOf('!');

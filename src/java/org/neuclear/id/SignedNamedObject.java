@@ -1,6 +1,14 @@
 /*
- * $Id: SignedNamedObject.java,v 1.13 2003/12/10 23:58:51 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.14 2003/12/19 18:03:34 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.14  2003/12/19 18:03:34  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.13  2003/12/10 23:58:51  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -207,6 +215,8 @@
 package org.neuclear.id;
 
 import org.dom4j.Element;
+import org.dom4j.QName;
+import org.dom4j.DocumentHelper;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
@@ -235,7 +245,7 @@ import java.sql.Timestamp;
  */
 public class SignedNamedObject implements SignedObject, Named {
 
-    protected SignedNamedObject(final SignedNamedCore core) throws NeuClearException {
+    protected SignedNamedObject(final SignedNamedCore core)  {
         this.core = core;
     }
 
@@ -313,7 +323,9 @@ public class SignedNamedObject implements SignedObject, Named {
     public void send() throws NeuClearException {
         getSignatory().receive(this);
     }
-
+    public final static QName createNEUIDQName(String name){
+        return DocumentHelper.createQName(name, NSTools.NS_NEUID);
+    }
     private final SignedNamedCore core;
 
     final public static class Reader implements NamedObjectReader {
@@ -323,7 +335,7 @@ public class SignedNamedObject implements SignedObject, Named {
          * @param elem 
          * @return 
          */
-        public SignedNamedObject read(final SignedNamedCore core, final Element elem) throws NeuClearException, XMLSecurityException {
+        public SignedNamedObject read(final SignedNamedCore core, final Element elem)  {
             return new SignedNamedObject(core);
         }
         /**

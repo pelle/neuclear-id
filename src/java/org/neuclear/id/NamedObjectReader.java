@@ -22,8 +22,16 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NamedObjectReader.java,v 1.6 2003/12/10 23:58:51 pelle Exp $
+$Id: NamedObjectReader.java,v 1.7 2003/12/19 18:03:34 pelle Exp $
 $Log: NamedObjectReader.java,v $
+Revision 1.7  2003/12/19 18:03:34  pelle
+Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+- For most cases the main exception to worry about now is InvalidNamedObjectException.
+- Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+  runtime exception.
+- Source and Store patterns each now have their own exceptions that generalizes the various physical
+  exceptions that can happen in that area.
+
 Revision 1.6  2003/12/10 23:58:51  pelle
 Did some cleaning up in the builders
 Fixed some stuff in IdentityCreator
@@ -83,5 +91,5 @@ public interface NamedObjectReader {
      * @param elem 
      * @return 
      */
-    public SignedNamedObject read(SignedNamedCore core, Element elem) throws NeuClearException, XMLSecurityException;
+    public SignedNamedObject read(SignedNamedCore core, Element elem) throws InvalidNamedObjectException;
 }

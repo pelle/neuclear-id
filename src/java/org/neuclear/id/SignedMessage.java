@@ -17,7 +17,7 @@ import java.sql.Timestamp;
  * To change this template use Options | File Templates.
  */
 public class SignedMessage extends SignedNamedObject{
-    private SignedMessage(SignedNamedCore core, String recipient,String subject, String message) throws NeuClearException {
+    private SignedMessage(SignedNamedCore core, String recipient,String subject, String message)  {
         super(core);
         this.recipient=recipient;
         this.subject=subject;
@@ -43,7 +43,7 @@ public class SignedMessage extends SignedNamedObject{
          * @param elem
          * @return
          */
-        public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws NeuClearException, XMLSecurityException {
+        public final SignedNamedObject read(final SignedNamedCore core, final Element elem) {
             final String to=elem.attributeValue("recipient");
             final String subject=elem.element("subject").getText();
             final String message=elem.element("message").getText();

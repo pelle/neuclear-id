@@ -5,8 +5,16 @@ package org.neuclear.source;
  * User: pelleb
  * Date: Feb 10, 2003
  * Time: 8:26:04 PM
- * $Id: Source.java,v 1.8 2003/12/04 21:50:36 pelle Exp $
+ * $Id: Source.java,v 1.9 2003/12/19 18:03:35 pelle Exp $
  * $Log: Source.java,v $
+ * Revision 1.9  2003/12/19 18:03:35  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.8  2003/12/04 21:50:36  pelle
  * Mainly documentation changes.
  *
@@ -73,6 +81,8 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.InvalidNamedObjectException;
+import org.neuclear.id.NameResolutionException;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.XMLException;
 
@@ -102,22 +112,17 @@ public abstract class Source {
      * @param endpoint 
      * @param name     
      * @return 
-     * @throws NeuClearException 
      */
-    public final SignedNamedObject fetch(final String endpoint, String name) throws NeuClearException {
-        try {
-            name = NSTools.normalizeNameURI(name);
-            SignedNamedObject candidate = (SignedNamedObject) cache.get(name);
-            if (candidate != null)
-                return candidate;
-
-            candidate = VerifyingReader.getInstance().read(getStream(endpoint, name));
-            if (candidate != null)
-                storeInCache(candidate);
+    public final SignedNamedObject fetch(final String endpoint, String name) throws SourceException, InvalidNamedObjectException, NameResolutionException {
+        name = NSTools.normalizeNameURI(name);
+        SignedNamedObject candidate = (SignedNamedObject) cache.get(name);
+        if (candidate != null)
             return candidate;
-        } catch (XMLException e) {
-            throw new NeuClearException(e);
-        }
+
+        candidate = VerifyingReader.getInstance().read(getStream(endpoint, name));
+        if (candidate != null)
+            storeInCache(candidate);
+        return candidate;
     }
 
     /**
@@ -127,11 +132,11 @@ public abstract class Source {
      * @param name     
      * @return 
      */
-    protected InputStream getStream(final String endpoint, final String name) throws NeuClearException {
+    protected InputStream getStream(final String endpoint, final String name) throws SourceException, InvalidNamedObjectException {
         return null;
     }
 
-    private void storeInCache(final SignedNamedObject obj) throws NeuClearException {
+    private void storeInCache(final SignedNamedObject obj)  {
         cache.put(obj.getName(), obj);
     }
 

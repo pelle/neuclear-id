@@ -1,7 +1,15 @@
 /*
  *
- * $Id: CachedSource.java,v 1.16 2003/12/09 23:41:44 pelle Exp $
+ * $Id: CachedSource.java,v 1.17 2003/12/19 18:03:35 pelle Exp $
  * $Log: CachedSource.java,v $
+ * Revision 1.17  2003/12/19 18:03:35  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.16  2003/12/09 23:41:44  pelle
  * IdentityCreator is now the default class of the uber jar.
  * It has many new features such as:
@@ -123,6 +131,7 @@ package org.neuclear.source;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.NSTools;
+import org.neuclear.id.InvalidNamedObjectException;
 
 import java.io.*;
 
@@ -145,7 +154,7 @@ public final class CachedSource extends Source {
     }
 
 
-    protected InputStream getStream(final String endpoint, final String name) throws NeuClearException {
+    protected InputStream getStream(final String endpoint, final String name) throws SourceException, InvalidNamedObjectException {
         final File object = new File(cachedirpath + NSTools.name2path(name) + "/root.id");
         try {
             if (!object.exists()||((object.lastModified()+MS_STALE)<System.currentTimeMillis())) {
@@ -164,7 +173,7 @@ public final class CachedSource extends Source {
             return new FileInputStream(object);
         } catch (IOException e) {
             // I have already checked for this but will wrap it anyhow.
-            throw new NeuClearException(e);
+            throw new SourceException(this,e);
         }
 
     }

@@ -1,6 +1,14 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.17 2003/12/10 23:58:52 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.18 2003/12/19 18:03:35 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
+ * Revision 1.18  2003/12/19 18:03:35  pelle
+ * Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
+ * - For most cases the main exception to worry about now is InvalidNamedObjectException.
+ * - Most lowerlevel exception that cant be handled meaningful are now wrapped in the LowLevelException, a
+ *   runtime exception.
+ * - Source and Store patterns each now have their own exceptions that generalizes the various physical
+ *   exceptions that can happen in that area.
+ *
  * Revision 1.17  2003/12/10 23:58:52  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -200,6 +208,7 @@ import org.neuclear.commons.crypto.CryptoException;
 import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.InvalidNamedObjectException;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -216,7 +225,7 @@ public final class EncryptedFileStore extends FileStore {
         super(base);
     }
 
-    protected final OutputStream getOutputStream(final SignedNamedObject obj) throws NeuClearException, FileNotFoundException {
+    protected final OutputStream getOutputStream(final SignedNamedObject obj) throws InvalidNamedObjectException, StorageException {
         final String outputFilename = base + getFileName(obj);
         System.out.println("Outputting to: " + outputFilename);
         final File outputFile = new File(outputFilename);
@@ -224,25 +233,25 @@ public final class EncryptedFileStore extends FileStore {
         try {
             return new CipherOutputStream(new FileOutputStream(outputFile), CryptoTools.makePBECipher(Cipher.ENCRYPT_MODE, obj.getName().toCharArray()));
         } catch (Exception e) {
-            throw new CryptoException(e);
+            throw new StorageException(this,e);
         }
     }
 
-    protected final InputStream getInputStream(final String name) throws FileNotFoundException, NeuClearException {
+    protected final InputStream getInputStream(final String name) throws InvalidNamedObjectException, StorageException {
         final String inputFilename = base + getFileName(name);
         System.out.println("Loading from: " + inputFilename);
         final File fin = new File(inputFilename);
         if (!fin.exists())
-            throw new NeuClearException("NeuClear: " + name + " doesnt exist");
+            throw new InvalidNamedObjectException(name);
         try {
             return new CipherInputStream(new FileInputStream(fin), CryptoTools.makePBECipher(Cipher.DECRYPT_MODE, name.toCharArray()));
         } catch (Exception e) {
-            throw new CryptoException(e);
+            throw new StorageException(this,e);
         }
     }
 
 
-    protected final String getFileName(final String name) throws NeuClearException {
+    protected final String getFileName(final String name) throws InvalidNamedObjectException  {
         final String deURLizedName = NSTools.normalizeNameURI(name);
         final byte[] hash = CryptoTools.formatAsBase36(CryptoTools.digest256(deURLizedName.getBytes())).getBytes();
         //if (true) return new String(hash);
