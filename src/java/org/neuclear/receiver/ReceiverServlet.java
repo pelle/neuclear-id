@@ -1,6 +1,9 @@
 /*
- * $Id: ReceiverServlet.java,v 1.10 2003/11/28 00:12:58 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.11 2003/12/08 19:32:32 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.11  2003/12/08 19:32:32  pelle
+ * Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
+ *
  * Revision 1.10  2003/11/28 00:12:58  pelle
  * Getting the NeuClear web transactions working.
  *
@@ -115,7 +118,7 @@ public class ReceiverServlet extends XMLInputStreamServlet {
     }
 
     protected final void handleInputStream(final InputStream is, final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        PrintWriter writer = response.getWriter();
+        final PrintWriter writer = response.getWriter();
         final boolean isXML = request.getContentType().equals("text/xml");
         if (isXML) {
             response.setContentType("text/xml");

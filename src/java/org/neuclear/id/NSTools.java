@@ -1,6 +1,9 @@
 /*
- * $Id: NSTools.java,v 1.16 2003/12/06 00:17:03 pelle Exp $
+ * $Id: NSTools.java,v 1.17 2003/12/08 19:32:32 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.17  2003/12/08 19:32:32  pelle
+ * Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
+ *
  * Revision 1.16  2003/12/06 00:17:03  pelle
  * Updated various areas in NSTools.
  * Updated URI Validation in particular to support new expanded format
@@ -322,6 +325,23 @@ public final class NSTools {
         }
         throw new InvalidNamedObject("Invalid NEU ID: " + name);
     }
+    /**
+     * Checks to see if the following name should be resolved using the HTTP Resolving Scheme
+     * @param name
+     * @return
+     */
+    public static String isHttpScheme(final String name){
+        if (!Utility.isEmpty(name)) {
+            final Matcher matcher = HTTP_SCHEME.matcher(name);
+            if (matcher.matches())
+                return "http://"+matcher.group(2)+"/_NEUID"; //TODO switch to https
+        }
+        return null;
+
+    }
+
+    private static final String HTTP_SCHEME_EX="^neu:(neuid:)?\\/\\/(([\\w-]+\\.)+[\\w-]+)$";
+    private static final Pattern HTTP_SCHEME=Pattern.compile(HTTP_SCHEME_EX);
 
     public static final String NEUID_URI = "http://neuclear.org/neu/neuid";
     public static final Namespace NS_NEUID = DocumentHelper.createNamespace("neuid", NEUID_URI);
@@ -342,5 +362,4 @@ public final class NSTools {
     private static final String STRIP_URI_ARROBA_EX = "neu://((" + VALID_TOKEN + ")@)?(" + VALID_TOKEN + ")?(" + VALID_SUB_TOKEN + VALID_TRAN_TOKEN + ")$";
 
     private static final Pattern STRIP_URI_ARROBA = Pattern.compile(STRIP_URI_ARROBA_EX);
-
 }

@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedCore.java,v 1.3 2003/11/21 13:57:27 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.4 2003/12/08 19:32:32 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.4  2003/12/08 19:32:32  pelle
+ * Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
+ *
  * Revision 1.3  2003/11/21 13:57:27  pelle
  * Changed some mutable fields in immutable classes, making them truely immutable. Thus safer.
  *
@@ -211,11 +214,13 @@ import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
 import org.neuclear.xml.xmlsec.XMLSecTools;
+import org.neuclear.xml.xmlsec.KeyInfo;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.id.verifier.VerifyingReader;
 
 import java.sql.Timestamp;
 import java.io.InputStream;
+import java.security.PublicKey;
 
 /**
  * The SignedNamedObject is a <i>secure</i> object normally encapsulating a Digitally signed contract of some
@@ -248,7 +253,7 @@ public final class SignedNamedCore  {
     }
 
     /**
-     * Used to read and authenticate a SignedNamedObject.
+     * Used to read and authenticate a SignedNamedCore.
      * @param elem
      * @return
      * @throws XMLException
@@ -257,9 +262,16 @@ public final class SignedNamedCore  {
     public final static SignedNamedCore read(final Element elem) throws XMLException, NeuClearException {
         final String name = NSTools.normalizeNameURI(elem.attributeValue(getNameAttrQName()));
         final String signatoryName = NSTools.getParentNSURI(name);
-
         final Identity signatory = NSResolver.resolveIdentity(signatoryName);
-        if (XMLSecTools.verifySignature(elem, signatory.getPublicKey())) {
+        PublicKey publicKey = signatory.getPublicKey();
+        if (NSTools.isHttpScheme(name)!=null){
+            // We have a self signed http authenticated certificate and need to extract
+            // the PublicKey from the xml
+            final Element allowElement = elem.element(DocumentHelper.createQName("allow", NSTools.NS_NEUID));
+            final KeyInfo ki = new KeyInfo(allowElement.element(XMLSecTools.createQName("KeyInfo")));
+            publicKey= ki.getPublicKey();
+        }
+        if (XMLSecTools.verifySignature(elem, publicKey)) {
             final Timestamp timestamp = TimeTools.parseTimeStamp(elem.attributeValue("timestamp"));
             return new SignedNamedCore( name, signatory, timestamp,new String(XMLSecTools.canonicalize(elem)));
         } else

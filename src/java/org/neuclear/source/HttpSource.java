@@ -5,8 +5,11 @@ package org.neuclear.source;
  * User: pelleb
  * Date: Feb 10, 2003
  * Time: 8:35:33 PM
- * $Id: HttpSource.java,v 1.11 2003/12/06 00:17:04 pelle Exp $
+ * $Id: HttpSource.java,v 1.12 2003/12/08 19:32:32 pelle Exp $
  * $Log: HttpSource.java,v $
+ * Revision 1.12  2003/12/08 19:32:32  pelle
+ * Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
+ *
  * Revision 1.11  2003/12/06 00:17:04  pelle
  * Updated various areas in NSTools.
  * Updated URI Validation in particular to support new expanded format
@@ -108,7 +111,7 @@ public final class HttpSource extends Source {
 
     protected final InputStream getStream(final String endpoint, final String name) throws NeuClearException {
         try {
-            final String urlstring = endpoint + NSTools.name2path(name);
+            final String urlstring = endpoint + NSTools.name2path(name)+"/root.id";
             final URL url = new URL(urlstring);
 
             return url.openStream();

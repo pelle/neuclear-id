@@ -1,6 +1,9 @@
 /*
- * $Id: IdentityBuilder.java,v 1.8 2003/11/21 04:45:10 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.9 2003/12/08 19:32:31 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.9  2003/12/08 19:32:31  pelle
+ * Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
+ *
  * Revision 1.8  2003/11/21 04:45:10  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -237,15 +240,5 @@ public  class IdentityBuilder extends NamedObjectBuilder {
         return "Identity";
     }
 
-    public static void main(final String[] args) {
-        System.out.println("Test Building NeuClear Identities");
-        try {
-            final NamedObjectBuilder id = new IdentityBuilder("neu://", Identity.NEUROOT.getPublicKey());
-            System.out.println(new String(id.canonicalize()));
-        } catch (XMLException e) {
-            e.printStackTrace();
-        } catch (NeuClearException e) {
-            e.printStackTrace();  //TODO Handle exception
-        }
-    }
+
 }

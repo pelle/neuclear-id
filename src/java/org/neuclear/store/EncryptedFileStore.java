@@ -1,6 +1,9 @@
 /*
- * $Id: EncryptedFileStore.java,v 1.15 2003/12/06 00:17:04 pelle Exp $
+ * $Id: EncryptedFileStore.java,v 1.16 2003/12/08 19:32:32 pelle Exp $
  * $Log: EncryptedFileStore.java,v $
+ * Revision 1.16  2003/12/08 19:32:32  pelle
+ * Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
+ *
  * Revision 1.15  2003/12/06 00:17:04  pelle
  * Updated various areas in NSTools.
  * Updated URI Validation in particular to support new expanded format
@@ -234,7 +237,7 @@ public final class EncryptedFileStore extends FileStore {
 
     protected final String getFileName(final String name) throws NeuClearException {
         final String deURLizedName = NSTools.normalizeNameURI(name);
-        final byte[] hash = CryptoTools.formatAsBase36(CryptoTools.digest256(deURLizedName.getBytes())).getBytes();
+        final byte[] hash = CryptoTools.formatAsBase36 (CryptoTools.digest256(deURLizedName.getBytes())).getBytes();
         //if (true) return new String(hash);
         final int partlength = hash.length / 8;
         final byte[] newName = new byte[hash.length + 8];

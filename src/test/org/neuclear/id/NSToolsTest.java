@@ -1,6 +1,9 @@
 /*
-  $Id: NSToolsTest.java,v 1.12 2003/12/06 00:17:04 pelle Exp $
+  $Id: NSToolsTest.java,v 1.13 2003/12/08 19:32:33 pelle Exp $
   $Log: NSToolsTest.java,v $
+  Revision 1.13  2003/12/08 19:32:33  pelle
+  Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
+
   Revision 1.12  2003/12/06 00:17:04  pelle
   Updated various areas in NSTools.
   Updated URI Validation in particular to support new expanded format
@@ -210,5 +213,14 @@ public final class NSToolsTest extends TestCase {
         assertTrue(NSTools.isValidName(NSTools.createUniqueTransactionID("neu://bob@test/one", "neu://neuclear.org")));
         assertTrue(NSTools.isValidName(NSTools.createUniqueTransactionID("neu://neuclear.org", "neu://bob@neuclear.org")));
         assertTrue(NSTools.isValidName(NSTools.createUniqueTransactionID("neu://bob@test.org", "neu://neuclear.org/test")));
+    }
+       public static void testIsHttpScheme(){
+        assertNotNull(NSTools.isHttpScheme("neu://neuclear.org"));
+        assertNotNull(NSTools.isHttpScheme("neu://repository.neuclear.org"));
+        assertNull(NSTools.isHttpScheme("neu://neuclear.org/test"));
+        assertNull(NSTools.isHttpScheme("neu://test@neuclear.org/test"));
+        assertNull(NSTools.isHttpScheme("neu://test@neuclear.org"));
+        assertNull(NSTools.isHttpScheme("neu://neuclear.org!sdfsdfdsf"));
+
     }
 }

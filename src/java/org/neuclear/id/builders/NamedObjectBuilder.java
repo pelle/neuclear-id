@@ -1,6 +1,9 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.14 2003/11/22 00:23:46 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.15 2003/12/08 19:32:31 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.15  2003/12/08 19:32:31  pelle
+ * Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
+ *
  * Revision 1.14  2003/11/22 00:23:46  pelle
  * All unit tests in commons, id and xmlsec now work.
  * AssetController now successfully processes payments in the unit test.
@@ -250,7 +253,7 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
     }
 
     final public SignedNamedObject sign(final Signer signer) throws NeuClearException, XMLException {
-        sign(getParent().getName(), signer);
+        sign(getParent().getName(), signer); //Sign with parent key
         return VerifyingReader.getInstance().read(getElement());
     }
 
