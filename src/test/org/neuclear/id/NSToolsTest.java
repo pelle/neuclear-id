@@ -1,6 +1,13 @@
 /*
-  $Id: NSToolsTest.java,v 1.13 2003/12/08 19:32:33 pelle Exp $
+  $Id: NSToolsTest.java,v 1.14 2003/12/10 23:58:52 pelle Exp $
   $Log: NSToolsTest.java,v $
+  Revision 1.14  2003/12/10 23:58:52  pelle
+  Did some cleaning up in the builders
+  Fixed some stuff in IdentityCreator
+  New maven goal to create executable jarapp
+  We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+  Will release shortly.
+
   Revision 1.13  2003/12/08 19:32:33  pelle
   Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
 
@@ -189,14 +196,14 @@ public final class NSToolsTest extends TestCase {
     }
 
     public static void testFindParent() throws NeuClearException {
-        assertEquals("neu://hello", NSTools.getParentNSURI("neu://hello/one"));
-        assertEquals("neu://hello", NSTools.getParentNSURI("neu://one@hello"));
-        assertEquals("neu://one@hello", NSTools.getParentNSURI("neu://one@hello/test"));
-        assertEquals("neu://hello", NSTools.getParentNSURI("neu://hello/one"));
-        assertEquals("neu://", NSTools.getParentNSURI("neu://hello"));
-        assertEquals("neu://one@hello", NSTools.getParentNSURI("neu://one@hello!test"));
-        assertEquals("neu://hello", NSTools.getParentNSURI("neu://hello!one"));
-        assertEquals("neu://", NSTools.getParentNSURI("neu://"));
+        assertEquals("neu://hello", NSTools.getSignatoryURI("neu://hello/one"));
+        assertEquals("neu://hello", NSTools.getSignatoryURI("neu://one@hello"));
+        assertEquals("neu://one@hello", NSTools.getSignatoryURI("neu://one@hello/test"));
+        assertEquals("neu://hello", NSTools.getSignatoryURI("neu://hello/one"));
+        assertEquals("neu://", NSTools.getSignatoryURI("neu://hello"));
+        assertEquals("neu://one@hello", NSTools.getSignatoryURI("neu://one@hello!test"));
+        assertEquals("neu://hello", NSTools.getSignatoryURI("neu://hello!one"));
+        assertEquals("neu://", NSTools.getSignatoryURI("neu://"));
 
     }
 
@@ -214,7 +221,8 @@ public final class NSToolsTest extends TestCase {
         assertTrue(NSTools.isValidName(NSTools.createUniqueTransactionID("neu://neuclear.org", "neu://bob@neuclear.org")));
         assertTrue(NSTools.isValidName(NSTools.createUniqueTransactionID("neu://bob@test.org", "neu://neuclear.org/test")));
     }
-       public static void testIsHttpScheme(){
+
+    public static void testIsHttpScheme() {
         assertNotNull(NSTools.isHttpScheme("neu://neuclear.org"));
         assertNotNull(NSTools.isHttpScheme("neu://repository.neuclear.org"));
         assertNull(NSTools.isHttpScheme("neu://neuclear.org/test"));
@@ -222,5 +230,13 @@ public final class NSToolsTest extends TestCase {
         assertNull(NSTools.isHttpScheme("neu://test@neuclear.org"));
         assertNull(NSTools.isHttpScheme("neu://neuclear.org!sdfsdfdsf"));
 
+    }
+
+    public static void testGetLocal() throws NeuClearException {
+        assertEquals("test", NSTools.getLocalName("neu://test"));
+        assertEquals("test", NSTools.getLocalName("neu://test@no"));
+        assertEquals("test", NSTools.getLocalName("neu://no/test"));
+        assertEquals("test", NSTools.getLocalName("neu://no!test"));
+        assertEquals("test", NSTools.getLocalName("neu://no@no!test"));
     }
 }

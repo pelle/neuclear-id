@@ -6,13 +6,20 @@ package org.neuclear.receiver;
  * Date: Oct 10, 2002
  * Time: 11:24:59 PM
  * To change this template use Options | File Templates.
- * $Id: Receiver.java,v 1.12 2003/11/19 23:33:59 pelle Exp $
+ * $Id: Receiver.java,v 1.13 2003/12/10 23:58:51 pelle Exp $
  * $Log: Receiver.java,v $
+ * Revision 1.13  2003/12/10 23:58:51  pelle
+ * Did some cleaning up in the builders
+ * Fixed some stuff in IdentityCreator
+ * New maven goal to create executable jarapp
+ * We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+ * Will release shortly.
+ *
  * Revision 1.12  2003/11/19 23:33:59  pelle
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
  * SignedNamedObject now contains the full xml which is returned with getEncoded()
- * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * This means that it is now possible to further receive on or process a SignedNamedObject, leaving
  * NamedObjectBuilder for its original purposes of purely generating new Contracts.
  * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
  * Updated all major interfaces that used the old model to use the new model.

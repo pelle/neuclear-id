@@ -1,6 +1,13 @@
 /*
- * $Id: SignedNamedObject.java,v 1.12 2003/11/21 04:45:13 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.13 2003/12/10 23:58:51 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.13  2003/12/10 23:58:51  pelle
+ * Did some cleaning up in the builders
+ * Fixed some stuff in IdentityCreator
+ * New maven goal to create executable jarapp
+ * We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+ * Will release shortly.
+ *
  * Revision 1.12  2003/11/21 04:45:13  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -19,7 +26,7 @@
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
  * SignedNamedObject now contains the full xml which is returned with getEncoded()
- * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * This means that it is now possible to further receive on or process a SignedNamedObject, leaving
  * NamedObjectBuilder for its original purposes of purely generating new Contracts.
  * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
  * Updated all major interfaces that used the old model to use the new model.
@@ -94,7 +101,7 @@
  * Revision 1.12  2003/02/14 21:10:30  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
  * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
- * The Identity object also has a new method send() which allows one to send a named object to the Identity's
+ * The Identity object also has a new method receive() which allows one to receive a named object to the Identity's
  * default receiver.
  *
  * Revision 1.11  2003/02/14 14:04:29  pelle
@@ -201,7 +208,6 @@ package org.neuclear.id;
 
 import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.sql.Timestamp;
@@ -230,7 +236,7 @@ import java.sql.Timestamp;
 public class SignedNamedObject implements SignedObject, Named {
 
     protected SignedNamedObject(final SignedNamedCore core) throws NeuClearException {
-        this.core=core;
+        this.core = core;
     }
 
     /**
@@ -290,14 +296,32 @@ public class SignedNamedObject implements SignedObject, Named {
         return core.getDigest();
     }
 
+    /**
+     * Logs this object to the signers logging service
+     * 
+     * @throws NeuClearException 
+     */
+    public void log() throws NeuClearException {
+        getSignatory().log(this);
+    }
+
+    /**
+     * Sends this object to its signers default receiver service
+     * 
+     * @throws NeuClearException 
+     */
+    public void send() throws NeuClearException {
+        getSignatory().receive(this);
+    }
+
     private final SignedNamedCore core;
 
     final public static class Reader implements NamedObjectReader {
         /**
          * Read object from Element and fill in its details
-         *
-         * @param elem
-         * @return
+         * 
+         * @param elem 
+         * @return 
          */
         public SignedNamedObject read(final SignedNamedCore core, final Element elem) throws NeuClearException, XMLSecurityException {
             return new SignedNamedObject(core);

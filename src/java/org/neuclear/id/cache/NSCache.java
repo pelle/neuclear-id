@@ -2,10 +2,10 @@ package org.neuclear.id.cache;
 
 import com.waterken.adt.NoSuchElement;
 import com.waterken.adt.cache.Cache;
-import org.neuclear.id.NSTools;
-import org.neuclear.id.Identity;
-import org.neuclear.id.SignedNamedObject;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.id.Identity;
+import org.neuclear.id.NSTools;
+import org.neuclear.id.SignedNamedObject;
 
 /**
  * The Idea of the NSCache is to have a quick cache of verified public NameSpaces. This is not stored, but is created from scratch
@@ -24,6 +24,7 @@ public final class NSCache {
 
     /**
      * Attempts to get a verified PublicKey for the given name from the cache
+     * 
      * @param name Fully Normalised name
      * @return a valid Identity object if found otherwise null
      */
@@ -37,7 +38,7 @@ public final class NSCache {
 
     public void cache(final SignedNamedObject ns) throws NeuClearException {
         // Only store if it's parent is already here
-        final String parentName = NSTools.getParentNSURI(ns.getName());
+        final String parentName = NSTools.getSignatoryURI(ns.getName());
         if ((fetchCached(parentName) != null) || (parentName.equals("neu://"))) {
             spaces.put(ns.getName(), ns);
         }

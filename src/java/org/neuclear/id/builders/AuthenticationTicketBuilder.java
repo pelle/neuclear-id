@@ -28,8 +28,15 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationTicketBuilder.java,v 1.4 2003/12/06 00:17:03 pelle Exp $
+$Id: AuthenticationTicketBuilder.java,v 1.5 2003/12/10 23:58:51 pelle Exp $
 $Log: AuthenticationTicketBuilder.java,v $
+Revision 1.5  2003/12/10 23:58:51  pelle
+Did some cleaning up in the builders
+Fixed some stuff in IdentityCreator
+New maven goal to create executable jarapp
+We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+Will release shortly.
+
 Revision 1.4  2003/12/06 00:17:03  pelle
 Updated various areas in NSTools.
 Updated URI Validation in particular to support new expanded format
@@ -51,7 +58,7 @@ Did a bit of work on the Canonicalizer and changed a few other minor bits.
 
 Revision 1.1  2003/11/06 20:01:53  pelle
 Implemented AuthenticationTicket and friends to comply with the newer model.
-Created SignatureRequest and friends to send unsigned NamedObjectBuilders to interactive signing services.
+Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to interactive signing services.
 
 */
 

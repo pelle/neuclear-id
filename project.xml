@@ -3,7 +3,7 @@
 
     <name>NeuClear Identity Framework</name>
     <id>neuclear-id</id>
-    <currentVersion>0.8-SNAPSHOT</currentVersion>
+    <currentVersion>0.8</currentVersion>
     <inceptionYear>2002</inceptionYear>
     <package>org.neuclear</package>
     <logo>/images/logo.gif</logo>
@@ -70,7 +70,7 @@
         <dependency>
             <id>neuclear-xmlsig</id>
             <name>neuclear-xmlsig</name>
-            <version>0.11-SNAPSHOT</version>
+            <version>0.11</version>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
@@ -79,7 +79,7 @@
         <dependency>
             <id>neuclear-commons</id>
             <name>neuclear-commons</name>
-            <version>0.5-SNAPSHOT</version>
+            <version>0.5</version>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
@@ -153,20 +153,20 @@
             <jar>activation.jar</jar>
             <url>http://java.sun.com/products/javabeans/glasgow/jaf.html</url>
         </dependency>
-        <dependency>
-            <id>picocontainer</id>
-            <version>1.0-beta-1</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
-            <id>nanocontainer</id>
-            <version>1.0-alpha-PRESPLIT-1</version>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
+        <!--        <dependency>
+                    <id>picocontainer</id>
+                    <version>1.0-beta-1</version>
+                    <properties>
+                        <war.bundle>true</war.bundle>
+                    </properties>
+                </dependency>
+                <dependency>
+                    <id>nanocontainer</id>
+                    <version>1.0-alpha-PRESPLIT-1</version>
+                    <properties>
+                        <war.bundle>true</war.bundle>
+                    </properties>
+                </dependency>-->
     </dependencies>
     <build>
 

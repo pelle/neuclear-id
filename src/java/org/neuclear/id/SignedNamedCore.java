@@ -1,6 +1,13 @@
 /*
- * $Id: SignedNamedCore.java,v 1.4 2003/12/08 19:32:32 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.5 2003/12/10 23:58:51 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.5  2003/12/10 23:58:51  pelle
+ * Did some cleaning up in the builders
+ * Fixed some stuff in IdentityCreator
+ * New maven goal to create executable jarapp
+ * We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+ * Will release shortly.
+ *
  * Revision 1.4  2003/12/08 19:32:32  pelle
  * Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
  *
@@ -25,7 +32,7 @@
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
  * SignedNamedObject now contains the full xml which is returned with getEncoded()
- * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * This means that it is now possible to further receive on or process a SignedNamedObject, leaving
  * NamedObjectBuilder for its original purposes of purely generating new Contracts.
  * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
  * Updated all major interfaces that used the old model to use the new model.
@@ -100,7 +107,7 @@
  * Revision 1.12  2003/02/14 21:10:30  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
  * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
- * The Identity object also has a new method send() which allows one to send a named object to the Identity's
+ * The Identity object also has a new method receive() which allows one to receive a named object to the Identity's
  * default receiver.
  *
  * Revision 1.11  2003/02/14 14:04:29  pelle
@@ -205,22 +212,19 @@
  */
 package org.neuclear.id;
 
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
-import org.dom4j.DocumentHelper;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.time.TimeTools;
 import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.xml.XMLException;
-import org.neuclear.xml.XMLTools;
-import org.neuclear.xml.xmlsec.XMLSecTools;
-import org.neuclear.xml.xmlsec.KeyInfo;
+import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.id.verifier.VerifyingReader;
+import org.neuclear.xml.XMLException;
+import org.neuclear.xml.xmlsec.KeyInfo;
+import org.neuclear.xml.xmlsec.XMLSecTools;
 
-import java.sql.Timestamp;
-import java.io.InputStream;
 import java.security.PublicKey;
+import java.sql.Timestamp;
 
 /**
  * The SignedNamedObject is a <i>secure</i> object normally encapsulating a Digitally signed contract of some
@@ -243,9 +247,9 @@ import java.security.PublicKey;
  * @see org.neuclear.senders.Sender
  * @see org.neuclear.commons.crypto.signers.Signer
  */
-public final class SignedNamedCore  {
+public final class SignedNamedCore {
 
-    private SignedNamedCore(final String name, final Identity signer, final Timestamp timestamp, final String encoded)  {
+    private SignedNamedCore(final String name, final Identity signer, final Timestamp timestamp, final String encoded) {
         this.name = name;
         this.signer = signer;
         this.timestamp = timestamp.getTime();
@@ -254,41 +258,45 @@ public final class SignedNamedCore  {
 
     /**
      * Used to read and authenticate a SignedNamedCore.
-     * @param elem
-     * @return
-     * @throws XMLException
-     * @throws NeuClearException
+     * 
+     * @param elem 
+     * @return 
+     * @throws XMLException      
+     * @throws NeuClearException 
      */
     public final static SignedNamedCore read(final Element elem) throws XMLException, NeuClearException {
         final String name = NSTools.normalizeNameURI(elem.attributeValue(getNameAttrQName()));
-        final String signatoryName = NSTools.getParentNSURI(name);
+        final String signatoryName = NSTools.getSignatoryURI(name);
         final Identity signatory = NSResolver.resolveIdentity(signatoryName);
         PublicKey publicKey = signatory.getPublicKey();
-        if (NSTools.isHttpScheme(name)!=null){
+        if (NSTools.isHttpScheme(name) != null) {
             // We have a self signed http authenticated certificate and need to extract
             // the PublicKey from the xml
             final Element allowElement = elem.element(DocumentHelper.createQName("allow", NSTools.NS_NEUID));
             final KeyInfo ki = new KeyInfo(allowElement.element(XMLSecTools.createQName("KeyInfo")));
-            publicKey= ki.getPublicKey();
+            publicKey = ki.getPublicKey();
         }
         if (XMLSecTools.verifySignature(elem, publicKey)) {
             final Timestamp timestamp = TimeTools.parseTimeStamp(elem.attributeValue("timestamp"));
-            return new SignedNamedCore( name, signatory, timestamp,new String(XMLSecTools.canonicalize(elem)));
+            return new SignedNamedCore(name, signatory, timestamp, new String(XMLSecTools.canonicalize(elem)));
         } else
             throw new InvalidNamedObject(name + " isnt valid");
     }
 
     /**
      * Solely used by RootIdentity
-     * @return
+     * 
+     * @return 
      */
-    final static SignedNamedCore createRootCore()  {
-        return new SignedNamedCore("neu://",null,new Timestamp(0),null);
+    final static SignedNamedCore createRootCore() {
+        return new SignedNamedCore("neu://", null, new Timestamp(0), null);
     }
+
     private static QName getNameAttrQName() {
         return DocumentHelper.createQName("name", NSTools.NS_NEUID);
 
     }
+
     /**
      * The full name (URI) of an object
      * 
@@ -352,7 +360,6 @@ public final class SignedNamedCore  {
     private final Identity signer;
     private final long timestamp;
     private final String encoded;
-
 
 
 }

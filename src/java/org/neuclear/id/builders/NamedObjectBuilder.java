@@ -1,6 +1,13 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.15 2003/12/08 19:32:31 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.16 2003/12/10 23:58:51 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.16  2003/12/10 23:58:51  pelle
+ * Did some cleaning up in the builders
+ * Fixed some stuff in IdentityCreator
+ * New maven goal to create executable jarapp
+ * We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+ * Will release shortly.
+ *
  * Revision 1.15  2003/12/08 19:32:31  pelle
  * Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
  *
@@ -32,7 +39,7 @@
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
  * SignedNamedObject now contains the full xml which is returned with getEncoded()
- * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * This means that it is now possible to further receive on or process a SignedNamedObject, leaving
  * NamedObjectBuilder for its original purposes of purely generating new Contracts.
  * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
  * Updated all major interfaces that used the old model to use the new model.
@@ -82,7 +89,7 @@
  * Revision 1.12  2003/02/14 21:10:30  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
  * The NamedObject has a new log() method that logs it's contents at it's parent NameSpace's logger.
- * The NameSpace object also has a new method send() which allows one to send a named object to the NameSpace's
+ * The NameSpace object also has a new method receive() which allows one to receive a named object to the NameSpace's
  * default receiver.
  *
  * Revision 1.11  2003/02/14 14:04:29  pelle
@@ -204,33 +211,30 @@ import org.neuclear.xml.xmlsec.SignedElement;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.sql.Timestamp;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This simple wrapper takes most of the contents of a NamedObject and puts it into a Serializable form that can be signed.
  */
 public class NamedObjectBuilder extends SignedElement implements Named, Cloneable {
-    public NamedObjectBuilder(final String name, final String tagName, final String prefix, final String nsURI) throws NeuClearException {
+    protected NamedObjectBuilder(final String name, final String tagName, final String prefix, final String nsURI) throws NeuClearException {
         super(tagName, prefix, nsURI);
         createDocument();
         setName(name);
     }
 
-    public NamedObjectBuilder(final String name, final String tagName, final Namespace ns) throws NeuClearException {
+    protected NamedObjectBuilder(final String name, final String tagName, final Namespace ns) throws NeuClearException {
         super(tagName, ns);
         createDocument();
         setName(name);
     }
 
-    public NamedObjectBuilder(final String name, final String tagName) throws NeuClearException {
+    protected NamedObjectBuilder(final String name, final String tagName) throws NeuClearException {
         super(tagName, NSTools.NS_NEUID);
         createDocument();
         setName(name);
     }
 
-    public NamedObjectBuilder(final String name, final QName qname) throws NeuClearException {
+    protected NamedObjectBuilder(final String name, final QName qname) throws NeuClearException {
         super(qname);
         createDocument();
         setName(name);
@@ -238,7 +242,7 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
 
     public NamedObjectBuilder(final Element elem) throws XMLSecurityException {
         super(elem);
-        //TODO Load targets
+
     }
 
 
@@ -253,7 +257,12 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
     }
 
     final public SignedNamedObject sign(final Signer signer) throws NeuClearException, XMLException {
-        sign(getParent().getName(), signer); //Sign with parent key
+        sign(getSignatory().getName(), signer); //Sign with parent key
+        return convert();
+    }
+
+    private SignedNamedObject convert() throws NeuClearException, XMLException {
+
         return VerifyingReader.getInstance().read(getElement());
     }
 
@@ -271,10 +280,8 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
      * 
      * @return Parent Name
      */
-    public final String getLocalName() {
-        final String fullName = getName();
-        final int i = fullName.lastIndexOf('/');
-        return fullName.substring(i + 1);
+    public final String getLocalName() throws NeuClearException {
+        return NSTools.getLocalName(getName());
     }
 
     private void setName(final String name) throws NeuClearException {
@@ -327,6 +334,7 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
      * 
      * @param target object
      */
+/*
     public final void addTarget(final TargetReference target) throws NeuClearException {
         if (target == null)
             return;
@@ -345,19 +353,37 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
             targets = new LinkedList();
         return targets;
     }
+*/
 
     /**
      * Lists the targets within an object
      * 
      * @return Iterator of targets
      */
+/*
     public final Iterator listTargets() throws NeuClearException {
         return targetList().iterator();
     }
+*/
 
     /**
      * Sends copy of object to all targets within
+     * <p/>
+     * public final void sendObject() throws NeuClearException {
+     * System.out.println("NEUDIST: Sending Object " + getName());
+     * <p/>
+     * if (this.isSigned()) {
+     * final Iterator iter = listTargets();
+     * while (iter.hasNext()) {
+     * final TargetReference tg = ((TargetReference) iter.next());
+     * System.out.println("NEUDIST: Sent to " + tg.getHref());
+     * }
+     * <p/>
+     * }
+     * <p/>
+     * }
      */
+/*
     public final void sendObject() throws NeuClearException {
         System.out.println("NEUDIST: Sending Object " + getName());
 
@@ -371,6 +397,7 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
         }
 
     }
+*/
 
     public final Timestamp getTimeStamp() throws NeuClearException {
         final String timeString = getElement().attributeValue(DocumentHelper.createQName("timestamp", NSTools.NS_NEUID));
@@ -388,8 +415,8 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
     }
 
 
-    public final Identity getParent() throws NeuClearException {
-        return NSResolver.resolveIdentity(NSTools.getParentNSURI(getName()));
+    public final Identity getSignatory() throws NeuClearException {
+        return NSResolver.resolveIdentity(NSTools.getSignatoryURI(getName()));
     }
 
     /**
@@ -454,8 +481,5 @@ public class NamedObjectBuilder extends SignedElement implements Named, Cloneabl
             throw new RuntimeException(e);
         }
     }
-
-    private List targets;
-
 
 }

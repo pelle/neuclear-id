@@ -19,23 +19,30 @@ import java.sql.Timestamp;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 1:23:05 PM
- * $Id: LogSender.java,v 1.12 2003/11/21 04:45:13 pelle Exp $
+ * $Id: LogSender.java,v 1.13 2003/12/10 23:58:52 pelle Exp $
  * $Log: LogSender.java,v $
+ * Revision 1.13  2003/12/10 23:58:52  pelle
+ * Did some cleaning up in the builders
+ * Fixed some stuff in IdentityCreator
+ * New maven goal to create executable jarapp
+ * We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+ * Will release shortly.
+ *
  * Revision 1.12  2003/11/21 04:45:13  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
  * Anything that can be final has been made final throughout everyting. We've used IDEA's Inspector tool to find all instance of variables that could be final.
  * This should hopefully make everything more stable (and secure).
- *
+ * <p/>
  * Revision 1.11  2003/11/19 23:33:59  pelle
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
  * SignedNamedObject now contains the full xml which is returned with getEncoded()
- * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * This means that it is now possible to further receive on or process a SignedNamedObject, leaving
  * NamedObjectBuilder for its original purposes of purely generating new Contracts.
  * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
  * Updated all major interfaces that used the old model to use the new model.
- *
+ * <p/>
  * Revision 1.10  2003/11/11 21:18:43  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -94,7 +101,7 @@ import java.sql.Timestamp;
  * Revision 1.1  2003/02/14 21:10:34  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
  * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
- * The Identity object also has a new method send() which allows one to send a named object to the Identity's
+ * The Identity object also has a new method receive() which allows one to receive a named object to the Identity's
  * default receiver.
  */
 public final class LogSender extends Sender {
@@ -168,7 +175,7 @@ public final class LogSender extends Sender {
         System.out.println("Got " + obj.getName());
         Sender log = new LogSender();
         System.out.print("Logging...");
-        log.send(LOGGER, obj);
+        log.receive(LOGGER, obj);
         System.out.println("Done");
     }
 

@@ -27,8 +27,15 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningRequestBuilderTest.java,v 1.4 2003/11/21 17:55:16 pelle Exp $
+$Id: SigningRequestBuilderTest.java,v 1.5 2003/12/10 23:58:52 pelle Exp $
 $Log: SigningRequestBuilderTest.java,v $
+Revision 1.5  2003/12/10 23:58:52  pelle
+Did some cleaning up in the builders
+Fixed some stuff in IdentityCreator
+New maven goal to create executable jarapp
+We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+Will release shortly.
+
 Revision 1.4  2003/11/21 17:55:16  pelle
 misc fixes
 
@@ -42,7 +49,7 @@ Revision 1.2  2003/11/19 23:34:00  pelle
 Signers now can generatekeys via the generateKey() method.
 Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
 SignedNamedObject now contains the full xml which is returned with getEncoded()
-This means that it is now possible to further send on or process a SignedNamedObject, leaving
+This means that it is now possible to further receive on or process a SignedNamedObject, leaving
 NamedObjectBuilder for its original purposes of purely generating new Contracts.
 NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
 Updated all major interfaces that used the old model to use the new model.
@@ -66,14 +73,14 @@ public final class SigningRequestBuilderTest extends AbstractSigningTest {
     public final void testSignatureRequest() throws NeuClearException, XMLException {
         final AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://users.neuclear.org:8080");
         final SignatureRequestBuilder sigreq = new SignatureRequestBuilder("neu://test", "neu://bob@test", authreq, "For testing purposes");
-        assertEquals(sigreq.getParent().getName(), "neu://test");
+        assertEquals(sigreq.getSignatory().getName(), "neu://test");
         try {
             final SignatureRequest tosign = (SignatureRequest) sigreq.sign(signer);
             assertTrue(sigreq.isSigned());
             assertEquals(tosign.getName(), sigreq.getName());
 
             final NamedObjectBuilder auth2 = tosign.getUnsigned();
-            assertEquals(auth2.getParent().getName(), "neu://bob@test");
+            assertEquals(auth2.getSignatory().getName(), "neu://bob@test");
             assertNotNull(auth2);
             assertNotNull(auth2.getElement());
             final AuthenticationTicket auth = (AuthenticationTicket) auth2.sign(signer);

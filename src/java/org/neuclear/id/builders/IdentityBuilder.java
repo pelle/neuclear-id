@@ -1,6 +1,13 @@
 /*
- * $Id: IdentityBuilder.java,v 1.9 2003/12/08 19:32:31 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.10 2003/12/10 23:58:51 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.10  2003/12/10 23:58:51  pelle
+ * Did some cleaning up in the builders
+ * Fixed some stuff in IdentityCreator
+ * New maven goal to create executable jarapp
+ * We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+ * Will release shortly.
+ *
  * Revision 1.9  2003/12/08 19:32:31  pelle
  * Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
  *
@@ -61,7 +68,7 @@
  * Revision 1.8  2003/02/14 21:10:29  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
  * The NamedObject has a new log() method that logs it's contents at it's parent NameSpace's logger.
- * The NameSpace object also has a new method send() which allows one to send a named object to the NameSpace's
+ * The NameSpace object also has a new method receive() which allows one to receive a named object to the NameSpace's
  * default receiver.
  *
  * Revision 1.7  2003/02/10 22:30:05  pelle
@@ -173,20 +180,19 @@ package org.neuclear.id.builders;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
-import org.neuclear.id.Identity;
-import org.neuclear.id.NSTools;
-import org.neuclear.commons.Utility;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.xml.XMLException;
+import org.neuclear.commons.Utility;
+import org.neuclear.id.NSTools;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import java.security.PublicKey;
 
-public  class IdentityBuilder extends NamedObjectBuilder {
+public class IdentityBuilder extends NamedObjectBuilder {
 
     /**
      * It creates a Standard Identity document, but doesn't sign it.
+     * 
      * @param name       The Name of Identity
      * @param allow      PublicKey allowed to sign in here
      * @param repository URL of Default Store for NameSpace. (Note. A NameSpace object is stored in the default repository of it's parent namespace)
@@ -195,11 +201,13 @@ public  class IdentityBuilder extends NamedObjectBuilder {
      */
 
     public IdentityBuilder(final String name, final PublicKey allow, final String repository, final String signer, final String logger, final String receiver) throws NeuClearException {
-        this(DocumentHelper.createQName("Identity",NSTools.NS_NEUID), name,allow,repository,signer,logger,receiver);
+        this(DocumentHelper.createQName("Identity", NSTools.NS_NEUID), name, allow, repository, signer, logger, receiver);
 
     }
+
     /**
      * This constructor should be used by subclasses of Identity. It creates a Standard Identity document, but doesn't sign it.
+     * 
      * @param tag        The Tag used by this sub class
      * @param name       The Name of Identity
      * @param allow      PublicKey allowed to sign in here
@@ -207,7 +215,7 @@ public  class IdentityBuilder extends NamedObjectBuilder {
      * @param signer     URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
      * @param receiver   URL of default receiver for namespace
      */
-    protected IdentityBuilder(final QName tag,final String name, final PublicKey allow, final String repository, final String signer, final String logger, final String receiver) throws NeuClearException {
+    protected IdentityBuilder(final QName tag, final String name, final PublicKey allow, final String repository, final String signer, final String logger, final String receiver) throws NeuClearException {
         super(name, tag);
 
         final Element root = getElement();

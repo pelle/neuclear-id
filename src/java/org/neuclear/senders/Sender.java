@@ -5,8 +5,15 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:29:29 AM
- * $Id: Sender.java,v 1.12 2003/11/21 04:45:13 pelle Exp $
+ * $Id: Sender.java,v 1.13 2003/12/10 23:58:52 pelle Exp $
  * $Log: Sender.java,v $
+ * Revision 1.13  2003/12/10 23:58:52  pelle
+ * Did some cleaning up in the builders
+ * Fixed some stuff in IdentityCreator
+ * New maven goal to create executable jarapp
+ * We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+ * Will release shortly.
+ *
  * Revision 1.12  2003/11/21 04:45:13  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -17,7 +24,7 @@ package org.neuclear.senders;
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
  * SignedNamedObject now contains the full xml which is returned with getEncoded()
- * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * This means that it is now possible to further receive on or process a SignedNamedObject, leaving
  * NamedObjectBuilder for its original purposes of purely generating new Contracts.
  * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
  * Updated all major interfaces that used the old model to use the new model.
@@ -110,7 +117,7 @@ public abstract class Sender {
         try {
             NameSpace pelle=(NameSpace)NamedObjectFactory.fetchNamedObject("neu://free/pelle");
             NamedObject free=NamedObjectFactory.fetchNamedObject("neu://free");
-            pelle.send(free);
+            pelle.receive(free);
         } catch (NeuClearException e) {
             e.printStackTrace();  //To change body of catch statement use Options | File Templates.
         }

@@ -3,13 +3,10 @@ package org.neuclear.id.tools.commandline;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent;
-import org.neuclear.commons.crypto.passphraseagents.CommandLineAgent;
-import org.neuclear.commons.crypto.signers.*;
-import org.neuclear.id.SignedNamedObject;
+import org.neuclear.commons.crypto.signers.DefaultSigner;
+import org.neuclear.commons.crypto.signers.JCESigner;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.builders.IdentityBuilder;
-import org.neuclear.store.FileStore;
-import org.neuclear.store.Store;
 import org.neuclear.xml.XMLException;
 
 import java.io.*;
@@ -33,8 +30,15 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: BuildHttpIdentity.java,v 1.1 2003/12/09 23:41:44 pelle Exp $
+$Id: BuildHttpIdentity.java,v 1.2 2003/12/10 23:58:51 pelle Exp $
 $Log: BuildHttpIdentity.java,v $
+Revision 1.2  2003/12/10 23:58:51  pelle
+Did some cleaning up in the builders
+Fixed some stuff in IdentityCreator
+New maven goal to create executable jarapp
+We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+Will release shortly.
+
 Revision 1.1  2003/12/09 23:41:44  pelle
 IdentityCreator is now the default class of the uber jar.
 It has many new features such as:
@@ -77,14 +81,14 @@ public final class BuildHttpIdentity {
 
     public static void main(final String[] args) {
         try {
-            if (args.length<2){
+            if (args.length < 2) {
                 System.err.println("Usage: java org.neuclear.id.tools.commandline.BuildHttpIdentity name receiver");
                 System.err.println("eg. java org.neuclear.id.tools.commandline.BuildHttpIdentity neu://neuclear.org mailto:bob@neuclear.org");
                 System.exit(1);
             }
             final JCESigner rootsig = new DefaultSigner(new GuiDialogAgent());
 
-            createIdentity(args[0], rootsig,args[1]);
+            createIdentity(args[0], rootsig, args[1]);
         } catch (NeuClearException e) {
             e.printStackTrace();
         } catch (GeneralSecurityException e) {
@@ -99,13 +103,13 @@ public final class BuildHttpIdentity {
         System.exit(0);
     }
 
-    private static void createIdentity(final String name, final JCESigner rootsig,String receiver) throws NeuClearException, XMLException, IOException {
-        System.out.println("Creating "+name);
+    private static void createIdentity(final String name, final JCESigner rootsig, final String receiver) throws NeuClearException, XMLException, IOException {
+        System.out.println("Creating " + name);
         String store = NSTools.isHttpScheme(name);
-        boolean isTopLevel=!Utility.isEmpty(store);
+        boolean isTopLevel = !Utility.isEmpty(store);
         if (!isTopLevel) {
             // If this isn't a top level we will derive the repository from its parent.
-            store=NSTools.isHttpScheme(NSTools.getParentNSURI(name));
+            store = NSTools.isHttpScheme(NSTools.getSignatoryURI(name));
         }
         final IdentityBuilder id = new IdentityBuilder(
                 name,
@@ -113,15 +117,15 @@ public final class BuildHttpIdentity {
                 store,
                 "http://localhost:11870/Signer",
                 "http://logger.neuclear.org",
-           receiver);
+                receiver);
 
         System.out.println("Signing: " + name);
-        id.sign((isTopLevel)?name:NSTools.getParentNSURI(name),rootsig);
-        String filename = "_NEUID"+NSTools.name2path(name)+"/root.id";
-        System.out.println("Saving to: "+filename);
-        File fout=new File(filename);
+        id.sign((isTopLevel) ? name : NSTools.getSignatoryURI(name), rootsig);
+        String filename = "_NEUID" + NSTools.name2path(name) + "/root.id";
+        System.out.println("Saving to: " + filename);
+        File fout = new File(filename);
         fout.getParentFile().mkdirs();
-        OutputStream os=new FileOutputStream(fout);
+        OutputStream os = new FileOutputStream(fout);
         os.write(id.canonicalize());
         os.close();
     }

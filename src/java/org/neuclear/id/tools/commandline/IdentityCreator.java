@@ -1,5 +1,12 @@
-/* $Id: IdentityCreator.java,v 1.1 2003/12/09 23:41:44 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.2 2003/12/10 23:58:51 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.2  2003/12/10 23:58:51  pelle
+ * Did some cleaning up in the builders
+ * Fixed some stuff in IdentityCreator
+ * New maven goal to create executable jarapp
+ * We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+ * Will release shortly.
+ *
  * Revision 1.1  2003/12/09 23:41:44  pelle
  * IdentityCreator is now the default class of the uber jar.
  * It has many new features such as:
@@ -106,7 +113,7 @@
  * Revision 1.10  2003/02/14 21:10:35  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
  * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
- * The Identity object also has a new method send() which allows one to send a named object to the Identity's
+ * The Identity object also has a new method receive() which allows one to receive a named object to the Identity's
  * default receiver.
  *
  * Revision 1.9  2003/02/14 05:10:13  pelle
@@ -188,15 +195,13 @@ import org.neuclear.commons.crypto.signers.PublicKeySource;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.builders.IdentityBuilder;
 import org.neuclear.id.builders.NamedObjectBuilder;
-import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.LogSender;
 
-import java.io.File;
 import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(final String[] args) throws Exception {
@@ -209,27 +214,27 @@ public final class IdentityCreator extends CommandLineSigner {
 //        final File cachedir = new File(cachedirpath);
 //        if (!cachedir.exists())
 //            cachedir.mkdirs();
-        if (!Utility.isEmpty(identity)){
+        if (!Utility.isEmpty(identity)) {
             of = Utility.denullString(of, "_NEUID" + NSTools.name2path(identity) + "/root.id");
-            alias = Utility.denullString(alias, NSTools.getParentNSURI(identity));
+            alias = Utility.denullString(alias, NSTools.getSignatoryURI(identity));
         }
 
 
     }
 
     public final NamedObjectBuilder build() throws Exception {
-        NamedObjectBuilder subject=null;
+        NamedObjectBuilder subject = null;
         if (cmd.hasOption('i')) {//If we have an input file we load that instead of creating a new one
-            subject= super.build();
-            identity=subject.getName();
+            subject = super.build();
+            identity = subject.getName();
         }
         String store = NSTools.isHttpScheme(identity);
-        boolean isTopLevel=!Utility.isEmpty(store);
+        boolean isTopLevel = !Utility.isEmpty(store);
         if (!isTopLevel) {
             // If this isn't a top level we will derive the repository from its parent.
-            store=NSTools.isHttpScheme(NSTools.getParentNSURI(identity));
+            store = NSTools.isHttpScheme(NSTools.getSignatoryURI(identity));
         }
-        alias=(isTopLevel)?identity:NSTools.getParentNSURI(identity);
+        alias = (isTopLevel) ? identity : NSTools.getSignatoryURI(identity);
         final String allow = Utility.denullString(cmd.getOptionValue("w"), identity);
         final String defaultstore = Utility.denullString(cmd.getOptionValue("r"), store);
         final String defaultsigner = Utility.denullString(cmd.getOptionValue("s"), "http://localhost:11870/Signer");
@@ -257,7 +262,7 @@ public final class IdentityCreator extends CommandLineSigner {
     }
 
     protected final boolean hasArguments() {
-        return (cmd.hasOption("i")||cmd.hasOption('v')||(cmd.hasOption("n") && cmd.hasOption("b")));
+        return (cmd.hasOption("i") || cmd.hasOption('v') || (cmd.hasOption("n") && cmd.hasOption("b")));
     }
 
     protected final void getLocalOptions(final Options options) {

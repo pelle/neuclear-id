@@ -26,8 +26,15 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationBuilderTest.java,v 1.3 2003/11/21 04:45:16 pelle Exp $
+$Id: AuthenticationBuilderTest.java,v 1.4 2003/12/10 23:58:52 pelle Exp $
 $Log: AuthenticationBuilderTest.java,v $
+Revision 1.4  2003/12/10 23:58:52  pelle
+Did some cleaning up in the builders
+Fixed some stuff in IdentityCreator
+New maven goal to create executable jarapp
+We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+Will release shortly.
+
 Revision 1.3  2003/11/21 04:45:16  pelle
 EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
 Otherwise You will Finaliate.
@@ -38,7 +45,7 @@ Revision 1.2  2003/11/19 23:34:00  pelle
 Signers now can generatekeys via the generateKey() method.
 Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
 SignedNamedObject now contains the full xml which is returned with getEncoded()
-This means that it is now possible to further send on or process a SignedNamedObject, leaving
+This means that it is now possible to further receive on or process a SignedNamedObject, leaving
 NamedObjectBuilder for its original purposes of purely generating new Contracts.
 NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
 Updated all major interfaces that used the old model to use the new model.
@@ -61,7 +68,7 @@ public final class AuthenticationBuilderTest extends AbstractSigningTest {
 
     public final void testAuthenticate() throws NeuClearException, XMLException {
         final AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://users.neuclear.org:8080");
-        assertEquals(authreq.getParent().getName(), "neu://bob@test");
+        assertEquals(authreq.getSignatory().getName(), "neu://bob@test");
         try {
             final AuthenticationTicket auth = (AuthenticationTicket) authreq.sign(signer);
             assertTrue(authreq.isSigned());

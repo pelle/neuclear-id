@@ -1,16 +1,12 @@
 package org.neuclear.id.resolver;
 
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.Utility;
 import org.neuclear.id.Identity;
 import org.neuclear.id.InvalidNamedObject;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.cache.NSCache;
 import org.neuclear.source.Source;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Secure Identity resolver. To get an Identity object simply do:
@@ -55,17 +51,17 @@ public final class NSResolver {
         if (obj != null)
             return obj;
 
-        final String parentname = NSTools.getParentNSURI(name);
+        final String parentname = NSTools.getSignatoryURI(name);
 
         if (parentname == null || name.equals("neu://"))
             return Identity.NEUROOT;
 
-        String store=NSTools.isHttpScheme(name);
-        if (store==null) {
+        String store = NSTools.isHttpScheme(name);
+        if (store == null) {
             final Identity parent = resolveIdentity(parentname);
             store = parent.getRepository();
         }
-        obj = (Identity) Source.getInstance().fetch(store, name);
+        obj = Source.getInstance().fetch(store, name);
         if (obj == null)
             throw new NeuClearException("Identity: " + name + " was not resolved");
         NSCACHE.cache(obj);

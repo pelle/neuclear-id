@@ -1,6 +1,13 @@
 /*
- * $Id: TargetReference.java,v 1.6 2003/11/21 04:45:10 pelle Exp $
+ * $Id: TargetReference.java,v 1.7 2003/12/10 23:58:51 pelle Exp $
  * $Log: TargetReference.java,v $
+ * Revision 1.7  2003/12/10 23:58:51  pelle
+ * Did some cleaning up in the builders
+ * Fixed some stuff in IdentityCreator
+ * New maven goal to create executable jarapp
+ * We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+ * Will release shortly.
+ *
  * Revision 1.6  2003/11/21 04:45:10  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -11,7 +18,7 @@
  * Signers now can generatekeys via the generateKey() method.
  * Refactored the relationship between SignedNamedObject and NamedObjectBuilder a bit.
  * SignedNamedObject now contains the full xml which is returned with getEncoded()
- * This means that it is now possible to further send on or process a SignedNamedObject, leaving
+ * This means that it is now possible to further receive on or process a SignedNamedObject, leaving
  * NamedObjectBuilder for its original purposes of purely generating new Contracts.
  * NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered way of processing it.
  * Updated all major interfaces that used the old model to use the new model.
@@ -44,7 +51,7 @@
  * Revision 1.2  2003/02/14 21:10:33  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
  * The NamedObject has a new log() method that logs it's contents at it's parent NameSpace's logger.
- * The NameSpace object also has a new method send() which allows one to send a named object to the NameSpace's
+ * The NameSpace object also has a new method receive() which allows one to receive a named object to the NameSpace's
  * default receiver.
  *
  * Revision 1.1  2003/02/14 14:04:59  pelle

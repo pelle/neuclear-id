@@ -20,8 +20,15 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: Named.java,v 1.3 2003/10/21 22:31:13 pelle Exp $
+$Id: Named.java,v 1.4 2003/12/10 23:58:51 pelle Exp $
 $Log: Named.java,v $
+Revision 1.4  2003/12/10 23:58:51  pelle
+Did some cleaning up in the builders
+Fixed some stuff in IdentityCreator
+New maven goal to create executable jarapp
+We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+Will release shortly.
+
 Revision 1.3  2003/10/21 22:31:13  pelle
 Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
 Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -42,13 +49,12 @@ todo with regards to cleaning up some of the outlying parts of the code.
 */
 
 /**
- * 
  * User: pelleb
  * Date: Sep 23, 2003
  * Time: 4:06:57 PM
  */
 public interface Named {
-    String getName() ;
+    String getName();
 
-    String getLocalName();
+    String getLocalName() throws NeuClearException;
 }

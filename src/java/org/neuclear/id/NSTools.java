@@ -1,6 +1,13 @@
 /*
- * $Id: NSTools.java,v 1.17 2003/12/08 19:32:32 pelle Exp $
+ * $Id: NSTools.java,v 1.18 2003/12/10 23:58:51 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.18  2003/12/10 23:58:51  pelle
+ * Did some cleaning up in the builders
+ * Fixed some stuff in IdentityCreator
+ * New maven goal to create executable jarapp
+ * We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+ * Will release shortly.
+ *
  * Revision 1.17  2003/12/08 19:32:32  pelle
  * Added support for the http scheme into ID. See http://neuclear.org/archives/000195.html
  *
@@ -90,7 +97,7 @@
  * Revision 1.11  2003/02/14 21:10:28  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
  * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
- * The Identity object also has a new method send() which allows one to send a named object to the Identity's
+ * The Identity object also has a new method receive() which allows one to receive a named object to the Identity's
  * default receiver.
  *
  * Revision 1.10  2003/02/14 14:04:28  pelle
@@ -238,7 +245,7 @@ public final class NSTools {
      * @return Parent URI or null if name is the root
      * @throws NeuClearException if name is invalid
      */
-    public static String getParentNSURI(final String uri) throws NeuClearException {
+    public static String getSignatoryURI(final String uri) throws NeuClearException {
         if (!isValidName(uri))
             throw new InvalidNamedObject("Invalid Neu ID: " + uri);
         final int bang = uri.indexOf('!');
@@ -257,6 +264,34 @@ public final class NSTools {
             return uri.substring(0, slash + 1);
         //Regular
         return uri.substring(0, slash);
+    }
+
+    /**
+     * Returns the last part of a NEU URI.
+     * 
+     * @param uri a valid NEU Name
+     * @return Parent URI or null if name is the root
+     * @throws NeuClearException if name is invalid
+     */
+    public static String getLocalName(final String uri) throws NeuClearException {
+        if (!isValidName(uri))
+            throw new InvalidNamedObject("Invalid Neu ID: " + uri);
+        final int bang = uri.indexOf('!');
+
+        // We hava a Transaction ID. We always return its signer
+        if (bang > -1)
+            return uri.substring(bang + 1);
+
+        final int slash = uri.lastIndexOf('/');
+        final int at = uri.indexOf('@');
+        // We have a User ID
+        if (slash < at)
+            return uri.substring(slash + 1, at);
+        // We have a top level
+        if (uri.charAt(slash - 1) == '/')
+            return uri.substring(slash + 1);
+        //Regular
+        return uri.substring(slash + 1);
     }
 
     /**
@@ -325,30 +360,32 @@ public final class NSTools {
         }
         throw new InvalidNamedObject("Invalid NEU ID: " + name);
     }
+
     /**
      * Checks to see if the following name should be resolved using the HTTP Resolving Scheme
-     * @param name
-     * @return
+     * 
+     * @param name 
+     * @return 
      */
-    public static String isHttpScheme(final String name){
+    public static String isHttpScheme(final String name) {
         if (!Utility.isEmpty(name)) {
             final Matcher matcher = HTTP_SCHEME.matcher(name);
             if (matcher.matches())
-                return "http://"+matcher.group(2)+"/_NEUID"; //TODO switch to https
+                return "http://" + matcher.group(2) + "/_NEUID"; //TODO switch to https
         }
         return null;
 
     }
 
-    private static final String HTTP_SCHEME_EX="^neu:(neuid:)?\\/\\/(([\\w-]+\\.)+[\\w-]+)$";
-    private static final Pattern HTTP_SCHEME=Pattern.compile(HTTP_SCHEME_EX);
+    private static final String HTTP_SCHEME_EX = "^neu:(neuid:)?\\/\\/(([\\w-]+\\.)+[\\w-]+)$";
+    private static final Pattern HTTP_SCHEME = Pattern.compile(HTTP_SCHEME_EX);
 
-    public static final String NEUID_URI = "http://neuclear.org/neu/neuid";
+    private static final String NEUID_URI = "http://neuclear.org/neu/neuid";
     public static final Namespace NS_NEUID = DocumentHelper.createNamespace("neuid", NEUID_URI);
 
     public static final String NEUID_PREFIX = "neuid:";
 
-    public static final String SCHEME_PREFIX = "([\\w]{1,6}:)?";
+    private static final String SCHEME_PREFIX = "([\\w]{1,6}:)?";
     private static final String VALID_TOKEN = "[\\w][\\w.-]*";
     private static final String VALID_USER_TOKEN = "(([\\w][\\w.-]*)@)?";
     private static final String VALID_TOP_TOKEN = VALID_USER_TOKEN + "[\\w]([\\w.-]*[\\w])?";

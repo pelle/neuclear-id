@@ -1,6 +1,13 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.10 2003/11/21 04:45:14 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.11 2003/12/10 23:58:52 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.11  2003/12/10 23:58:52  pelle
+ * Did some cleaning up in the builders
+ * Fixed some stuff in IdentityCreator
+ * New maven goal to create executable jarapp
+ * We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+ * Will release shortly.
+ *
  * Revision 1.10  2003/11/21 04:45:14  pelle
  * EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
  * Otherwise You will Finaliate.
@@ -71,7 +78,7 @@
  * Revision 1.5  2003/02/14 21:10:36  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
  * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
- * The Identity object also has a new method send() which allows one to send a named object to the Identity's
+ * The Identity object also has a new method receive() which allows one to receive a named object to the Identity's
  * default receiver.
  *
  * Revision 1.4  2003/02/14 14:04:59  pelle

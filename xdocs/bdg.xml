@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <document>
 
-	<properties>
-		<title>The Busy Developer's Guide to the NeuClear ID API</title>
-		<author email="pelle@neubia.com">Pelle Braendgaard</author>
-	</properties>
+    <properties>
+        <title>The Busy Developer's Guide to the NeuClear ID API</title>
+        <author email="pelle@neubia.com">Pelle Braendgaard</author>
+    </properties>
 
-	<body>
-		<section name="The Busy Developer's Guide to the NeuClear ID API">
+    <body>
+        <section name="The Busy Developer's Guide to the NeuClear ID API">
 
             <h4>Scope</h4>
             <p>
@@ -21,24 +21,26 @@
                 currently listed for unix type machines, but it should work on any machine running jdk1.4 including Windows.
             </p>
             <h4>Purpose</h4>
-                <p>
+            <p>
                     The main purpose of the NeuClear ID API is to provide a simple framework and API for building applications
                     using a Public Key Infrastructure (PKI).
-                </p>
+            </p>
         </section>
         <section name="Creating an Top Level Identity for your Domain Name">
             <p>
-                All messages (<a href="apidocs/org/neuclear/id/SignedNamedObject.html">SignedNamedObjects</a> in NeuClear lingo)
-                in NeuClear ID must be signed by an <a href="apidocs/org/neuclear/id/Identity.html">Identity</a>. So to get started we
+                All messages (
+                <a href="apidocs/org/neuclear/id/SignedNamedObject.html">SignedNamedObjects</a> in NeuClear lingo)
+                in NeuClear ID must be signed by an
+                <a href="apidocs/org/neuclear/id/Identity.html">Identity</a>. So to get started we
                 must first create a new Identity.
             </p>
             <p>
                 Each domain name must create a top level identity, which main job in life is to sign sub identities. So that is where we start.
             </p>
             <p>
-                The easiest way to get started is to use the neuclear-id-uber.jar from a command line.
+                The easiest way to get started is to use the neuclear-id-app.jar from a command line.
                 We need to have the following ready:
-            </p> 
+            </p>
             <ul>
                 <li>The Name</li>
                 <li>A default receiver</li>
@@ -53,13 +55,16 @@
             <h4>Creating the Key Pair</h4>
             <p>
                 Now we know the name of our new identity we first need to create our keypair. Sun provides us with a very badly designed
-                tool called <a href="http://java.sun.com/j2se/1.4.2/docs/tooldocs/solaris/keytool.html">keytool</a> which we can use to
+                tool called
+                <a href="http://java.sun.com/j2se/1.4.2/docs/tooldocs/solaris/keytool.html">keytool</a> which we can use to
                 create and store our keypair. The NeuClear toolset will provide its own keygeneration tools soon, but for now we've got to do it like this:
             </p>
-            <source>$ keytool -genkey -keyalg RSA -alias <b>neu://yourdomain.com</b>
+            <source>$ keytool -genkey -keyalg RSA -alias
+                <b>neu://yourdomain.com</b>
 Enter keystore password:  #####
 What is your first and last name?
-  [Unknown]:  <b>neu://yourdomain.com</b>
+  [Unknown]:
+                <b>neu://yourdomain.com</b>
 What is the name of your organizational unit?
   [Unknown]:  Your Domain
 What is the name of your organization?
@@ -74,22 +79,27 @@ Is CN=neu://yourdomain.com, OU=Your Domain, O=Your Domain, L=Panama City, ST=Pan
   [no]:  yes
 
 Enter key password for neu://yourdomain.com
-        (RETURN if same as keystore password):</source>
+        (RETURN if same as keystore password):
+            </source>
             <p>
-                What you can see there is the invocation of keytool with the <tt>-genkey</tt> option.
+                What you can see there is the invocation of keytool with the
+                <tt>-genkey</tt> option.
                 We pick a RSA key, which is recommended over the default DSA key. The alias must be the same as the ID that you are creating.
                 The details about first and last name location etc, are pretty much irrelevant for our purposes, but by convension we like to
-                put the ID (eg. <tt>neu://yourdomain.com</tt>) in the first and last name field. What might not be immediately obvious here
-                is that keytool creates a default keystore in your home directory at <tt>~/.keystore</tt> this contains your keys and the
+                put the ID (eg.
+                <tt>neu://yourdomain.com</tt>) in the first and last name field. What might not be immediately obvious here
+                is that keytool creates a default keystore in your home directory at
+                <tt>~/.keystore</tt> this contains your keys and the
                 neuclear tools use this keystore later on.
             </p>
             <h4>Create the Selfsigned Certificate</h4>
             <p>
-                Download the <a href="http://neuclear.org/maven/neuclear-id/jars/neuclear-id-0.8-SNAPSHOT-uber.jar">NeuClear ID Executable</a>.
+                Download the
+                <a href="http://neuclear.org/maven/neuclear-id/jars/neuclear-id-app-0.8.jar">NeuClear ID Executable</a>.
                 Excuse the long and ugly name, we will package it nicer later on. Currently this tool allows you to create a certificate and
                 sign it. Lets run it with our ID and receiver we decided on earlier.
             </p>
-            <source>$ java -jar neuclear-id-0.8-SNAPSHOT-uber.jar --name neu://yourdomain.com --receiver mailto:admin@yourdomain.com
+            <source>$ java -jar neuclear-id-app-0.8.jar --name neu://yourdomain.com --receiver mailto:admin@yourdomain.com
 Please enter passphrase for: KeyStore Passphrase for~/.keystore
 :
 Signing by neu://yourdomain.com ...
@@ -98,17 +108,23 @@ Please enter passphrase for: neu://yourdomain.com
 Outputting to: _NEUID/yourdomain.com/root.id</source>
             <p>
                 The program asks you for the passphrases for both the keystore and your key. Enter them exactly like you did
-                before. As the program has to initialise all sorts of cryptographic processes, it might seem a bit slow, but be patient.
+                before.
             </p>
             <h4>Copy certificate to Web Server</h4>
             <p>
                 The Certificate must now be moved to your web server. It has to live in the following file:
-                <tt>http://yourdomain.com/_NEUID/yourdomain.com/root.id</tt><br/>
-                The simplest way to do this in unix is to use <tt>scp</tt>:
+                <tt>http://yourdomain.com/_NEUID/yourdomain.com/root.id</tt>
+                <br/>
+                The simplest way to do this in unix is to use
+                <tt>scp</tt>:
             </p>
-            <source>scp -r _NEUID/ <b>user@yourdomain.com:/home/httpd/htdocs/</b></source>
+            <source>scp -r _NEUID/
+                <b>user@yourdomain.com:/home/httpd/htdocs/</b>
+            </source>
             <p>
-                where <tt>user</tt> is your username on the webserver. <tt>yourdomain.com</tt> is webserver domain name and
+                where
+                <tt>user</tt> is your username on the webserver.
+                <tt>yourdomain.com</tt> is webserver domain name and
                 <tt>/home/httpd/htdocs/</tt> the full absolute path to the root of your web server.
             </p>
         </section>
@@ -116,7 +132,7 @@ Outputting to: _NEUID/yourdomain.com/root.id</source>
             <p>
                 To verify an Identity type the following in your command prompt:
             </p>
-            <source>$ java -jar neuclear-id-0.8-SNAPSHOT-uber.jar --verify neu://pelle@neuclear.org
+            <source>$ java -jar neuclear-id-app-0.8.jar --verify neu://pelle@neuclear.org
 Resolving and Verifying: neu://pelle@neuclear.org
 Signed Object: neu://pelle@neuclear.org is verified
 was signed at: 2003-12-09T10:00:42,466EST
@@ -139,32 +155,43 @@ signer: http://localhost:11870/Signer</source>
                 convention. Such as:
             </p>
             <ul>
-                <li><tt>neu://bob@yourdomain.com</tt></li>
-                <li><tt>neu://sales@yourdomain.com</tt></li>
+                <li>
+                    <tt>neu://bob@yourdomain.com</tt>
+                </li>
+                <li>
+                    <tt>neu://sales@yourdomain.com</tt>
+                </li>
             </ul>
             <p>
                 If you want your sub identity to be a process or service. Such as an ecommerce site, an asset transfer system or an exchange system use
                 this format:
             </p>
             <ul>
-                <li><tt>neu://yourdomain.com/store</tt></li>
-                <li><tt>neu://yourdomain.com/homebanking</tt></li>
+                <li>
+                    <tt>neu://yourdomain.com/store</tt>
+                </li>
+                <li>
+                    <tt>neu://yourdomain.com/homebanking</tt>
+                </li>
             </ul>
             <p>
                 The two formats are functionally equivalent, but are separated stylistically to make it easier to understand for
                 end users.
             </p>
             <p>
-                So for our example we picked <tt>neu://bob@yourdomain.com</tt>
+                So for our example we picked
+                <tt>neu://bob@yourdomain.com</tt>
             </p>
             <h4>Creating the Key Pair</h4>
             <p>
                 Create a new keypair just like you did before:
             </p>
-           <source>$ keytool -genkey -keyalg RSA -alias <b>neu://bob@yourdomain.com</b>
+            <source>$ keytool -genkey -keyalg RSA -alias
+                <b>neu://bob@yourdomain.com</b>
 Enter keystore password:  #####
 What is your first and last name?
-  [Unknown]:  <b>neu://bob@yourdomain.com</b>
+  [Unknown]:
+                <b>neu://bob@yourdomain.com</b>
 What is the name of your organizational unit?
   [Unknown]:  Your Domain
 What is the name of your organization?
@@ -179,15 +206,16 @@ Is CN=neu://bob@yourdomain.com, OU=Your Domain, O=Your Domain, L=Panama City, ST
   [no]:  yes
 
 Enter key password for neu://bob@yourdomain.com
-        (RETURN if same as keystore password):</source>
+        (RETURN if same as keystore password):
+            </source>
             <h4>Create the Signed Certificate</h4>
-             <p>
+            <p>
                 Again we need to create a certificate. This time however it is not self signed, but signed
                  by the top level identity we created above. As long as we create the two identities on the same
                  machine. The process is completely identical from a users stand point, with the notable exception
                  that we are asked for the root identity's passphrase and not the one of the sub identity.
-             </p>
-            <source>$ java -jar neuclear-id-0.8-SNAPSHOT-uber.jar --name neu://bob@yourdomain.com --receiver mailto:bob@yourdomain.com
+            </p>
+            <source>$ java -jar neuclear-id-app-0.8.jar --name neu://bob@yourdomain.com --receiver mailto:bob@yourdomain.com
 Please enter passphrase for: KeyStore Passphrase for~/.keystore
 :
 Signing by neu://yourdomain.com ...
@@ -207,6 +235,6 @@ Outputting to: _NEUID/yourdomain.com/@bob/root.id</source>
         </section>
 
 
-	</body>
+    </body>
 
 </document>

@@ -1,5 +1,12 @@
-/* $Id: CommandLineSigner.java,v 1.1 2003/12/09 23:41:44 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.2 2003/12/10 23:58:51 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.2  2003/12/10 23:58:51  pelle
+ * Did some cleaning up in the builders
+ * Fixed some stuff in IdentityCreator
+ * New maven goal to create executable jarapp
+ * We are close to 0.8 final of ID, 0.11 final of XMLSIG and 0.5 of commons.
+ * Will release shortly.
+ *
  * Revision 1.1  2003/12/09 23:41:44  pelle
  * IdentityCreator is now the default class of the uber jar.
  * It has many new features such as:
@@ -102,7 +109,7 @@
  * Revision 1.10  2003/02/14 21:10:35  pelle
  * The email sender works. The LogSender and the SoapSender should work but havent been tested yet.
  * The SignedNamedObject has a new log() method that logs it's contents at it's parent Identity's logger.
- * The Identity object also has a new method send() which allows one to send a named object to the Identity's
+ * The Identity object also has a new method receive() which allows one to receive a named object to the Identity's
  * default receiver.
  *
  * Revision 1.9  2003/02/14 05:10:13  pelle
@@ -178,20 +185,17 @@ package org.neuclear.id.tools.commandline;
 
 import org.apache.commons.cli.*;
 import org.dom4j.Document;
-import org.neuclear.commons.Utility;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.time.TimeTools;
-import org.neuclear.commons.configuration.Configuration;
-import org.neuclear.commons.configuration.ConfigurationException;
+import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.crypto.passphraseagents.CommandLineAgent;
-import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.crypto.signers.DefaultSigner;
-import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.NSTools;
+import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.Identity;
-import org.neuclear.id.resolver.NSResolver;
+import org.neuclear.id.NSTools;
 import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
 
@@ -200,7 +204,7 @@ import java.security.GeneralSecurityException;
 
 /**
  * @author pelleb
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CommandLineSigner {
     public CommandLineSigner(final String[] args) throws ParseException, FileNotFoundException, GeneralSecurityException, NeuClearException {
@@ -211,17 +215,17 @@ public class CommandLineSigner {
 
         cmd = clparser.parse(options, args);
         checkArguments();
-        if (cmd.hasOption('v')){
-            String name=cmd.getOptionValue('v');
-            System.out.println("Resolving and Verifying: "+name);
+        if (cmd.hasOption('v')) {
+            String name = cmd.getOptionValue('v');
+            System.out.println("Resolving and Verifying: " + name);
             try {
-                Identity id=NSResolver.resolveIdentity(name);
-                if (id!=null){
-                    System.out.println("Signed Object: "+id.getName()+ " is verified");
-                    System.out.println("was signed at: "+TimeTools.formatTimeStamp(id.getTimeStamp()));
-                    System.out.println("Is of type: "+id.getClass().getName());
-                    System.out.println("repository: "+id.getRepository());
-                    System.out.println("signer: "+id.getSigner());
+                Identity id = NSResolver.resolveIdentity(name);
+                if (id != null) {
+                    System.out.println("Signed Object: " + id.getName() + " is verified");
+                    System.out.println("was signed at: " + TimeTools.formatTimeStamp(id.getTimeStamp()));
+                    System.out.println("Is of type: " + id.getClass().getName());
+                    System.out.println("repository: " + id.getRepository());
+                    System.out.println("signer: " + id.getSigner());
                 } else {
                     System.out.println("Couldnt Resolve or Verify the object.");
                 }
@@ -235,8 +239,8 @@ public class CommandLineSigner {
         sig = new DefaultSigner(new CommandLineAgent());
         alias = cmd.getOptionValue("a");
         of = cmd.getOptionValue("o");
-        if (Utility.isEmpty(of)&&cmd.hasOption('i')){
-            of=cmd.getOptionValue('i')+".id";
+        if (Utility.isEmpty(of) && cmd.hasOption('i')) {
+            of = cmd.getOptionValue('i') + ".id";
         }
     }
 
@@ -254,7 +258,7 @@ public class CommandLineSigner {
             final HelpFormatter help = new HelpFormatter();
             help.printHelp("java " +
                     this.getClass().getName() +
-                    getExtraHelp()+" [--outputfile signed/test.id] " , options);
+                    getExtraHelp() + " [--outputfile signed/test.id] ", options);
             System.exit(1);
         }
     }
@@ -264,7 +268,7 @@ public class CommandLineSigner {
     }
 
     protected boolean hasArguments() {
-        return cmd.hasOption("i")||cmd.hasOption('v');
+        return cmd.hasOption("i") || cmd.hasOption('v');
     }
 
     public final void execute() {
@@ -274,8 +278,8 @@ public class CommandLineSigner {
 
             if (!sig.canSignFor(alias)) {
                 if (!Utility.isEmpty(of))
-                    of=subject.getLocalName()+".xml";
-                System.err.println("Key with alias: " + alias + " doesnt exist in our keystore. \nSaving unsigned Identity as: "+of);
+                    of = subject.getLocalName() + ".xml";
+                System.err.println("Key with alias: " + alias + " doesnt exist in our keystore. \nSaving unsigned Identity as: " + of);
             } else {
                 System.err.println("Signing by " + alias + " ...");
                 subject.sign(alias, sig);
@@ -304,26 +308,30 @@ public class CommandLineSigner {
             InputStream source = System.in;
             if (!Utility.isEmpty(sf)) {
                 source = new FileInputStream(sf);
+                if (Utility.isEmpty(of)) {
+                    int loc = sf.lastIndexOf(".");
+                    of = sf.substring(0, loc) + ".id";
+                }
             }
             final Document doc = XMLTools.loadDocument(source);
             final NamedObjectBuilder subject = new NamedObjectBuilder(doc);
 
             if (Utility.isEmpty(alias)) {
-                alias = Utility.denullString(NSTools.isHttpScheme(subject.getName()),NSTools.getParentNSURI(subject.getName()));
+                alias = Utility.denullString(NSTools.isHttpScheme(subject.getName()), NSTools.getSignatoryURI(subject.getName()));
 
             }
             if (!sig.canSignFor(alias)) {
-                System.err.println("You can not sign as " +alias+ " with your current keystore.");
+                System.err.println("You can not sign as " + alias + " with your current keystore.");
                 System.exit(1);
             }
 
             System.out.println("You are about to sign the following Contract. Please make sure that is what you want.");
-            System.out.println("Type: "+subject.getTagName());
-            System.out.println("Proposed Name: "+subject.getName());
+            System.out.println("Type: " + subject.getTagName());
+            System.out.println("Proposed Name: " + subject.getName());
             System.out.println("Raw XML:\n===================");
             System.out.println(subject.asXML());
             System.out.print("===================\nAre you shure you wish to sign this? (y/N) ");
-            String answer=new jline.ConsoleReader().readLine();
+            String answer = new jline.ConsoleReader().readLine();
             if (!answer.toLowerCase().equals("y")) {
                 System.out.println("Aborted Signing Process");
                 System.exit(0);
