@@ -151,6 +151,12 @@ SignedMessage message=(SignedMessage) builder.convert(signer);
                     &lt;/html>
                 </span>
             </source>
+            <p>
+                Once you have created this html file and saved it to disk. Start the
+                <a href="http://dist.neuclear.org/app/neuclear-signer.jnlp">
+                    NeuClear Personal Signer</a> via Java Web Start to create a new Key Pair ("Personality") and sign the file.
+                Then upload it to the url you put in the original source url link.
+            </p>
         </section>
         <section name="Sending a Signed Object">
             <p>
