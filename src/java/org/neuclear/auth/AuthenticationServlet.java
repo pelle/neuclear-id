@@ -40,8 +40,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServlet.java,v 1.7 2003/12/10 23:58:51 pelle Exp $
+$Id: AuthenticationServlet.java,v 1.8 2003/12/12 21:13:16 pelle Exp $
 $Log: AuthenticationServlet.java,v $
+Revision 1.8  2003/12/12 21:13:16  pelle
+I have now done manual testing of the SigningServlet et al and am happy releasing it to 0.8
+
 Revision 1.7  2003/12/10 23:58:51  pelle
 Did some cleaning up in the builders
 Fixed some stuff in IdentityCreator
@@ -139,7 +142,7 @@ public final class AuthenticationServlet extends HttpServlet {
             out.write("<form action=\"");
             out.print(NSResolver.resolveIdentity(userns).getSigner());
             out.write("\" method=\"POST\">\n    ");
-            out.write("<input name=\"base64xml\" value=\"");
+            out.write("<input name=\"neuclear-request\" value=\"");
             out.print(XMLSecTools.encodeElementBase64(sigreq));
             out.write("\" type=\"hidden\">\n    ");
             out.write("<input name=\"endpoint\" value=\"");

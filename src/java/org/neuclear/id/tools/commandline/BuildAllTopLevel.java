@@ -30,8 +30,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: BuildAllTopLevel.java,v 1.1 2003/12/09 23:41:44 pelle Exp $
+$Id: BuildAllTopLevel.java,v 1.2 2003/12/12 21:13:16 pelle Exp $
 $Log: BuildAllTopLevel.java,v $
+Revision 1.2  2003/12/12 21:13:16  pelle
+I have now done manual testing of the SigningServlet et al and am happy releasing it to 0.8
+
 Revision 1.1  2003/12/09 23:41:44  pelle
 IdentityCreator is now the default class of the uber jar.
 It has many new features such as:
@@ -73,7 +76,7 @@ public final class BuildAllTopLevel {
                 name,
                 pubsource.getPublicKey(name),
                 "http://repository.neuclear.org",
-                "http://users.neuclear.org:8080/Signer",
+                "http://users.neuclear.org:8080/DemoSigner",
                 "http://logger.neuclear.org",
                 "mailto:pelle@neuclear.org");
         System.out.println("Signing: " + name);
@@ -85,11 +88,7 @@ public final class BuildAllTopLevel {
             final JCESigner rootsig = new DefaultSigner(new GuiDialogAgent());
             final JCESigner testsig = new TestCaseSigner();
             final Store store = new FileStore("target/testdata/repository");
-            store.receive(createIdentities("neu://", rootsig, rootsig));
-            store.receive(createIdentities("neu://test", rootsig, testsig));
-            store.receive(createIdentities("neu://pelle@neuclear.org", rootsig, rootsig));
-            store.receive(createIdentities("neu://pelle", rootsig, rootsig));
-            store.receive(createIdentities("neu://verax", rootsig, rootsig));
+//            store.receive(createIdentities("neu://test", rootsig, testsig));
             store.receive(createIdentities("neu://bob@test", testsig, testsig));
             store.receive(createIdentities("neu://alice@test", testsig, testsig));
 
