@@ -10,8 +10,11 @@ import org.neuclear.xml.xmlsec.KeyInfo;
 import java.security.PublicKey;
 
 /*
-$Id: ServiceBuilder.java,v 1.6 2004/04/27 15:25:39 pelle Exp $
+$Id: ServiceBuilder.java,v 1.7 2004/09/06 22:23:12 pelle Exp $
 $Log: ServiceBuilder.java,v $
+Revision 1.7  2004/09/06 22:23:12  pelle
+Added a fees element within the ServiceBuilder. This is so Services can add their fees structure in this particular place.
+
 Revision 1.6  2004/04/27 15:25:39  pelle
 Due to a new API change in 0.5 I have changed the name of Ledger and it's implementers to LedgerController.
 
@@ -70,6 +73,8 @@ public class ServiceBuilder extends IdentityBuilder {
         tr.addElement("th").setText("Value");
         tr.addElement("th").setText("Description");
 
+        fees = body.addElement("div");
+
         body.addElement("h3").setText("Keys");
         pktable = body.addElement("table");
 //        pktable.addAttribute("class","pktable");
@@ -127,5 +132,6 @@ public class ServiceBuilder extends IdentityBuilder {
     protected final Element description;
     protected final Element rules;
     protected final Element keys;
+    protected final Element fees;
 }
 
