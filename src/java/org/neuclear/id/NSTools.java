@@ -1,6 +1,9 @@
 /*
- * $Id: NSTools.java,v 1.8 2003/10/22 22:12:33 pelle Exp $
+ * $Id: NSTools.java,v 1.9 2003/10/22 23:11:43 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.9  2003/10/22 23:11:43  pelle
+ * Updated the getParentURI method to support the new neu://test@home format.
+ *
  * Revision 1.8  2003/10/22 22:12:33  pelle
  * Replaced the dependency for the Apache Regex library with JDK1.4's Regex implementation.
  * Changed the valid format of NeuClear ID's to include neu://bob@hello/ formatted ids.
@@ -129,13 +132,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class NSTools {
-    private static final String VALID_TOKEN = "[\\w.]+";
-    private static final String VALID_ID = "^(neu:\\/)?" +
-            "(\\/(" + VALID_TOKEN + "@" + VALID_TOKEN + ")?" +
-            "((\\/)|" + VALID_TOKEN + ")*)$";
-
-    private static final Pattern VALID = Pattern.compile(VALID_ID);
-
     private NSTools() {
     };
 
@@ -181,6 +177,9 @@ public final class NSTools {
     public static String getParentNSURI(String name) throws NeuClearException {
         String uri = normalizeNameURI(name);
         int slash = uri.lastIndexOf('/');
+        int at = uri.indexOf('@');
+        if (slash < at)
+            return uri.substring(0, slash + 1) + uri.substring(at + 1);
         if (uri.equals("neu://") || (slash < 5))
             return "neu://";
         if (slash == 5)
@@ -249,4 +248,20 @@ public final class NSTools {
     public static final Namespace NS_NEUID = DocumentHelper.createNamespace("neuid", NEUID_URI);
 
     public static final String NEUID_PREFIX = "neuid:";
+    private static final String VALID_TOKEN = "[\\w.]+";
+    private static final String VALID_ID = "^(neu:\\/)?" +
+            "(\\/(" + VALID_TOKEN + "@" + VALID_TOKEN + ")?" +
+            "((\\/)|" + VALID_TOKEN + ")*)$";
+
+    private static final Pattern VALID = Pattern.compile(VALID_ID);
+
+    private static final String PARENT_ARROBA_REGEX = "^neu:\\/" +
+            "\\/(" + VALID_TOKEN + "@)" + VALID_TOKEN + "$";
+
+    private static final String PARENT_REGEX = "^neu:\\/[\\w.\\/@]*(\\/" + VALID_TOKEN + ")$";
+
+    private static final Pattern PARENT = Pattern.compile(PARENT_REGEX);
+    private static final Pattern PARENT_ARROBA = Pattern.compile(PARENT_ARROBA_REGEX);
+
+
 }

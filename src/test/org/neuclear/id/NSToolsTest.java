@@ -1,6 +1,9 @@
 /*
-  $Id: NSToolsTest.java,v 1.6 2003/10/22 22:12:33 pelle Exp $
+  $Id: NSToolsTest.java,v 1.7 2003/10/22 23:11:43 pelle Exp $
   $Log: NSToolsTest.java,v $
+  Revision 1.7  2003/10/22 23:11:43  pelle
+  Updated the getParentURI method to support the new neu://test@home format.
+
   Revision 1.6  2003/10/22 22:12:33  pelle
   Replaced the dependency for the Apache Regex library with JDK1.4's Regex implementation.
   Changed the valid format of NeuClear ID's to include neu://bob@hello/ formatted ids.
@@ -117,6 +120,7 @@ public class NSToolsTest extends TestCase {
         assertValidName("neu://pelle@neuclear.org/abcdefg232Avc");
 
         assertInvalidName("neu:/");
+        assertInvalidName("neu://pelle@");
         assertInvalidName("neu://test/pelle@help");
         assertInvalidName("neu://test/pelle@help/abcdefg232Avc");
 
@@ -133,6 +137,8 @@ public class NSToolsTest extends TestCase {
 
     public static void testFindParent() throws NeuClearException {
         assertEquals("neu://hello", NSTools.getParentNSURI("neu://hello/one"));
+        assertEquals("neu://hello", NSTools.getParentNSURI("neu://one@hello"));
+        assertEquals("neu://one@hello", NSTools.getParentNSURI("neu://one@hello/test"));
         assertEquals("neu://hello", NSTools.getParentNSURI("/hello/one"));
         assertEquals("neu://", NSTools.getParentNSURI("neu://hello"));
         assertEquals("neu://", NSTools.getParentNSURI("/hello"));
