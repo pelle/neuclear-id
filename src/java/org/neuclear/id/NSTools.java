@@ -1,6 +1,9 @@
 /*
- * $Id: NSTools.java,v 1.9 2003/10/22 23:11:43 pelle Exp $
+ * $Id: NSTools.java,v 1.10 2003/10/22 23:16:00 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.10  2003/10/22 23:16:00  pelle
+ * Cleaned up some unused stuff in NSTools
+ *
  * Revision 1.9  2003/10/22 23:11:43  pelle
  * Updated the getParentURI method to support the new neu://test@home format.
  *
@@ -123,7 +126,6 @@ package org.neuclear.id;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Namespace;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.id.resolver.NSResolver;
 import org.neudist.crypto.CryptoTools;
 import org.neudist.utils.Utility;
 
@@ -226,24 +228,6 @@ public final class NSTools {
         return "/";
     }
 
-    public static void main(String args[]) {
-        try {
-            SignedNamedObject obj = NSResolver.resolveIdentity("neu://free/pelle");
-            System.out.println("Got: " + obj.getName());
-            obj = NSResolver.resolveIdentity("neu://pelle");
-            System.out.println("Got: " + obj.getName());
-            obj = NSResolver.resolveIdentity("neu://free");
-            System.out.println("Got: " + obj.getName());
-            obj = NSResolver.resolveIdentity("neu://free/pelle");
-            System.out.println("Got: " + obj.getName());
-//            obj=NamedObjectFactory.fetchNamedObject("neu://free/trix");
-//            System.out.println("Got: "+obj.getName());
-            //System.out.println(obj.getElement().asXML());
-        } catch (NeuClearException e) {
-            e.printStackTrace();  //To change body of catch statement use Options | File Templates.
-        }
-    }
-
     public static final String NEUID_URI = "http://neudist.org/neu/neuid";
     public static final Namespace NS_NEUID = DocumentHelper.createNamespace("neuid", NEUID_URI);
 
@@ -254,14 +238,5 @@ public final class NSTools {
             "((\\/)|" + VALID_TOKEN + ")*)$";
 
     private static final Pattern VALID = Pattern.compile(VALID_ID);
-
-    private static final String PARENT_ARROBA_REGEX = "^neu:\\/" +
-            "\\/(" + VALID_TOKEN + "@)" + VALID_TOKEN + "$";
-
-    private static final String PARENT_REGEX = "^neu:\\/[\\w.\\/@]*(\\/" + VALID_TOKEN + ")$";
-
-    private static final Pattern PARENT = Pattern.compile(PARENT_REGEX);
-    private static final Pattern PARENT_ARROBA = Pattern.compile(PARENT_ARROBA_REGEX);
-
 
 }
