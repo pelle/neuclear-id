@@ -156,15 +156,10 @@
                 </dependency>-->
     </dependencies>
     <build>
-
-        <!--    <sourceDirectories>-->
         <sourceDirectory>src/java</sourceDirectory>
-        <!--<sourceDirectory>src/examplecode</sourceDirectory>-->
-        <!--    </sourceDirectories>-->
 
         <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
 
-        <!-- Unit test cases -->
         <unitTest>
             <includes>
                 <include>**/*Test.java</include>
@@ -173,6 +168,27 @@
                 <exclude>**/Abstract*Test.java</exclude>
             </excludes>
         </unitTest>
+
+        <resources>
+            <resource>
+                <directory>
+                      src/java
+                </directory>
+                <includes>
+                    <include>*.png</include>
+                    <include>*.gif</include>
+                    <include>*.jpg</include>
+                    <include>*.jks</include>
+                    <include>*.xml</include>
+                    <include>*.properties</include>
+                    <include>LICENSE.txt</include>
+                </includes>
+                <excludes>
+                    <exclude>*.java</exclude>
+                </excludes>
+            </resource>
+        </resources>
+
     </build>
 </project>
 
