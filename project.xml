@@ -21,12 +21,13 @@
     <url>http://dev.neuclear.org/id/</url>
     <repository>
         <connection>
-         scm:cvs:pserver:anonymous@cvs.neuclear.sourceforge.net:/cvsroot/neuclear:neuclear-id
+         scm:cvs:pserver:anonymous@cvs.sourceforge.net:/cvsroot/neuclear:neuclear-id
         </connection>
         <url>
-      http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/neuclear/neuclear-id/
+      http://cvs.sourceforge.net/viewcvs.py/neuclear/neuclear-id/
         </url>
     </repository>
+
 
     <siteAddress>dev.neuclear.org</siteAddress>
     <siteDirectory>/home/sites/neuclear.org/public_html/id/</siteDirectory>
