@@ -155,9 +155,6 @@
         <!--    </sourceDirectories>-->
 
         <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
-        <integrationUnitTestSourceDirectory/>
-
-        <aspectSourceDirectory/>
 
         <!-- Unit test cases -->
         <unitTest>
