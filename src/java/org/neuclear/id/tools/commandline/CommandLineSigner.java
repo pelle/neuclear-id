@@ -1,5 +1,8 @@
-/* $Id: CommandLineSigner.java,v 1.15 2004/04/17 19:28:22 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.16 2004/06/02 20:01:27 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.16  2004/06/02 20:01:27  pelle
+ * Added tool for creating a Rules file.
+ *
  * Revision 1.15  2004/04/17 19:28:22  pelle
  * Identity is now fully html based as is the ServiceBuilder.
  * VerifyingReader correctly identifies html files and parses them as such.
@@ -249,9 +252,7 @@ import org.neuclear.commons.crypto.passphraseagents.ConsoleAgent;
 import org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent;
 import org.neuclear.commons.crypto.passphraseagents.InteractiveAgent;
 import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
-import org.neuclear.commons.crypto.signers.DefaultSigner;
-import org.neuclear.commons.crypto.signers.NonExistingSignerException;
-import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.crypto.signers.*;
 import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.Identity;
 import org.neuclear.id.builders.Builder;
@@ -263,12 +264,12 @@ import java.io.*;
 
 /**
  * @author pelleb
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class CommandLineSigner {
     private final String executable;
 
-    public CommandLineSigner(final String[] args) throws UserCancellationException {
+    public CommandLineSigner(final String[] args) throws UserCancellationException, InvalidPassphraseException {
         CryptoTools.ensureProvider();
         executable = Utility.getExecutable(getClass());
         options = createOptions();
@@ -314,8 +315,11 @@ public class CommandLineSigner {
         return null;
     }
 
-    private DefaultSigner createSigner(final InteractiveAgent agent) throws UserCancellationException {
-        return new DefaultSigner(agent);
+    private BrowsableSigner createSigner(final InteractiveAgent agent) throws UserCancellationException, InvalidPassphraseException {
+        if (!cmd.hasOption('k'))
+            return new DefaultSigner(agent);
+        final String ksfile = cmd.getOptionValue('k');
+        return new JCESigner(ksfile, "jks", "SUN", agent);
     }
 
     public static void main(final String[] args) {
@@ -341,30 +345,32 @@ public class CommandLineSigner {
         final HelpFormatter help = new HelpFormatter();
         help.setDescPadding(10);
         help.printHelp("\n" + executable + getExtraHelp() +
-                "  [--outputfile signed/test.id] \n" +
-                executable + " --verify neu://neuclear.org\n" +
-                executable + " --inputfile joe@yourdomain.xml \n", options);
+                "  [--outputfile --outputfile mypage_sig.html] \n" +
+                executable + " --verify http://pkyp.org/bob/\n" +
+                executable + " --inputfile mypage.html \n", options);
     }
 
     protected String getExtraHelp() {
-        return " --inputfile unsigned/test.id";
+        return " --inputfile mypage.html";
     }
 
     protected boolean hasArguments() {
         return cmd.hasOption("i") || cmd.hasOption('v');
     }
 
-    public final void execute() throws UserCancellationException {
+    public final void execute() throws NeuClearException {
         final Builder subject = build();
 
         try {
-            if (!sig.canSignFor(alias)) {
-                if (!Utility.isEmpty(of))
-                    of = "signthis.xml";
-                System.out.println("Key with alias: " + alias + " doesnt exist in our keystore. \nSaving unsigned Identity as: " + of);
-            } else if (!subject.isSigned()) {
-                System.out.println("Signing by " + alias + " ...");
-                subject.sign(alias, sig);
+            if (alias != null) {
+                if (!sig.canSignFor(alias)) {
+                    if (!Utility.isEmpty(of))
+                        of = "signthis.xml";
+                    System.out.println("Key with alias: " + alias + " doesnt exist in our keystore. \nSaving unsigned Identity as: " + of);
+                } else if (!subject.isSigned()) {
+                    System.out.println("Signing by " + alias + " ...");
+                    subject.sign(alias, sig);
+                }
             }
 
             OutputStream dest = System.out;
@@ -408,7 +414,7 @@ public class CommandLineSigner {
 
     }
 
-    protected Builder build() throws UserCancellationException {
+    protected Builder build() throws NeuClearException {
         final String sf = cmd.getOptionValue("i");
         Builder subject = null;
         try {
@@ -455,9 +461,10 @@ public class CommandLineSigner {
         final Options options = new Options();
         options.addOption(new Option("o", "outputfile", true, "specify output file \n[ --outputfile bob.id ]"));
         options.addOption(new Option("i", "inputfile", true, "specify Input File \n[ --inputfile bob.xml ]"));
-        options.addOption(new Option("v", "verify", true, "Specify NEU ID to verify \n[ --verify neu://bob@yourdomain.com ]"));
+        options.addOption(new Option("v", "verify", true, "Specify NeuClear page to verify \n[ --verify http://pkyp.org/bob/ ]"));
         options.addOption(new Option("h", "help", false, "Help"));
         options.addOption(new Option("g", "gui", false, "Use GUI Passphrase Dialog"));
+        options.addOption(new Option("k", "keystore", true, "keystore file to use"));
         getLocalOptions(options);
 
 
@@ -469,7 +476,7 @@ public class CommandLineSigner {
 
     protected final CommandLine cmd;
     protected final Options options;
-    protected final Signer sig;
+    protected final BrowsableSigner sig;
     protected String alias;
     protected String of;
 
