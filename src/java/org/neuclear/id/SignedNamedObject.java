@@ -1,6 +1,15 @@
 /*
- * $Id: SignedNamedObject.java,v 1.15 2003/12/20 00:21:19 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.16 2004/01/08 23:39:06 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.16  2004/01/08 23:39:06  pelle
+ * XMLSignature can now give you the Signing key and the id of the signer.
+ * SignedElement can now self verify using embedded public keys as well as KeyName's
+ * Added NeuclearKeyResolver for resolving public key's from Identity certificates.
+ * SignedNamedObjects can now generate their own name using the following format:
+ * neu:sha1://[sha1 of PublicKey]![sha1 of full signed object]
+ * The resulting object has a special internally generted Identity containing the PublicKey
+ * Identity can now contain nothing but a public key
+ *
  * Revision 1.15  2003/12/20 00:21:19  pelle
  * overwrote the standard Object.toString(), hashCode() and equals() methods for SignedNamedObject/Core
  * fixed cactus tests
@@ -249,7 +258,7 @@ import java.sql.Timestamp;
  * @see org.neuclear.senders.Sender
  * @see org.neuclear.commons.crypto.signers.Signer
  */
-public class SignedNamedObject implements SignedObject {
+public class SignedNamedObject {
 
     protected SignedNamedObject(final SignedNamedCore core)  {
         this.core = core;

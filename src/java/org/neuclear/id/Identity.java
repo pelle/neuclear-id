@@ -1,6 +1,15 @@
 /*
- * $Id: Identity.java,v 1.27 2004/01/07 23:12:20 pelle Exp $
+ * $Id: Identity.java,v 1.28 2004/01/08 23:39:06 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.28  2004/01/08 23:39:06  pelle
+ * XMLSignature can now give you the Signing key and the id of the signer.
+ * SignedElement can now self verify using embedded public keys as well as KeyName's
+ * Added NeuclearKeyResolver for resolving public key's from Identity certificates.
+ * SignedNamedObjects can now generate their own name using the following format:
+ * neu:sha1://[sha1 of PublicKey]![sha1 of full signed object]
+ * The resulting object has a special internally generted Identity containing the PublicKey
+ * Identity can now contain nothing but a public key
+ *
  * Revision 1.27  2004/01/07 23:12:20  pelle
  * XMLSig now has various added features:
  * -  KeyInfo supports X509v3 (untested)
@@ -341,48 +350,43 @@ public class Identity extends SignedNamedObject implements Principal {
     private static PublicKey nsrootpk;
 
 
-    /**
-     * @param repository URL of Default Store for Identity. (Note. A Identity object is stored in the default repository of it's parent namespace)
-     * @param signer     URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
-     * @param receiver   URL of default receiver for namespace
-     */
 
-    protected Identity(final SignedNamedCore core, final String repository, final String signer, final String logger, final String receiver, final PublicKey pub)  {
+    protected Identity(final SignedNamedCore core, final PublicKey pub)  {
         super(core);
-        this.repository = repository;
-        this.logger = logger;
-        this.signer = signer;
-        this.receiver = receiver;
         this.pub = pub;
     }
 
 
     public final String getRepository() {
-        return repository;
+        return null;
     }
 
     public final String getSigner() {
-        return signer;
+        return null;
     }
 
     public final String getLogger() {
-        return logger;
+        return null;
     }
 
     public final String getReceiver() {
-        return receiver;
+        return null;
     }
 
     public final SignedNamedObject receive(final SignedNamedObject obj) throws NeuClearException {
+/*
         if (!Utility.isEmpty(receiver))
             return Sender.quickSend(receiver, obj);
         else
+*/
             throw new NeuClearException("Cant receive object, " + getName() + " doesnt have a registered Receiver");
     }
 
     final void log(final SignedNamedObject obj) throws NeuClearException {
+/*
         if (!Utility.isEmpty(logger))
             Sender.quickSend(logger, obj);
+*/
     }
 
     public final PublicKey getPublicKey() {
@@ -393,10 +397,6 @@ public class Identity extends SignedNamedObject implements Principal {
         return new NeuClearCertificate(this);
     }
 
-    private final String repository;
-    private final String signer;
-    private final String logger;
-    private final String receiver;
 
     private final PublicKey pub;
 
@@ -404,8 +404,7 @@ public class Identity extends SignedNamedObject implements Principal {
 
         try {
             final PublicKey rootpk = CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
-            return new Identity(SignedNamedCore.createRootCore(), NSResolver.NSROOTSTORE,
-                    null, null, null, rootpk);
+            return new Identity(SignedNamedCore.createRootCore(), rootpk);
         } catch (NeuClearException e) {
             e.printStackTrace();
         }
@@ -416,31 +415,19 @@ public class Identity extends SignedNamedObject implements Principal {
 
     public final java.security.cert.Certificate[] getCertificateChain() {
         return new Certificate[]{getCertificate()};
-//        final ArrayList certs = new ArrayList(3);
-//        Identity id = this;
-//        while (id != null) {
-//            certs.add(id.getCertificate());
-//            id = id.getSignatory();
-//        }
-//        certs.add(NEUROOT.getCertificate());
-//        certs.trimToSize();
-//        final Certificate[] cert = new Certificate[certs.size()];
-//        final Iterator iter = certs.iterator();
-//        int i = 0;
-//        while (iter.hasNext()) {
-//            final Certificate certificate = (java.security.cert.Certificate) iter.next();
-//            cert[i++] = certificate;
-//        }
-//        return cert;
     }
 
     /**
      * Returns the fixed Root PublicKey
      */
-    final static PublicKey getRootPK() throws CryptoException {
-        if (nsrootpk == null)
-            nsrootpk = CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
-        return nsrootpk;
+    final static synchronized PublicKey getRootPK()  {
+        try {
+            if (nsrootpk == null)
+                nsrootpk = CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
+            return nsrootpk;
+        } catch (CryptoException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private final class NeuClearCertificate extends Certificate {
@@ -505,16 +492,12 @@ public class Identity extends SignedNamedObject implements Principal {
          * @return 
          */
         public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws InvalidNamedObjectException {
-            final String repository = elem.attributeValue(createNEUIDQName("repository"));
-            final String signer = elem.attributeValue(createNEUIDQName("signer"));
-            final String logger = elem.attributeValue(createNEUIDQName("logger"));
-            final String receiver = elem.attributeValue(createNEUIDQName("receiver"));
 
             final Element allowElement = InvalidNamedObjectException.assertContainsElementQName(core,elem,createNEUIDQName("Allow"));
             try {
                 final KeyInfo ki = new KeyInfo(InvalidNamedObjectException.assertContainsElementQName(allowElement, XMLSecTools.createQName("KeyInfo")));
                 final PublicKey pub = ki.getPublicKey();
-                return new Identity(core, repository, signer, logger, receiver, pub);
+                return new Identity(core, pub);
             } catch (XMLSecurityException e) {
                 throw new InvalidNamedObjectException(core.getName(),e);
             }

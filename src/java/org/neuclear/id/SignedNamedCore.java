@@ -1,6 +1,15 @@
 /*
- * $Id: SignedNamedCore.java,v 1.8 2003/12/20 00:21:19 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.9 2004/01/08 23:39:06 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.9  2004/01/08 23:39:06  pelle
+ * XMLSignature can now give you the Signing key and the id of the signer.
+ * SignedElement can now self verify using embedded public keys as well as KeyName's
+ * Added NeuclearKeyResolver for resolving public key's from Identity certificates.
+ * SignedNamedObjects can now generate their own name using the following format:
+ * neu:sha1://[sha1 of PublicKey]![sha1 of full signed object]
+ * The resulting object has a special internally generted Identity containing the PublicKey
+ * Identity can now contain nothing but a public key
+ *
  * Revision 1.8  2003/12/20 00:21:19  pelle
  * overwrote the standard Object.toString(), hashCode() and equals() methods for SignedNamedObject/Core
  * fixed cactus tests
@@ -235,32 +244,27 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.commons.crypto.Base64;
+import org.neuclear.commons.crypto.CryptoException;
 import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.xmlsec.KeyInfo;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
+import org.neuclear.xml.xmlsec.XMLSignature;
 
 import java.security.PublicKey;
 import java.sql.Timestamp;
 import java.text.ParseException;
 
 /**
- * The SignedNamedObject is a <i>secure</i> object normally encapsulating a Digitally signed contract of some
- * sort.<p>
- * Instances of SignedNamedObject and its sub classes are never instantiated directly by client code.
- * Instead it is created by its Reader inner class. This Reader implements NamedObjectReader and is called by
- * VerifyingReader.<p>
- * In most cases a user will load NamedObject through one of two methods:
- * <ul><li>NSResolver for permanent contracts stored on the internet, such as Identity Certificates</li>
- * <li>The other way they are often received are as return values when sending your own objects to WebServices.</l>
- * </ul>
- * To actually create and sign your own object use the NamedObjectBuilder or its subclasses. Each subclass of
- * SignedNamedObject should have a corresponding subclass of NamedObjectBuilder.<p>
- * These NamedObjectBuilder objects should be signed using your Signer, before being sent on to a web service.
- * 
+ * <p>The SignedNamedCore is a non extendible core object used when building SignedNamedObjects.
+ * All implementations of SignedNamedObject, must contain this core which implements all the basic features.
+ * </p><p>
+ * The SignedNamedCore has
  * @see NamedObjectReader
+ * @see SignedNamedObject
  * @see org.neuclear.id.builders.NamedObjectBuilder
  * @see org.neuclear.id.verifier.VerifyingReader
  * @see org.neuclear.id.resolver.NSResolver
@@ -268,12 +272,52 @@ import java.text.ParseException;
  * @see org.neuclear.commons.crypto.signers.Signer
  */
 public final class SignedNamedCore {
+    /**
+     * SignedNamedCore for use in creating Identities for anonymous keys
+     * @param pub
+     */
+    private SignedNamedCore(final PublicKey pub){
+        this.digest=CryptoTools.formatAsBase36(CryptoTools.digest(pub.getEncoded()));
+        this.name="neu:sha1:"+digest;
+        this.timestamp=System.currentTimeMillis();
+        this.encoded=new String(pub.getEncoded());
+        this.signer = null;//new Identity(this,pub);
+    }
 
+    /**
+     * SignedNamedCore for creating SignedNamedObjects from Nymous sources
+     * @param pub
+     * @param encoded
+     */
+    private SignedNamedCore(final PublicKey pub, final String encoded){
+        this.signer = new Identity(new SignedNamedCore(pub),pub);
+        this.digest=CryptoTools.formatAsBase36(CryptoTools.digest(encoded.getBytes()));
+        this.name=signer.getName()+"!"+digest;
+        this.timestamp=System.currentTimeMillis();
+        this.encoded=encoded;
+    }
+    /**
+     * SignedNamedCore for normal signed named objects
+     * @param name
+     * @param signer
+     * @param timestamp
+     * @param encoded
+     */
     private SignedNamedCore(final String name, final Identity signer, final Timestamp timestamp, final String encoded) {
         this.name = name;
         this.signer = signer;
         this.timestamp = timestamp.getTime();
         this.encoded = encoded;
+        this.digest=CryptoTools.formatAsBase36(CryptoTools.digest(encoded.getBytes()));
+    }
+
+    private SignedNamedCore()  {
+        this.name="neu://";
+        this.signer=null;//new Identity(this,Identity.getRootPK());
+        final byte[] encoded = Identity.getRootPK().getEncoded();
+        this.digest=CryptoTools.formatAsBase36(CryptoTools.digest(encoded));
+        this.timestamp=System.currentTimeMillis();
+        this.encoded=new String(encoded);
     }
 
     /**
@@ -284,8 +328,12 @@ public final class SignedNamedCore {
      * @throws InvalidNamedObjectException
      */
     public final static SignedNamedCore read(final Element elem) throws InvalidNamedObjectException, NameResolutionException {
-        final String name = NSTools.normalizeNameURI(InvalidNamedObjectException.assertAttributeQName(elem,getNameAttrQName()));
+        final String name = getSignatoryName(elem);
         try {
+            if (name==null){ // We have an unnamed object
+                return readUnnamed(elem);
+            }
+
             final String signatoryName = NSTools.getSignatoryURI(name);
             final Identity signatory = NSResolver.resolveIdentity(signatoryName);
             PublicKey publicKey = signatory.getPublicKey();
@@ -298,7 +346,7 @@ public final class SignedNamedCore {
             }
             if (XMLSecTools.verifySignature(elem, publicKey)) {
                 final Timestamp timestamp = TimeTools.parseTimeStamp(InvalidNamedObjectException.assertAttributeQName(elem,createQName("timestamp")));
-                return new SignedNamedCore(name, signatory, timestamp, new String(XMLSecTools.canonicalize(elem)));
+                return new SignedNamedCore(name, signatory, timestamp, encodeElement(elem));
             } else
                 throw new InvalidNamedObjectException(name);
         } catch (XMLSecurityException e) {
@@ -308,13 +356,33 @@ public final class SignedNamedCore {
         }
     }
 
+    private static String encodeElement(final Element elem) {
+        return new String(XMLSecTools.canonicalize(elem));
+    }
+
+    private static SignedNamedCore readUnnamed(final Element elem) throws XMLSecurityException, InvalidNamedObjectException {
+        final XMLSignature sig=XMLSecTools.getXMLSignature(elem);
+        final PublicKey pub = sig.getSignersKey();
+        if (sig.verifySignature(pub))
+            return new SignedNamedCore(pub,encodeElement(elem));
+        else
+            throw new InvalidNamedObjectException("Unnamed object failed Signature verification");
+    }
+
+    private static String getSignatoryName(final Element elem) throws InvalidNamedObjectException {
+        final String name = elem.attributeValue(getNameAttrQName());
+        if (name==null)
+            return null;
+        return NSTools.normalizeNameURI(name);
+    }
+
     /**
      * Solely used by RootIdentity
      * 
      * @return 
      */
     final static SignedNamedCore createRootCore() {
-        return new SignedNamedCore("neu://", null, new Timestamp(0), null);
+        return new SignedNamedCore();
     }
 
     private static QName getNameAttrQName() {
@@ -380,8 +448,8 @@ public final class SignedNamedCore {
         return encoded;
     }
 
-    public final byte[] getDigest() {
-        return CryptoTools.digest(encoded.getBytes());
+    public final String getDigest() {
+        return digest;
     }
 
     public final int hashCode() {
@@ -404,6 +472,7 @@ public final class SignedNamedCore {
     private final Identity signer;
     private final long timestamp;
     private final String encoded;
+    private final String digest;
 
 
 }
