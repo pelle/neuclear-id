@@ -1,6 +1,12 @@
 /*
- * $Id: SignedNamedObject.java,v 1.4 2003/10/01 17:05:37 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.5 2003/10/01 19:08:31 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.5  2003/10/01 19:08:31  pelle
+ * Changed XML Format. Now NameSpace has been modified to Identity also the
+ * xml namespace prefix nsdl has been changed to neuid.
+ * The standard constants for using these have been moved into NSTools.
+ * The NamedObjectBuilder can also now take an Element, such as an unsigned template.
+ *
  * Revision 1.4  2003/10/01 17:05:37  pelle
  * Moved the NeuClearCertificate class to be an inner class of Identity.
  *
@@ -150,9 +156,7 @@
  */
 package org.neuclear.id;
 
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.Namespace;
 import org.neudist.utils.NeudistException;
 
 import java.sql.Timestamp;
@@ -162,11 +166,11 @@ import java.sql.Timestamp;
  */
 public class SignedNamedObject implements SignedObject, Named {
 
-    protected SignedNamedObject(String name, Identity signer,Timestamp timestamp,String digest) throws NeudistException {
-        this.name=NSTools.normalizeNameURI(name);
-        this.signer=signer;
-        this.timestamp=timestamp;
-        this.digest=digest;
+    protected SignedNamedObject(String name, Identity signer, Timestamp timestamp, String digest) throws NeudistException {
+        this.name = NSTools.normalizeNameURI(name);
+        this.signer = signer;
+        this.timestamp = timestamp;
+        this.digest = digest;
     }
 
     /**
@@ -181,12 +185,11 @@ public class SignedNamedObject implements SignedObject, Named {
      * The Name of an object within it's parent Identity
      * @return Parent Name
      */
-    public String getLocalName()  {
+    public String getLocalName() {
         String fullName = getName();
         int i = fullName.lastIndexOf('/');
         return fullName.substring(i + 1);
     }
-
 
 
     public Timestamp getTimeStamp() throws NeudistException {
@@ -209,6 +212,7 @@ public class SignedNamedObject implements SignedObject, Named {
     public String getDigest() {
         return digest;
     }
+
     private final String name;
     private final Identity signer;
     private final Timestamp timestamp;
@@ -222,13 +226,9 @@ public class SignedNamedObject implements SignedObject, Named {
          */
         public SignedNamedObject read(Element elem, String name, Identity signatory, String digest, Timestamp timestamp) throws NeudistException {
 
-            return new SignedNamedObject(name,signatory,timestamp,digest);
+            return new SignedNamedObject(name, signatory, timestamp, digest);
         }
 
     }
-    public static final String NSDL_NAMESPACE="http://neudist.org/neu/nsdl";
-     public static final Namespace NS_NSDL=DocumentHelper.createNamespace("nsdl",NSDL_NAMESPACE);
-
-     public static final String NSDL_PREFIX="nsdl:";
 
 }

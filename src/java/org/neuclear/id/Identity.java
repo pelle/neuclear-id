@@ -1,6 +1,12 @@
 /*
- * $Id: Identity.java,v 1.5 2003/10/01 17:05:37 pelle Exp $
+ * $Id: Identity.java,v 1.6 2003/10/01 19:08:31 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.6  2003/10/01 19:08:31  pelle
+ * Changed XML Format. Now NameSpace has been modified to Identity also the
+ * xml namespace prefix nsdl has been changed to neuid.
+ * The standard constants for using these have been moved into NSTools.
+ * The NamedObjectBuilder can also now take an Element, such as an unsigned template.
+ *
  * Revision 1.5  2003/10/01 17:05:37  pelle
  * Moved the NeuClearCertificate class to be an inner class of Identity.
  *
@@ -163,23 +169,20 @@ package org.neuclear.id;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.id.resolver.NSResolver;
+import org.neuclear.senders.Sender;
+import org.neudist.crypto.CryptoTools;
 import org.neudist.utils.NeudistException;
 import org.neudist.utils.Utility;
 import org.neudist.xml.xmlsec.KeyInfo;
 import org.neudist.xml.xmlsec.XMLSecTools;
 import org.neudist.xml.xmlsec.XMLSecurityException;
-import org.neudist.crypto.CryptoTools;
-import org.neudist.crypto.CryptoException;
-import org.neuclear.senders.Sender;
-import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.id.builders.NamedObjectBuilder;
 
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.util.Iterator;
-import java.util.List;
 import java.sql.Timestamp;
 
 public final class Identity extends SignedNamedObject {
@@ -206,9 +209,6 @@ public final class Identity extends SignedNamedObject {
         this.receiver = receiver;
         this.pub = pub;
     }
-
-
-
 
 
     public String getRepository() {
@@ -239,12 +239,14 @@ public final class Identity extends SignedNamedObject {
         return "Identity";
     }
 
-    public PublicKey getPublicKey(){
+    public PublicKey getPublicKey() {
         return pub;
     }
+
     public Certificate getCertificate() {
         return new NeuClearCertificate();
     }
+
     private final String repository;
     private final String signer;
     private final String logger;
@@ -255,9 +257,9 @@ public final class Identity extends SignedNamedObject {
     private final static Identity createRootIdentity() {
 
         try {
-            PublicKey rootpk=CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
-            return new Identity("neu://",null,new Timestamp(0),null,NSResolver.NSROOTSTORE,
-                    null,null,null,rootpk);
+            PublicKey rootpk = CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
+            return new Identity("neu://", null, new Timestamp(0), null, NSResolver.NSROOTSTORE,
+                    null, null, null, rootpk);
         } catch (NeudistException e) {
             e.printStackTrace();
 
@@ -266,7 +268,7 @@ public final class Identity extends SignedNamedObject {
 
     }
 
-    public static final Identity NEUROOT=createRootIdentity();
+    public static final Identity NEUROOT = createRootIdentity();
 
 
     /**
@@ -317,11 +319,13 @@ public final class Identity extends SignedNamedObject {
         public PublicKey getPublicKey() {
             return pub;
         }
+
         public String toString() {
-                return getName();
+            return getName();
         }
 
     }
+
     //TODO I dont like this being public
     public final static class Reader implements NamedObjectReader {
         /**
@@ -330,15 +334,15 @@ public final class Identity extends SignedNamedObject {
          * @return
          */
         public SignedNamedObject read(Element elem, String name, Identity signatory, String digest, Timestamp timestamp) throws NeudistException {
-            String repository=elem.attributeValue(DocumentHelper.createQName("store",SignedNamedObject.NS_NSDL));
-            String signer=elem.attributeValue(DocumentHelper.createQName("signer",SignedNamedObject.NS_NSDL));
-            String logger=elem.attributeValue(DocumentHelper.createQName("logger",SignedNamedObject.NS_NSDL));
-            String receiver=elem.attributeValue(DocumentHelper.createQName("receiver",SignedNamedObject.NS_NSDL));
+            String repository = elem.attributeValue(DocumentHelper.createQName("store", NSTools.NS_NEUID));
+            String signer = elem.attributeValue(DocumentHelper.createQName("signer", NSTools.NS_NEUID));
+            String logger = elem.attributeValue(DocumentHelper.createQName("logger", NSTools.NS_NEUID));
+            String receiver = elem.attributeValue(DocumentHelper.createQName("receiver", NSTools.NS_NEUID));
 
-            Element allowElement=elem.element(DocumentHelper.createQName("allow",SignedNamedObject.NS_NSDL));
-            KeyInfo ki=new KeyInfo(allowElement.element(XMLSecTools.createQName("KeyInfo")));
-            PublicKey pub=ki.getPublicKey();
-            return new Identity(name,signatory,timestamp,digest,repository,signer,logger,receiver,pub);
+            Element allowElement = elem.element(DocumentHelper.createQName("allow", NSTools.NS_NEUID));
+            KeyInfo ki = new KeyInfo(allowElement.element(XMLSecTools.createQName("KeyInfo")));
+            PublicKey pub = ki.getPublicKey();
+            return new Identity(name, signatory, timestamp, digest, repository, signer, logger, receiver, pub);
         }
 
     }

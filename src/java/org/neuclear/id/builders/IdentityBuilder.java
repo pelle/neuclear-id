@@ -1,6 +1,12 @@
 /*
- * $Id: IdentityBuilder.java,v 1.1 2003/09/27 19:23:11 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.2 2003/10/01 19:08:30 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.2  2003/10/01 19:08:30  pelle
+ * Changed XML Format. Now NameSpace has been modified to Identity also the
+ * xml namespace prefix nsdl has been changed to neuid.
+ * The standard constants for using these have been moved into NSTools.
+ * The NamedObjectBuilder can also now take an Element, such as an unsigned template.
+ *
  * Revision 1.1  2003/09/27 19:23:11  pelle
  * Added Builders to create named objects from scratch.
  *
@@ -131,56 +137,66 @@ package org.neuclear.id.builders;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
+import org.neuclear.id.Identity;
+import org.neuclear.id.NSTools;
 import org.neudist.utils.NeudistException;
 import org.neudist.utils.Utility;
-import org.neudist.xml.xmlsec.KeyInfo;
 import org.neudist.xml.xmlsec.XMLSecTools;
 
 import java.security.PublicKey;
-import java.util.Iterator;
-import java.util.List;
 
-public final class  IdentityBuilder extends NamedObjectBuilder {
+public final class IdentityBuilder extends NamedObjectBuilder {
 
 
-        /**
-         * This constructor should be used by subclasses of NameSpace. It creates a Standard NameSpace document, but doesn't sign it.
-         * The signing should be done as the last step of the constructor of the subclass.
-         * @param name The Name of NameSpace
-         * @param allow PublicKey allowed to sign in here
-         * @param repository URL of Default Store for NameSpace. (Note. A NameSpace object is stored in the default repository of it's parent namespace)
-         * @param signer URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
-         * @param receiver URL of default receiver for namespace
-         * @throws NeudistException
-         */
-       public IdentityBuilder(String name,PublicKey allow,String repository,String signer,String logger,String receiver) throws NeudistException {
-                super(name,"NameSpace");
+    /**
+     * This constructor should be used by subclasses of NameSpace. It creates a Standard NameSpace document, but doesn't sign it.
+     * The signing should be done as the last step of the constructor of the subclass.
+     * @param name The Name of NameSpace
+     * @param allow PublicKey allowed to sign in here
+     * @param repository URL of Default Store for NameSpace. (Note. A NameSpace object is stored in the default repository of it's parent namespace)
+     * @param signer URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
+     * @param receiver URL of default receiver for namespace
+     * @throws NeudistException
+     */
+    public IdentityBuilder(String name, PublicKey allow, String repository, String signer, String logger, String receiver) throws NeudistException {
+        super(name, "Identity");
 
-                Element root=getElement();
-                // We have meaningful defaults for the following two
-                root.addAttribute(DocumentHelper.createQName("repository",NamedObjectBuilder.NS_NSDL),repository);
-                root.addAttribute(DocumentHelper.createQName("logger",NamedObjectBuilder.NS_NSDL),receiver);
-                if (!Utility.isEmpty(signer))
-                    root.addAttribute(DocumentHelper.createQName("signer",NamedObjectBuilder.NS_NSDL),signer);
+        Element root = getElement();
+        // We have meaningful defaults for the following two
+        root.addAttribute(DocumentHelper.createQName("repository", NSTools.NS_NEUID), repository);
+        root.addAttribute(DocumentHelper.createQName("logger", NSTools.NS_NEUID), receiver);
+        if (!Utility.isEmpty(signer))
+            root.addAttribute(DocumentHelper.createQName("signer", NSTools.NS_NEUID), signer);
 
-                if (!Utility.isEmpty(receiver))
-                    root.addAttribute(DocumentHelper.createQName("receiver",NamedObjectBuilder.NS_NSDL),receiver);
+        if (!Utility.isEmpty(receiver))
+            root.addAttribute(DocumentHelper.createQName("receiver", NSTools.NS_NEUID), receiver);
 
-                if (allow!=null) {
-                    QName allowName=DocumentHelper.createQName("allow",NamedObjectBuilder.NS_NSDL);
-                    Element pub=root.addElement(allowName);
-                    pub.add(XMLSecTools.createKeyInfo(allow));
-                }
+        if (allow != null) {
+            QName allowName = DocumentHelper.createQName("allow", NSTools.NS_NEUID);
+            Element pub = root.addElement(allowName);
+            pub.add(XMLSecTools.createKeyInfo(allow));
         }
-
-    public IdentityBuilder(String name,PublicKey allow,String repository) throws NeudistException {
-            this(name,allow,repository,null,null,null);
     }
-    public IdentityBuilder(String name,PublicKey allow) throws NeudistException {
-             this(name,allow,null);
-     }
+
+    public IdentityBuilder(String name, PublicKey allow, String repository) throws NeudistException {
+        this(name, allow, repository, null, null, null);
+    }
+
+    public IdentityBuilder(String name, PublicKey allow) throws NeudistException {
+        this(name, allow, null);
+    }
 
     public String getTagName() {
-        return "NameSpace";
+        return "Identity";
+    }
+
+    public static void main(String args[]) {
+        System.out.println("Test Building NeuClear Identities");
+        try {
+            NamedObjectBuilder id = new IdentityBuilder("neu://", Identity.NEUROOT.getPublicKey());
+            System.out.println(new String(id.canonicalize()));
+        } catch (NeudistException e) {
+            e.printStackTrace();
+        }
     }
 }

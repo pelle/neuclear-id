@@ -1,6 +1,12 @@
 /*
- * $Id: NSTools.java,v 1.5 2003/09/26 00:22:06 pelle Exp $
+ * $Id: NSTools.java,v 1.6 2003/10/01 19:08:31 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.6  2003/10/01 19:08:31  pelle
+ * Changed XML Format. Now NameSpace has been modified to Identity also the
+ * xml namespace prefix nsdl has been changed to neuid.
+ * The standard constants for using these have been moved into NSTools.
+ * The NamedObjectBuilder can also now take an Element, such as an unsigned template.
+ *
  * Revision 1.5  2003/09/26 00:22:06  pelle
  * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
  *
@@ -103,10 +109,12 @@ package org.neuclear.id;
 
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Namespace;
+import org.neuclear.id.resolver.NSResolver;
 import org.neudist.crypto.CryptoTools;
 import org.neudist.utils.NeudistException;
 import org.neudist.utils.Utility;
-import org.neuclear.id.resolver.NSResolver;
 
 import java.util.Random;
 
@@ -222,4 +230,9 @@ public final class NSTools {
             e.printStackTrace();  //To change body of catch statement use Options | File Templates.
         }
     }
+
+    public static final String NEUID_URI = "http://neudist.org/neu/neuid";
+    public static final Namespace NS_NEUID = DocumentHelper.createNamespace("neuid", NEUID_URI);
+
+    public static final String NEUID_PREFIX = "neuid:";
 }

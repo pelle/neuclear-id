@@ -1,6 +1,12 @@
 /*
- * $Id: TargetReference.java,v 1.1 2003/09/27 19:23:11 pelle Exp $
+ * $Id: TargetReference.java,v 1.2 2003/10/01 19:08:30 pelle Exp $
  * $Log: TargetReference.java,v $
+ * Revision 1.2  2003/10/01 19:08:30  pelle
+ * Changed XML Format. Now NameSpace has been modified to Identity also the
+ * xml namespace prefix nsdl has been changed to neuid.
+ * The standard constants for using these have been moved into NSTools.
+ * The NamedObjectBuilder can also now take an Element, such as an unsigned template.
+ *
  * Revision 1.1  2003/09/27 19:23:11  pelle
  * Added Builders to create named objects from scratch.
  *
@@ -40,48 +46,49 @@ package org.neuclear.id.builders;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
-//import org.neudist.ns.NamedObject;
+import org.neuclear.id.NSTools;
 import org.neuclear.senders.Sender;
 import org.neudist.utils.NeudistException;
 import org.neudist.utils.Utility;
 import org.neudist.xml.AbstractElementProxy;
-import org.neuclear.senders.Sender;
 
 public class TargetReference extends AbstractElementProxy {
-    public TargetReference(NamedObjectBuilder obj, Element elem) throws NeudistException{
+    public TargetReference(NamedObjectBuilder obj, Element elem) throws NeudistException {
         super(elem);
         if (!elem.getName().equals(TAG_NAME))
             throw new NeudistException("Element is not a <Target/> Element");
-        owner=obj;
+        owner = obj;
     }
 
-    public TargetReference(NamedObjectBuilder obj,String href,String type) {
-        super(DocumentHelper.createQName(TAG_NAME,NamedObjectBuilder.NS_NSDL));
+    public TargetReference(NamedObjectBuilder obj, String href, String type) {
+        super(DocumentHelper.createQName(TAG_NAME, NSTools.NS_NEUID));
         if (!Utility.isEmpty(href))
-            getElement().addAttribute(DocumentHelper.createQName("href",NamedObjectBuilder.NS_NSDL),href);
+            getElement().addAttribute(DocumentHelper.createQName("href", NSTools.NS_NEUID), href);
         if (!Utility.isEmpty(type))
-            getElement().addAttribute(DocumentHelper.createQName("type",NamedObjectBuilder.NS_NSDL),type);
-        owner=obj;
-     }
+            getElement().addAttribute(DocumentHelper.createQName("type", NSTools.NS_NEUID), type);
+        owner = obj;
+    }
 
     public String getHref() {
-        return getElement().attributeValue(DocumentHelper.createQName("href",NamedObjectBuilder.NS_NSDL));
-    }
-    public String getType() {
-        return getElement().attributeValue(DocumentHelper.createQName("type",NamedObjectBuilder.NS_NSDL));
+        return getElement().attributeValue(DocumentHelper.createQName("href", NSTools.NS_NEUID));
     }
 
-    private static final String TAG_NAME="Target";
+    public String getType() {
+        return getElement().attributeValue(DocumentHelper.createQName("type", NSTools.NS_NEUID));
+    }
+
+    private static final String TAG_NAME = "Target";
 
     public String getTagName() {
         return TAG_NAME;
     }
 
     public Namespace getNS() {
-        return NamedObjectBuilder.NS_NSDL;
+        return NSTools.NS_NEUID;
     }
+
     public void send() throws NeudistException {
-            Sender.quickSend(getHref(),owner);
+        Sender.quickSend(getHref(), owner);
     }
 
     private NamedObjectBuilder owner;

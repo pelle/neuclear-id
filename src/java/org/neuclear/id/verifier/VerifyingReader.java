@@ -1,26 +1,21 @@
 package org.neuclear.id.verifier;
 
-import org.neudist.xml.xmlsec.SignedElement;
-import org.neudist.xml.xmlsec.XMLSecurityException;
-import org.neudist.xml.xmlsec.XMLSecTools;
-import org.neudist.xml.XMLTools;
-import org.neudist.xml.XMLException;
-import org.neudist.utils.NeudistException;
-import org.neudist.crypto.CryptoTools;
-import org.dom4j.Namespace;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
-import org.dom4j.DocumentHelper;
 import org.neuclear.id.*;
 import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.id.cache.NSCache;
 import org.neuclear.time.TimeTools;
+import org.neudist.crypto.CryptoTools;
+import org.neudist.utils.NeudistException;
+import org.neudist.xml.XMLTools;
+import org.neudist.xml.xmlsec.XMLSecTools;
 
-import java.security.PublicKey;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.HashMap;
+import java.security.PublicKey;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -40,8 +35,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.2 2003/10/01 17:05:38 pelle Exp $
+$Id: VerifyingReader.java,v 1.3 2003/10/01 19:08:31 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.3  2003/10/01 19:08:31  pelle
+Changed XML Format. Now NameSpace has been modified to Identity also the
+xml namespace prefix nsdl has been changed to neuid.
+The standard constants for using these have been moved into NSTools.
+The NamedObjectBuilder can also now take an Element, such as an unsigned template.
+
 Revision 1.2  2003/10/01 17:05:38  pelle
 Moved the NeuClearCertificate class to be an inner class of Identity.
 
@@ -63,15 +64,16 @@ todo with regards to cleaning up some of the outlying parts of the code.
  * Time: 4:47:15 PM
  */
 public class VerifyingReader {
-    private VerifyingReader(){
-        readers=new HashMap();
-        readers.put("Identity",new Identity.Reader());
-        defaultReader=new SignedNamedObject.Reader();
+    private VerifyingReader() {
+        readers = new HashMap();
+        readers.put("Identity", new Identity.Reader());
+        defaultReader = new SignedNamedObject.Reader();
     }
 
     public static VerifyingReader getInstance() {
         return new VerifyingReader();
     }
+
     /**
      * Read Object from input stream.
      * Verify signature with parent Identity
@@ -80,31 +82,32 @@ public class VerifyingReader {
      * @throws NeudistException
      */
     public SignedNamedObject read(InputStream is) throws NeudistException {
-        Element elem=XMLTools.loadDocument(is).getRootElement();
-        String name=NSTools.normalizeNameURI(elem.attributeValue(getNameAttrQName()));
-        String signatoryName=NSTools.getParentNSURI(name);
-        PublicKey pubs[]=null;
-        Identity signatory=NSResolver.resolveIdentity(signatoryName);
-        if (XMLSecTools.verifySignature(elem,signatory.getPublicKey())) {
+        Element elem = XMLTools.loadDocument(is).getRootElement();
+        String name = NSTools.normalizeNameURI(elem.attributeValue(getNameAttrQName()));
+        String signatoryName = NSTools.getParentNSURI(name);
+        PublicKey pubs[] = null;
+        Identity signatory = NSResolver.resolveIdentity(signatoryName);
+        if (XMLSecTools.verifySignature(elem, signatory.getPublicKey())) {
             //I should be able to get this from within. This is just a quick hack.
-            String digest=new String(CryptoTools.digest(XMLSecTools.canonicalize(elem)));
-            Timestamp timestamp=TimeTools.parseTimeStamp(elem.attributeValue("timestamp"));
-            return resolveReader(elem).read(elem,name,signatory, digest,timestamp);
+            String digest = new String(CryptoTools.digest(XMLSecTools.canonicalize(elem)));
+            Timestamp timestamp = TimeTools.parseTimeStamp(elem.attributeValue("timestamp"));
+            return resolveReader(elem).read(elem, name, signatory, digest, timestamp);
         } else
-                throw new InvalidIdentityException(name+" isnt valid");
+            throw new InvalidIdentityException(name + " isnt valid");
     }
 
-    private NamedObjectReader resolveReader(Element elem){
-        NamedObjectReader reader=(NamedObjectReader) readers.get(elem.getName());
-        if (reader==null)
-            reader=defaultReader;
+    private NamedObjectReader resolveReader(Element elem) {
+        NamedObjectReader reader = (NamedObjectReader) readers.get(elem.getName());
+        if (reader == null)
+            reader = defaultReader;
         return reader;
     }
 
-     private static QName getNameAttrQName() {
-        return DocumentHelper.createQName("name",SignedNamedObject.NS_NSDL);
+    private static QName getNameAttrQName() {
+        return DocumentHelper.createQName("name", NSTools.NS_NEUID);
 
     }
+
     private Map readers;
     private NamedObjectReader defaultReader;
 }

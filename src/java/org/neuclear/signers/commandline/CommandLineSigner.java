@@ -1,5 +1,11 @@
-/* $Id: CommandLineSigner.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.6 2003/10/01 19:08:31 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.6  2003/10/01 19:08:31  pelle
+ * Changed XML Format. Now NameSpace has been modified to Identity also the
+ * xml namespace prefix nsdl has been changed to neuid.
+ * The standard constants for using these have been moved into NSTools.
+ * The NamedObjectBuilder can also now take an Element, such as an unsigned template.
+ *
  * Revision 1.5  2003/09/26 00:22:07  pelle
  * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
  *
@@ -120,9 +126,9 @@ package org.neuclear.signers.commandline;
 import org.apache.commons.cli.*;
 import org.dom4j.Document;
 import org.neuclear.id.NSTools;
-import org.neuclear.id.Identity;
 import org.neuclear.id.SignedNamedObject;
-
+import org.neuclear.id.builders.IdentityBuilder;
+import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.LogSender;
 import org.neudist.crypto.CryptoTools;
@@ -139,14 +145,14 @@ import java.security.cert.Certificate;
 
 /**
  * @author pelleb
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  **/
 public class CommandLineSigner {
 
     public static void main(String args[]) {
         CryptoTools.ensureProvider();
         String keystore = System.getProperty("user.home") + "/.keystore";
-/*
+
 
         try {
             //System.setProperty("org.apache.commons.cli.parser","org.apache.commons.cli.PosixParser");
@@ -194,7 +200,7 @@ public class CommandLineSigner {
                     System.exit(1);
                 }
             }
-            SignedNamedObject subject;
+            NamedObjectBuilder subject;
             if (!doCreate) {
                 subject = loadNamedObject(sf);
             } else {
@@ -208,7 +214,7 @@ public class CommandLineSigner {
                     newkid = cert.getPublicKey();
                 } else
                     newkid = ks.getCertificate(alias).getPublicKey(); //Self Sign
-                subject = new Identity(namespace, newkid, defaultstore, defaultsigner, defaultlogger, defaultreceiver);
+                subject = new IdentityBuilder(namespace, newkid, defaultstore, defaultsigner, defaultlogger, defaultreceiver);
 
             }
 
@@ -238,22 +244,18 @@ public class CommandLineSigner {
             System.err.println(e.getMessage());
             e.printStackTrace(System.err);
         }
-*/
 
     }
-/*
 
-    private static SignedNamedObject loadNamedObject(String sf) throws FileNotFoundException, NeudistException {
+    private static NamedObjectBuilder loadNamedObject(String sf) throws FileNotFoundException, NeudistException {
         SignedNamedObject subject;
         InputStream source = System.in;
         if (!Utility.isEmpty(sf)) {
             source = new FileInputStream(sf);
         }
         Document doc = XMLTools.loadDocument(source);
-        subject = NamedObjectFactory.createNamedObject(doc);
-        return subject;
+        return new NamedObjectBuilder(doc);
     }
-*/
 
     private static Options createOptions() {
         // create Options object
