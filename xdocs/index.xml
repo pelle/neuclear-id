@@ -16,37 +16,28 @@
 
 			</p>
        </section>
-        <section name="Rethinking PKI">
-             <p>
-                I am a big believer in Public/Private Key crypto and digital signatures. The core technology is so elegant and
-                 has so many uses it is a wonder that it never quite took off. Unless you start
-                 addressing the many problems involved with the actual implementations and applications of the
-                 technology, see Ian Griggs wonderful rants here and you might understand:
-            </p>
-
-<ul><li><a href="http://www.iang.org/ssl/">SSL</a></li>
-<li><a href="http://www.iang.org/ssl/pki_considered_harmful.html">PKI</a></li>
-</ul>
-
-<p>The purpose of writing a new PKI system by scratch for NeuClear was to create a system that was:</p>
-
-<ul><li>Easy to use and understand for average users</li>
-<li>completely legacy free (ie. http (or p2p) not ldap, xml not asn.1 nor x509)</li>
-<li>Not be succeptible to government manipulation such as the dns system.</li>
-<li>Leave CyberSpace <span class="caps">ID</span> to Meat Space <span class="caps">ID</span> mapping to optional higher levels.</li>
-<li>Make accessability a higher priority than theoretical threat analysis (See Ian's rants again above)</li>
-</ul>
+        <section name="Busy Developer Guide">
             <p>
-                The NeuClear ID attempts to take flexibility of <a href="http://www.pgp.org">PGP</a> and merge it with the
-                ease of use of DNS. We have attempted to stay away from any of the thought processes behind the traditional X509
-                CA model as offered by VeriSign, as we belive it doesnt solve any problems and presents too many.
+                We are working on expanding our documentation now. Besides expanding our <a href="apidocs/index.html">API Documentation</a>,
+                we also now have a <a href="bdg.html">busy developers guide</a>. Aimed to get developers started with their own Identities
+                quickly and easily.
+            </p>
+        </section>
+        <section name="Road Map">
+            <p>
+                The current development version is 0.8-SNAPSHOT. Our aim for 0.8 FINAL is to stabilize and freeze the API.
+                Thus the goal is to acheive usability for application developers. This should be reached in mid December 2003.
             </p>
             <p>
-                The Core technology is based on XML. With heavy use of the new XML-Signature standard to handle trust and
-                security aspects of the framework. The initial implementation is in Java, but there is absolutely no
-                reason at all that it couldnt be implemented in say C#, Pythom or Perl.
+                Our aim for the next version 0.9 is to stabilize and freeze the underlying xml formats and standards as well
+                as to create more userland tools. Thus the goal is to fix the underlying format making it easier for other implementations
+                of NeuClear ID. This should be reached early on in January 2004
             </p>
-		</section>
+            <p>
+                Our goal is for 1.0 the following release to be fairly polished from a usability standpoint. Our goal is to release this
+                in February 2004.
+            </p>
+        </section>
 	</body>
 
 </document>

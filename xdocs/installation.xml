@@ -7,7 +7,19 @@
 	</properties>
 
 	<body>
-		<section name="Requirements">
+        <section name="Requirements">
+            <p>
+                Any JRE 1.4 VM should work. <a href="http://www.java.com:80/en/download/manual.jsp">Get the latest for your platform straight from Sun</a>.
+                If you are running Mac OS/X Jaguar or Panther you should already be set. Please let us know of any problems.
+            </p>
+            <p>
+                 Download the <a href="http://neuclear.org/maven/neuclear-id/jars/neuclear-id-0.8-SNAPSHOT-uber.jar">NeuClear ID Executable</a>.
+                 Excuse the long and ugly name, we will package it nicer later on. Currently this tool allows you to create a certificate and
+                 sign it. The jar file also contains all the required libraries and should be suitable for adding to your favorite IDE's classpath.
+             </p>
+
+        </section>
+		<section name="Requirements for Building">
             <p>
                 To build the NeuClear framework you first need to install <a href="http://maven.apache.org/">Maven</a>.
                 Follow their installation instructions and you should be ok. I haven't tried this under windows yet, but I'm guessing
