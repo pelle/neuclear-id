@@ -6,6 +6,7 @@ import org.neuclear.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.NSTools;
+import org.neuclear.id.InvalidNamedObjectException;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -28,8 +29,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationTicketBuilder.java,v 1.7 2003/12/11 16:29:26 pelle Exp $
+$Id: AuthenticationTicketBuilder.java,v 1.8 2003/12/22 13:45:31 pelle Exp $
 $Log: AuthenticationTicketBuilder.java,v $
+Revision 1.8  2003/12/22 13:45:31  pelle
+Added a naive benchmarking tool.
+Fixed a bug in AskAtStartupAgent
+
 Revision 1.7  2003/12/11 16:29:26  pelle
 Updated various builders to use the new helper methods in AbstractElementProxy hopefully making them more readable.
 
@@ -75,11 +80,11 @@ Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to 
  * Time: 11:59:58 AM
  */
 public final class AuthenticationTicketBuilder extends NamedObjectBuilder {
-    public AuthenticationTicketBuilder(final String user, final String requester, final String site) throws NeuClearException {
+    public AuthenticationTicketBuilder(final String user, final String requester, final String site) throws InvalidNamedObjectException {
         this(user, requester, new Timestamp(new Date().getTime() + 1800000), site);
     }
 
-    public AuthenticationTicketBuilder(final String user, final String requester, final Date validto, final String site) throws NeuClearException {
+    public AuthenticationTicketBuilder(final String user, final String requester, final Date validto, final String site) throws InvalidNamedObjectException {
         super(NSTools.createUniqueTransactionID(user, requester), AuthenticationTicket.TAG_NAME, AuthenticationTicket.NS_NSAUTH);
         createAttribute("requester", NSTools.normalizeNameURI(requester));
         createAttribute("validto", TimeTools.formatTimeStamp(validto));
