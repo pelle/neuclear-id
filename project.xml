@@ -3,7 +3,7 @@
 
     <name>NeuClear Identity Framework</name>
     <id>neuclear-id</id>
-    <currentVersion>1.0-beta4</currentVersion>
+    <currentVersion>1.0-beta5</currentVersion>
     <inceptionYear>2002</inceptionYear>
     <package>org.neuclear</package>
     <logo>/images/logo.gif</logo>
