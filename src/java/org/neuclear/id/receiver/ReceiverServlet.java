@@ -1,6 +1,14 @@
 /*
- * $Id: ReceiverServlet.java,v 1.3 2004/04/21 00:10:28 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.4 2004/04/21 23:27:18 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.4  2004/04/21 23:27:18  pelle
+ * Integrated Browser with the asset controller
+ * Updated look and feel
+ * Added ServletLedgerFactory
+ * Added ServletAssetControllerFactory
+ * Created issue.jsp file
+ * Fixed many smaller issues
+ *
  * Revision 1.3  2004/04/21 00:10:28  pelle
  * Index page looks a bit nicer.
  *
@@ -210,6 +218,26 @@ public class ReceiverServlet extends XMLInputStreamServlet {
     }      ;
     protected Signer createSigner(ServletConfig config) throws GeneralSecurityException, NeuClearException, IOException {
         return ServletSignerFactory.getInstance().createSigner(config);
+    }
+
+    protected void outputHTMLError(PrintWriter writer, Exception e) {
+        writer.println("<html><head><title>");
+        writer.println(getTitle());
+        writer.println(" - ERROR!");
+        writer.println("</title><link rel=\"stylesheet\" type=\'text/css\' href=\"styles.css\"/></head><body>");
+        writer.println("<h1>Error</h1><h3>");
+        writer.println(getRootCause(e).getLocalizedMessage());
+        writer.println("</h3><pre style=\"display:none\">");
+        e.printStackTrace(writer);
+        writer.println("</pre>");
+
+        writer.println("</body></html>");
+    }
+
+    protected Throwable getRootCause(Throwable e) {
+        if (e.getCause() != null)
+            return getRootCause(e.getCause());
+        return e;
     }
 
     public final String getTitle() {
