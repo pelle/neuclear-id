@@ -1,6 +1,9 @@
 /*
- * $Id: Signatory.java,v 1.3 2004/04/23 23:34:12 pelle Exp $
+ * $Id: Signatory.java,v 1.4 2004/05/12 18:06:55 pelle Exp $
  * $Log: Signatory.java,v $
+ * Revision 1.4  2004/05/12 18:06:55  pelle
+ * Changed the way hashCode works an quals works in Signatory. Now hashCode is created during instantiation as the integer value of the first 4 bytes of the raw digest.
+ *
  * Revision 1.3  2004/04/23 23:34:12  pelle
  * Major update. Added an original url and nickname to Identity and friends.
  *
@@ -364,9 +367,11 @@ public final class Signatory implements Principal {
      * @param pub
      */
     public Signatory(final PublicKey pub) {
-        this.id = Base32.encode(CryptoTools.digest(pub.getEncoded()));
+        final byte[] sha = CryptoTools.digest(pub.getEncoded());
+        this.id = Base32.encode(sha);
         this.pub = pub;
         PublicKeyCache.cachePublicKey(pub);
+        this.hashcode = sha[0] | sha[1] << 8 | sha[2] << 16 | sha[3] << 24;
     }
 
     public String getName() {
@@ -391,8 +396,29 @@ public final class Signatory implements Principal {
         return Resolver.resolveIdentity(id);
     }
 
+    public final int hashCode() {
+        return hashcode;
+    }
+
+    public final String toString() {
+        return "signer:" + id;    //To change body of overriden methods use Options | File Templates.
+    }
+
+    public final boolean equals(Object object) {
+        if (object == null)
+            return false;
+        if (object == this)
+            return true;
+        if (!(object instanceof Signatory))
+            return false;
+
+        return id.equals(((Signatory) object).getName());    //To change body of overriden methods use Options | File Templates.
+    }
+
     private final PublicKey pub;
     private final String id;
+    private final int hashcode;
+
 
     private final class NeuClearCertificate extends Certificate {
         public NeuClearCertificate(Signatory signer) {
