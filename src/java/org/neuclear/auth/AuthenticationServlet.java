@@ -42,8 +42,17 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServlet.java,v 1.10 2003/12/15 23:33:04 pelle Exp $
+$Id: AuthenticationServlet.java,v 1.11 2003/12/16 15:04:59 pelle Exp $
 $Log: AuthenticationServlet.java,v $
+Revision 1.11  2003/12/16 15:04:59  pelle
+Added SignedMessage contract for signing simple textual contracts.
+Added NeuSender, updated SmtpSender and Sender to take plain email addresses (without the mailto:)
+Added AbstractObjectCreationTest to make it quicker to write unit tests to verify
+NamedObjectBuilder/SignedNamedObject Pairs.
+Sample application has been expanded with a basic email application.
+Updated docs for sample web app.
+Added missing LGPL LICENSE.txt files to signer and sample app
+
 Revision 1.10  2003/12/15 23:33:04  pelle
 added ServletTools.getInitParam() which first tries the ServletConfig, then the context config.
 All the web.xml's have been updated to support this. Also various further generalizations have been done throughout
@@ -159,7 +168,7 @@ public class AuthenticationServlet extends HttpServlet {
             out.write("<form action=\"");
             out.print(NSResolver.resolveIdentity(userns).getSigner());
             out.write("\" method=\"POST\">\n    ");
-            out.write("<input name=\"base64xml\" value=\"");
+            out.write("<input name=\"neuclear-request\" value=\"");
             out.print(XMLSecTools.encodeElementBase64(sigreq));
             out.write("\" type=\"hidden\">\n    ");
             out.write("<input name=\"endpoint\" value=\"");

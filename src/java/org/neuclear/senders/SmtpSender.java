@@ -5,8 +5,17 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:52:38 AM
- * $Id: SmtpSender.java,v 1.15 2003/12/10 23:58:52 pelle Exp $
+ * $Id: SmtpSender.java,v 1.16 2003/12/16 15:05:00 pelle Exp $
  * $Log: SmtpSender.java,v $
+ * Revision 1.16  2003/12/16 15:05:00  pelle
+ * Added SignedMessage contract for signing simple textual contracts.
+ * Added NeuSender, updated SmtpSender and Sender to take plain email addresses (without the mailto:)
+ * Added AbstractObjectCreationTest to make it quicker to write unit tests to verify
+ * NamedObjectBuilder/SignedNamedObject Pairs.
+ * Sample application has been expanded with a basic email application.
+ * Updated docs for sample web app.
+ * Added missing LGPL LICENSE.txt files to signer and sample app
+ *
  * Revision 1.15  2003/12/10 23:58:52  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -114,6 +123,7 @@ package org.neuclear.senders;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.Identity;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -122,9 +132,11 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.util.Date;
 import java.util.Properties;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public final class SmtpSender extends Sender {
-    public final SignedNamedObject send(String endpoint, final SignedNamedObject obj) throws NeuClearException {
+    public final SignedNamedObject send(String endpoint, final SignedNamedObject obj) throws NeuClearException,UnsupportedEndpointException {
         final Properties props = System.getProperties();
         if (endpoint.startsWith("mailto:"))
             endpoint = endpoint.substring(7);
@@ -138,7 +150,7 @@ public final class SmtpSender extends Sender {
             final Message msg = new MimeMessage(session);
 
             // -- Set the FROM and TO fields --
-            msg.setFrom(new InternetAddress("pelle@neuclear.org"));// TODO Remove this hardcoded email
+            msg.setFrom(new InternetAddress(getSender(obj)));// TODO Remove this hardcoded email
             msg.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(endpoint, false));
 
@@ -172,4 +184,14 @@ public final class SmtpSender extends Sender {
 
         return null;// We never receive a response
     }
+
+    private String getSender(final SignedNamedObject obj) {
+        Identity senderid=obj.getSignatory();
+        final Matcher matcher = SENDER.matcher(senderid.getReceiver());
+        if (matcher.matches())
+            return matcher.group(2) ;
+        return "dummy@neuclear.org";
+    }
+    private static final Pattern SENDER = Pattern.compile("^(mailto:)([\\w-.]+\\@[\\w-.]+)");
+
 }

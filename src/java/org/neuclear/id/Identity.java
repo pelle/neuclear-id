@@ -1,6 +1,15 @@
 /*
- * $Id: Identity.java,v 1.23 2003/12/10 23:58:51 pelle Exp $
+ * $Id: Identity.java,v 1.24 2003/12/16 15:05:00 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.24  2003/12/16 15:05:00  pelle
+ * Added SignedMessage contract for signing simple textual contracts.
+ * Added NeuSender, updated SmtpSender and Sender to take plain email addresses (without the mailto:)
+ * Added AbstractObjectCreationTest to make it quicker to write unit tests to verify
+ * NamedObjectBuilder/SignedNamedObject Pairs.
+ * Sample application has been expanded with a basic email application.
+ * Updated docs for sample web app.
+ * Added missing LGPL LICENSE.txt files to signer and sample app
+ *
  * Revision 1.23  2003/12/10 23:58:51  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -340,6 +349,10 @@ public class Identity extends SignedNamedObject implements Principal {
 
     public final String getLogger() {
         return logger;
+    }
+
+    public final String getReceiver() {
+        return receiver;
     }
 
     public final SignedNamedObject receive(final SignedNamedObject obj) throws NeuClearException {

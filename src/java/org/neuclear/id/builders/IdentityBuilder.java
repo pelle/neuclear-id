@@ -1,6 +1,15 @@
 /*
- * $Id: IdentityBuilder.java,v 1.13 2003/12/11 23:57:29 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.14 2003/12/16 15:04:59 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.14  2003/12/16 15:04:59  pelle
+ * Added SignedMessage contract for signing simple textual contracts.
+ * Added NeuSender, updated SmtpSender and Sender to take plain email addresses (without the mailto:)
+ * Added AbstractObjectCreationTest to make it quicker to write unit tests to verify
+ * NamedObjectBuilder/SignedNamedObject Pairs.
+ * Sample application has been expanded with a basic email application.
+ * Updated docs for sample web app.
+ * Added missing LGPL LICENSE.txt files to signer and sample app
+ *
  * Revision 1.13  2003/12/11 23:57:29  pelle
  * Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
  * Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -233,7 +242,7 @@ public class IdentityBuilder extends NamedObjectBuilder {
         addLineBreak();
         // We have meaningful defaults for the following two
         createNEUIDAttribute("repository", repository);
-        createNEUIDAttribute("logger", receiver);
+        createNEUIDAttribute("logger", logger);
         if (!Utility.isEmpty(signer))
             createNEUIDAttribute("signer", signer);
 

@@ -29,8 +29,17 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.15 2003/12/10 23:58:51 pelle Exp $
+$Id: VerifyingReader.java,v 1.16 2003/12/16 15:05:00 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.16  2003/12/16 15:05:00  pelle
+Added SignedMessage contract for signing simple textual contracts.
+Added NeuSender, updated SmtpSender and Sender to take plain email addresses (without the mailto:)
+Added AbstractObjectCreationTest to make it quicker to write unit tests to verify
+NamedObjectBuilder/SignedNamedObject Pairs.
+Sample application has been expanded with a basic email application.
+Updated docs for sample web app.
+Added missing LGPL LICENSE.txt files to signer and sample app
+
 Revision 1.15  2003/12/10 23:58:51  pelle
 Did some cleaning up in the builders
 Fixed some stuff in IdentityCreator
@@ -133,6 +142,7 @@ public final class VerifyingReader {
         readers.put("Asset", new Identity.Reader());
         readers.put(AuthenticationTicket.TAG_NAME, new AuthenticationTicket.Reader());
         readers.put(SignatureRequest.SIGREQUEST_TAG, new SignatureRequest.Reader());
+        readers.put(SignedMessage.TAG_NAME, new SignedMessage.Reader());
         defaultReader = new SignedNamedObject.Reader();
     }
 

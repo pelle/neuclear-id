@@ -5,8 +5,17 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:29:29 AM
- * $Id: Sender.java,v 1.13 2003/12/10 23:58:52 pelle Exp $
+ * $Id: Sender.java,v 1.14 2003/12/16 15:05:00 pelle Exp $
  * $Log: Sender.java,v $
+ * Revision 1.14  2003/12/16 15:05:00  pelle
+ * Added SignedMessage contract for signing simple textual contracts.
+ * Added NeuSender, updated SmtpSender and Sender to take plain email addresses (without the mailto:)
+ * Added AbstractObjectCreationTest to make it quicker to write unit tests to verify
+ * NamedObjectBuilder/SignedNamedObject Pairs.
+ * Sample application has been expanded with a basic email application.
+ * Updated docs for sample web app.
+ * Added missing LGPL LICENSE.txt files to signer and sample app
+ *
  * Revision 1.13  2003/12/10 23:58:52  pelle
  * Did some cleaning up in the builders
  * Fixed some stuff in IdentityCreator
@@ -82,13 +91,10 @@ import java.util.Map;
 
 public abstract class Sender {
 
-    public abstract SignedNamedObject send(String endpoint, SignedNamedObject obj) throws NeuClearException, XMLException;
+    public abstract SignedNamedObject send(String endpoint, SignedNamedObject obj) throws NeuClearException, XMLException, UnsupportedEndpointException;
 
     public static SignedNamedObject quickSend(final String endpoint, final SignedNamedObject obj) throws NeuClearException {
-        final int protloc = endpoint.indexOf(":");
-        if (protloc < 0)
-            throw new NeuClearException(endpoint + "Is not in URL format");
-        final String protocol = endpoint.substring(0, protloc);
+        final String protocol = getProtocol(endpoint);
         final Sender sender = getSender(protocol);
         if (sender == null)
             throw new NeuClearException("Unsupported Send Protocol:" + endpoint.toString());
@@ -99,12 +105,23 @@ public abstract class Sender {
         }
     }
 
+    private static String getProtocol(final String endpoint) throws NeuClearException {
+        final int protloc = endpoint.indexOf(":");
+        final int atloc = endpoint.indexOf("@");
+        if (protloc < 0&&atloc<0)
+            throw new NeuClearException(endpoint + "Is not in URL format");
+        if (protloc>=0)
+            return endpoint.substring(0, protloc);
+        return "mailto";
+    }
+
     public static Sender getSender(final String protocol) {
         if (SENDERS == null) {
             SENDERS = new HashMap();
             SENDERS.put("soap", new SoapSender());
             SENDERS.put("http", new SoapSender());
             SENDERS.put("mailto", new SmtpSender());
+            SENDERS.put("neu", new NeuSender());
         }
 
         return (Sender) SENDERS.get(protocol);
