@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <meta content="HTML Tidy, see www.w3.org" name="generator"/>
+        <title>Bob Smith</title>
+        <link rel="neu:receiver" href="mailto:pelle@neuclear.org"/>
+        <link rel="neu:logger" href="http://logger.neuclear.org"/>
+        <meta content="Identity" name="neu:type"/>
+    </head>
+    <body>
+        <h1 id="name">Bob Smith</h1>
+        <p>Hi I am Bob.</p>
+        <p id="dsigtitle" style="background:#00B; font-family:sans-serif; font-size: small;color:white">This page has been digitally signed.</p>
+    </body>
+    <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:SignedInfo style="background:#FEE; font-family:monospace; font-size: xx-small; color:#400;display:block">
+            <ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+            <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+            <ds:Reference>
+                <ds:Transforms>
+                    <ds:Transform ds:Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                    <ds:Transform ds:Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                </ds:Transforms>
+                <ds:DigestMethod ds:Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                <ds:DigestValue>
+Z4wp3sv1DCzQzXAkuwI33GjR+as=
+                </ds:DigestValue>
+            </ds:Reference>
+        </ds:SignedInfo>
+        <ds:SignatureValue style="background:#EEF; font-family:monospace; font-size: xx-small; color:#004;display:block">
+lWUzcCL/6W5tgdSWuPdntP6EgaTOCCBUZDdvTr0aobhLZszOyscKHQheMWSdKjTmq8dVQkikPK1o
+bmqGUNHKLUPRF7cIRG2p+DbNhgWBQD0PQkA2yuR8cA4ibEPi312wfCRHAXdhBJBi9gKSlI2lSBUu
+oOI/3KvAm4LDp+2HtRs=
+        </ds:SignatureValue>
+        <ds:KeyInfo style="display:none">
+            <ds:KeyValue>
+                <ds:RSAKeyValue>
+                    <ds:Modulus>
+tB+Eulrq1ap2r8LGoMQWauOvcL5sxJeWu5Oo10DZkvDKx3HHTZrOK9i9lBlGajmnYHuJVhUrKCQX
+WV3xaHEGplZKEgxDIh+BAOAT7FQ8gWYqCUup4GVZuP7bcuJ5HEQKVtAvcZfLp9/VRFb/YwB0dOS4
+G7u6wqciv8yO1v9dLQE=
+                    </ds:Modulus>
+                    <ds:Exponent>
+AQAB
+                    </ds:Exponent>
+                </ds:RSAKeyValue>
+            </ds:KeyValue>
+        </ds:KeyInfo>
+    </ds:Signature>
+</html>

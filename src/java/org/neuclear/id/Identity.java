@@ -1,6 +1,13 @@
 /*
- * $Id: Identity.java,v 1.32 2004/04/01 23:19:49 pelle Exp $
+ * $Id: Identity.java,v 1.33 2004/04/17 19:28:22 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.33  2004/04/17 19:28:22  pelle
+ * Identity is now fully html based as is the ServiceBuilder.
+ * VerifyingReader correctly identifies html files and parses them as such.
+ * Targets and Target now parse html link tags
+ * AssetBuilder and ExchangeAgentBuilder have been updated to support it and provide html formatted contracts.
+ * The Asset.Reader and ExchangeAgent.Reader still need to be updated.
+ *
  * Revision 1.32  2004/04/01 23:19:49  pelle
  * Split Identity into Signatory and Identity class.
  * Identity remains a signed named object and will in the future just be used for self declared information.
@@ -325,7 +332,6 @@ package org.neuclear.id;
 
 import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.Utility;
 import org.neuclear.id.targets.Targets;
 
 import java.security.Principal;
@@ -348,14 +354,9 @@ import java.security.Principal;
  * @see org.neuclear.id.builders.IdentityBuilder
  */
 public class Identity extends SignedNamedObject implements Principal {
-    protected Identity(final SignedNamedCore core, String signer, Targets targets) {
+    protected Identity(final SignedNamedCore core, Targets targets) {
         super(core);
         this.targets = (targets != null) ? targets : Targets.EMPTY;
-        this.signer = Utility.denullString(signer, DEFAULT_SIGNER);
-    }
-
-    public final String getSigner() {
-        return signer;
     }
 
 
@@ -369,7 +370,6 @@ public class Identity extends SignedNamedObject implements Principal {
     }
 
     private final Targets targets;
-    private final String signer;
 
     public static final String DEFAULT_SIGNER = "http://localhost:11870/Signer";
 
@@ -382,9 +382,7 @@ public class Identity extends SignedNamedObject implements Principal {
          */
         public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws InvalidNamedObjectException {
             final Targets targets = Targets.parseList(elem);
-            final Element se = elem.element("Signer");
-            final String signer = (se != null) ? se.getTextTrim() : null;
-            return new Identity(core, signer, targets);
+            return new Identity(core, targets);
         }
 
     }

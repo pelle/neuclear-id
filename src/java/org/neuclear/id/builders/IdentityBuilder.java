@@ -1,6 +1,13 @@
 /*
- * $Id: IdentityBuilder.java,v 1.21 2004/04/01 23:19:47 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.22 2004/04/17 19:28:21 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.22  2004/04/17 19:28:21  pelle
+ * Identity is now fully html based as is the ServiceBuilder.
+ * VerifyingReader correctly identifies html files and parses them as such.
+ * Targets and Target now parse html link tags
+ * AssetBuilder and ExchangeAgentBuilder have been updated to support it and provide html formatted contracts.
+ * The Asset.Reader and ExchangeAgent.Reader still need to be updated.
+ *
  * Revision 1.21  2004/04/01 23:19:47  pelle
  * Split Identity into Signatory and Identity class.
  * Identity remains a signed named object and will in the future just be used for self declared information.
@@ -234,69 +241,54 @@
 package org.neuclear.id.builders;
 
 import org.dom4j.Element;
-import org.dom4j.QName;
 import org.neuclear.commons.Utility;
-import org.neuclear.id.Identity;
-import org.neuclear.id.InvalidNamedObjectException;
 
 public class IdentityBuilder extends Builder {
 
-    public IdentityBuilder() throws InvalidNamedObjectException {
-        this(Identity.DEFAULT_SIGNER);
+    public IdentityBuilder() {
+        this(TYPENAME);
     }
+
 
     /**
-     * It creates a Standard Identity document, but doesn't sign it.
+     * This constructor should be used by subclasses of Identity. It creates a Standard Identity document, but doesn't sign it.
      *
-     * @param signer   URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
      * @param receiver URL of default receiver for namespace
      */
+    public IdentityBuilder(final String name, final String receiver, final String message) {
+        this();
+        addTarget(receiver, "receiver");
+        head.addElement("title").setText(name);
+        body.addElement("h1").setText(name);
+        body.addElement("p").setText(message);
 
-    public IdentityBuilder(final String signer, final String logger, final String receiver) throws InvalidNamedObjectException {
-        this(createNEUIDQName(TAGNAME), signer, logger, receiver);
-    }
-
-    public IdentityBuilder(final String signer) throws InvalidNamedObjectException {
-        this(createNEUIDQName(TAGNAME), signer);
     }
 
     /**
      * This constructor should be used by subclasses of Identity. It creates a Standard Identity document, but doesn't sign it.
      *
-     * @param tag      The Tag used by this sub class
-     * @param signer   URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
-     * @param receiver URL of default receiver for namespace
+     * @param type The type identifier
      */
-    protected IdentityBuilder(final QName tag, final String signer, final String logger, final String receiver) throws InvalidNamedObjectException {
-        this(tag, signer);
-
-        addTarget(logger, "logger");
-        addTarget(receiver, "inbox");
-    }
-
-    /**
-     * This constructor should be used by subclasses of Identity. It creates a Standard Identity document, but doesn't sign it.
-     *
-     * @param tag    The Tag used by this sub class
-     * @param signer URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
-     */
-    protected IdentityBuilder(final QName tag, final String signer) throws InvalidNamedObjectException {
-        super(tag);
-
-        final Element root = getElement();
-        addLineBreak();
-        if (!Utility.isEmpty(signer))
-            addElement("Signer", signer);
+    protected IdentityBuilder(String type) {
+        super("html");
+        head = getElement().addElement("head");
+        body = getElement().addElement("body");
     }
 
 
-    private void addTarget(final String href, final String type) {
-        if (!Utility.isEmpty(href))
-            addElement("Target", href).addAttribute("type", type);
+    protected final void addTarget(final String href, final String type) {
+        if (!Utility.isEmpty(href)) {
+            final Element target = head.addElement("link");
+            target.addAttribute("rel", "neu:" + type);
+            target.addAttribute("href", href);
+        }
     }
 
 
-    private static final String TAGNAME = "Identity";
+    protected final Element head;
+    protected final Element body;
+
+    private static final String TYPENAME = "Identity";
 
 
 }

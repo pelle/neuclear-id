@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <meta content="HTML Tidy, see www.w3.org" name="generator"/>
+        <title>Evil Bob Smith</title>
+        <meta content="Identity" name="neu:type"/>
+        <link type="neu:receiver" href="mailto:pelle@neuclear.org"/>
+        <link rel="stylesheet" href="http://neuclear.org/sig.css" type="text/css"/>
+    </head>
+    <body>
+        <h1 id="name">Bob Smith</h1>
+        <p>Hi I am Bob.</p>
+        <p id="dsigtitle">This page has been digitally signed.</p>
+    </body>
+    <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:SignedInfo id="dsdigestvalue">
+            <ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+            <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+            <ds:Reference>
+                <ds:Transforms>
+                    <ds:Transform ds:Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                    <ds:Transform ds:Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                </ds:Transforms>
+                <ds:DigestMethod ds:Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                <ds:DigestValue>
+xtrl3jlrXz39TurJJHCB2rd7eNY=
+                </ds:DigestValue>
+            </ds:Reference>
+        </ds:SignedInfo>
+        <ds:SignatureValue id="dssigvalue">
+GLg6OoLB6ar1tz82U/itMkOV7bYGuwZLrddtZ77I+CSPkLqB+ghsVN2y6i0RtwkYwrm2gpYQ+rUM
+VZzmPtqqkSOK8H0XrBHBVmfomu9gLBjL+J1v419bwuWT4RKe4yYP1T7o3vvJn9XwFcR30dyk1ek5
+gnnRWbRMj+n1ai2T9SQ=
+        </ds:SignatureValue>
+        <ds:KeyInfo id="dskeyinfo">
+            <ds:KeyValue>
+                <ds:RSAKeyValue>
+                    <ds:Modulus>
+tB+Eulrq1ap2r8LGoMQWauOvcL5sxJeWu5Oo10DZkvDKx3HHTZrOK9i9lBlGajmnYHuJVhUrKCQX
+WV3xaHEGplZKEgxDIh+BAOAT7FQ8gWYqCUup4GVZuP7bcuJ5HEQKVtAvcZfLp9/VRFb/YwB0dOS4
+G7u6wqciv8yO1v9dLQE=
+                    </ds:Modulus>
+                    <ds:Exponent>
+AQAB
+                    </ds:Exponent>
+                </ds:RSAKeyValue>
+            </ds:KeyValue>
+        </ds:KeyInfo>
+    </ds:Signature>
+</html>

@@ -1,5 +1,6 @@
 package org.neuclear.id.verifier;
 
+import org.dom4j.Attribute;
 import org.dom4j.Element;
 import org.neuclear.id.*;
 import org.neuclear.id.auth.AuthenticationTicket;
@@ -29,8 +30,15 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.23 2004/04/02 17:33:31 pelle Exp $
+$Id: VerifyingReader.java,v 1.24 2004/04/17 19:28:22 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.24  2004/04/17 19:28:22  pelle
+Identity is now fully html based as is the ServiceBuilder.
+VerifyingReader correctly identifies html files and parses them as such.
+Targets and Target now parse html link tags
+AssetBuilder and ExchangeAgentBuilder have been updated to support it and provide html formatted contracts.
+The Asset.Reader and ExchangeAgent.Reader still need to be updated.
+
 Revision 1.23  2004/04/02 17:33:31  pelle
 Added automatic caching of SignedNamedObject
 
@@ -203,10 +211,20 @@ public final class VerifyingReader {
 
 
     private NamedObjectReader resolveReader(final Element elem) {
-        NamedObjectReader reader = (NamedObjectReader) readers.get(elem.getName());
+        NamedObjectReader reader = (NamedObjectReader) readers.get(extractName(elem));
         if (reader == null)
             reader = defaultReader;
         return reader;
+    }
+
+    private String extractName(final Element elem) {
+        if (elem.getName().equals("html")) {
+            Attribute type = (Attribute) elem.selectSingleNode("//html/head/meta[@name='neu:type']/@content");
+            if (type != null && type.getValue() != null)
+                return type.getValue();
+            return "Identity"; //default to identity
+        }
+        return elem.getName();
     }
 
 

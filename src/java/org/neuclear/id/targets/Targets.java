@@ -25,8 +25,15 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: Targets.java,v 1.2 2004/03/02 18:59:10 pelle Exp $
+$Id: Targets.java,v 1.3 2004/04/17 19:28:22 pelle Exp $
 $Log: Targets.java,v $
+Revision 1.3  2004/04/17 19:28:22  pelle
+Identity is now fully html based as is the ServiceBuilder.
+VerifyingReader correctly identifies html files and parses them as such.
+Targets and Target now parse html link tags
+AssetBuilder and ExchangeAgentBuilder have been updated to support it and provide html formatted contracts.
+The Asset.Reader and ExchangeAgent.Reader still need to be updated.
+
 Revision 1.2  2004/03/02 18:59:10  pelle
 Further cleanups in neuclear-id. Moved everything under id.
 
@@ -42,39 +49,49 @@ Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
  * Time: 10:39:07 PM
  */
 public final class Targets {
-    private Targets(Target list[]){
-        targetlist=list;
+    private Targets(Target list[]) {
+        targetlist = list;
     }
+
     public final void send(SignedNamedObject obj) throws NeuClearException {
-        for (int i=0;i<targetlist.length;i++){
-            Sender.quickSend(targetlist[i].getHref(),obj);
+        for (int i = 0; i < targetlist.length; i++) {
+            Sender.quickSend(targetlist[i].getHref(), obj);
         }
     }
-    public final void send(String type,SignedNamedObject obj) throws NeuClearException {
-        final int ti=Target.getType(type);
-        for (int i=0;i<targetlist.length;i++){
-            if (targetlist[i].getType()==ti)
-                Sender.quickSend(targetlist[i].getHref(),obj);
+
+    public final void send(String type, SignedNamedObject obj) throws NeuClearException {
+        final int ti = Target.getType(type);
+        for (int i = 0; i < targetlist.length; i++) {
+            if (targetlist[i].getType() == ti)
+                Sender.quickSend(targetlist[i].getHref(), obj);
         }
     }
+
     public final void log(SignedNamedObject obj) throws NeuClearException {
-        send("logger",obj);
+        send("logger", obj);
     }
 
+    public final int getSize() {
+        return targetlist.length;
+    }
 
-    public final static Targets parseList(Element elem){
-        List list=elem.elements("Target");
-        Target targets[]=new Target[list.size()];
-        Target signer=null;
-        for (int i=0;i<list.size();i++){
-            targets[i]=Target.parseElement((Element) list.get(i));
+    Target[] getTargets() {
+        return targetlist;
+    }
+
+    public final static Targets parseList(Element elem) {
+        List list = elem.selectNodes("//html/head/link[starts-with(@rel,'neu:')]");
+        Target targets[] = new Target[list.size()];
+        Target signer = null;
+        for (int i = 0; i < list.size(); i++) {
+            targets[i] = Target.parseElement((Element) list.get(i));
         }
         return new Targets(targets);
     }
 
     private final Target[] targetlist;
 
-    public static final Targets EMPTY=new Targets(new Target[0]);
+    public static final Targets EMPTY = new Targets(new Target[0]);
 
 }
 

@@ -1,5 +1,12 @@
-/* $Id: IdentityCreator.java,v 1.11 2004/04/01 23:19:49 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.12 2004/04/17 19:28:22 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.12  2004/04/17 19:28:22  pelle
+ * Identity is now fully html based as is the ServiceBuilder.
+ * VerifyingReader correctly identifies html files and parses them as such.
+ * Targets and Target now parse html link tags
+ * AssetBuilder and ExchangeAgentBuilder have been updated to support it and provide html formatted contracts.
+ * The Asset.Reader and ExchangeAgent.Reader still need to be updated.
+ *
  * Revision 1.11  2004/04/01 23:19:49  pelle
  * Split Identity into Signatory and Identity class.
  * Identity remains a signed named object and will in the future just be used for self declared information.
@@ -240,7 +247,7 @@ import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public final class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(final String[] args) throws UserCancellationException, ParseException, InvalidNamedObjectException {
@@ -261,30 +268,24 @@ public final class IdentityCreator extends CommandLineSigner {
         if (cmd.hasOption('i')) {//If we have an input file we load that instead of creating a new one
             return super.build();
         }
-        try {
-            final String defaultsigner = Utility.denullString(cmd.getOptionValue("s"), "http://localhost:11870/Signer");
-            final String defaultlogger = Utility.denullString(cmd.getOptionValue("l"), LogSender.LOGGER);
-            final String defaultreceiver = cmd.getOptionValue("b");
-            if (!sig.canSignFor(alias)) {
-                System.out.println("You do not currently have a key matching this name. Do you with to create one?");
-                if (!Utility.getAffirmative(true)) {
-                    System.out.println("OK, Bye");
-                    System.exit(0);
-                }
-                System.out.println("Generating Keys for " + alias + "... ");
-                PublicKey pub = sig.generateKey(alias);
-                System.out.println("DONE");
-                System.out.println("STORING Keys");
-                sig.save();
-
+        final String defaultsigner = Utility.denullString(cmd.getOptionValue("s"), "http://localhost:11870/Signer");
+        final String defaultlogger = Utility.denullString(cmd.getOptionValue("l"), LogSender.LOGGER);
+        final String defaultreceiver = cmd.getOptionValue("b");
+        if (!sig.canSignFor(alias)) {
+            System.out.println("You do not currently have a key matching this name. Do you with to create one?");
+            if (!Utility.getAffirmative(true)) {
+                System.out.println("OK, Bye");
+                System.exit(0);
             }
+            System.out.println("Generating Keys for " + alias + "... ");
+            PublicKey pub = sig.generateKey(alias);
+            System.out.println("DONE");
+            System.out.println("STORING Keys");
+            sig.save();
 
-            return new IdentityBuilder(defaultsigner, defaultlogger, defaultreceiver);
-        } catch (InvalidNamedObjectException e) {
-            System.err.println("The name: " + e.getName() + " is not valid. ");
-            System.exit(1);
         }
-        return null;
+
+        return new IdentityBuilder(defaultsigner, defaultlogger, defaultreceiver);
     }
 
     public static void main(final String[] args) {

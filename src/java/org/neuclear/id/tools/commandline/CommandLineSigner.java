@@ -1,5 +1,12 @@
-/* $Id: CommandLineSigner.java,v 1.14 2004/04/15 16:10:24 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.15 2004/04/17 19:28:22 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.15  2004/04/17 19:28:22  pelle
+ * Identity is now fully html based as is the ServiceBuilder.
+ * VerifyingReader correctly identifies html files and parses them as such.
+ * Targets and Target now parse html link tags
+ * AssetBuilder and ExchangeAgentBuilder have been updated to support it and provide html formatted contracts.
+ * The Asset.Reader and ExchangeAgent.Reader still need to be updated.
+ *
  * Revision 1.14  2004/04/15 16:10:24  pelle
  * Got rid of unnecessary catch clause for InvalidPassphrase
  *
@@ -256,7 +263,7 @@ import java.io.*;
 
 /**
  * @author pelleb
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class CommandLineSigner {
     private final String executable;
@@ -276,7 +283,6 @@ public class CommandLineSigner {
                     System.out.println("Signed Object: " + id.getName() + " is verified");
                     System.out.println("was signed at: " + TimeTools.formatTimeStamp(id.getTimeStamp()));
                     System.out.println("Is of type: " + id.getClass().getName());
-                    System.out.println("signer: " + id.getSigner());
                 } else {
                     System.out.println("Couldnt Resolve or Verify the object.");
                 }

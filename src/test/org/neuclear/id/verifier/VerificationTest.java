@@ -28,8 +28,15 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerificationTest.java,v 1.11 2004/01/20 17:39:13 pelle Exp $
+$Id: VerificationTest.java,v 1.12 2004/04/17 19:28:23 pelle Exp $
 $Log: VerificationTest.java,v $
+Revision 1.12  2004/04/17 19:28:23  pelle
+Identity is now fully html based as is the ServiceBuilder.
+VerifyingReader correctly identifies html files and parses them as such.
+Targets and Target now parse html link tags
+AssetBuilder and ExchangeAgentBuilder have been updated to support it and provide html formatted contracts.
+The Asset.Reader and ExchangeAgent.Reader still need to be updated.
+
 Revision 1.11  2004/01/20 17:39:13  pelle
 Further updates to unit tests
 
@@ -109,6 +116,10 @@ public final class VerificationTest extends TestCase {
         runDirectoryTest("src/testdata/fakes", false);
     }
 
+    public final void testSamples() throws IOException, DocumentException, NeuClearException, XMLException {
+        runDirectoryTest("src/testdata/simple", true);
+    }
+
     public final void runDirectoryTest(final String path, final boolean wantValid) throws DocumentException, IOException, FileNotFoundException, NeuClearException, XMLException {
         final File dir = new File(path);
         if (!dir.exists()) {
@@ -118,7 +129,7 @@ public final class VerificationTest extends TestCase {
         final FilenameFilter filter;
         filter = new FilenameFilter() {
             public boolean accept(final File dirf, final String name) {
-                return name.endsWith(".id");
+                return name.endsWith(".id") || name.endsWith(".xml") || name.endsWith(".html");
             }
         };
 

@@ -26,6 +26,10 @@ public class Builder extends SignedElement {
         createDocument();
     }
 
+    public Builder(final String name) {
+        super(name);
+    }
+
     public Builder(final String name, final Namespace ns) {
         super(name, ns);
         createDocument();

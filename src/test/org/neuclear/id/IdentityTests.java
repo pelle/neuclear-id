@@ -40,7 +40,6 @@ public class IdentityTests extends AbstractObjectCreationTest {
                 obj.getName().substring(4, 36));
         assertEquals(new String(CryptoTools.digest(signer.getPublicKey(NAME).getEncoded())),
                 new String(Base32.decode(obj.getName().substring(4, 36))));
-        assertEquals(id.getSigner(), SIGNER);
         assertNotNull(id.getSignatory().getPublicKey());
     }
 
