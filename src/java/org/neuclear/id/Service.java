@@ -10,8 +10,11 @@ import org.neuclear.xml.xmlsec.XMLSecurityException;
 import java.security.PublicKey;
 
 /*
-$Id: Service.java,v 1.3 2004/04/23 23:34:11 pelle Exp $
+$Id: Service.java,v 1.4 2004/07/22 21:51:38 pelle Exp $
 $Log: Service.java,v $
+Revision 1.4  2004/07/22 21:51:38  pelle
+added a Signatory object for the Service object. This also gives it a service ID.
+
 Revision 1.3  2004/04/23 23:34:11  pelle
 Major update. Added an original url and nickname to Identity and friends.
 
@@ -35,12 +38,20 @@ Created new ServiceBuilder class for creating services. A service is an identity
 public class Service extends Identity {
     public Service(final SignedNamedCore core, String nickname, String original, String serviceUrl, PublicKey serviceKey, Targets targets) {
         super(core, nickname, original, targets);
-        this.serviceKey = serviceKey;
+        this.serviceSignatory = new Signatory(serviceKey);
         this.serviceUrl = serviceUrl;
     }
 
     public final PublicKey getServiceKey() {
-        return serviceKey;
+        return serviceSignatory.getPublicKey();
+    }
+
+    public final Signatory getServiceSignatory() {
+        return serviceSignatory;
+    }
+
+    public final String getServiceId() {
+        return serviceSignatory.getName();
     }
 
     public final String getServiceUrl() {
@@ -57,5 +68,5 @@ public class Service extends Identity {
     }
 
     protected final String serviceUrl;
-    protected final PublicKey serviceKey;
+    protected final Signatory serviceSignatory;
 }
