@@ -1,6 +1,15 @@
 /*
- * $Id: SigningServlet.java,v 1.20 2003/12/12 19:28:03 pelle Exp $
+ * $Id: SigningServlet.java,v 1.21 2003/12/14 20:53:04 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.21  2003/12/14 20:53:04  pelle
+ * Added ServletPassPhraseAgent which uses ThreadLocal to transfer the passphrase to the signer.
+ * Added ServletSignerFactory, which builds Signers for use within servlets based on parameters in the Servlets
+ * Init parameters in web.xml
+ * Updated SQLContext to use ThreadLocal
+ * Added jakarta cactus unit tests to neuclear-commons to test the 2 new features above.
+ * Added use of the new features in neuclear-commons to the servilets within neuclear-id and added
+ * configuration parameters in web.xml
+ *
  * Revision 1.20  2003/12/12 19:28:03  pelle
  * All the Cactus tests now for signing servlet.
  * Added working AuthenticationFilterTest
@@ -210,10 +219,7 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.Base64;
 import org.neuclear.commons.crypto.passphraseagents.GuiDialogAgent;
-import org.neuclear.commons.crypto.signers.DefaultSigner;
-import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
-import org.neuclear.commons.crypto.signers.NonExistingSignerException;
-import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.crypto.signers.*;
 import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.NSTools;
@@ -232,6 +238,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.FileNotFoundException;
 import java.security.GeneralSecurityException;
 
 
@@ -255,7 +262,7 @@ public class SigningServlet extends XMLInputStreamServlet {
     }
 
     protected Signer createSigner(ServletConfig config) throws GeneralSecurityException, NeuClearException, IOException {
-        return new DefaultSigner(new GuiDialogAgent());
+        return ServletSignerFactory.getInstance().createSigner(config);
     }
 
     protected final Signer getSigner() {

@@ -1,6 +1,15 @@
 /*
- * $Id: DemoSigningServlet.java,v 1.13 2003/12/12 19:28:03 pelle Exp $
+ * $Id: DemoSigningServlet.java,v 1.14 2003/12/14 20:53:04 pelle Exp $
  * $Log: DemoSigningServlet.java,v $
+ * Revision 1.14  2003/12/14 20:53:04  pelle
+ * Added ServletPassPhraseAgent which uses ThreadLocal to transfer the passphrase to the signer.
+ * Added ServletSignerFactory, which builds Signers for use within servlets based on parameters in the Servlets
+ * Init parameters in web.xml
+ * Updated SQLContext to use ThreadLocal
+ * Added jakarta cactus unit tests to neuclear-commons to test the 2 new features above.
+ * Added use of the new features in neuclear-commons to the servilets within neuclear-id and added
+ * configuration parameters in web.xml
+ *
  * Revision 1.13  2003/12/12 19:28:03  pelle
  * All the Cactus tests now for signing servlet.
  * Added working AuthenticationFilterTest
@@ -162,6 +171,7 @@ package org.neuclear.signers.servlet;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.passphraseagents.PassPhraseAgent;
+import org.neuclear.commons.crypto.passphraseagents.ServletPassPhraseAgent;
 import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.xml.XMLException;
@@ -174,30 +184,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 
-public final class DemoSigningServlet extends SigningServlet implements PassPhraseAgent, SingleThreadModel {
+public final class DemoSigningServlet extends SigningServlet {
+    public DemoSigningServlet(){
+        agent=new ServletPassPhraseAgent();
+    }
     protected Signer createSigner(ServletConfig config) throws GeneralSecurityException, NeuClearException {
-        passphrase = "neuclear";
-        return new TestCaseSigner(this);
+        agent.set("neuclear");
+        final TestCaseSigner signerd = new TestCaseSigner(agent);
+        agent.clear();
+        return signerd;
     }
 
-    protected synchronized void handleInputStream(InputStream is, HttpServletRequest request, HttpServletResponse response) throws IOException, NeuClearException, XMLException {
-        passphrase = request.getParameter("passphrase");
+    protected void handleInputStream(InputStream is, HttpServletRequest request, HttpServletResponse response) throws IOException, NeuClearException, XMLException {
+        agent.setRequest(request);
         super.handleInputStream(is, request, response);
-        passphrase = null;
+        agent.clear();
     }
 
-    /**
-     * Retrieve the PassPhrase for a given name/alias
-     * 
-     * @param name 
-     * @return 
-     */
-    public final char[] getPassPhrase(final String name) {
-        if (passphrase == null)
-            return null;
-        return passphrase.toCharArray();
-    }
-
-
-    private String passphrase;// Single Thread Model hack
+     private final ServletPassPhraseAgent agent;
 }

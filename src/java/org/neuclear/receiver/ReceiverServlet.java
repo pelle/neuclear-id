@@ -1,6 +1,15 @@
 /*
- * $Id: ReceiverServlet.java,v 1.13 2003/12/12 15:12:50 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.14 2003/12/14 20:53:04 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.14  2003/12/14 20:53:04  pelle
+ * Added ServletPassPhraseAgent which uses ThreadLocal to transfer the passphrase to the signer.
+ * Added ServletSignerFactory, which builds Signers for use within servlets based on parameters in the Servlets
+ * Init parameters in web.xml
+ * Updated SQLContext to use ThreadLocal
+ * Added jakarta cactus unit tests to neuclear-commons to test the 2 new features above.
+ * Added use of the new features in neuclear-commons to the servilets within neuclear-id and added
+ * configuration parameters in web.xml
+ *
  * Revision 1.13  2003/12/12 15:12:50  pelle
  * The ReceiverServletTest now passes.
  * Add first stab at a SigningServletTest which currently doesnt pass.
@@ -106,6 +115,8 @@ package org.neuclear.receiver;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.crypto.signers.ServletSignerFactory;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.xml.ElementProxy;
@@ -119,10 +130,20 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.security.GeneralSecurityException;
 
 public class ReceiverServlet extends XMLInputStreamServlet {
     public void init(final ServletConfig config) throws ServletException {
         super.init(config);
+        try {
+            signer=createSigner(config);
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();  //To change body of catch statement use Options | File Templates.
+        } catch (NeuClearException e) {
+            e.printStackTrace();  //To change body of catch statement use Options | File Templates.
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use Options | File Templates.
+        }
     }
 
     protected final void handleInputStream(final InputStream is, final HttpServletRequest request, final HttpServletResponse response) throws IOException, NeuClearException, XMLException {
@@ -154,15 +175,22 @@ public class ReceiverServlet extends XMLInputStreamServlet {
 
     }
 
-    public final void setReceiver(final Receiver receiver) {
+    protected final void setReceiver(final Receiver receiver) {
         this.receiver = receiver;
     }
 
     final Receiver getReceiver() {
         return receiver;
     }
+    public Signer getSigner(){
+        return signer;
+    }
+    protected Signer createSigner(ServletConfig config) throws GeneralSecurityException, NeuClearException, IOException {
+        return ServletSignerFactory.getInstance().createSigner(config);
+    }
 
     private Receiver receiver;
+    private Signer signer;
     private static final Element OK = DocumentHelper.createElement("Status");
 
     {

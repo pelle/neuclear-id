@@ -2,8 +2,9 @@ package org.neuclear.auth;
 
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
-import org.neuclear.commons.crypto.signers.Signer;
-import org.neuclear.commons.crypto.signers.TestCaseSigner;
+import org.neuclear.commons.crypto.signers.*;
+import org.neuclear.commons.crypto.passphraseagents.*;
+import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.id.builders.SignatureRequestBuilder;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.FileNotFoundException;
 import java.security.GeneralSecurityException;
 
 /*
@@ -40,10 +42,16 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServlet.java,v 1.8 2003/12/12 21:13:16 pelle Exp $
+$Id: AuthenticationServlet.java,v 1.9 2003/12/14 20:53:04 pelle Exp $
 $Log: AuthenticationServlet.java,v $
-Revision 1.8  2003/12/12 21:13:16  pelle
-I have now done manual testing of the SigningServlet et al and am happy releasing it to 0.8
+Revision 1.9  2003/12/14 20:53:04  pelle
+Added ServletPassPhraseAgent which uses ThreadLocal to transfer the passphrase to the signer.
+Added ServletSignerFactory, which builds Signers for use within servlets based on parameters in the Servlets
+Init parameters in web.xml
+Updated SQLContext to use ThreadLocal
+Added jakarta cactus unit tests to neuclear-commons to test the 2 new features above.
+Added use of the new features in neuclear-commons to the servilets within neuclear-id and added
+configuration parameters in web.xml
 
 Revision 1.7  2003/12/10 23:58:51  pelle
 Did some cleaning up in the builders
@@ -85,22 +93,26 @@ Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to 
  * Date: Nov 6, 2003
  * Time: 2:04:31 PM
  */
-public final class AuthenticationServlet extends HttpServlet {
+public class AuthenticationServlet extends HttpServlet {
     public final void init(final ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
         serviceid = servletConfig.getInitParameter("serviceid");
         title = servletConfig.getInitParameter("title");
 
         try {
-            signer = new TestCaseSigner();
+            signer = createSigner(servletConfig);
         } catch (NeuClearException e) {
             throw new ServletException(e);
         } catch (GeneralSecurityException e) {
             throw new ServletException(e);
+        } catch (FileNotFoundException e) {
+            throw new ServletException(e);
         }
 
     }
-
+    protected Signer createSigner(ServletConfig config) throws FileNotFoundException, GeneralSecurityException, NeuClearException {
+        return ServletSignerFactory.getInstance().createSigner(config);
+    }
     protected final void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 
     }
@@ -142,7 +154,7 @@ public final class AuthenticationServlet extends HttpServlet {
             out.write("<form action=\"");
             out.print(NSResolver.resolveIdentity(userns).getSigner());
             out.write("\" method=\"POST\">\n    ");
-            out.write("<input name=\"neuclear-request\" value=\"");
+            out.write("<input name=\"base64xml\" value=\"");
             out.print(XMLSecTools.encodeElementBase64(sigreq));
             out.write("\" type=\"hidden\">\n    ");
             out.write("<input name=\"endpoint\" value=\"");

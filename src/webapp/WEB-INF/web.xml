@@ -4,9 +4,9 @@
 
 <web-app>
 
-    <display-name>NeuDist WebApp</display-name>
+    <display-name>NeuClear WebApp</display-name>
     <description>
-	Storage System for Named Objects in Neubia
+	Demo NeuClear Web app
     </description>
     <filter>
         <filter-name>authfilter</filter-name>
@@ -24,16 +24,16 @@
         <servlet-name>jcesigner</servlet-name>
         <servlet-class>org.neuclear.signers.servlet.SigningServlet</servlet-class>
         <init-param>
-            <param-name>keystore</param-name>
-            <param-value>/WEB-INF/testkeys.ks</param-value>
-        </init-param>
-        <init-param>
-            <param-name>keystore.password</param-name>
-            <param-value>neuclear</param-value>
-        </init-param>
-        <init-param>
             <param-name>title</param-name>
             <param-value>NeuClear Local Signer</param-value>
+        </init-param>
+        <init-param>
+            <param-name>keeppassphrase</param-name>
+            <param-value>1</param-value>
+        </init-param>
+        <init-param>
+            <param-name>passphraseagent</param-name>
+            <param-value>gui</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -56,6 +56,18 @@
         <init-param>
             <param-name>serviceid</param-name>
             <param-value>neu://test</param-value>
+        </init-param>
+        <init-param>
+            <param-name>keystore</param-name>
+            <param-value></param-value>
+        </init-param>
+        <init-param>
+            <param-name>keeppassphrase</param-name>
+            <param-value>1</param-value>
+        </init-param>
+        <init-param>
+            <param-name>passphraseagent</param-name>
+            <param-value>gui</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
