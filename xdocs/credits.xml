@@ -1,33 +1,36 @@
 <?xml version="1.0"?>
 <document>
 
-	<properties>
-		<title>Credits and Dependencies</title>
-		<author email="pelle@neubia.com">Pelle Braendgaard</author>
-	</properties>
+    <properties>
+        <title>Credits and Dependencies</title>
+        <author email="pelle@neubia.com">Pelle Braendgaard</author>
+    </properties>
 
-	<body>
-		<section name="Dependencies">
+    <body>
+        <section name="Dependencies">
             <p>
                 We are currently using the following libraries quite heavily:
                 <ul>
-                    <li><a href="http://www.bouncycastle.org">Bouncy Castle for Crypto</a></li>
-                    <li><a href="http://www.dom4j.org">Dom4J - XML API</a></li>
-                    <li><a href="http://jakarta.apache.org/turbine/maven/">Maven - for Building</a></li>
-                    <li><a href="http://jakarta.apache.org/commons/cli/">Apache Jakarta Commons CLI</a></li>
-                    <li><a href="http://jakarta.apache.org/commons/collections.html">Apache Jakarta Commons Collections</a></li>
-                    <li><a href="http://www.picocontainer.org">PicoContainer</a></li>
-                    <li><a href="http://www.nanocontainer.org">NanoContainer</a></li>
-               </ul>
+                    <li>
+                        <a href="http://dev.neuclear.org/commons">NeuClear Commons</a>
+                    </li>
+                    <li>
+                        <a href="http://dev.neuclear.org/xmlsig">NeuClear XMLSig</a>
+                    </li>
+                    <li>
+                        <a href="http://www.bouncycastle.org">Bouncy Castle for Crypto</a>
+                    </li>
+                    <li>
+                        <a href="http://www.dom4j.org">Dom4J - XML API</a>
+                    </li>
+                    <li>
+                        <a href="http://maven.apache.org/">Maven - for Building</a>
+                    </li>
+                    <li>
+                        <a href="http://jakarta.apache.org/commons/cli/">Apache Jakarta Commons CLI</a>
+                    </li>
+                </ul>
 
-            </p>
-        </section>
-        <section name="Credits">
-            <p>
-                Originally we used Apache Groups <a href="http://xml.apache.org">XML-Security</a> package for XML-Signatures. But when
-                we went from using DOM to Dom4J, we decided to write our own implementation ontop of Dom4J. While we have rewritten most things we owe
-                a debt of gratitude for the inspiration from XML-Security. In a few cases we simply ported the apache code to dom4j. I'm not 100% sure of the
-                copyright implications of this, if we are doing it wrong please write me and I'll rectify it.
             </p>
         </section>
     </body>
