@@ -1,6 +1,12 @@
 /*
- * $Id: Identity.java,v 1.8 2003/10/21 22:31:12 pelle Exp $
+ * $Id: Identity.java,v 1.9 2003/10/25 00:39:54 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.9  2003/10/25 00:39:54  pelle
+ * Fixed SmtpSender it now sends the messages.
+ * Refactored CommandLineSigner. Now it simply signs files read from command line. However new class IdentityCreator
+ * is subclassed and creates new Identities. You can subclass CommandLineSigner to create your own variants.
+ * Several problems with configuration. Trying to solve at the moment. Updated PicoContainer to beta-2
+ *
  * Revision 1.8  2003/10/21 22:31:12  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
  * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -180,12 +186,12 @@ package org.neuclear.id;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.senders.Sender;
-import org.neudist.crypto.CryptoTools;
 import org.neudist.crypto.CryptoException;
-import org.neuclear.commons.NeuClearException;
+import org.neudist.crypto.CryptoTools;
 import org.neudist.utils.Utility;
 import org.neudist.xml.xmlsec.KeyInfo;
 import org.neudist.xml.xmlsec.XMLSecTools;
@@ -205,13 +211,13 @@ public final class Identity extends SignedNamedObject {
 
 
     /**
-     * @param name The Name of Identity
-     * @param signatory The Signatory that signed this object
-     * @param timestamp The TimeStamp of the SignedNamedObject
+     * @param name       The Name of Identity
+     * @param signatory  The Signatory that signed this object
+     * @param timestamp  The TimeStamp of the SignedNamedObject
      * @param repository URL of Default Store for Identity. (Note. A Identity object is stored in the default repository of it's parent namespace)
-     * @param signer URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
-     * @param receiver URL of default receiver for namespace
-     * @throws NeuClearException
+     * @param signer     URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
+     * @param receiver   URL of default receiver for namespace
+     * @throws NeuClearException 
      */
 
     Identity(String name, Identity signatory, Timestamp timestamp, String digest, String repository, String signer, String logger, String receiver, PublicKey pub) throws NeuClearException {
@@ -285,7 +291,7 @@ public final class Identity extends SignedNamedObject {
 
 
     /**
-     *  Returns the fixed Root PublicKey
+     * Returns the fixed Root PublicKey
      */
     private final static PublicKey getRootPK() throws XMLSecurityException {
         if (nsrootpk == null)
@@ -302,8 +308,9 @@ public final class Identity extends SignedNamedObject {
         /**
          * For efficiency purposes we do not store the source material here but instead
          * return the URI of the certificate which allows us to regenerate it from source.
-         * @return
-         * @throws CertificateEncodingException
+         * 
+         * @return 
+         * @throws CertificateEncodingException 
          */
         public byte[] getEncoded() throws CertificateEncodingException {
             return getName().getBytes();
@@ -313,12 +320,13 @@ public final class Identity extends SignedNamedObject {
          * Since the Instance of Identity implies that it has already been verified in the
          * creation process. I just check if the signers key is the same as the given.
          * TODO: This almost certainly has bad security implications and needs to be though through
-         * @param publicKey
-         * @throws CertificateException
-         * @throws NoSuchAlgorithmException
-         * @throws InvalidKeyException
-         * @throws NoSuchProviderException
-         * @throws SignatureException
+         * 
+         * @param publicKey 
+         * @throws CertificateException     
+         * @throws NoSuchAlgorithmException 
+         * @throws InvalidKeyException      
+         * @throws NoSuchProviderException  
+         * @throws SignatureException       
          */
         public void verify(PublicKey publicKey) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
             if (!getSignatory().getPublicKey().equals(publicKey))
@@ -343,11 +351,12 @@ public final class Identity extends SignedNamedObject {
     public final static class Reader implements NamedObjectReader {
         /**
          * Read object from Element and fill in its details
-         * @param elem
-         * @return
+         * 
+         * @param elem 
+         * @return 
          */
         public SignedNamedObject read(Element elem, String name, Identity signatory, String digest, Timestamp timestamp) throws XMLSecurityException, NeuClearException {
-            String repository = elem.attributeValue(DocumentHelper.createQName("store", NSTools.NS_NEUID));
+            String repository = elem.attributeValue(DocumentHelper.createQName("repository", NSTools.NS_NEUID));
             String signer = elem.attributeValue(DocumentHelper.createQName("signer", NSTools.NS_NEUID));
             String logger = elem.attributeValue(DocumentHelper.createQName("logger", NSTools.NS_NEUID));
             String receiver = elem.attributeValue(DocumentHelper.createQName("receiver", NSTools.NS_NEUID));

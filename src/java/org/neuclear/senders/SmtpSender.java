@@ -5,8 +5,14 @@ package org.neuclear.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:52:38 AM
- * $Id: SmtpSender.java,v 1.7 2003/10/21 22:31:13 pelle Exp $
+ * $Id: SmtpSender.java,v 1.8 2003/10/25 00:39:54 pelle Exp $
  * $Log: SmtpSender.java,v $
+ * Revision 1.8  2003/10/25 00:39:54  pelle
+ * Fixed SmtpSender it now sends the messages.
+ * Refactored CommandLineSigner. Now it simply signs files read from command line. However new class IdentityCreator
+ * is subclassed and creates new Identities. You can subclass CommandLineSigner to create your own variants.
+ * Several problems with configuration. Trying to solve at the moment. Updated PicoContainer to beta-2
+ *
  * Revision 1.7  2003/10/21 22:31:13  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
  * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -53,11 +59,10 @@ package org.neuclear.senders;
  *
  */
 
-import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.Named;
-import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neudist.utils.Utility;
+import org.neudist.xml.XMLException;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -99,7 +104,7 @@ public class SmtpSender extends Sender {
             Multipart multi = new MimeMultipart();
             multi.addBodyPart(body);
             BodyPart objpart = new MimeBodyPart();
-//TODO How do we replace this            objpart.setText(obj.asXML());
+            objpart.setText(obj.asXML());
             objpart.setHeader("Content-type", "application/nsdl");
             multi.addBodyPart(objpart);
             msg.setContent(multi);
@@ -111,6 +116,9 @@ public class SmtpSender extends Sender {
             Transport.send(msg);
         } catch (MessagingException e) {
             e.printStackTrace();  //To change body of catch statement use Options | File Templates.
+            Utility.rethrowException(e);
+        } catch (XMLException e) {
+            e.printStackTrace();
             Utility.rethrowException(e);
         }
 

@@ -1,6 +1,12 @@
 /*
- * $Id: NSTools.java,v 1.11 2003/10/23 22:02:36 pelle Exp $
+ * $Id: NSTools.java,v 1.12 2003/10/25 00:39:54 pelle Exp $
  * $Log: NSTools.java,v $
+ * Revision 1.12  2003/10/25 00:39:54  pelle
+ * Fixed SmtpSender it now sends the messages.
+ * Refactored CommandLineSigner. Now it simply signs files read from command line. However new class IdentityCreator
+ * is subclassed and creates new Identities. You can subclass CommandLineSigner to create your own variants.
+ * Several problems with configuration. Trying to solve at the moment. Updated PicoContainer to beta-2
+ *
  * Revision 1.11  2003/10/23 22:02:36  pelle
  * Moved some certificates to live status at http://repository.neuclear.org
  * Updated NSTools.url2path to support neuids with @ signs.
@@ -207,7 +213,7 @@ public final class NSTools {
 
 
         for (int i = offset; i < ticketsrc.length; i++) {
-            if (ticketsrc[i] == (byte) '/')
+            if (ticketsrc[i] == (byte) '/' || ticketsrc[i] == (byte) '@')
                 ticketsrc[i] = (byte) '.';
         }
 /*
@@ -240,14 +246,14 @@ public final class NSTools {
     public static final Namespace NS_NEUID = DocumentHelper.createNamespace("neuid", NEUID_URI);
 
     public static final String NEUID_PREFIX = "neuid:";
-    private static final String VALID_TOKEN = "[\\w.]+";
+    private static final String VALID_TOKEN = "[\\w.-]+";
     private static final String VALID_ID = "^(neu:\\/)?" +
             "(\\/(" + VALID_TOKEN + "@" + VALID_TOKEN + ")?" +
             "((\\/)|" + VALID_TOKEN + ")*)$";
 
     private static final Pattern VALID = Pattern.compile(VALID_ID);
     private static final String STRIP_URI_ARROBA_EX = "^(neu:\\/)?" +
-            "\\/(" + VALID_TOKEN + ")@(" + VALID_TOKEN + ")([\\/\\w.]*)$";
+            "\\/(" + VALID_TOKEN + ")@(" + VALID_TOKEN + ")([\\/\\w.-]*)$";
 
     private static final Pattern STRIP_URI_ARROBA = Pattern.compile(STRIP_URI_ARROBA_EX);
 

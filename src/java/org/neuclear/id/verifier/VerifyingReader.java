@@ -3,13 +3,13 @@ package org.neuclear.id.verifier;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
+import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.*;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.time.TimeTools;
 import org.neudist.crypto.CryptoTools;
-import org.neuclear.commons.NeuClearException;
-import org.neudist.xml.XMLTools;
 import org.neudist.xml.XMLException;
+import org.neudist.xml.XMLTools;
 import org.neudist.xml.xmlsec.XMLSecTools;
 
 import java.io.InputStream;
@@ -36,8 +36,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.4 2003/10/21 22:31:12 pelle Exp $
+$Id: VerifyingReader.java,v 1.5 2003/10/25 00:39:54 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.5  2003/10/25 00:39:54  pelle
+Fixed SmtpSender it now sends the messages.
+Refactored CommandLineSigner. Now it simply signs files read from command line. However new class IdentityCreator
+is subclassed and creates new Identities. You can subclass CommandLineSigner to create your own variants.
+Several problems with configuration. Trying to solve at the moment. Updated PicoContainer to beta-2
+
 Revision 1.4  2003/10/21 22:31:12  pelle
 Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
 Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -64,7 +70,6 @@ todo with regards to cleaning up some of the outlying parts of the code.
 */
 
 /**
- * 
  * User: pelleb
  * Date: Sep 23, 2003
  * Time: 4:47:15 PM
@@ -77,15 +82,16 @@ public class VerifyingReader {
     }
 
     public static VerifyingReader getInstance() {
-        return new VerifyingReader();
+        return instance;
     }
 
     /**
      * Read Object from input stream.
      * Verify signature with parent Identity
-     * @param is
-     * @return
-     * @throws NeuClearException
+     * 
+     * @param is 
+     * @return 
+     * @throws NeuClearException 
      */
     public SignedNamedObject read(InputStream is) throws XMLException, NeuClearException {
         Element elem = XMLTools.loadDocument(is).getRootElement();
@@ -114,6 +120,11 @@ public class VerifyingReader {
 
     }
 
+    public void registerReader(String name, NamedObjectReader reader) {
+        readers.put(name, reader);
+    }
+
     private Map readers;
     private NamedObjectReader defaultReader;
+    private static VerifyingReader instance = new VerifyingReader();
 }

@@ -1,0 +1,13 @@
+<neuid:Identity xmlns:neuid="http://neudist.org/neu/neuid" neuid:name="neu://test@pelle" neuid:repository="http://repository.neuclear.org" neuid:logger="mailto:pelle@neuclear.org" neuid:signer="http://localhost:11870/signer" neuid:receiver="mailto:pelle@neuclear.org" neuid:timestamp="2003-10-24T15:53:41,397EST"><neuid:allow><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:KeyValue><ds:DSAKeyValue><ds:P>
+/X9TgR11EilS30qcLuzk5/YRt1I870QAwx4/gLZRJmlFXUAiUftZPY1Y+r/F9bow9subVWzXgTuAHTRv8mZgt2uZUKWkn5/oBHsQIsJPu6nX/rfGG/g7V+fGqKYVDwT7g/bTxR7DAjVUE1oWkTL2dfOuK2HXKu/yIgMZndFIAcc=
+</ds:P><ds:Q>
+l2BQjxUjC8yykrmCouuEC/BYHPU=
+</ds:Q><ds:G>
+9+GghdabPd7LvKtcNrhXuXmUr7v6OuqC+VdMCz0HgmdRWVeOutRZT+ZxBxCBgLRJFnEj6EwoFhO3zwkyjMim4TwWeotUfI0o4KOuHiuzpnWRbqN/C/ohNWLx+2J6ASQ7zKTxvqhRkImog9/hWuWfBpKLZl6Ae1UlZAFMO/7PSSo=
+</ds:G><ds:Y>
+ytPZeMrqbmSPQTTNVKpA0859o+hH4Z8A/cLgpgoI1MrwMzUXabpKyt+jalpBpmLSaRMSrS7F9DX1RxR/PDhUDoZx+2icsNM/MoWlaXJXa8C1UgEjONsbWvId1SRDVHxGWl9AuZSZrcb0t9XSrW79DWRMJ5cN8Yvy8Jg8abSa1+U=
+</ds:Y></ds:DSAKeyValue></ds:KeyValue></ds:KeyInfo></neuid:allow><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><ds:Reference URI=""><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>
+QssfQvVZJJMBp/ZsrhpahxNXolk=
+</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>
+M27vRhI8N1nIEPDsI/ufVFQ1Req/cfaLJBvjlUsNRye99JSzk8cGLX4dW1/GjrhyAOzfEozt9B3V1T36UpnLnwnhDF/A2TgJ7w/b+ySC/Ay91fVFIO2pAhlUjuz8vwUlJL99xtPLHXw48Ad13k8XEundE8l0zsvqw7wthHDXJtJsi3VJbNcUnLDy4oAQ/YqYTBoba3g6OCtuhahJGx/7mp46Ljw7ZRxzarE0mWXG0LVOexqD2yVMR8T0DE6Nf5obOyL3lKswX88kRNZ0stcAZGo81D0x7zxBCPP3UD8GlXwdV0PtWuNDRJtbXGaDp2VWmYACEoIaRVs/H9rbK+k2JA==
+</ds:SignatureValue></ds:Signature></neuid:Identity>

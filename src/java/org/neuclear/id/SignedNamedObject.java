@@ -1,6 +1,12 @@
 /*
- * $Id: SignedNamedObject.java,v 1.6 2003/10/21 22:31:13 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.7 2003/10/25 00:39:54 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.7  2003/10/25 00:39:54  pelle
+ * Fixed SmtpSender it now sends the messages.
+ * Refactored CommandLineSigner. Now it simply signs files read from command line. However new class IdentityCreator
+ * is subclassed and creates new Identities. You can subclass CommandLineSigner to create your own variants.
+ * Several problems with configuration. Trying to solve at the moment. Updated PicoContainer to beta-2
+ *
  * Revision 1.6  2003/10/21 22:31:13  pelle
  * Renamed NeudistException to NeuClearException and moved it to org.neuclear.commons where it makes more sense.
  * Unhooked the XMLException in the xmlsig library from NeuClearException to make all of its exceptions an independent hierarchy.
@@ -180,6 +186,7 @@ public class SignedNamedObject implements SignedObject, Named {
 
     /**
      * The full name (URI) of an object
+     * 
      * @return String containing the fully qualified URI of an object
      */
     public String getName() {
@@ -188,6 +195,7 @@ public class SignedNamedObject implements SignedObject, Named {
 
     /**
      * The Name of an object within it's parent Identity
+     * 
      * @return Parent Name
      */
     public String getLocalName() {
@@ -197,14 +205,15 @@ public class SignedNamedObject implements SignedObject, Named {
     }
 
 
-    public Timestamp getTimeStamp() throws NeuClearException {
+    public Timestamp getTimeStamp() {
         return timestamp;
 
     }
 
     /**
      * The Signatory of the current document
-     * @return
+     * 
+     * @return 
      */
     public Identity getSignatory() {
         return signer;
@@ -212,7 +221,8 @@ public class SignedNamedObject implements SignedObject, Named {
 
     /**
      * The SHA1 Digest of the full XML encoded document
-     * @return
+     * 
+     * @return 
      */
     public String getDigest() {
         return digest;
@@ -226,8 +236,9 @@ public class SignedNamedObject implements SignedObject, Named {
     final public static class Reader implements NamedObjectReader {
         /**
          * Read object from Element and fill in its details
-         * @param elem
-         * @return
+         * 
+         * @param elem 
+         * @return 
          */
         public SignedNamedObject read(Element elem, String name, Identity signatory, String digest, Timestamp timestamp) throws NeuClearException {
 
