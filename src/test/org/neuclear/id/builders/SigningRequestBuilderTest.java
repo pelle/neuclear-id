@@ -1,15 +1,10 @@
 package org.neuclear.id.builders;
 
-import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.crypto.signers.NonExistingSignerException;
-import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.SignatureRequest;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.NameResolutionException;
-import org.neuclear.tests.AbstractSigningTest;
+import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.tests.AbstractObjectCreationTest;
-import org.neuclear.xml.XMLException;
 
 import java.security.GeneralSecurityException;
 
@@ -31,8 +26,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningRequestBuilderTest.java,v 1.12 2004/03/03 23:26:45 pelle Exp $
+$Id: SigningRequestBuilderTest.java,v 1.13 2004/03/22 20:09:49 pelle Exp $
 $Log: SigningRequestBuilderTest.java,v $
+Revision 1.13  2004/03/22 20:09:49  pelle
+Added simple ledger for unit testing and in memory use
+
 Revision 1.12  2004/03/03 23:26:45  pelle
 Updated various tests to use the AbstractObjectCreationTest
 
@@ -84,7 +82,7 @@ NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered 
 Updated all major interfaces that used the old model to use the new model.
 
 Revision 1.1  2003/11/18 00:01:56  pelle
-The sample signing web application for logging in and out is now working.
+The simple signing web application for logging in and out is now working.
 There had been an issue in the canonicalizer when dealing with the embedded object of the SignatureRequest object.
 
 */
@@ -99,14 +97,14 @@ public final class SigningRequestBuilderTest extends AbstractObjectCreationTest 
         super(string);
     }
 
-    protected void verifyObject(SignedNamedObject obj) throws Exception  {
-        SignatureRequest tosign=(SignatureRequest) obj;
+    protected void verifyObject(SignedNamedObject obj) throws Exception {
+        SignatureRequest tosign = (SignatureRequest) obj;
         assertNotNull(tosign.getUnsigned());
         final Builder auth2 = tosign.getUnsigned();
 //            assertEquals(auth2.getSignatory().getName(), "neu://bob@test");
         assertNotNull(auth2);
         assertNotNull(auth2.getElement());
-        final AuthenticationTicket auth = (AuthenticationTicket) auth2.convert("neu://bob@test",signer);
+        final AuthenticationTicket auth = (AuthenticationTicket) auth2.convert("neu://bob@test", signer);
         assertTrue(auth2.isSigned());
 //            assertEquals(auth.getName(), authreq.getName());
         assertEquals(auth.getSiteHref(), "http://users.neuclear.org:8080");
@@ -119,7 +117,7 @@ public final class SigningRequestBuilderTest extends AbstractObjectCreationTest 
 
     protected Builder createBuilder() throws Exception {
         final AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://users.neuclear.org:8080");
-        return new SignatureRequestBuilder( "neu://bob@test", authreq, "For testing purposes");
+        return new SignatureRequestBuilder("neu://bob@test", authreq, "For testing purposes");
     }
 
 }

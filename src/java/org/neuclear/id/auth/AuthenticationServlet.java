@@ -1,32 +1,11 @@
 package org.neuclear.id.auth;
 
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.Utility;
-import org.neuclear.commons.crypto.signers.*;
-import org.neuclear.commons.crypto.passphraseagents.*;
-import org.neuclear.commons.crypto.CryptoTools;
-import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
-import org.neuclear.id.builders.SignatureRequestBuilder;
 import org.neuclear.id.builders.Builder;
-import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.id.Identity;
-import org.neuclear.id.InvalidNamedObjectException;
-import org.neuclear.xml.XMLException;
-import org.neuclear.xml.xmlsec.XMLSecTools;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
 import org.neuclear.id.signers.SignatureRequestServlet;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.FileNotFoundException;
-import java.security.GeneralSecurityException;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -46,8 +25,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServlet.java,v 1.1 2004/03/02 18:59:10 pelle Exp $
+$Id: AuthenticationServlet.java,v 1.2 2004/03/22 20:09:43 pelle Exp $
 $Log: AuthenticationServlet.java,v $
+Revision 1.2  2004/03/22 20:09:43  pelle
+Added simple ledger for unit testing and in memory use
+
 Revision 1.1  2004/03/02 18:59:10  pelle
 Further cleanups in neuclear-id. Moved everything under id.
 
@@ -65,8 +47,8 @@ Added NeuSender, updated SmtpSender and Sender to take plain email addresses (wi
 Added AbstractObjectCreationTest to make it quicker to write unit tests to verify
 NamedObjectBuilder/SignedNamedObject Pairs.
 Sample application has been expanded with a basic email application.
-Updated docs for sample web app.
-Added missing LGPL LICENSE.txt files to signer and sample app
+Updated docs for simple web app.
+Added missing LGPL LICENSE.txt files to signer and simple app
 
 Revision 1.10  2003/12/15 23:33:04  pelle
 added ServletTools.getInitParam() which first tries the ServletConfig, then the context config.

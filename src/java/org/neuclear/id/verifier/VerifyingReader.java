@@ -1,8 +1,8 @@
 package org.neuclear.id.verifier;
 
 import org.dom4j.Element;
-import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.id.*;
+import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
 
@@ -28,8 +28,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.21 2004/03/03 23:26:43 pelle Exp $
+$Id: VerifyingReader.java,v 1.22 2004/03/22 20:09:49 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.22  2004/03/22 20:09:49  pelle
+Added simple ledger for unit testing and in memory use
+
 Revision 1.21  2004/03/03 23:26:43  pelle
 Updated various tests to use the AbstractObjectCreationTest
 
@@ -60,8 +63,8 @@ Added NeuSender, updated SmtpSender and Sender to take plain email addresses (wi
 Added AbstractObjectCreationTest to make it quicker to write unit tests to verify
 NamedObjectBuilder/SignedNamedObject Pairs.
 Sample application has been expanded with a basic email application.
-Updated docs for sample web app.
-Added missing LGPL LICENSE.txt files to signer and sample app
+Updated docs for simple web app.
+Added missing LGPL LICENSE.txt files to signer and simple app
 
 Revision 1.15  2003/12/10 23:58:51  pelle
 Did some cleaning up in the builders
@@ -106,7 +109,7 @@ NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered 
 Updated all major interfaces that used the old model to use the new model.
 
 Revision 1.9  2003/11/18 00:01:55  pelle
-The sample signing web application for logging in and out is now working.
+The simple signing web application for logging in and out is now working.
 There had been an issue in the canonicalizer when dealing with the embedded object of the SignatureRequest object.
 
 Revision 1.8  2003/11/15 01:58:16  pelle

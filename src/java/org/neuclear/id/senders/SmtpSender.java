@@ -5,8 +5,11 @@ package org.neuclear.id.senders;
  * User: pelleb
  * Date: Feb 14, 2003
  * Time: 9:52:38 AM
- * $Id: SmtpSender.java,v 1.1 2004/03/02 18:59:10 pelle Exp $
+ * $Id: SmtpSender.java,v 1.2 2004/03/22 20:09:46 pelle Exp $
  * $Log: SmtpSender.java,v $
+ * Revision 1.2  2004/03/22 20:09:46  pelle
+ * Added simple ledger for unit testing and in memory use
+ *
  * Revision 1.1  2004/03/02 18:59:10  pelle
  * Further cleanups in neuclear-id. Moved everything under id.
  *
@@ -20,8 +23,8 @@ package org.neuclear.id.senders;
  * Added AbstractObjectCreationTest to make it quicker to write unit tests to verify
  * NamedObjectBuilder/SignedNamedObject Pairs.
  * Sample application has been expanded with a basic email application.
- * Updated docs for sample web app.
- * Added missing LGPL LICENSE.txt files to signer and sample app
+ * Updated docs for simple web app.
+ * Added missing LGPL LICENSE.txt files to signer and simple app
  *
  * Revision 1.15  2003/12/10 23:58:52  pelle
  * Did some cleaning up in the builders
@@ -141,7 +144,7 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 
 public final class SmtpSender extends Sender {
-    public final SignedNamedObject send(String endpoint, final SignedNamedObject obj) throws NeuClearException,UnsupportedEndpointException {
+    public final SignedNamedObject send(String endpoint, final SignedNamedObject obj) throws NeuClearException, UnsupportedEndpointException {
         final Properties props = System.getProperties();
         if (endpoint.startsWith("mailto:"))
             endpoint = endpoint.substring(7);
@@ -197,6 +200,7 @@ public final class SmtpSender extends Sender {
 //            return matcher.group(2) ;
         return "dummy@neuclear.org";
     }
+
     private static final Pattern SENDER = Pattern.compile("^(mailto:)([\\w-.]+\\@[\\w-.]+)");
 
 }

@@ -24,8 +24,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequest.java,v 1.14 2004/02/18 00:14:32 pelle Exp $
+$Id: SignatureRequest.java,v 1.15 2004/03/22 20:09:49 pelle Exp $
 $Log: SignatureRequest.java,v $
+Revision 1.15  2004/03/22 20:09:49  pelle
+Added simple ledger for unit testing and in memory use
+
 Revision 1.14  2004/02/18 00:14:32  pelle
 Many, many clean ups. I've readded Targets in a new method.
 Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
@@ -90,7 +93,7 @@ NamedObjectBuilder.sign() now returns a SignedNamedObject which is the prefered 
 Updated all major interfaces that used the old model to use the new model.
 
 Revision 1.3  2003/11/18 00:01:55  pelle
-The sample signing web application for logging in and out is now working.
+The simple signing web application for logging in and out is now working.
 There had been an issue in the canonicalizer when dealing with the embedded object of the SignatureRequest object.
 
 Revision 1.2  2003/11/11 21:18:43  pelle
@@ -116,7 +119,7 @@ Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to 
  * Time: 12:23:52 PM
  */
 public final class SignatureRequest extends SignedNamedObject {
-    private SignatureRequest(final SignedNamedCore core, final String userid, final Builder unsigned, final String description)  {
+    private SignatureRequest(final SignedNamedCore core, final String userid, final Builder unsigned, final String description) {
         super(core);
         this.userid = userid;
         this.unsigned = unsigned;
@@ -128,7 +131,7 @@ public final class SignatureRequest extends SignedNamedObject {
     }
 
     public final Builder getUnsigned() {
-        return  (Builder) unsigned.clone();
+        return (Builder) unsigned.clone();
     }
 
     public final String getDescription() {
@@ -143,9 +146,9 @@ public final class SignatureRequest extends SignedNamedObject {
          * @return 
          */
         public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws InvalidNamedObjectException {
-            InvalidNamedObjectException.assertElementQName(core,elem,createNEUIDQName(SIGREQUEST_TAG));
-            final Element request = InvalidNamedObjectException.assertContainsElementQName(core,elem,createNEUIDQName("Unsigned"));
-            final String userid = InvalidNamedObjectException.assertAttributeQName(core,elem,createNEUIDQName("userid"));
+            InvalidNamedObjectException.assertElementQName(core, elem, createNEUIDQName(SIGREQUEST_TAG));
+            final Element request = InvalidNamedObjectException.assertContainsElementQName(core, elem, createNEUIDQName("Unsigned"));
+            final String userid = InvalidNamedObjectException.assertAttributeQName(core, elem, createNEUIDQName("userid"));
             final Element uelem = ((Element) request.elements().get(0)).createCopy();
             final Document doc = DocumentHelper.createDocument(uelem);
             try {
@@ -157,7 +160,7 @@ public final class SignatureRequest extends SignedNamedObject {
 
                 return new SignatureRequest(core, userid, unsigned, description);
             } catch (XMLSecurityException e) {
-                throw new InvalidNamedObjectException(core.getName(),e);
+                throw new InvalidNamedObjectException(core.getName(), e);
             }
         }
 

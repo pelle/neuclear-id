@@ -1,6 +1,9 @@
 /*
- * $Id: Identity.java,v 1.30 2004/02/18 00:14:31 pelle Exp $
+ * $Id: Identity.java,v 1.31 2004/03/22 20:09:49 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.31  2004/03/22 20:09:49  pelle
+ * Added simple ledger for unit testing and in memory use
+ *
  * Revision 1.30  2004/02/18 00:14:31  pelle
  * Many, many clean ups. I've readded Targets in a new method.
  * Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
@@ -43,8 +46,8 @@
  * Added AbstractObjectCreationTest to make it quicker to write unit tests to verify
  * NamedObjectBuilder/SignedNamedObject Pairs.
  * Sample application has been expanded with a basic email application.
- * Updated docs for sample web app.
- * Added missing LGPL LICENSE.txt files to signer and sample app
+ * Updated docs for simple web app.
+ * Added missing LGPL LICENSE.txt files to signer and simple app
  *
  * Revision 1.23  2003/12/10 23:58:51  pelle
  * Did some cleaning up in the builders
@@ -356,17 +359,18 @@ public class Identity extends SignedNamedObject implements Principal {
 
     /**
      * Constructor for creating an Identity object for a "Nymous" Identity.
+     *
      * @param pub
      */
-    public Identity(final PublicKey pub){
-        this(new SignedNamedCore(pub),pub,null,null);
+    public Identity(final PublicKey pub) {
+        this(new SignedNamedCore(pub), pub, null, null);
     }
 
-    protected Identity(final SignedNamedCore core, final PublicKey pub,String signer,Targets targets)  {
+    protected Identity(final SignedNamedCore core, final PublicKey pub, String signer, Targets targets) {
         super(core);
         this.pub = pub;
-        this.targets=(targets!=null)?targets:Targets.EMPTY;
-        this.signer=Utility.denullString(signer,DEFAULT_SIGNER);
+        this.targets = (targets != null) ? targets : Targets.EMPTY;
+        this.signer = Utility.denullString(signer, DEFAULT_SIGNER);
     }
 
 
@@ -397,7 +401,7 @@ public class Identity extends SignedNamedObject implements Principal {
 
 
     private final PublicKey pub;
-    private final Targets  targets;
+    private final Targets targets;
     private final String signer;
 
     public static final String DEFAULT_SIGNER = "http://localhost:11870/Signer";
@@ -409,7 +413,7 @@ public class Identity extends SignedNamedObject implements Principal {
     /**
      * Returns the fixed Root PublicKey
      */
-    final static synchronized PublicKey getRootPK()  {
+    final static synchronized PublicKey getRootPK() {
         try {
             if (nsrootpk == null)
                 nsrootpk = CryptoTools.createPK(NSROOTPKMOD, NSROOTPKEXP);
@@ -423,7 +427,7 @@ public class Identity extends SignedNamedObject implements Principal {
     private final class NeuClearCertificate extends Certificate {
         public NeuClearCertificate(Identity id) {
             super("NeuClear");
-            this.id=id;
+            this.id = id;
 
         }
 
@@ -470,6 +474,7 @@ public class Identity extends SignedNamedObject implements Principal {
         public final String toString() {
             return getName();
         }
+
         private final Identity id;
     }
 
@@ -483,16 +488,16 @@ public class Identity extends SignedNamedObject implements Principal {
          */
         public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws InvalidNamedObjectException {
 
-            final Element allowElement = InvalidNamedObjectException.assertContainsElementQName(core,elem,createNEUIDQName("Allow"));
+            final Element allowElement = InvalidNamedObjectException.assertContainsElementQName(core, elem, createNEUIDQName("Allow"));
             try {
                 final KeyInfo ki = new KeyInfo(InvalidNamedObjectException.assertContainsElementQName(allowElement, XMLSecTools.createQName("KeyInfo")));
                 final PublicKey pub = ki.getPublicKey();
-                final Targets targets=Targets.parseList(elem);
-                final Element se=elem.element("Signer");
-                final String signer=(se!=null)?se.getTextTrim():null;
-                return new Identity(core, pub,signer,targets);
+                final Targets targets = Targets.parseList(elem);
+                final Element se = elem.element("Signer");
+                final String signer = (se != null) ? se.getTextTrim() : null;
+                return new Identity(core, pub, signer, targets);
             } catch (XMLSecurityException e) {
-                throw new InvalidNamedObjectException(core.getName(),e);
+                throw new InvalidNamedObjectException(core.getName(), e);
             }
         }
 

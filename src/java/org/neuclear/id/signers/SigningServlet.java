@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.2 2004/03/03 23:26:43 pelle Exp $
+ * $Id: SigningServlet.java,v 1.3 2004/03/22 20:09:47 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.3  2004/03/22 20:09:47  pelle
+ * Added simple ledger for unit testing and in memory use
+ *
  * Revision 1.2  2004/03/03 23:26:43  pelle
  * Updated various tests to use the AbstractObjectCreationTest
  *
@@ -104,7 +107,7 @@
  * Payment Web Application is getting there.
  *
  * Revision 1.12  2003/11/18 00:01:55  pelle
- * The sample signing web application for logging in and out is now working.
+ * The simple signing web application for logging in and out is now working.
  * There had been an issue in the canonicalizer when dealing with the embedded object of the SignatureRequest object.
  *
  * Revision 1.11  2003/11/15 01:58:16  pelle
