@@ -1,6 +1,11 @@
 /*
- * $Id: SignedNamedObject.java,v 1.19 2004/03/02 18:59:11 pelle Exp $
+ * $Id: SignedNamedObject.java,v 1.20 2004/04/01 23:19:49 pelle Exp $
  * $Log: SignedNamedObject.java,v $
+ * Revision 1.20  2004/04/01 23:19:49  pelle
+ * Split Identity into Signatory and Identity class.
+ * Identity remains a signed named object and will in the future just be used for self declared information.
+ * Signatory now contains the PublicKey etc and is NOT a signed object.
+ *
  * Revision 1.19  2004/03/02 18:59:11  pelle
  * Further cleanups in neuclear-id. Moved everything under id.
  *
@@ -245,7 +250,6 @@ package org.neuclear.id;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.QName;
-import org.neuclear.commons.NeuClearException;
 
 import java.sql.Timestamp;
 
@@ -265,13 +269,13 @@ import java.sql.Timestamp;
  * 
  * @see NamedObjectReader
  * @see org.neuclear.id.verifier.VerifyingReader
- * @see org.neuclear.id.resolver.NSResolver
+ * @see org.neuclear.id.resolver.Resolver
  * @see org.neuclear.id.senders.Sender
  * @see org.neuclear.commons.crypto.signers.Signer
  */
 public class SignedNamedObject {
 
-    protected SignedNamedObject(final SignedNamedCore core)  {
+    protected SignedNamedObject(final SignedNamedCore core) {
         this.core = core;
     }
 
@@ -283,21 +287,6 @@ public class SignedNamedObject {
     public final String getName() {
         return core.getName();
     }
-
-    /**
-     * The Name of an object within it's parent Identity
-     * <p/>
-     * eg.:<pre>
-     * getName() = "neu://test/hello"
-     * getLocalName() = "hello":
-     * </pre>
-     * 
-     * @return Name
-     */
-    public final String getLocalName() {
-        return core.getLocalName();
-    }
-
 
     /**
      * The time the object was signed
@@ -315,7 +304,7 @@ public class SignedNamedObject {
      * 
      * @return 
      */
-    public final Identity getSignatory() {
+    public final Signatory getSignatory() {
         return core.getSignatory();
     }
 
@@ -332,29 +321,13 @@ public class SignedNamedObject {
         return core.getDigest();
     }
 
-    /**
-     * Logs this object to the signers logging service
-     * 
-     * @throws NeuClearException 
-     */
-    public void log() throws NeuClearException {
-        getSignatory().log(this);
-    }
 
-    /**
-     * Sends this object to its signers default receiver service
-     * 
-     * @throws NeuClearException 
-     */
-    public void send() throws NeuClearException {
-        getSignatory().receive(this);
-    }
-    public final static QName createNEUIDQName(String name){
+    public final static QName createNEUIDQName(String name) {
         return DocumentHelper.createQName(name, NSTools.NS_NEUID);
     }
 
     public final int hashCode() {
-        return getClass().hashCode()+core.hashCode();
+        return getClass().hashCode() + core.hashCode();
     }
 
     public String toString() {
@@ -362,12 +335,13 @@ public class SignedNamedObject {
     }
 
     public final boolean equals(Object object) {
-        if (object==this)
+        if (object == this)
             return true;
-        if (object.getClass()==getClass())
+        if (object.getClass() == getClass())
             return true;
-        return getEncoded().equals(((SignedNamedObject)object).getEncoded());
+        return getEncoded().equals(((SignedNamedObject) object).getEncoded());
     }
+
     private final SignedNamedCore core;
 
 }

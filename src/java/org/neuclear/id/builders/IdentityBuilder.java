@@ -1,6 +1,11 @@
 /*
- * $Id: IdentityBuilder.java,v 1.20 2004/03/22 20:09:43 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.21 2004/04/01 23:19:47 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.21  2004/04/01 23:19:47  pelle
+ * Split Identity into Signatory and Identity class.
+ * Identity remains a signed named object and will in the future just be used for self declared information.
+ * Signatory now contains the PublicKey etc and is NOT a signed object.
+ *
  * Revision 1.20  2004/03/22 20:09:43  pelle
  * Added simple ledger for unit testing and in memory use
  *
@@ -228,68 +233,66 @@
  */
 package org.neuclear.id.builders;
 
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
-import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.Utility;
+import org.neuclear.id.Identity;
 import org.neuclear.id.InvalidNamedObjectException;
-import org.neuclear.id.NSTools;
-import org.neuclear.xml.xmlsec.XMLSecTools;
-import org.neuclear.xml.xmlsec.XMLSecurityException;
-
-import java.security.PublicKey;
 
 public class IdentityBuilder extends Builder {
+
+    public IdentityBuilder() throws InvalidNamedObjectException {
+        this(Identity.DEFAULT_SIGNER);
+    }
+
     /**
      * It creates a Standard Identity document, but doesn't sign it.
      *
-     * @param allow    PublicKey allowed to sign in here
      * @param signer   URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
      * @param receiver URL of default receiver for namespace
      */
 
-    public IdentityBuilder(final PublicKey allow, final String signer, final String logger, final String receiver) throws InvalidNamedObjectException {
-        this(createNEUIDQName(TAGNAME), allow, signer, logger, receiver);
+    public IdentityBuilder(final String signer, final String logger, final String receiver) throws InvalidNamedObjectException {
+        this(createNEUIDQName(TAGNAME), signer, logger, receiver);
+    }
+
+    public IdentityBuilder(final String signer) throws InvalidNamedObjectException {
+        this(createNEUIDQName(TAGNAME), signer);
     }
 
     /**
      * This constructor should be used by subclasses of Identity. It creates a Standard Identity document, but doesn't sign it.
      *
      * @param tag      The Tag used by this sub class
-     * @param allow    PublicKey allowed to sign in here
      * @param signer   URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
      * @param receiver URL of default receiver for namespace
      */
-    protected IdentityBuilder(final QName tag, final PublicKey allow, final String signer, final String logger, final String receiver) throws InvalidNamedObjectException {
+    protected IdentityBuilder(final QName tag, final String signer, final String logger, final String receiver) throws InvalidNamedObjectException {
+        this(tag, signer);
+
+        addTarget(logger, "logger");
+        addTarget(receiver, "inbox");
+    }
+
+    /**
+     * This constructor should be used by subclasses of Identity. It creates a Standard Identity document, but doesn't sign it.
+     *
+     * @param tag    The Tag used by this sub class
+     * @param signer URL of default interactive signing service for namespace. If null it doesnt allow interactive signing
+     */
+    protected IdentityBuilder(final QName tag, final String signer) throws InvalidNamedObjectException {
         super(tag);
 
         final Element root = getElement();
         addLineBreak();
         if (!Utility.isEmpty(signer))
             addElement("Signer", signer);
-        addTarget(logger, "logger");
-        addTarget(receiver, "inbox");
-
-        final QName allowName = DocumentHelper.createQName("Allow", NSTools.NS_NEUID);
-        Element pub = getElement().element(allowName);
-        if (pub == null)
-            pub = getElement().addElement(allowName);
-        else
-            pub.clearContent();
-        pub.addText("\n");
-        pub.add(XMLSecTools.createKeyInfo(allow));
-
     }
+
 
     private void addTarget(final String href, final String type) {
         if (!Utility.isEmpty(href))
             addElement("Target", href).addAttribute("type", type);
-    }
-
-
-    public IdentityBuilder(final PublicKey allow) throws XMLSecurityException, NeuClearException {
-        this(allow, null, null, null);
     }
 
 

@@ -1,5 +1,10 @@
-/* $Id: IdentityCreator.java,v 1.10 2004/03/03 23:26:43 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.11 2004/04/01 23:19:49 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.11  2004/04/01 23:19:49  pelle
+ * Split Identity into Signatory and Identity class.
+ * Identity remains a signed named object and will in the future just be used for self declared information.
+ * Signatory now contains the PublicKey etc and is NOT a signed object.
+ *
  * Revision 1.10  2004/03/03 23:26:43  pelle
  * Updated various tests to use the AbstractObjectCreationTest
  *
@@ -225,7 +230,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
-import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.PublicKeySource;
 import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.builders.Builder;
@@ -236,7 +240,7 @@ import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public final class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(final String[] args) throws UserCancellationException, ParseException, InvalidNamedObjectException {
@@ -245,7 +249,6 @@ public final class IdentityCreator extends CommandLineSigner {
             System.err.println("The default signer has to include public keys");
             System.exit(1);
         }
-        pksource = (PublicKeySource) sig;
         alias = cmd.getOptionValue("n");
         //final String cachedirpath = System.getProperty("user.home") + "/.neuclear/cache";
 //        final File cachedir = new File(cachedirpath);
@@ -255,9 +258,8 @@ public final class IdentityCreator extends CommandLineSigner {
     }
 
     protected Builder build() throws UserCancellationException {
-        Builder subject = null;
         if (cmd.hasOption('i')) {//If we have an input file we load that instead of creating a new one
-            subject = super.build();
+            return super.build();
         }
         try {
             final String defaultsigner = Utility.denullString(cmd.getOptionValue("s"), "http://localhost:11870/Signer");
@@ -276,14 +278,11 @@ public final class IdentityCreator extends CommandLineSigner {
                 sig.save();
 
             }
-            final PublicKey newkid = pksource.getPublicKey(alias);
 
-            return new IdentityBuilder(newkid, defaultsigner, defaultlogger, defaultreceiver);
+            return new IdentityBuilder(defaultsigner, defaultlogger, defaultreceiver);
         } catch (InvalidNamedObjectException e) {
             System.err.println("The name: " + e.getName() + " is not valid. ");
             System.exit(1);
-        } catch (NonExistingSignerException e) {
-            e.printStackTrace();
         }
         return null;
     }
@@ -316,5 +315,4 @@ public final class IdentityCreator extends CommandLineSigner {
     }
 
 
-    private final PublicKeySource pksource;
 }

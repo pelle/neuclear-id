@@ -37,8 +37,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearJCETest.java,v 1.14 2004/02/18 00:14:35 pelle Exp $
+$Id: NeuClearJCETest.java,v 1.15 2004/04/01 23:19:50 pelle Exp $
 $Log: NeuClearJCETest.java,v $
+Revision 1.15  2004/04/01 23:19:50  pelle
+Split Identity into Signatory and Identity class.
+Identity remains a signed named object and will in the future just be used for self declared information.
+Signatory now contains the PublicKey etc and is NOT a signed object.
+
 Revision 1.14  2004/02/18 00:14:35  pelle
 Many, many clean ups. I've readded Targets in a new method.
 Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
@@ -131,11 +136,11 @@ public final class NeuClearJCETest extends AbstractSigningTest {
     }
 
     public final void testGetCertificate() throws NeuClearException, XMLException {
-        final IdentityBuilder id = new IdentityBuilder(signer.getPublicKey("neu://bob@test"));
-        final Identity bob = (Identity) id.convert("neu://bob@test",signer);
-        final Certificate cert = bob.getCertificate();
+        final IdentityBuilder id = new IdentityBuilder();
+        final Identity bob = (Identity) id.convert("neu://bob@test", signer);
+        final Certificate cert = bob.getSignatory().getCertificate();
         assertNotNull(cert);
-        assertEquals(cert.getPublicKey(), bob.getPublicKey());
+        assertEquals(cert.getPublicKey(), bob.getSignatory().getPublicKey());
     }
 
     public final void testStoreKey() throws NeuClearException, XMLException, NoSuchProviderException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, UnrecoverableKeyException {
@@ -146,41 +151,42 @@ public final class NeuClearJCETest extends AbstractSigningTest {
         kpg.initialize(512);
         final KeyPair kp = kpg.generateKeyPair();
         final JCESigner sig2 = new JCESigner(ks, new AlwaysTheSamePassphraseAgent("neuclear"));
-        final IdentityBuilder id = new IdentityBuilder( kp.getPublic());
-        final Identity eve = (Identity) id.convert("neu://test",signer);
+        final IdentityBuilder id = new IdentityBuilder();
+        final Identity eve = (Identity) id.convert("neu://test", signer);
 
-        ks.setKeyEntry("neu://eve@test", kp.getPrivate(), "neuclear".toCharArray(), eve.getCertificateChain());
+        ks.setKeyEntry("neu://eve@test", kp.getPrivate(), "neuclear".toCharArray(), eve.getSignatory().getCertificateChain());
         assertTrue(ks.containsAlias("neu://eve@test"));
 //        assertTrue(ks.isCertificateEntry("neu://eve@test"));
         assertTrue(ks.isKeyEntry("neu://eve@test"));
         assertNotNull(ks.getCertificate("neu://eve@test"));
         assertNotNull(ks.getCertificate("neu://eve@test").getPublicKey());
-        assertEquals(eve.getCertificate(),ks.getCertificate("neu://eve@test"));
-        assertEquals(eve.getPublicKey(),ks.getCertificate("neu://eve@test").getPublicKey());
-        assertEquals(kp.getPrivate(),ks.getKey("neu://eve@test","neuclear".toCharArray()));
-        assertEquals(ks.getCertificateAlias(eve.getCertificate()),"neu://eve@test");
+        assertEquals(eve.getSignatory().getCertificate(), ks.getCertificate("neu://eve@test"));
+        assertEquals(eve.getSignatory().getPublicKey(), ks.getCertificate("neu://eve@test").getPublicKey());
+        assertEquals(kp.getPrivate(), ks.getKey("neu://eve@test", "neuclear".toCharArray()));
+        assertEquals(ks.getCertificateAlias(eve.getSignatory().getCertificate()), "neu://eve@test");
         try {
-            ks.getCertificate("neu://eve@test").verify(signer.getPublicKey("neu://test"));;
+            ks.getCertificate("neu://eve@test").verify(signer.getPublicKey("neu://test"));
+            ;
         } catch (InvalidKeyException e) {
-            assertTrue("Invalid Key",false);
+            assertTrue("Invalid Key", false);
         } catch (SignatureException e) {
-            assertTrue("Invalid Signature",false);
+            assertTrue("Invalid Signature", false);
         }
         //Lets write it
-        File ksfile=new File("target/testdata/keystores/testneuclearcert.jks");
+        File ksfile = new File("target/testdata/keystores/testneuclearcert.jks");
         ksfile.getParentFile().mkdirs();
         try {
-            ks.store(new FileOutputStream(ksfile),"neuclear".toCharArray());
+            ks.store(new FileOutputStream(ksfile), "neuclear".toCharArray());
         } catch (Exception e) {
             e.printStackTrace();
-            assertTrue("Couldnt write file",false);
+            assertTrue("Couldnt write file", false);
         }
         final KeyStore ks2 = KeyStore.getInstance("jks", "SUN");
         try {
             ks2.load(new FileInputStream(ksfile), "neuclear".toCharArray());
         } catch (Exception e) {
             e.printStackTrace();
-            assertTrue("Couldnt Read File",false);
+            assertTrue("Couldnt Read File", false);
         }
 
         assertTrue(ks2.containsAlias("neu://eve@test"));
@@ -188,43 +194,45 @@ public final class NeuClearJCETest extends AbstractSigningTest {
         assertTrue(ks2.isKeyEntry("neu://eve@test"));
         assertNotNull(ks2.getCertificate("neu://eve@test"));
         assertNotNull(ks2.getCertificate("neu://eve@test").getPublicKey());
-        assertEquals(eve.getCertificate(),ks2.getCertificate("neu://eve@test"));
-        assertEquals(eve.getPublicKey(),ks2.getCertificate("neu://eve@test").getPublicKey());
-        assertEquals(kp.getPrivate(),ks2.getKey("neu://eve@test","neuclear".toCharArray()));
+        assertEquals(eve.getSignatory().getCertificate(), ks2.getCertificate("neu://eve@test"));
+        assertEquals(eve.getSignatory().getPublicKey(), ks2.getCertificate("neu://eve@test").getPublicKey());
+        assertEquals(kp.getPrivate(), ks2.getKey("neu://eve@test", "neuclear".toCharArray()));
 
-        assertEquals(ks2.getCertificateAlias(eve.getCertificate()),"neu://eve@test");
+        assertEquals(ks2.getCertificateAlias(eve.getSignatory().getCertificate()), "neu://eve@test");
         try {
-            ks2.getCertificate("neu://eve@test").verify(signer.getPublicKey("neu://test"));;
+            ks2.getCertificate("neu://eve@test").verify(signer.getPublicKey("neu://test"));
+            ;
         } catch (InvalidKeyException e) {
-            assertTrue("Invalid Key",false);
+            assertTrue("Invalid Key", false);
         } catch (SignatureException e) {
-            assertTrue("Invalid Signature",false);
+            assertTrue("Invalid Signature", false);
         }
         //final AuthenticationTicketBuilder authb = new AuthenticationTicketBuilder("neu://eve@test", "neu://test", "http://users.neuclear.org:8080");
         //authb.sign(sig2);
 
     }
+
     public void testCreateAndUpdateCert() throws NeuClearException, XMLException {
-        PublicKey pub=getSigner().generateKey(IVAN);
+        PublicKey pub = getSigner().generateKey(IVAN);
         assertNotNull(pub);
-        final IdentityBuilder id = new IdentityBuilder(pub);
+        final IdentityBuilder id = new IdentityBuilder();
         assertTrue(signer.canSignFor(IVAN));
         assertNotNull(signer.getPublicKey(IVAN));
-        assertEquals(pub,signer.getPublicKey(IVAN));
-        id.sign(IVAN,signer);
+        assertEquals(pub, signer.getPublicKey(IVAN));
+        id.sign(IVAN, signer);
         try {
             final Identity ivan = (Identity) id.convert();
             assertNotNull(ivan);
 //            assertEquals(IVAN,ivan.getName());
-            assertNotNull(ivan.getPublicKey());
-            assertEquals(pub,ivan.getCertificate().getPublicKey());
-            assertEquals(ivan.getPublicKey(),signer.getPublicKey(IVAN));
+            assertNotNull(ivan.getSignatory().getPublicKey());
+            assertEquals(pub, ivan.getSignatory().getCertificate().getPublicKey());
+            assertEquals(ivan.getSignatory().getPublicKey(), signer.getPublicKey(IVAN));
             final byte[] data = "this is a test".getBytes();
             final byte[] sig = signer.sign(IVAN, data);
             assertNotNull(sig);
-            assertTrue(CryptoTools.verify(ivan.getPublicKey(), data, sig));
+            assertTrue(CryptoTools.verify(ivan.getSignatory().getPublicKey(), data, sig));
         } catch (InvalidNamedObjectException e) {
-            assertTrue("The Signature was invalid",false);
+            assertTrue("The Signature was invalid", false);
         }
     }
 }

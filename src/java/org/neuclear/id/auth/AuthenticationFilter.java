@@ -2,7 +2,7 @@ package org.neuclear.id.auth;
 
 import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.Base64;
-import org.neuclear.id.Identity;
+import org.neuclear.id.Signatory;
 import org.neuclear.id.SignedNamedObject;
 import org.neuclear.id.verifier.VerifyingReader;
 
@@ -32,8 +32,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationFilter.java,v 1.1 2004/03/02 18:59:10 pelle Exp $
+$Id: AuthenticationFilter.java,v 1.2 2004/04/01 23:19:47 pelle Exp $
 $Log: AuthenticationFilter.java,v $
+Revision 1.2  2004/04/01 23:19:47  pelle
+Split Identity into Signatory and Identity class.
+Identity remains a signed named object and will in the future just be used for self declared information.
+Signatory now contains the PublicKey etc and is NOT a signed object.
+
 Revision 1.1  2004/03/02 18:59:10  pelle
 Further cleanups in neuclear-id. Moved everything under id.
 
@@ -84,7 +89,7 @@ public final class AuthenticationFilter implements Filter {
                 ticket = (AuthenticationTicket) sess.getAttribute("NeuClearAuthTicket");
             }
             if (ticket != null) {
-                final Identity user = ticket.getSignatory();
+                final Signatory user = ticket.getSignatory();
                 request = new HttpServletRequestWrapper((HttpServletRequest) request) {
                     public String getRemoteUser() {
                         return user.getName();    //To change body of overriden methods use Options | File Templates.

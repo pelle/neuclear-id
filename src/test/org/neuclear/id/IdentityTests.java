@@ -41,7 +41,7 @@ public class IdentityTests extends AbstractObjectCreationTest {
         assertEquals(new String(CryptoTools.digest(signer.getPublicKey(NAME).getEncoded())),
                 new String(Base32.decode(obj.getName().substring(5, 37))));
         assertEquals(id.getSigner(), SIGNER);
-        assertNotNull(id.getPublicKey());
+        assertNotNull(id.getSignatory().getPublicKey());
     }
 
     protected Class getRequiredClass() {
@@ -49,12 +49,12 @@ public class IdentityTests extends AbstractObjectCreationTest {
     }
 
     protected Builder createBuilder() throws NeuClearException {
-        return new IdentityBuilder(getSigner().getPublicKey(NAME), SIGNER, null, null);
+        return new IdentityBuilder(SIGNER, null, null);
     }
 
     public void testAnonymous() throws NoSuchAlgorithmException {
         KeyPair kp = CryptoTools.createTinyDSAKeyPair();
-        Identity id = new Identity(kp.getPublic());
+        Signatory id = new Signatory(kp.getPublic());
         assertNotNull(id);
         assertNotNull(id.getName());
         assertEquals("sha1:", id.getName().substring(0, 5));
@@ -76,7 +76,7 @@ public class IdentityTests extends AbstractObjectCreationTest {
         assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(obj.getEncoded().getBytes())), obj.getName().substring(obj.getName().length() - 32));
 
 
-        Identity id = obj.getSignatory();
+        Signatory id = obj.getSignatory();
         assertNotNull(id);
         assertNotNull(id.getName());
         assertEquals("sha1:", id.getName().substring(0, 5));

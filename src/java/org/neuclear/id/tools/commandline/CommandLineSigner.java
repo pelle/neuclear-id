@@ -1,5 +1,10 @@
-/* $Id: CommandLineSigner.java,v 1.12 2004/03/03 23:26:43 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.13 2004/04/01 23:19:49 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.13  2004/04/01 23:19:49  pelle
+ * Split Identity into Signatory and Identity class.
+ * Identity remains a signed named object and will in the future just be used for self declared information.
+ * Signatory now contains the PublicKey etc and is NOT a signed object.
+ *
  * Revision 1.12  2004/03/03 23:26:43  pelle
  * Updated various tests to use the AbstractObjectCreationTest
  *
@@ -241,7 +246,7 @@ import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.time.TimeTools;
 import org.neuclear.id.Identity;
 import org.neuclear.id.builders.Builder;
-import org.neuclear.id.resolver.NSResolver;
+import org.neuclear.id.resolver.Resolver;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
 
@@ -249,7 +254,7 @@ import java.io.*;
 
 /**
  * @author pelleb
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class CommandLineSigner {
     private final String executable;
@@ -264,7 +269,7 @@ public class CommandLineSigner {
             String name = cmd.getOptionValue('v');
             System.out.println("Resolving and Verifying: " + name);
             try {
-                Identity id = NSResolver.resolveIdentity(name);
+                Identity id = Resolver.resolveIdentity(name);
                 if (id != null) {
                     System.out.println("Signed Object: " + id.getName() + " is verified");
                     System.out.println("was signed at: " + TimeTools.formatTimeStamp(id.getTimeStamp()));

@@ -1,6 +1,11 @@
 /*
- * $Id: SignedNamedCore.java,v 1.22 2004/03/20 17:19:55 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.23 2004/04/01 23:19:49 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.23  2004/04/01 23:19:49  pelle
+ * Split Identity into Signatory and Identity class.
+ * Identity remains a signed named object and will in the future just be used for self declared information.
+ * Signatory now contains the PublicKey etc and is NOT a signed object.
+ *
  * Revision 1.22  2004/03/20 17:19:55  pelle
  * The problem with Enveloped signatures has now been fixed. It was a problem in the way transforms work. I have bandaided it, but in the future if better support for transforms need to be made, we need to rethink it a bit. Perhaps using the new crypto channel's in neuclear-commons.
  *
@@ -286,9 +291,7 @@
  */
 package org.neuclear.id;
 
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.QName;
 import org.neuclear.commons.LowLevelException;
 import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.xml.xmlsec.*;
@@ -305,24 +308,11 @@ import java.sql.Timestamp;
  * @see NamedObjectReader
  * @see SignedNamedObject
  * @see org.neuclear.id.verifier.VerifyingReader
- * @see org.neuclear.id.resolver.NSResolver
+ * @see org.neuclear.id.resolver.Resolver
  * @see org.neuclear.id.senders.Sender
  * @see org.neuclear.commons.crypto.signers.Signer
  */
 public final class SignedNamedCore {
-    /**
-     * SignedNamedCore for use in creating Identities for anonymous keys
-     *
-     * @param pub
-     */
-    public SignedNamedCore(final PublicKey pub) {
-        this.digest = CryptoTools.encodeBase32(CryptoTools.digest(pub.getEncoded()));
-        this.name = "sha1:" + digest;
-        this.timestamp = System.currentTimeMillis();
-        this.encoded = new String(pub.getEncoded());
-        this.signer = null;//new Identity(this,pub);
-    }
-
     /**
      * SignedNamedCore for creating SignedNamedObjects from Nymous sources
      *
@@ -330,36 +320,11 @@ public final class SignedNamedCore {
      * @param encoded
      */
     private SignedNamedCore(final PublicKey pub, final String encoded) {
-        this.signer = new Identity(pub);
+        this.signer = new Signatory(pub);
         this.digest = CryptoTools.encodeBase32(CryptoTools.digest(encoded.getBytes()));
-        this.name = signer.getName() + "!" + digest;
+        this.name = "neu:" + signer.getName() + "!" + digest;
         this.timestamp = System.currentTimeMillis();
         this.encoded = encoded;
-    }
-
-    /**
-     * SignedNamedCore for normal signed named objects
-     *
-     * @param name
-     * @param signer
-     * @param timestamp
-     * @param encoded
-     */
-    private SignedNamedCore(final String name, final Identity signer, final Timestamp timestamp, final String encoded) {
-        this.name = name;
-        this.signer = signer;
-        this.timestamp = timestamp.getTime();
-        this.encoded = encoded;
-        this.digest = CryptoTools.encodeBase32(CryptoTools.digest(encoded.getBytes()));
-    }
-
-    private SignedNamedCore() {
-        this.name = "neu://";
-        this.signer = null;//new Identity(this,Identity.getRootPK());
-        final byte[] encoded = Identity.getRootPK().getEncoded();
-        this.digest = CryptoTools.encodeBase32(CryptoTools.digest(encoded));
-        this.timestamp = System.currentTimeMillis();
-        this.encoded = new String(encoded);
     }
 
     /**
@@ -425,30 +390,6 @@ public final class SignedNamedCore {
         }
     }
 
-    private static String getSignatoryName(final Element elem) throws InvalidNamedObjectException {
-        final String name = elem.attributeValue(getNameAttrQName());
-        if (name == null)
-            return null;
-        return NSTools.normalizeNameURI(name);
-    }
-
-    /**
-     * Solely used by RootIdentity
-     * 
-     * @return 
-     */
-    final static SignedNamedCore createRootCore() {
-        return new SignedNamedCore();
-    }
-
-    private static QName getNameAttrQName() {
-        return DocumentHelper.createQName("name", NSTools.NS_NEUID);
-    }
-
-    private static QName createQName(String name) {
-        return DocumentHelper.createQName(name, NSTools.NS_NEUID);
-    }
-
 
     /**
      * The full name (URI) of an object
@@ -458,23 +399,6 @@ public final class SignedNamedCore {
     public final String getName() {
         return name;
     }
-
-    /**
-     * The Name of an object within it's parent Identity
-     * <p/>
-     * eg.:<pre>
-     * getName() = "neu://test/hello"
-     * getLocalName() = "hello":
-     * </pre>
-     * 
-     * @return Name
-     */
-    public final String getLocalName() {
-        final String fullName = getName();
-        final int i = fullName.lastIndexOf('/');
-        return fullName.substring(i + 1);
-    }
-
 
     /**
      * The time the object was signed
@@ -492,7 +416,7 @@ public final class SignedNamedCore {
      * 
      * @return 
      */
-    public final Identity getSignatory() {
+    public final Signatory getSignatory() {
         return signer;
     }
 
@@ -520,17 +444,14 @@ public final class SignedNamedCore {
     public final boolean equals(Object object) {
         if (object == this)
             return true;
-        if (object instanceof SignedNamedCore)
-            return true;
+        if (!(object instanceof SignedNamedCore))
+            return false;
         return encoded.equals(((SignedNamedCore) object).getEncoded());    //To change body of overriden methods use Options | File Templates.
     }
 
-    static Identity createSimpleIdentity(PublicKey pub) {
-        return new Identity(new SignedNamedCore(pub), pub, null, null);
-    }
 
     private final String name;
-    private final Identity signer;
+    private final Signatory signer;
     private final long timestamp;
     private final String encoded;
     private final String digest;

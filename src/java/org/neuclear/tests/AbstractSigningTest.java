@@ -5,7 +5,7 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.crypto.signers.JCESigner;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
-import org.neuclear.id.Identity;
+import org.neuclear.id.Signatory;
 
 import java.security.GeneralSecurityException;
 
@@ -27,8 +27,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AbstractSigningTest.java,v 1.6 2004/02/18 00:14:34 pelle Exp $
+$Id: AbstractSigningTest.java,v 1.7 2004/04/01 23:19:50 pelle Exp $
 $Log: AbstractSigningTest.java,v $
+Revision 1.7  2004/04/01 23:19:50  pelle
+Split Identity into Signatory and Identity class.
+Identity remains a signed named object and will in the future just be used for self declared information.
+Signatory now contains the PublicKey etc and is NOT a signed object.
+
 Revision 1.6  2004/02/18 00:14:34  pelle
 Many, many clean ups. I've readded Targets in a new method.
 Gotten rid of NamedObjectBuilder and revamped Identity and Resolvers
@@ -72,9 +77,9 @@ public class AbstractSigningTest extends TestCase {
         assertNotNull(signer);
         assertNotNull(signer.getPublicKey("neu://bob@test"));
 
-        alice = new Identity(signer.getPublicKey("neu://alice@test"));
+        alice = new Signatory(signer.getPublicKey("neu://alice@test"));
         assertNotNull(alice);
-        bob = new Identity(signer.getPublicKey("neu://bob@test"));
+        bob = new Signatory(signer.getPublicKey("neu://bob@test"));
         assertNotNull(bob);
     }
 
@@ -84,7 +89,7 @@ public class AbstractSigningTest extends TestCase {
      * @return 
      */
 
-    protected final Identity getBob() {
+    protected final Signatory getBob() {
         return bob;
     }
 
@@ -94,7 +99,7 @@ public class AbstractSigningTest extends TestCase {
      * @return 
      */
 
-    protected final Identity getAlice() {
+    protected final Signatory getAlice() {
         return alice;
     }
 
@@ -102,7 +107,7 @@ public class AbstractSigningTest extends TestCase {
         return signer;
     }
 
-    private Identity bob;
-    private Identity alice;
+    private Signatory bob;
+    private Signatory alice;
     protected final JCESigner signer;
 }

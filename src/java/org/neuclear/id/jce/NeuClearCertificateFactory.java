@@ -1,18 +1,18 @@
 package org.neuclear.id.jce;
 
-import org.neuclear.id.Identity;
-import org.neuclear.id.NSTools;
-import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.id.verifier.VerifyingReader;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.xml.XMLException;
+import org.neuclear.id.Identity;
+import org.neuclear.id.verifier.VerifyingReader;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.security.cert.*;
-import java.io.*;
-import java.util.Collection;
-import java.util.List;
-import java.util.LinkedList;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /*
 NeuClear Distributed Transaction Clearing Platform
@@ -32,8 +32,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuClearCertificateFactory.java,v 1.9 2003/12/19 18:03:34 pelle Exp $
+$Id: NeuClearCertificateFactory.java,v 1.10 2004/04/01 23:19:48 pelle Exp $
 $Log: NeuClearCertificateFactory.java,v $
+Revision 1.10  2004/04/01 23:19:48  pelle
+Split Identity into Signatory and Identity class.
+Identity remains a signed named object and will in the future just be used for self declared information.
+Signatory now contains the PublicKey etc and is NOT a signed object.
+
 Revision 1.9  2003/12/19 18:03:34  pelle
 Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
 - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -82,11 +87,11 @@ Added new JCE Provider and java Certificate implementation for NeuClear Identity
  * This is the beginnings of integrating NeuClear into the JCE architecture allowing
  * NeuClear to be plugged in relatively easily for other types of applications such as
  * Code signing.
- * <p>
+ * <p/>
  * Currently the provider provides a CertificateFactory with the name NeuClear. This
  * can be instantiated using:<br>
  * <tt> CertificateFactory certfact=CertificateFactory.getInstance("NeuClear");</tt><p>
- *
+ * <p/>
  * User: pelleb
  * Date: Sep 30, 2003
  * Time: 4:39:08 PM
@@ -96,16 +101,16 @@ public final class NeuClearCertificateFactory extends CertificateFactorySpi {
         try {
             //Identity id=(Identity) VerifyingReader.getInstance().read(inputStream);
             final BufferedReader d = new BufferedReader(new InputStreamReader(inputStream));
-            return ((Identity)VerifyingReader.getInstance().read(inputStream)).getCertificate();
+            return ((Identity) VerifyingReader.getInstance().read(inputStream)).getSignatory().getCertificate();
         } catch (NeuClearException e) {
-            throw new CertificateException("NeuClear: Problem reading Certificate:"+e.getMessage());
+            throw new CertificateException("NeuClear: Problem reading Certificate:" + e.getMessage());
         }
     }
 
     final public Collection engineGenerateCertificates(final InputStream inputStream) throws CertificateException {
-        final List list=new LinkedList();
+        final List list = new LinkedList();
         try {
-            while(inputStream.available()>0) {
+            while (inputStream.available() > 0) {
                 list.add(engineGenerateCertificate(inputStream));
             }
         } catch (IOException e) {

@@ -1,7 +1,7 @@
 /*
- * $Id: Identity.java,v 1.32 2004/04/01 23:19:49 pelle Exp $
- * $Log: Identity.java,v $
- * Revision 1.32  2004/04/01 23:19:49  pelle
+ * $Id: Signatory.java,v 1.1 2004/04/01 23:19:49 pelle Exp $
+ * $Log: Signatory.java,v $
+ * Revision 1.1  2004/04/01 23:19:49  pelle
  * Split Identity into Signatory and Identity class.
  * Identity remains a signed named object and will in the future just be used for self declared information.
  * Signatory now contains the PublicKey etc and is NOT a signed object.
@@ -323,12 +323,14 @@
  */
 package org.neuclear.id;
 
-import org.dom4j.Element;
-import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.Utility;
-import org.neuclear.id.targets.Targets;
+import org.neuclear.commons.crypto.Base32;
+import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.id.resolver.Resolver;
 
-import java.security.Principal;
+import java.security.*;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
 
 /**
  * The Identity class is one of the most important concepts in <a href="http://neuclear.org">NeuClear</a>.
@@ -347,47 +349,95 @@ import java.security.Principal;
  * 
  * @see org.neuclear.id.builders.IdentityBuilder
  */
-public class Identity extends SignedNamedObject implements Principal {
-    protected Identity(final SignedNamedCore core, String signer, Targets targets) {
-        super(core);
-        this.targets = (targets != null) ? targets : Targets.EMPTY;
-        this.signer = Utility.denullString(signer, DEFAULT_SIGNER);
+public final class Signatory implements Principal {
+    /**
+     * Constructor for creating an Identity object for a "Nymous" Identity.
+     *
+     * @param pub
+     */
+    public Signatory(final PublicKey pub) {
+        this.pub = pub;
+        this.id = Base32.encode(CryptoTools.digest(pub.getEncoded()));
     }
 
-    public final String getSigner() {
-        return signer;
+    public String getName() {
+        return id;
     }
 
 
-    public final SignedNamedObject receive(final SignedNamedObject obj) throws NeuClearException {
-        targets.send(obj);
-        return null;
+    public final PublicKey getPublicKey() {
+        return pub;
     }
 
-    final void log(final SignedNamedObject obj) throws NeuClearException {
-        targets.log(obj);
+    public final Certificate getCertificate() {
+        return new NeuClearCertificate(this);
     }
 
-    private final Targets targets;
-    private final String signer;
 
-    public static final String DEFAULT_SIGNER = "http://localhost:11870/Signer";
+    public final Certificate[] getCertificateChain() {
+        return new Certificate[]{getCertificate()};
+    }
 
-    public static final class Reader implements NamedObjectReader {
-        /**
-         * Read object from Element and fill in its details
-         * 
-         * @param elem 
-         * @return 
-         */
-        public final SignedNamedObject read(final SignedNamedCore core, final Element elem) throws InvalidNamedObjectException {
-            final Targets targets = Targets.parseList(elem);
-            final Element se = elem.element("Signer");
-            final String signer = (se != null) ? se.getTextTrim() : null;
-            return new Identity(core, signer, targets);
+    public final Identity resolveIdentity() throws NameResolutionException, InvalidNamedObjectException {
+        return Resolver.resolveIdentity(id);
+    }
+
+    private final PublicKey pub;
+    private final String id;
+
+    private final class NeuClearCertificate extends Certificate {
+        public NeuClearCertificate(Signatory signer) {
+            super("NeuClear");
+            this.id = signer;
+
         }
 
-    }
+        /**
+         * For efficiency purposes we do not store the source material here but instead
+         * return the URI of the certificate which allows us to regenerate it from source.
+         *
+         * @return
+         * @throws java.security.cert.CertificateEncodingException
+         *
+         */
+        public final byte[] getEncoded() throws CertificateEncodingException {
+            return id.getPublicKey().getEncoded();
+        }
 
+        /**
+         * Since the Instance of Identity implies that it has already been verified in the
+         * creation process. I just check if the signers key is the same as the given.
+         * TODO: This almost certainly has bad security implications and needs to be though through
+         *
+         * @param publicKey
+         * @throws CertificateException
+         * @throws java.security.NoSuchAlgorithmException
+         *
+         * @throws java.security.InvalidKeyException
+         *
+         * @throws java.security.NoSuchProviderException
+         *
+         * @throws java.security.SignatureException
+         *
+         */
+        public final void verify(final PublicKey publicKey) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
+            if (!id.getPublicKey().equals(publicKey))
+                throw new SignatureException("Key didnt match Signature");
+        }
+
+        public final void verify(final PublicKey publicKey, final String string) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
+            verify(publicKey);
+        }
+
+        public final PublicKey getPublicKey() {
+            return pub;
+        }
+
+        public final String toString() {
+            return getName();
+        }
+
+        private final Signatory id;
+    }
 
 }

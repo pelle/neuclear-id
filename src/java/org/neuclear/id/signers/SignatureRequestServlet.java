@@ -8,7 +8,7 @@ import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.Identity;
 import org.neuclear.id.builders.Builder;
 import org.neuclear.id.builders.SignatureRequestBuilder;
-import org.neuclear.id.resolver.NSResolver;
+import org.neuclear.id.resolver.Resolver;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
@@ -41,8 +41,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.1 2004/03/02 18:59:10 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.2 2004/04/01 23:19:48 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.2  2004/04/01 23:19:48  pelle
+Split Identity into Signatory and Identity class.
+Identity remains a signed named object and will in the future just be used for self declared information.
+Signatory now contains the PublicKey etc and is NOT a signed object.
+
 Revision 1.1  2004/03/02 18:59:10  pelle
 Further cleanups in neuclear-id. Moved everything under id.
 
@@ -78,8 +83,8 @@ Added SignatureRequestServlet which is abstract and can be used for building Sig
 public abstract class SignatureRequestServlet extends HttpServlet {
     public final void init(final ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
-        serviceid = ServletTools.getInitParam("serviceid",servletConfig);
-        title = ServletTools.getInitParam("title",servletConfig);
+        serviceid = ServletTools.getInitParam("serviceid", servletConfig);
+        title = ServletTools.getInitParam("title", servletConfig);
 
         try {
             signer = createSigner(servletConfig);
@@ -93,11 +98,11 @@ public abstract class SignatureRequestServlet extends HttpServlet {
 
     }
 
-    protected final  String getServiceid() {
+    protected final String getServiceid() {
         return serviceid;
     }
 
-    protected final  String getTitle() {
+    protected final String getTitle() {
         return title;
     }
 
@@ -160,12 +165,12 @@ public abstract class SignatureRequestServlet extends HttpServlet {
     }
 
     protected Identity getUserNS(final HttpServletRequest request) throws NeuClearException {
-        if (request.getUserPrincipal()!=null)
-            return (Identity)request.getUserPrincipal();
+        if (request.getUserPrincipal() != null)
+            return (Identity) request.getUserPrincipal();
         final String username = request.getParameter("identity");
         if (Utility.isEmpty(username))
             throw new NeuClearException("No Identity Provided");
-        return NSResolver.resolveIdentity(username);
+        return Resolver.resolveIdentity(username);
     }
 
     protected abstract Builder createBuilder(HttpServletRequest request) throws NeuClearException;

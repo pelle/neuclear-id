@@ -1,7 +1,7 @@
 package org.neuclear.id;
 
 import org.neuclear.commons.crypto.keyresolvers.KeyResolver;
-import org.neuclear.id.resolver.NSResolver;
+import org.neuclear.id.resolver.Resolver;
 
 import java.security.PublicKey;
 
@@ -23,8 +23,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: NeuclearKeyResolver.java,v 1.1 2004/01/08 23:39:06 pelle Exp $
+$Id: NeuclearKeyResolver.java,v 1.2 2004/04/01 23:19:49 pelle Exp $
 $Log: NeuclearKeyResolver.java,v $
+Revision 1.2  2004/04/01 23:19:49  pelle
+Split Identity into Signatory and Identity class.
+Identity remains a signed named object and will in the future just be used for self declared information.
+Signatory now contains the PublicKey etc and is NOT a signed object.
+
 Revision 1.1  2004/01/08 23:39:06  pelle
 XMLSignature can now give you the Signing key and the id of the signer.
 SignedElement can now self verify using embedded public keys as well as KeyName's
@@ -41,10 +46,10 @@ Identity can now contain nothing but a public key
  * Date: Jan 8, 2004
  * Time: 9:34:56 PM
  */
-public class NeuclearKeyResolver implements KeyResolver{
+public class NeuclearKeyResolver implements KeyResolver {
     public PublicKey resolve(String name) {
         try {
-            return NSResolver.resolveIdentity(name).getPublicKey();
+            return Resolver.resolveIdentity(name).getSignatory().getPublicKey();
         } catch (NameResolutionException e) {
             return null;
         } catch (InvalidNamedObjectException e) {

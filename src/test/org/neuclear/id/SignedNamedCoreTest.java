@@ -30,8 +30,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignedNamedCoreTest.java,v 1.8 2004/01/19 17:55:00 pelle Exp $
+$Id: SignedNamedCoreTest.java,v 1.9 2004/04/01 23:19:51 pelle Exp $
 $Log: SignedNamedCoreTest.java,v $
+Revision 1.9  2004/04/01 23:19:51  pelle
+Split Identity into Signatory and Identity class.
+Identity remains a signed named object and will in the future just be used for self declared information.
+Signatory now contains the PublicKey etc and is NOT a signed object.
+
 Revision 1.8  2004/01/19 17:55:00  pelle
 Updated the NeuClear ID naming scheme to support various levels of semantics
 
@@ -81,22 +86,13 @@ public final class SignedNamedCoreTest extends TestCase {
         super(string);
         signer = new TestCaseSigner();
     }
-    
-    public final void testCreateRoot() {
-        final SignedNamedCore core = SignedNamedCore.createRootCore();
-        assertNotNull(core);
-        assertEquals(core.getName(), "neu://");
-        assertNull(core.getSignatory());
-    }
 
     public final void testCreateNymous() throws InvalidNamedObjectException, XMLException, NonExistingSignerException, UserCancellationException {
         final String name = "neu://bob@test";
-        Identity bobx=SignedNamedCore.createSimpleIdentity(signer.getPublicKey(name));
+        Signatory bobx = new Signatory(signer.getPublicKey(name));
         assertNotNull(bobx);
         assertNotNull(bobx.getName());
         System.out.println(bobx.getName());
-        assertNotNull(bobx.getEncoded());
-        assertNotNull(bobx.getSigner());
         assertNotNull(bobx.getPublicKey());
     }
 
