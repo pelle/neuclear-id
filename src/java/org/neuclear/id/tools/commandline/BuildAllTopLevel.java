@@ -9,9 +9,6 @@ import org.neuclear.store.FileStore;
 import org.neuclear.store.Store;
 import org.neuclear.xml.XMLException;
 
-import java.io.FileNotFoundException;
-import java.security.GeneralSecurityException;
-
 /*
 NeuClear Distributed Transaction Clearing Platform
 (C) 2003 Pelle Braendgaard
@@ -30,8 +27,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: BuildAllTopLevel.java,v 1.3 2003/12/19 00:31:30 pelle Exp $
+$Id: BuildAllTopLevel.java,v 1.4 2004/01/15 00:02:08 pelle Exp $
 $Log: BuildAllTopLevel.java,v $
+Revision 1.4  2004/01/15 00:02:08  pelle
+Problem fixed with Enveloping signatures.
+
 Revision 1.3  2003/12/19 00:31:30  pelle
 Lots of usability changes through out all the passphrase agents and end user tools.
 
@@ -91,7 +91,7 @@ public final class BuildAllTopLevel {
             final JCESigner rootsig = new DefaultSigner(new GuiDialogAgent());
             final JCESigner testsig = new TestCaseSigner();
             final Store store = new FileStore("target/testdata/repository");
-//            store.receive(createIdentities("neu://test", rootsig, testsig));
+            store.receive(createIdentities("neu://test", rootsig, testsig));
             store.receive(createIdentities("neu://bob@test", testsig, testsig));
             store.receive(createIdentities("neu://alice@test", testsig, testsig));
 
