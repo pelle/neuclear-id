@@ -1,7 +1,7 @@
-<script language="JavaScript1.1">
-    <!--
+<script language="JavaScript">
 
     var neuclear_personal="http://127.0.0.1:11870/Sign";
+    var neuclear_isrunning=0;
 
     function setCookie(name, value, expire) {
        document.cookie = name + "=" + escape(value)
@@ -28,17 +28,6 @@
     if (!neuclear_signer) {
         neuclear_signer=neuclear_personal;
     }
-    function goToServer(){
-        setCookie("neuclear.signer",neuclear_signer);
-        if (traderIsRunning()) {
-            return true;
-        } else {
-            if (ask("Your Personal Trader is not running. Do you wish to start it?")){
-                window.open("http://dist.neuclear.org/app/neuclear-signer.jnlp");
-            }
-            return false;
-        }
-    }
     function reloadStatus(){
         var status=document.getElementById("loginbutton");
         status.src="http://127.0.0.1:11870/login.png";
@@ -48,10 +37,12 @@
         var status=reloadStatus();
         return  (status.src=="http://127.0.0.1:11870/login.png");
     }
-    -->
 </script>
-<a href="Authorize" onclick="return goToServer()">
-    <img id="loginbutton" src="http://127.0.0.1:11870/login.png" border="0" onmouseover="reloadStatus();this.style.background=#00f"
-        onmouseoff="this.style.background=none" onclick="goToServer()"
-        onerror="this.src='images/neuclear_start.png'"/>
+<a href="Authorize">
+    <img id="loginbutton" src="http://127.0.0.1:11870/login.png" border="0" onmouseover="reloadStatus()"
+        onload="document.getElementById('startbutton').style.display='none';this.style.display='inline'"
+        onerror="this.style.display='none';document.getElementById('startbutton').style.display='inline';"/>
+</a>
+<a href="http://dist.neuclear.org/app/neuclear-signer.jnlp">
+    <img id="startbutton" src="images/neuclear_start.png" onmouseover="reloadStatus()" border="0" style="display:none"/>
 </a>

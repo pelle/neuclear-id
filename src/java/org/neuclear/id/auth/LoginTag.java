@@ -42,6 +42,7 @@ public class LoginTag extends TagSupport {
             String line = reader.readLine();
             while (line != null) {
                 buffy.append(line);
+                buffy.append("\n");
                 line = reader.readLine();
             }
 

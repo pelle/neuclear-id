@@ -211,6 +211,7 @@
                     <include>**/*.jpg</include>
                     <include>**/*.jks</include>
                     <include>**/*.xml</include>
+                    <include>**/*.html</include>
                     <include>**/*.properties</include>
                     <include>LICENSE.txt</include>
                 </includes>
