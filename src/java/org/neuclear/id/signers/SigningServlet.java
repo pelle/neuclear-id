@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.17 2004/06/17 15:10:31 pelle Exp $
+ * $Id: SigningServlet.java,v 1.18 2004/06/22 14:23:45 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.18  2004/06/22 14:23:45  pelle
+ * Fixed issues with endpoints in the signing request and signing servlets
+ *
  * Revision 1.17  2004/06/17 15:10:31  pelle
  * Added support for the account url reference in recipient. It displays the url and also verifies that the referenced account page has the same account id as is specified to disallow spoofing.
  *
@@ -423,6 +426,7 @@ public class SigningServlet extends XMLInputStreamServlet {
                 "\t#log {background: #008;font-size:14px;font-weight:bolder;color:white;}" +
                 "</style></head><body><div id=\"banner\">NeuClear Personal Trader</div>");
         final String endpoint = request.getParameter("endpoint");
+        final String receiver = request.getParameter("receiver");
         final Builder named = sigreq.getUnsigned();
 //        final String username = sigreq.getUserid();
         boolean isSigned = false;
@@ -508,7 +512,6 @@ public class SigningServlet extends XMLInputStreamServlet {
             out.flush();
             try {
                 isSigned = sign(named, out);
-
             } catch (InvalidNamedObjectException e) {
 //                System.out.println("<br><font color=\"red\"><b>ERROR: Invalid Identity</b></font><br>");
                 out.println("<li><font color=\"red\"><b>ERROR: Invalid Identity</b></font></li>");
@@ -532,11 +535,15 @@ public class SigningServlet extends XMLInputStreamServlet {
             printSecondStageForm(request, out, sigreq, endpoint);
         } else if (!Utility.isEmpty(endpoint)) {
             out.print("<form action=\"");
-            out.print(endpoint);
+            out.print(Utility.denullString(receiver, endpoint));
             out.print("\" method=\"POST\"><input name=\"neuclear-request\" value=\"");
 //                    context.log("Signing Servlet: ");
             out.print(XMLSecTools.encodeElementBase64(named));
             out.println("\" type=\"hidden\"/>");
+            out.write("<input name=\"endpoint\" value=\"");
+            out.print(endpoint);
+            out.write("\" type=\"hidden\"/>\n");
+
 //            out.write("<input id=\"submit\" type=\"submit\" >");
             out.write("</form>\n");
             out.write("<script language=\"javascript\">\n");

@@ -41,8 +41,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.9 2004/06/19 21:16:31 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.10 2004/06/22 14:23:45 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.10  2004/06/22 14:23:45  pelle
+Fixed issues with endpoints in the signing request and signing servlets
+
 Revision 1.9  2004/06/19 21:16:31  pelle
 Changes to javascript in SignatureRequestServlet
 
@@ -139,8 +142,11 @@ public abstract class SignatureRequestServlet extends HttpServlet {
         response.setDateHeader("Expires", 0);
         response.setContentType("text/html");
 
-        final String siteurl = ServletTools.getAbsoluteURL(request, "/");
-
+        String siteurl = ServletTools.getAbsoluteURL(request, "/");
+        final String referrer = request.getHeader("Referer");
+        if (referrer != null && referrer.startsWith(siteurl)) {
+            siteurl = referrer;
+        }
         String signingserver = Identity.DEFAULT_SIGNER;
 /*
         String reqSigner = request.getParameter("signer");
@@ -216,6 +222,9 @@ public abstract class SignatureRequestServlet extends HttpServlet {
             out.write("<input name=\"endpoint\" value=\"");
             out.print(siteurl);
             out.write("\" type=\"hidden\"/>\n");
+            out.write("<input name=\"receiver\" value=\"");
+            out.print(getReceiver(request, siteurl));
+            out.write("\" type=\"hidden\"/>\n");
 //            out.write("<input type=\"submit\">");
             out.write("</form>\n");
             out.write("<script language=\"javascript\">\n");
@@ -230,6 +239,10 @@ public abstract class SignatureRequestServlet extends HttpServlet {
         } catch (XMLException e) {
             e.printStackTrace(out);
         }
+    }
+
+    protected String getReceiver(final HttpServletRequest request, final String siteurl) {
+        return siteurl;
     }
 
     protected Identity getUserNS(final HttpServletRequest request) throws NeuClearException {
