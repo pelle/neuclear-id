@@ -8,7 +8,7 @@
     <description>
 	Storage System for Named Objects in Neubia
     </description>
-
+<!--
     <servlet>
         <servlet-name>storage</servlet-name>
         <servlet-class>org.neuclear.store.servlet.StorageServlet</servlet-class>
@@ -52,6 +52,7 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    -->
     <servlet>
         <servlet-name>jcesigner</servlet-name>
         <servlet-class>org.neuclear.signers.servlet.SigningServlet</servlet-class>
@@ -65,12 +66,12 @@
         </init-param>
         <init-param>
           <param-name>title</param-name>
-          <param-value>NeuDist Local Test Signer</param-value>
+          <param-value>NeuClear Remote Signer</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
- <!--       -->
+ <!--
     <servlet-mapping>
         <servlet-name>storage</servlet-name>
         <url-pattern>/Store</url-pattern>
@@ -81,11 +82,11 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>demosigner</servlet-name>
-        <url-pattern>/Signer</url-pattern>
-    </servlet-mapping>
+        <url-pattern>/demo/Signer</url-pattern>
+    </servlet-mapping>-->
     <servlet-mapping>
         <servlet-name>jcesigner</servlet-name>
-        <url-pattern>/personal/Signer</url-pattern>
+        <url-pattern>/Signer</url-pattern>
     </servlet-mapping>
 
 <!--

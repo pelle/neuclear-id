@@ -1,5 +1,4 @@
 <%@page import="org.neuclear.commons.Utility,
-                 com.opensymphony.util.TextUtils,
                  org.neuclear.auth.AuthenticationTicket,
                  java.util.Date,
                  org.neuclear.xml.xmlsec.XMLSecTools,
@@ -37,7 +36,7 @@ NeuDist Login
 </title></head>
 <body>
 <h3>contacting signing service...</h3>
-<form action="<%=NSResolver.resolveIdentity(userns).getSigner()%>)" method="POST">
+<form action="<%=NSResolver.resolveIdentity(userns).getSigner()%>" method="POST">
     <input name="base64xml" value="<%=XMLSecTools.encodeElementBase64(sigreq.getElement())%>" type="hidden">
     <input name="endpoint" value="<%=siteurl%>" type="hidden"/>
 </form>
@@ -46,15 +45,15 @@ NeuDist Login
    document.forms[0].submit();
 -->
 </script>
-<%} catch (Exception e) {
+<%} catch (Throwable e) {
     %>
 <html><head><title>Error: <%=e.getMessage()%></title></head><body>
 <h4>Problem:</h4>
 <pre><%=e.getMessage()%>
-<% e.printStackTrace(System.out);%>
+<% e.printStackTrace();%>
 </pre>
     <%
-    return;
+
 }
 %>
 

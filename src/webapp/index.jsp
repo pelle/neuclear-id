@@ -1,11 +1,8 @@
 <%@ page import="org.neuclear.commons.Utility,
-                 com.opensymphony.util.TextUtils,
-                 org.neuclear.receiver.ReceiverServlet,
                  org.neuclear.id.SignedNamedObject,
                  org.neuclear.auth.AuthenticationTicket,
                  org.neuclear.id.NSTools,
-                 org.neuclear.commons.servlets.ServletTools
-                 ,
+                 org.neuclear.commons.servlets.ServletTools        ,
                  org.neuclear.id.Identity,
                  org.neuclear.id.resolver.NSResolver"%>
  <%
@@ -19,23 +16,27 @@
         sess.removeAttribute("NeuClearAuthTicket");
 
     }
-    AuthenticationTicket ticket=(AuthenticationTicket)sess.getAttribute("NeuClearAuthTicket");
+     try {
+         AuthenticationTicket ticket=(AuthenticationTicket)sess.getAttribute("NeuClearAuthTicket");
 
-        if (ticket!=null){
-            loggedin=true;
-            userns=ticket.getSignatory();
-        } else {
-            loggedin=false;
-            if (cookies!=null){
-                for (int i=0;i<cookies.length;i++) {
-                    if(cookies[i].getName().equals("identity")) {
-                        userns=NSResolver.resolveIdentity(cookies[i].getValue());
-                        i=cookies.length;
-                    }
-                }
-            }
-        }
-%>
+         if (ticket!=null){
+             loggedin=true;
+             userns=ticket.getSignatory();
+         } else {
+             loggedin=false;
+             if (cookies!=null){
+                 for (int i=0;i<cookies.length;i++) {
+                     if(cookies[i].getName().equals("identity")) {
+                         userns=NSResolver.resolveIdentity(cookies[i].getValue());
+                         i=cookies.length;
+                     }
+                 }
+             }
+         }
+     } catch (Exception e) {
+         ;// The errors arent important we ignore them
+     }
+ %>
 <html>
 <head><title>
 NeuDist Sample Web App

@@ -1,9 +1,9 @@
-<neuid:Identity xmlns:neuid="http://neudist.org/neu/neuid" neuid:name="neu://test" neuid:repository="http://repository.neuclear.org" neuid:logger="mailto:pelle@neuclear.org" neuid:signer="http://localhost:11870/signer" neuid:receiver="mailto:pelle@neuclear.org" neuid:timestamp="2003-10-31T15:36:43,690EST"><neuid:allow><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:KeyValue><ds:RSAKeyValue><ds:Modulus>
-xMhp7rej5MIDbTDQ31AfRNQWP7eW/B1LHc36tPenLCLLJSDMbC0p8cCF60E+IM1y9iDurCKviiWJrhL4bAex2xwlQG4C0e+FD9ryd8HjP5WxdvgrAdbQD+lIZ2ntB7eMHErN3fAlrOKOncjyeB0cxjgUiqi0kFpMf3fRFLLGHos=
+<neuid:Identity xmlns:neuid="http://neuclear.org/neu/neuid" neuid:name="neu://test" neuid:repository="http://repository.neuclear.org" neuid:logger="neuclear-develop@lists.sourceforge.net" neuid:signer="http://users.neuclear.org:8080/Signer" neuid:receiver="neuclear-develop@lists.sourceforge.net" neuid:timestamp="2003-11-13T18:05:54,377EST"><neuid:allow><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:KeyValue><ds:RSAKeyValue><ds:Modulus>
+8oBM0bU6t/RUQHHI1Q8H6IUf/Pp4ZUF9tUTCNphkG7S4PmpvhxhdJhldrATeNkEPrqUuUqFL1yubLLj2r6uSTw==
 </ds:Modulus><ds:Exponent>
 AQAB
 </ds:Exponent></ds:RSAKeyValue></ds:KeyValue></ds:KeyInfo></neuid:allow><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><ds:Reference URI=""><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>
-AoMJy1GxM+8XFjMU3r4jyxfhyKc=
+eGkul4nQec19D+ZBmzxATRzxYi8=
 </ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>
-H7tqEqRansDygGc7Zn0NDapXNbYCKfw9pifwcreNMIL6n8rG+3nMrloJnjDG0gnr7+VrSIZs6D1CGBFtrMo+tJ+qrdOFFYDtpppOvuYxPKJiPmaAKTdkKt56GPf76wuJ4rjuo256eomHwKbfLwzYx/HqAVf0RhQe0+loHgNDpDEChnqh3kn0QuHtEZatR6ZuFUo5tyU3XzXBADSERB733dJ/4Fj6SLLBPswBadpvRcKUonID0de7ny9u+hB9RTibjGrC/CEY9PX5SNs8/G5a760XH1RUCXBpnmJt1cdy1Un0gorJBK2DlnKT2LmnlwwDruSrsbquJKkizzbdGoDEzQ==
+dVtbX78WoXHA4Dy1vj+jZ/ewPb9svAVwfUWwwfvZHF/5mrUuQvXKVwTIx6IBg6m4uG4Qh9b63h7RS4iQdmeRoaXONrM1dCXAsnkASoNpVhL2C4VEtdK5LXWBUD97CTEr8pRaOa4jT5oV3h6CqtHwDR9CbusNEJeCaASjn7v2UhFrmm+7VKZx/rxUv2t/5tluJm6cpSxEGYCdlkZBEGnpjfKdKRQjyuqSkDfjGRDGNjJS70fzsQ5Eat4Rf530vpxx+byTv4E6rWYYCk4EHpyEzlej5U+GNErXtbHGU+Ij6qPMwpdPvkeXquy3DpyX6NIldEpRLuOBZTejg5P9sIuZ2A==
 </ds:SignatureValue></ds:Signature></neuid:Identity>

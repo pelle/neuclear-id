@@ -1,5 +1,8 @@
-/* $Id: CommandLineSigner.java,v 1.12 2003/11/11 21:18:43 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.13 2003/11/13 23:26:42 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.13  2003/11/13 23:26:42  pelle
+ * The signing service and web authentication application is now almost working.
+ *
  * Revision 1.12  2003/11/11 21:18:43  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -156,13 +159,13 @@ package org.neuclear.signers.commandline;
 
 import org.apache.commons.cli.*;
 import org.dom4j.Document;
+import org.neuclear.commons.Utility;
 import org.neuclear.commons.configuration.Configuration;
 import org.neuclear.commons.configuration.ConfigurationException;
-import org.neuclear.id.SignedNamedObject;
-import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.crypto.signers.Signer;
-import org.neuclear.commons.Utility;
+import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
 
@@ -170,7 +173,7 @@ import java.io.*;
 
 /**
  * @author pelleb
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class CommandLineSigner {
     public CommandLineSigner(String args[]) throws ParseException, ConfigurationException {
@@ -201,7 +204,7 @@ public class CommandLineSigner {
             HelpFormatter help = new HelpFormatter();
             help.printHelp("java " +
                     this.getClass().getName() +
-                    " --keystorepassword kspassword [--alias alias --password password] " +
+                    " --inputfile unsigned/test.id [--outputfile signed/test.id] " +
                     getExtraHelp(), options);
             System.exit(1);
         }
@@ -212,7 +215,7 @@ public class CommandLineSigner {
     }
 
     protected boolean hasArguments() {
-        return cmd.hasOption("a");
+        return cmd.hasOption("i");
     }
 
     public void execute() {
@@ -220,15 +223,16 @@ public class CommandLineSigner {
         try {
             NamedObjectBuilder subject = build();
 
-            if (!Utility.isEmpty(alias)) {
-                if (!sig.canSignFor(alias)) {
-                    System.err.println("Key with alias: " + alias + " doesnt exist");
-                    System.exit(1);
-                }
-
-                System.err.println("Signing by " + alias + " ...");
-                subject.sign(alias, sig);
+            if (Utility.isEmpty(alias)) {
+                alias = subject.getParent().getName();
             }
+            if (!sig.canSignFor(alias)) {
+                System.err.println("Key with alias: " + alias + " doesnt exist");
+                System.exit(1);
+            }
+            System.err.println("Signing by " + alias + " ...");
+            subject.sign(alias, sig);
+
 
             OutputStream dest = System.out;
             if (!Utility.isEmpty(of)) {
@@ -275,7 +279,7 @@ public class CommandLineSigner {
 //        options.addOption("s", "keystore", true, "specify KeyStore");
 //        options.addOption("t", "keystoretype", true, "specify KeyStore Type");
 //        options.addOption("j", "keystorepassword", true, "specify KeyStore Password");
-        options.addOption("a", "alias", true, "specify Key Alias in KeyStore");
+//        options.addOption("a", "alias", true, "specify Key Alias in KeyStore");
 //        options.addOption("p", "password", true, "specify Alias Password");
         options.addOption("o", "outputfile", true, "specify Output File");
 

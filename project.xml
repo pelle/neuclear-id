@@ -30,7 +30,7 @@
 
   <siteAddress>neuclear.org</siteAddress>
   <siteDirectory>/home/sites/neuclear.org/public_html/id/</siteDirectory>
-  <issueTrackingUrl>http://devone.veraxpay.com:9090/</issueTrackingUrl>
+  <issueTrackingUrl>http://jira.neuclear.org:8080/</issueTrackingUrl>
     <mailingLists>
       <mailingList>
         <name>NeuClear Announce</name>
@@ -106,7 +106,7 @@
       <name>bouncycastle</name>
       <jar>bouncycastle-jce-jdk13-112.jar</jar>
       <properties>
-            <war.bundle.jar>false</war.bundle.jar>
+            <war.bundle.jar>true</war.bundle.jar>
       </properties>
     </dependency>
    <dependency>
@@ -146,10 +146,16 @@
    <dependency>
        <id>picocontainer</id>
        <version>1.0-beta-1</version>
+       <properties>
+             <war.bundle.jar>true</war.bundle.jar>
+       </properties>
    </dependency>
    <dependency>
        <id>nanocontainer</id>
        <version>1.0-alpha-PRESPLIT-1</version>
+       <properties>
+             <war.bundle.jar>true</war.bundle.jar>
+       </properties>
    </dependency>
   </dependencies>
   <build>

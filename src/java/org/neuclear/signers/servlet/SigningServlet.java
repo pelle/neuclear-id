@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.9 2003/11/11 21:18:44 pelle Exp $
+ * $Id: SigningServlet.java,v 1.10 2003/11/13 23:26:42 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.10  2003/11/13 23:26:42  pelle
+ * The signing service and web authentication application is now almost working.
+ *
  * Revision 1.9  2003/11/11 21:18:44  pelle
  * Further vital reshuffling.
  * org.neudist.crypto.* and org.neudist.utils.* have been moved to respective areas under org.neuclear.commons
@@ -158,17 +161,16 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.neuclear.commons.NeuClearException;
-import org.neuclear.commons.configuration.Configuration;
-import org.neuclear.commons.configuration.ConfigurationException;
+import org.neuclear.commons.Utility;
+import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
+import org.neuclear.commons.crypto.signers.Signer;
+import org.neuclear.commons.crypto.signers.TestCaseSigner;
+import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.receiver.ReceiverServlet;
-import org.neuclear.commons.crypto.signers.InvalidPassphraseException;
-import org.neuclear.commons.crypto.signers.NonExistingSignerException;
-import org.neuclear.commons.crypto.signers.Signer;
-import org.neuclear.commons.servlets.ServletTools;
-import org.neuclear.commons.Utility;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
@@ -179,6 +181,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.security.GeneralSecurityException;
 
 public class SigningServlet extends ReceiverServlet {
     public void init(ServletConfig config) throws ServletException {
@@ -187,13 +190,15 @@ public class SigningServlet extends ReceiverServlet {
         context = config.getServletContext();
         try {
             System.out.println("NEUDIST: Initialising SigningServlet");
-            title = Utility.denullString(config.getInitParameter("title").toString(), "NeuDist Signing Service");
+            title = Utility.denullString(config.getInitParameter("title").toString(), "NeuClear Signing Service");
             if (signer == null) {
-                signer = (Signer) Configuration.getComponent(Signer.class, "neuclear-signing-servlet");
+                signer = new TestCaseSigner();
             }
             System.out.println("NEUDIST: Finished SigningServlet Init ");
 
-        } catch (ConfigurationException e) {
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        } catch (NeuClearException e) {
             e.printStackTrace();
         }
 
