@@ -1,6 +1,12 @@
 /*
- * $Id: IdentityBuilder.java,v 1.2 2003/10/01 19:08:30 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.3 2003/10/02 23:29:03 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.3  2003/10/02 23:29:03  pelle
+ * Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
+ * VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
+ * Cleaned up much of the tests and they all pass now.
+ * The FileStoreTests need to be rethought out, by adding a test key.
+ *
  * Revision 1.2  2003/10/01 19:08:30  pelle
  * Changed XML Format. Now NameSpace has been modified to Identity also the
  * xml namespace prefix nsdl has been changed to neuid.
@@ -143,6 +149,7 @@ import org.neudist.utils.NeudistException;
 import org.neudist.utils.Utility;
 import org.neudist.xml.xmlsec.XMLSecTools;
 
+import java.security.PrivateKey;
 import java.security.PublicKey;
 
 public final class IdentityBuilder extends NamedObjectBuilder {
@@ -184,6 +191,11 @@ public final class IdentityBuilder extends NamedObjectBuilder {
 
     public IdentityBuilder(String name, PublicKey allow) throws NeudistException {
         this(name, allow, null);
+    }
+
+    public IdentityBuilder(String name, PrivateKey signer, PublicKey allow) throws NeudistException {
+        this(name, allow);
+        sign(signer);
     }
 
     public String getTagName() {

@@ -1,6 +1,12 @@
 /*
- * $Id: FileStore.java,v 1.5 2003/09/26 00:22:07 pelle Exp $
+ * $Id: FileStore.java,v 1.6 2003/10/02 23:29:03 pelle Exp $
  * $Log: FileStore.java,v $
+ * Revision 1.6  2003/10/02 23:29:03  pelle
+ * Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
+ * VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
+ * Cleaned up much of the tests and they all pass now.
+ * The FileStoreTests need to be rethought out, by adding a test key.
+ *
  * Revision 1.5  2003/09/26 00:22:07  pelle
  * Cleanups and final changes to code for refactoring of the Verifier and Reader part.
  *
@@ -119,11 +125,11 @@ package org.neuclear.store;
 
 //import org.neuclear.id.NSDLObject;
 
-import org.dom4j.Document;
 import org.neuclear.id.NSTools;
 import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.id.verifier.VerifyingReader;
 import org.neudist.utils.NeudistException;
-import org.neudist.xml.XMLTools;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -141,7 +147,7 @@ public class FileStore extends Store {
         this.base = base;
     }
 
-    protected void rawStore(SignedNamedObject obj) throws IOException, NeudistException {
+    protected void rawStore(NamedObjectBuilder obj) throws IOException, NeudistException {
         String outputFilename = base + getFileName(obj);
         System.out.println("Outputting to: " + outputFilename);
         File outputFile = new File(outputFilename);
@@ -153,26 +159,19 @@ public class FileStore extends Store {
 //        store(new NSDLObject(doc));
 //    }
 
-    protected SignedNamedObject fetch(String name) throws NeudistException {
+    SignedNamedObject fetch(String name) throws NeudistException {
         String inputFilename = base + getFileName(NSTools.normalizeNameURI(name));
         System.out.println("Loading from: " + inputFilename);
         File fin = new File(inputFilename);
         if (!fin.exists())
             return null;
 
-        SignedNamedObject ns = null;
         try {
-            Document doc = XMLTools.loadDocument(new FileInputStream(fin));
-//TODO Find alternative            ns = NamedObjectFactory.createNamedObject(doc);
-//           System.out.println("NEUDIST: Fetched SignedNamedObject tag:"+rootName.getName()+" URI:"+rootName.getNamespaceURI());
-//        } catch (ParserConfigurationException e) {
-//            Utility.rethrowException(e);
+            return VerifyingReader.getInstance().read(new FileInputStream(fin));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            //           Utility.rethrowException(e);
+            return null;
         }
-
-        return ns;
     }
 
 
@@ -185,7 +184,7 @@ public class FileStore extends Store {
             return name + ".id";
     }
 
-    protected static String getFileName(SignedNamedObject obj) throws NeudistException {
+    protected static String getFileName(NamedObjectBuilder obj) throws NeudistException {
         return getFileName(obj.getName());
 //        if (! (obj instanceof Identity))
 //            return obj.getName();

@@ -1,6 +1,12 @@
 /*
- * $Id: Store.java,v 1.6 2003/09/26 23:53:10 pelle Exp $
+ * $Id: Store.java,v 1.7 2003/10/02 23:29:03 pelle Exp $
  * $Log: Store.java,v $
+ * Revision 1.7  2003/10/02 23:29:03  pelle
+ * Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
+ * VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
+ * Cleaned up much of the tests and they all pass now.
+ * The FileStoreTests need to be rethought out, by adding a test key.
+ *
  * Revision 1.6  2003/09/26 23:53:10  pelle
  * Changes mainly in receiver and related fun.
  * First real neuclear stuff in the payment package. Added TransferContract and PaymentReceiver.
@@ -133,36 +139,43 @@
  */
 package org.neuclear.store;
 
+import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.SignedNamedObject;
-import org.neuclear.receiver.Receiver;
-import org.neuclear.receiver.UnsupportedTransaction;
+import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.receiver.RawReceiver;
 import org.neudist.utils.NeudistException;
+import org.neudist.xml.xmlsec.XMLSecurityException;
 
 import java.io.IOException;
 
-abstract public class Store implements Receiver {
+abstract public class Store implements RawReceiver {
+
 
     //protected Store(Store store)
 
     /**
      *  This handles the Identity checking on the object.
      */
-    public final void receive(SignedNamedObject obj) throws UnsupportedTransaction {
+    public final void receive(NamedObjectBuilder obj) throws InvalidIdentityException {
         try {
             // Dont allow overwrites
             //TODO: Implement versioning
-//            if (fetch(obj.getName())!=null)
-//                throw new InvalidIdentityException("The name: "+obj.getName()+" already exists");
 
+//            if (obj.verifySignature(obj.getParent().getPublicKey()))
             rawStore(obj);
-
+//            else
+//                throw new InvalidIdentityException("INVALID Signature");
             if (next != null)
                 next.receive(obj);
 
+
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (NeudistException e) {
+        } catch (XMLSecurityException e) {
             e.printStackTrace();
+        } catch (NeudistException e) {
+            if (e instanceof InvalidIdentityException)
+                throw (InvalidIdentityException) e;
         }
 //            if (e instanceof InvalidIdentityException)
 //                throw (InvalidIdentityException)e;
@@ -176,9 +189,11 @@ abstract public class Store implements Receiver {
     /**
      * Override this for each specific Store type
      */
-    protected void rawStore(SignedNamedObject obj) throws IOException, NeudistException {
+    protected void rawStore(NamedObjectBuilder obj) throws IOException, NeudistException {
         ;
     }
 
-    private Receiver next;
+    private RawReceiver next;
+
+    abstract SignedNamedObject fetch(String name) throws NeudistException;
 }

@@ -1,6 +1,12 @@
 /*
-  $Id: NameSpaceTest.java,v 1.4 2003/09/29 23:17:32 pelle Exp $
+  $Id: NameSpaceTest.java,v 1.5 2003/10/02 23:29:03 pelle Exp $
   $Log: NameSpaceTest.java,v $
+  Revision 1.5  2003/10/02 23:29:03  pelle
+  Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
+  VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
+  Cleaned up much of the tests and they all pass now.
+  The FileStoreTests need to be rethought out, by adding a test key.
+
   Revision 1.4  2003/09/29 23:17:32  pelle
   Changes to the senders. Now the senders only work with NamedObjectBuilders
   which are the only NamedObject representations that contain full XML.
@@ -119,24 +125,20 @@
 */
 
 package org.neuclear.id;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import org.neuclear.store.Store;
-import org.neudist.utils.NeudistException;
-import org.neudist.utils.Utility;
 
-import java.io.FileInputStream;
+import junit.framework.TestCase;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.*;
-import java.security.interfaces.RSAPrivateKey;
+import java.security.GeneralSecurityException;
+import java.security.KeyPair;
+import java.security.PrivateKey;
 
 
 /**
  * @author Pelle Braendgaard
  */
-public class NameSpaceTest extends TestCase  {
+public class NameSpaceTest extends TestCase {
 
     public NameSpaceTest(String string) {
         super(string);
@@ -163,8 +165,9 @@ public class NameSpaceTest extends TestCase  {
      * <li>neu://bob/eve (owned by eve)
      * </ul>
      */
-    protected void setUp() throws FileNotFoundException,GeneralSecurityException, IOException {
+    protected void setUp() throws FileNotFoundException, GeneralSecurityException, IOException {
 
+/*
         try {
             //SignatureAlgorithm.providerInit();
             //SignatureAlgorithm.register(XMLSignature.ALGO_ID_SIGNATURE_RSA,);
@@ -196,21 +199,14 @@ public class NameSpaceTest extends TestCase  {
 //        } catch (NeudistException e) {
 //            Utility.handleException(e);
         }
+*/
 
     }
 
 
-    protected void tearDown() {
+    public void testGetRoot() {
+        assertNotNull(Identity.NEUROOT);
     }
-
-	private static void sleepabit() {
-	  try {
-		Thread.currentThread().sleep(1000);
-	  } catch (InterruptedException e) {
-		; // You are a bad boy Pelle
-	  }
-
-	}
 
     KeyPair root;
     PrivateKey aliceSigner;

@@ -2,13 +2,10 @@ package org.neuclear.id.verifier;
 
 import junit.framework.TestCase;
 import org.dom4j.DocumentException;
-import org.dom4j.Document;
-import org.dom4j.io.SAXReader;
-import org.neudist.utils.NeudistException;
-import org.neudist.utils.RegexFileNameFilter;
-import org.neudist.xml.xmlsec.XMLSecTools;
-import org.neudist.crypto.CryptoTools;
+import org.neuclear.id.InvalidIdentityException;
 import org.neuclear.id.SignedNamedObject;
+import org.neudist.crypto.CryptoTools;
+import org.neudist.utils.NeudistException;
 
 import java.io.*;
 
@@ -30,8 +27,14 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerificationTest.java,v 1.2 2003/09/30 23:25:15 pelle Exp $
+$Id: VerificationTest.java,v 1.3 2003/10/02 23:29:03 pelle Exp $
 $Log: VerificationTest.java,v $
+Revision 1.3  2003/10/02 23:29:03  pelle
+Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
+VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
+Cleaned up much of the tests and they all pass now.
+The FileStoreTests need to be rethought out, by adding a test key.
+
 Revision 1.2  2003/09/30 23:25:15  pelle
 Added new JCE Provider and java Certificate implementation for NeuClear Identity.
 
@@ -51,37 +54,44 @@ public class VerificationTest extends TestCase {
 
         super(string);
         CryptoTools.ensureProvider();
-        reader=VerifyingReader.getInstance();
-    }
-    public void testSimple() throws IOException, DocumentException, NeudistException {
-        runDirectoryTest("src/testdata/simple");
+        reader = VerifyingReader.getInstance();
     }
 
-    public void runDirectoryTest(String path) throws DocumentException, IOException, FileNotFoundException, NeudistException {
-        File dir=new File(path);
+    public void testSimple() throws IOException, DocumentException, NeudistException {
+        runDirectoryTest("src/testdata/simple", true);
+    }
+
+    public void testFakes() throws IOException, DocumentException, NeudistException {
+        runDirectoryTest("src/testdata/fakes", false);
+    }
+
+    public void runDirectoryTest(String path, boolean wantValid) throws DocumentException, IOException, FileNotFoundException, NeudistException {
+        File dir = new File(path);
         if (!dir.exists()) {
             System.out.println("Doesnt exist");
             return;
         }
         FilenameFilter filter;
-        filter=new FilenameFilter(){
+        filter = new FilenameFilter() {
             public boolean accept(File dirf, String name) {
-                return name.endsWith(".neu");
+                return name.endsWith(".id");
             }
         };
 
-        File xmlfiles[]=dir.listFiles(filter);
-        System.out.println("There are "+xmlfiles.length+" files in the directory");
+        File xmlfiles[] = dir.listFiles(filter);
+        System.out.println("There are " + xmlfiles.length + " files in the directory");
         for (int i = 0; i < xmlfiles.length; i++) {
 
             File xmlfile = xmlfiles[i];
-            System.out.print("Testing file: "+xmlfile.getName()+"... ");
+            System.out.print("Testing file: " + xmlfile.getName() + "... ");
             try {
-                SignedNamedObject obj=reader.read(new FileInputStream(xmlfile));
-                System.out.println("Name : "+obj.getName()+" VERIFIED");
-            } catch (Exception e) {
-                    System.out.println("ERROR "+e.getMessage());
-                    assertTrue(false);
+                SignedNamedObject obj = reader.read(new FileInputStream(xmlfile));
+                System.out.println("Name : " + obj.getName() + " VERIFIED");
+                assertTrue(wantValid);
+
+            } catch (InvalidIdentityException e) {
+                System.out.println("INVALID  " + e.getMessage());
+                assertTrue(!wantValid);
             }
         }
 

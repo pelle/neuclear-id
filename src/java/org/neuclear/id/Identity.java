@@ -1,6 +1,12 @@
 /*
- * $Id: Identity.java,v 1.6 2003/10/01 19:08:31 pelle Exp $
+ * $Id: Identity.java,v 1.7 2003/10/02 23:29:02 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.7  2003/10/02 23:29:02  pelle
+ * Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
+ * VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
+ * Cleaned up much of the tests and they all pass now.
+ * The FileStoreTests need to be rethought out, by adding a test key.
+ *
  * Revision 1.6  2003/10/01 19:08:31  pelle
  * Changed XML Format. Now NameSpace has been modified to Identity also the
  * xml namespace prefix nsdl has been changed to neuid.
@@ -186,7 +192,8 @@ import java.security.cert.CertificateException;
 import java.sql.Timestamp;
 
 public final class Identity extends SignedNamedObject {
-    private static final String NSROOTPKMOD = "AKbv1DrfQCj7fbcc/9U8mLHi9LzFGVw8ac9z26BN1+yeq9VG3wvW+OXjvUpQ9cD+dpwpFXeai9Hz DkFeJcT9Coi9A8Aj4nffWAlxJ/AVOIRCi1d4A/d9InhQ7UYYA5O7XBcwKneopYVa9zRDUoy0ZpVy t9Kj5i0Zw6oZsflAu4S4pIU+niYwwWrYmCuBEq9kecf7nSGiU0rHp1QNs7NYdhXCl2BMcSaz0AZt AF8YLlZYasviJkoxUFBB/Vjqa98xi7V7XIGsMbXWqUvJ8MW2N/CUdBz5aDlpBUwul8rqyq+03A0q 84AFJiUcudqVL7KhURXB8ZYy/hZb+YkEvE3IigU=";
+    private static final String NSROOTPKMOD = "pu/UOt9AKPt9txz/1TyYseL0vMUZXDxpz3PboE3X7J6r1UbfC9b45eO9SlD1wP52nCkVd5qL0fMOQV4lxP0KiL0DwCPid99YCXEn8BU4hEKLV3gD930ieFDtRhgDk7tcFzAqd6ilhVr3NENSjLRmlXK30qPmLRnDqhmx+UC7hLikhT6eJjDBatiYK4ESr2R5x/udIaJTSsenVA2zs1h2FcKXYExxJrPQBm0AXxguVlhqy+ImSjFQUEH9WOpr3zGLtXtcgawxtdapS8nwxbY38JR0HPloOWkFTC6XyurKr7TcDSrzgAUmJRy52pUvsqFRFcHxljL+Flv5iQS8TciKBQ==";
+    //private static final String NSROOTPKMOD = "AKbv1DrfQCj7fbcc/9U8mLHi9LzFGVw8ac9z26BN1+yeq9VG3wvW+OXjvUpQ9cD+dpwpFXeai9Hz DkFeJcT9Coi9A8Aj4nffWAlxJ/AVOIRCi1d4A/d9InhQ7UYYA5O7XBcwKneopYVa9zRDUoy0ZpVy t9Kj5i0Zw6oZsflAu4S4pIU+niYwwWrYmCuBEq9kecf7nSGiU0rHp1QNs7NYdhXCl2BMcSaz0AZt AF8YLlZYasviJkoxUFBB/Vjqa98xi7V7XIGsMbXWqUvJ8MW2N/CUdBz5aDlpBUwul8rqyq+03A0q 84AFJiUcudqVL7KhURXB8ZYy/hZb+YkEvE3IigU=";
     private static final String NSROOTPKEXP = "AQAB";
     private static PublicKey nsrootpk;
 

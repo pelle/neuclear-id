@@ -1,6 +1,12 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.3 2003/10/01 19:08:30 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.4 2003/10/02 23:29:03 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.4  2003/10/02 23:29:03  pelle
+ * Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
+ * VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
+ * Cleaned up much of the tests and they all pass now.
+ * The FileStoreTests need to be rethought out, by adding a test key.
+ *
  * Revision 1.3  2003/10/01 19:08:30  pelle
  * Changed XML Format. Now NameSpace has been modified to Identity also the
  * xml namespace prefix nsdl has been changed to neuid.
@@ -333,7 +339,8 @@ public class NamedObjectBuilder extends SignedElement implements Named {
 
     public final void log() throws NeudistException {
         Identity ns = getParent();
-        Sender.quickSend(ns.getLogger(), this);
+        if (ns != null && ns.getLogger() != null)
+            Sender.quickSend(ns.getLogger(), this);
     }
 
     public Identity getParent() throws NeudistException {

@@ -1,8 +1,21 @@
 /*
- * $Id: EncryptedFileStoreTest.java,v 1.1 2003/09/19 14:41:54 pelle Exp $
+ * $Id: EncryptedFileStoreTest.java,v 1.2 2003/10/02 23:29:03 pelle Exp $
  * $Log: EncryptedFileStoreTest.java,v $
- * Revision 1.1  2003/09/19 14:41:54  pelle
- * Initial revision
+ * Revision 1.2  2003/10/02 23:29:03  pelle
+ * Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
+ * VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
+ * Cleaned up much of the tests and they all pass now.
+ * The FileStoreTests need to be rethought out, by adding a test key.
+ *
+ * Revision 1.1.1.1  2003/09/19 14:41:54  pelle
+ * First import into the neuclear project. This was originally under the SF neudist
+ * project. This marks a general major refactoring and renaming ahead.
+ *
+ * The new name for this code is NeuClear Identity and has the general package header of
+ * org.neuclear.id
+ * There are other areas within the current code which will be split out into other subprojects later on.
+ * In particularly the signers will be completely seperated out as well as the contract types.
+ *
  *
  * Revision 1.2  2003/02/10 22:30:26  pelle
  * Got rid of even further dependencies. In Particular OSCore
@@ -26,37 +39,17 @@
  */
 package org.neuclear.store;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import java.security.GeneralSecurityException;
 
-public class EncryptedFileStoreTest extends AbstractStoreTest{
+public class EncryptedFileStoreTest extends AbstractStoreTest {
     public EncryptedFileStoreTest(String name) throws GeneralSecurityException {
         super(name);
     }
-   public static void main (String[] args) {
-        try {
-            AbstractStoreTest test=new EncryptedFileStoreTest("Encrypted Test");
-            test.setUp();
-            test.testStore();
-        } catch (Exception e) {
-//            if (e instanceof NeudistException) {
-//                ((NeudistException)e).getParcel().printStackTrace();
-//            } else
-                e.printStackTrace();
 
-        }
-
-//		junit.textui.TestRunner.run (suite());
-	}
     /**
      */
     public Store getStoreInstance() {
-        return new EncryptedFileStore("/home/java/projects/neuclear/build/tests/efs");
+        return new EncryptedFileStore("target/neuclear/tests/efs");
     }
-    public static Test suite() {
-		return new TestSuite(EncryptedFileStoreTest.class);
-	}
 
 }

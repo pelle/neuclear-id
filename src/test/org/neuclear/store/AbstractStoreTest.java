@@ -1,6 +1,12 @@
 /*
-  $Id: AbstractStoreTest.java,v 1.4 2003/09/24 23:56:49 pelle Exp $
+  $Id: AbstractStoreTest.java,v 1.5 2003/10/02 23:29:03 pelle Exp $
   $Log: AbstractStoreTest.java,v $
+  Revision 1.5  2003/10/02 23:29:03  pelle
+  Updated Root Key. This will be the root key for the remainder of the beta period. With version 1.0 I will update it with a new key.
+  VerifyingTest works now and also does a pass for fake ones. Will have to think of better ways of making fake Identities to break it.
+  Cleaned up much of the tests and they all pass now.
+  The FileStoreTests need to be rethought out, by adding a test key.
+
   Revision 1.4  2003/09/24 23:56:49  pelle
   Refactoring nearly done. New model for creating signed objects.
   With view for supporting the xmlpull api shortly for performance reasons.
@@ -99,6 +105,7 @@ package org.neuclear.store;
 
 import junit.framework.TestCase;
 import org.neuclear.id.InvalidIdentityException;
+import org.neuclear.id.builders.IdentityBuilder;
 import org.neudist.utils.NeudistException;
 
 import java.security.GeneralSecurityException;
@@ -113,17 +120,13 @@ import java.security.SecureRandom;
 public abstract class AbstractStoreTest extends TestCase {
     public AbstractStoreTest(String name) throws GeneralSecurityException {
         super(name);
-        setUp();
+        store = getStoreInstance();
+        generateKeys();
     }
 
     /**
      */
     public abstract Store getStoreInstance();
-
-    protected void setUp() throws GeneralSecurityException {
-        store = getStoreInstance();
-        generateKeys();
-    }
 
     protected static synchronized void generateKeys() throws GeneralSecurityException {
         if (kg == null) {
@@ -146,28 +149,30 @@ public abstract class AbstractStoreTest extends TestCase {
 
     public void testStore() throws NeudistException, InvalidIdentityException {
         System.out.println("\nTesting " + this.getClass().getName());
-//                System.out.println("Storing "+rootName);
-//                store.receive(new Identity(rootName,root,root.getPublic()));
-//                System.out.println("Storing "+bobName);
-//                store.receive(new Identity(bobName,root,bob.getPublic()));
-//                System.out.println("Storing "+bobAliceName);
-//                store.receive(new Identity(bobAliceName,bob,alice.getPublic()));
-//                System.out.println("Storing "+eveName);
-//                store.receive(new Identity(eveName,root,eve.getPublic()));
-//                System.out.println("Fetching "+rootName);
-//                SignedNamedObject nobj1=store.fetch(rootName);
-//                assertEquals(NSTools.normalizeNameURI(rootName),nobj1.getName());
-//                System.out.println("Fetching "+bobName);
-//                SignedNamedObject nobj2=store.fetch(bobName);
-//                assertEquals(NSTools.normalizeNameURI(bobName),nobj2.getName());
-//
-//                System.out.println("Fetching "+bobAliceName);
-//                SignedNamedObject nobj3=store.fetch(bobAliceName);
-//                assertEquals(NSTools.normalizeNameURI(bobAliceName),nobj3.getName());
-//
-//                System.out.println("Fetching "+eveName);
-//                SignedNamedObject nobj4=store.fetch(eveName);
-//                assertEquals(NSTools.normalizeNameURI(eveName),nobj4.getName());
+        System.out.println("Storing " + rootName);
+        store.receive(new IdentityBuilder(rootName, root.getPrivate(), root.getPublic()));
+        System.out.println("Storing " + bobName);
+        store.receive(new IdentityBuilder(bobName, root.getPrivate(), bob.getPublic()));
+        System.out.println("Storing " + bobAliceName);
+        store.receive(new IdentityBuilder(bobAliceName, bob.getPrivate(), alice.getPublic()));
+        System.out.println("Storing " + eveName);
+        store.receive(new IdentityBuilder(eveName, root.getPrivate(), eve.getPublic()));
+/* TODO: To complete this part I need to have a parent testkey in a keystore that is signed by root.
+                System.out.println("Fetching "+rootName);
+                SignedNamedObject nobj1=store.fetch(rootName);
+                assertEquals(NSTools.normalizeNameURI(rootName),nobj1.getName());
+                System.out.println("Fetching "+bobName);
+                SignedNamedObject nobj2=store.fetch(bobName);
+                assertEquals(NSTools.normalizeNameURI(bobName),nobj2.getName());
+
+                System.out.println("Fetching "+bobAliceName);
+                SignedNamedObject nobj3=store.fetch(bobAliceName);
+                assertEquals(NSTools.normalizeNameURI(bobAliceName),nobj3.getName());
+
+                System.out.println("Fetching "+eveName);
+                SignedNamedObject nobj4=store.fetch(eveName);
+                assertEquals(NSTools.normalizeNameURI(eveName),nobj4.getName());
+*/
     }
 
 //    KeyPair root;
