@@ -5,6 +5,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.id.builders.Builder;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 /*
@@ -25,8 +26,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequest.java,v 1.10 2003/12/19 18:03:34 pelle Exp $
+$Id: SignatureRequest.java,v 1.11 2004/01/12 22:39:26 pelle Exp $
 $Log: SignatureRequest.java,v $
+Revision 1.11  2004/01/12 22:39:26  pelle
+Completed all the builders and contracts.
+Added a new abstract Value class to contain either an amount or a list of serial numbers.
+Now ready to finish off the AssetControllers.
+
 Revision 1.10  2003/12/19 18:03:34  pelle
 Revamped a lot of exception handling throughout the framework, it has been simplified in most places:
 - For most cases the main exception to worry about now is InvalidNamedObjectException.
@@ -101,7 +107,7 @@ Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to 
  * Time: 12:23:52 PM
  */
 public final class SignatureRequest extends SignedNamedObject {
-    private SignatureRequest(final SignedNamedCore core, final String userid, final NamedObjectBuilder unsigned, final String description)  {
+    private SignatureRequest(final SignedNamedCore core, final String userid, final Builder unsigned, final String description)  {
         super(core);
         this.userid = userid;
         this.unsigned = unsigned;
@@ -134,7 +140,7 @@ public final class SignatureRequest extends SignedNamedObject {
             final Element uelem = ((Element) request.elements().get(0)).createCopy();
             final Document doc = DocumentHelper.createDocument(uelem);
             try {
-                final NamedObjectBuilder unsigned = new NamedObjectBuilder(uelem);
+                final Builder unsigned = new NamedObjectBuilder(uelem);
                 String description = null;
                 final Element descrelem = elem.element(DocumentHelper.createQName("Description", NSTools.NS_NEUID));
                 if (descrelem != null)
@@ -150,7 +156,7 @@ public final class SignatureRequest extends SignedNamedObject {
     }
 
     private final String userid;
-    private final NamedObjectBuilder unsigned;
+    private final Builder unsigned;
     private final String description;
     public final static String SIGREQUEST_TAG = "SignatureRequest";
 

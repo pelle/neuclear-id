@@ -24,8 +24,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestBuilder.java,v 1.7 2003/12/11 23:57:29 pelle Exp $
+$Id: SignatureRequestBuilder.java,v 1.8 2004/01/12 22:39:26 pelle Exp $
 $Log: SignatureRequestBuilder.java,v $
+Revision 1.8  2004/01/12 22:39:26  pelle
+Completed all the builders and contracts.
+Added a new abstract Value class to contain either an amount or a list of serial numbers.
+Now ready to finish off the AssetControllers.
+
 Revision 1.7  2003/12/11 23:57:29  pelle
 Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
 Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -71,7 +76,7 @@ Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to 
  * Time: 12:45:14 PM
  */
 public final class SignatureRequestBuilder extends NamedObjectBuilder {
-    public SignatureRequestBuilder(final String requestor, final String userid, final NamedObjectBuilder unsigned, final String description) throws NeuClearException {
+    public SignatureRequestBuilder(final String requestor, final String userid, final Builder unsigned, final String description) throws NeuClearException {
         super(NSTools.createUniqueTransactionID(requestor, userid), SignatureRequest.SIGREQUEST_TAG);
         final Element unsignedElem = addElement("Unsigned");
         unsignedElem.add(unsigned.getElement());

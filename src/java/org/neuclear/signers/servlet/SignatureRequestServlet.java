@@ -7,8 +7,8 @@ import org.neuclear.commons.crypto.signers.Signer;
 import org.neuclear.commons.crypto.signers.ServletSignerFactory;
 import org.neuclear.id.Identity;
 import org.neuclear.id.resolver.NSResolver;
-import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.id.builders.SignatureRequestBuilder;
+import org.neuclear.id.builders.Builder;
 import org.neuclear.xml.xmlsec.XMLSecTools;
 import org.neuclear.xml.xmlsec.XMLSecurityException;
 import org.neuclear.xml.XMLException;
@@ -41,8 +41,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.3 2003/12/22 22:15:27 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.4 2004/01/12 22:39:26 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.4  2004/01/12 22:39:26  pelle
+Completed all the builders and contracts.
+Added a new abstract Value class to contain either an amount or a list of serial numbers.
+Now ready to finish off the AssetControllers.
+
 Revision 1.3  2003/12/22 22:15:27  pelle
 Last minute cleanups and documentation prior to release 0.8.1
 
@@ -119,7 +124,7 @@ public abstract class SignatureRequestServlet extends HttpServlet {
 
         try {
             final Identity user = getUserNS(request);
-            final NamedObjectBuilder namedreq = createBuilder(request);
+            final Builder namedreq = createBuilder(request);
             final SignatureRequestBuilder sigreq = new SignatureRequestBuilder(serviceid, user.getName(), namedreq, "Login to Site");
             sigreq.sign(serviceid, signer);
             out.write("<form action=\"");
@@ -155,7 +160,7 @@ public abstract class SignatureRequestServlet extends HttpServlet {
         return NSResolver.resolveIdentity(username);
     }
 
-    protected abstract NamedObjectBuilder createBuilder(HttpServletRequest request) throws NeuClearException;
+    protected abstract Builder createBuilder(HttpServletRequest request) throws NeuClearException;
 
     private Signer signer;
     private String serviceid;

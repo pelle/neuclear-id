@@ -5,7 +5,7 @@ import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.signers.JCESigner;
 import org.neuclear.commons.crypto.signers.TestCaseSigner;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
-import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.id.builders.Builder;
 import org.neuclear.xml.XMLException;
 
 import java.io.FileNotFoundException;
@@ -29,8 +29,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignedNamedCoreTest.java,v 1.4 2003/12/11 23:57:30 pelle Exp $
+$Id: SignedNamedCoreTest.java,v 1.5 2004/01/12 22:39:26 pelle Exp $
 $Log: SignedNamedCoreTest.java,v $
+Revision 1.5  2004/01/12 22:39:26  pelle
+Completed all the builders and contracts.
+Added a new abstract Value class to contain either an amount or a list of serial numbers.
+Now ready to finish off the AssetControllers.
+
 Revision 1.4  2003/12/11 23:57:30  pelle
 Trying to test the ReceiverServlet with cactus. Still no luck. Need to return a ElementProxy of some sort.
 Cleaned up some missing fluff in the ElementProxy interface. getTagName(), getQName() and getNameSpace() have been killed.
@@ -71,7 +76,7 @@ public final class SignedNamedCoreTest extends TestCase {
 
     public final void testRead() throws NeuClearException, GeneralSecurityException, XMLException, FileNotFoundException {
         final String name = "neu://bob@test";
-        final NamedObjectBuilder builder = new AuthenticationTicketBuilder(name, "neu://test", "http://slashdot.org");
+        final Builder builder = new AuthenticationTicketBuilder(name, "neu://test", "http://slashdot.org");
         final JCESigner signer = new TestCaseSigner();
         builder.sign(name, signer);
         assertTrue(builder.verifySignature(signer.getPublicKey(name)));

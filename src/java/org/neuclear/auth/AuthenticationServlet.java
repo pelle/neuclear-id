@@ -8,7 +8,7 @@ import org.neuclear.commons.crypto.CryptoTools;
 import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.id.builders.SignatureRequestBuilder;
-import org.neuclear.id.builders.NamedObjectBuilder;
+import org.neuclear.id.builders.Builder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.id.Identity;
 import org.neuclear.id.InvalidNamedObjectException;
@@ -46,8 +46,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServlet.java,v 1.12 2003/12/17 23:53:50 pelle Exp $
+$Id: AuthenticationServlet.java,v 1.13 2004/01/12 22:39:26 pelle Exp $
 $Log: AuthenticationServlet.java,v $
+Revision 1.13  2004/01/12 22:39:26  pelle
+Completed all the builders and contracts.
+Added a new abstract Value class to contain either an amount or a list of serial numbers.
+Now ready to finish off the AssetControllers.
+
 Revision 1.12  2003/12/17 23:53:50  pelle
 Added SignatureRequestServlet which is abstract and can be used for building SignatureRequests for various applications.
 
@@ -116,7 +121,7 @@ Created SignatureRequest and friends to receive unsigned NamedObjectBuilders to 
  */
 public class AuthenticationServlet extends SignatureRequestServlet {
 
-    protected NamedObjectBuilder createBuilder(final HttpServletRequest request) throws NeuClearException {
+    protected Builder createBuilder(final HttpServletRequest request) throws NeuClearException {
         final String userns = request.getParameter("identity");
         request.getSession(true).setAttribute("auth", userns);
         return new AuthenticationTicketBuilder(userns, getServiceid(), request.getRequestURI());
