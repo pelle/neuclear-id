@@ -3,7 +3,7 @@
 
     <name>NeuClear Identity Framework</name>
     <id>neuclear-id</id>
-    <currentVersion>1.0-beta17</currentVersion>
+    <currentVersion>1.0-beta18</currentVersion>
     <inceptionYear>2002</inceptionYear>
     <package>org.neuclear</package>
     <logo>/images/logo.gif</logo>
@@ -79,7 +79,7 @@
         <dependency>
             <id>neuclear-commons</id>
             <name>neuclear-commons</name>
-            <version>1.0-beta10</version>
+            <version>1.0-beta14</version>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>

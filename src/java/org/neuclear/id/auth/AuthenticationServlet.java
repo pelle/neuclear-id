@@ -1,6 +1,7 @@
 package org.neuclear.id.auth;
 
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.servlets.ServletTools;
 import org.neuclear.id.builders.AuthenticationTicketBuilder;
 import org.neuclear.id.builders.Builder;
 import org.neuclear.id.signers.SignatureRequestServlet;
@@ -25,8 +26,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: AuthenticationServlet.java,v 1.5 2004/05/24 18:32:30 pelle Exp $
+$Id: AuthenticationServlet.java,v 1.6 2004/08/18 09:42:31 pelle Exp $
 $Log: AuthenticationServlet.java,v $
+Revision 1.6  2004/08/18 09:42:31  pelle
+Many fixes to the various Signing and SigningRequest Servlets etc.
+
 Revision 1.5  2004/05/24 18:32:30  pelle
 Changed asset id in ledger to be asset.getSignatory().getName().
 Made SigningRequestServlet and SigningServlet a bit clearer.
@@ -119,7 +123,7 @@ public class AuthenticationServlet extends SignatureRequestServlet {
     protected Builder createBuilder(final HttpServletRequest request) throws NeuClearException {
         final String userns = request.getParameter("signer");
         request.getSession(true).setAttribute("auth", userns);
-        return new AuthenticationTicketBuilder(request.getRequestURL().toString());
+        return new AuthenticationTicketBuilder(ServletTools.getAbsoluteURL(request, "/"));
     }
 
     protected String getRequestType() {

@@ -1,6 +1,7 @@
 package org.neuclear.id.signers;
 
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.Utility;
 import org.neuclear.commons.crypto.passphraseagents.UserCancellationException;
 import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.commons.crypto.signers.ServletSignerFactory;
@@ -15,6 +16,7 @@ import org.neuclear.xml.xmlsec.XMLSecurityException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,8 +43,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.11 2004/06/22 14:38:46 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.12 2004/08/18 09:42:31 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.12  2004/08/18 09:42:31  pelle
+Many fixes to the various Signing and SigningRequest Servlets etc.
+
 Revision 1.11  2004/06/22 14:38:46  pelle
 Fixed issues with endpoints in the signing request and signing servlets
 
@@ -146,12 +151,16 @@ public abstract class SignatureRequestServlet extends HttpServlet {
         response.setContentType("text/html");
 
         String siteurl = ServletTools.getAbsoluteURL(request, "/");
-        final String referrer = request.getHeader("Referer");
-        if (referrer != null && referrer.startsWith(siteurl)) {
-            siteurl = referrer;
-        }
+        String siteparam = request.getParameter("endpoint");
+        if (!Utility.isEmpty(siteparam))
+            siteurl = siteparam;
+
+//        final String referrer = request.getHeader("Referer");
+//        if (referrer != null && referrer.startsWith(siteurl)) {
+//            siteurl = referrer;
+//        }
         String signingserver = Identity.DEFAULT_SIGNER;
-/*
+
         String reqSigner = request.getParameter("signer");
         if (!Utility.isEmpty(reqSigner)) {
             signingserver = reqSigner;
@@ -166,13 +175,14 @@ public abstract class SignatureRequestServlet extends HttpServlet {
 
             }
         }
+        if (Utility.isEmpty(signingserver))
+            signingserver = Identity.DEFAULT_SIGNER;
 
         final Cookie usercookie = new Cookie("neuclear.signer", signingserver);
         //usercookie.setSecure(true);
         usercookie.setMaxAge(2592000);
         response.addCookie(usercookie);
 
-*/
         final PrintWriter out = response.getWriter();
         ServletTools.printHeader(out, request, getTitle(), "Transfering to Personal Trader");
 //        out.write("<div id=\"banner\n");
