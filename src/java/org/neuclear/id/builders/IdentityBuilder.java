@@ -1,6 +1,11 @@
 /*
- * $Id: IdentityBuilder.java,v 1.29 2004/05/27 19:51:48 pelle Exp $
+ * $Id: IdentityBuilder.java,v 1.30 2004/05/31 19:11:36 pelle Exp $
  * $Log: IdentityBuilder.java,v $
+ * Revision 1.30  2004/05/31 19:11:36  pelle
+ * Added working PublishAccountScreen
+ * IdentityPanel now include Cut and Paste of URLS's
+ * KeyStorePanel when used from within the PersonalTrader allows copying of entries. The entries are XMLSig KeyInfo objects.
+ *
  * Revision 1.29  2004/05/27 19:51:48  pelle
  * The beginnings of the Create Account Page
  *
@@ -340,6 +345,63 @@ public class IdentityBuilder extends Builder {
         target.addAttribute("rel", type);
         target.addAttribute("href", href);
         return target;
+    }
+
+    public void addBlock(String id, String title, String value) {
+        if (Utility.isEmpty(value))
+            return;
+        Element block = body.addElement("div");
+        block.addElement("h3").setText(title);
+        Element p = block.addElement("p");
+        p.addAttribute("id", id);
+        p.setText(value);
+    }
+
+    public void addImage(String id, String value) {
+        if (Utility.isEmpty(value))
+            return;
+        Element image = body.addElement("img");
+        image.addAttribute("id", id);
+        image.addAttribute("src", value);
+    }
+
+    public void addInfo(String id, String title, String value) {
+        if (Utility.isEmpty(value))
+            return;
+        Element block = body.addElement("p");
+        block.addElement("b").setText(title + ": ");
+        Element p = block.addElement("div");
+        p.addAttribute("id", id);
+        p.setText(value);
+    }
+
+    public void addWebLink(String id, String title, String value) {
+        if (Utility.isEmpty(value))
+            return;
+        Element block = body.addElement("p");
+        block.addElement("b").setText(title + ": ");
+        Element p = block.addElement("a");
+        p.addAttribute("id", id);
+        p.addAttribute("href", value);
+        p.setText(value);
+    }
+
+    public void addAddContactLink() {
+        Element p = body.addElement("a");
+        p.addAttribute("href", "http://localhost:11870/AddContact?" + getOriginal());
+        p.addElement("img").addAttribute("src", "http://pkyp.org/images/contact_new.png");
+        p.addText("Add to contacts in Personal Trader");
+    }
+
+    public void addEmail(String id, String title, String value) {
+        if (Utility.isEmpty(value))
+            return;
+        Element block = body.addElement("p");
+        block.addElement("b").setText(title + ": ");
+        Element p = block.addElement("a");
+        p.addAttribute("id", id);
+        p.addAttribute("href", "mailto:" + value);
+        p.setText(value);
     }
 
     public void setStylesheet(String href) {
