@@ -41,8 +41,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SignatureRequestServlet.java,v 1.5 2004/05/24 18:32:30 pelle Exp $
+$Id: SignatureRequestServlet.java,v 1.6 2004/05/24 19:10:12 pelle Exp $
 $Log: SignatureRequestServlet.java,v $
+Revision 1.6  2004/05/24 19:10:12  pelle
+Fixed Javascript errors on Mozilla and Firefox
+
 Revision 1.5  2004/05/24 18:32:30  pelle
 Changed asset id in ledger to be asset.getSignatory().getName().
 Made SigningRequestServlet and SigningServlet a bit clearer.
@@ -144,11 +147,11 @@ public abstract class SignatureRequestServlet extends HttpServlet {
         out.write("<body>\n");
         out.write("<table border=2><tr><th  colspan=\"4\" style=\"background-color:blue;color:white\">Processing: ");
         out.write(getRequestType());
-        out.write("</th></tr><tr><td id=\"prepare\" width=\"150\">");
+        out.write("</th></tr><tr><td id=\"prepare\" width=\"150\" style=\"background-color:#F0F0FF\">");
         out.write("1. Preparing ");
         out.write(getRequestType());
         out.write("</td>");
-        out.write("<td id=\"send\" width=\"150\">");
+        out.write("<td id=\"sending\" width=\"150\" style=\"background-color:#FFF0F0\">");
         out.write("2. Sending to NeuClear Personal Trader</td>");
         out.write("<td id=\"signing\" width=\"150\">");
         out.write("3. Sign ");
@@ -159,9 +162,6 @@ public abstract class SignatureRequestServlet extends HttpServlet {
         out.write(siteurl);
         out.write("</td>");
         out.write("</tr></table>");
-        out.write("<script language=\"javascript\">\n");
-        out.write("<!--\n   prepare.style.backgroundColor=\"#FFF0F0\";\n-->\n");
-        out.write("</script>\n");
 
         out.flush();
 
@@ -191,8 +191,7 @@ public abstract class SignatureRequestServlet extends HttpServlet {
 //            out.write("<input type=\"submit\">");
             out.write("</form>\n");
             out.write("<script language=\"javascript\">\n");
-            out.write("<!--\n  prepare.style.backgroundColor=\"#F0F0FF\";\n");
-            out.write(" send.style.backgroundColor=\"#FFF0F0\";\n");
+            out.write("<!--\n");
             out.write(" document.forms[0].submit();\n-->\n");
             out.write("</script>\n");
 

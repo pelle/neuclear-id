@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.13 2004/05/24 18:32:30 pelle Exp $
+ * $Id: SigningServlet.java,v 1.14 2004/05/24 19:10:12 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.14  2004/05/24 19:10:12  pelle
+ * Fixed Javascript errors on Mozilla and Firefox
+ *
  * Revision 1.13  2004/05/24 18:32:30  pelle
  * Changed asset id in ledger to be asset.getSignatory().getName().
  * Made SigningRequestServlet and SigningServlet a bit clearer.
@@ -533,8 +536,8 @@ public class SigningServlet extends XMLInputStreamServlet {
         final SignedNamedObject signed = named.convert(signer);
         isSigned = true;
         out.write("<script language=\"javascript\">\n");
-        out.write("<!--\n   signing.style.backgroundColor=\"#F0F0FF\";\n" +
-                "returning.style.backgroundColor=\"#FFF0F0\";-->\n");
+        out.write("<!--\n   if (signing) signing.style.backgroundColor=\"#F0F0FF\";\n" +
+                "if (returning) returning.style.backgroundColor=\"#FFF0F0\";-->\n");
         out.write("</script>\n");
 
         out.println("<li>Signed</li>");
