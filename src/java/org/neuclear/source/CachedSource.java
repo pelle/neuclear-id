@@ -1,7 +1,11 @@
 /*
  *
- * $Id: CachedSource.java,v 1.6 2003/11/05 18:50:34 pelle Exp $
+ * $Id: CachedSource.java,v 1.7 2003/11/05 23:40:21 pelle Exp $
  * $Log: CachedSource.java,v $
+ * Revision 1.7  2003/11/05 23:40:21  pelle
+ * A few minor fixes to make all the unit tests work
+ * Also the start of getting SigningServlet and friends back working.
+ *
  * Revision 1.6  2003/11/05 18:50:34  pelle
  * Refactored org.neuclear.signers.source.Source and implementing classes to provide support for a local filesystem cache.
  * Also added Unit tests to make sure it actually works and modified IdentityCreator to write directly to the cache if no output filename is given.
@@ -77,7 +81,7 @@ public final class CachedSource extends Source {
     protected InputStream getStream(String endpoint, String name) throws NeuClearException {
         File object = new File(cachedirpath + NSTools.url2path(name) + "/root.id");
         try {
-            if (!object.exists()) {
+            if (!object.exists()) {   //TODO check for freshness
                 object.getParentFile().mkdirs();
                 InputStream in = src.getStream(endpoint, name);
                 OutputStream out = new FileOutputStream(object);

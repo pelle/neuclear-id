@@ -1,6 +1,10 @@
 /*
-  $Id: NSToolsTest.java,v 1.8 2003/10/23 22:02:36 pelle Exp $
+  $Id: NSToolsTest.java,v 1.9 2003/11/05 23:40:22 pelle Exp $
   $Log: NSToolsTest.java,v $
+  Revision 1.9  2003/11/05 23:40:22  pelle
+  A few minor fixes to make all the unit tests work
+  Also the start of getting SigningServlet and friends back working.
+
   Revision 1.8  2003/10/23 22:02:36  pelle
   Moved some certificates to live status at http://repository.neuclear.org
   Updated NSTools.url2path to support neuids with @ signs.
@@ -122,6 +126,7 @@ public class NSToolsTest extends TestCase {
 
         assertValidName("neu://pelle@neuclear.org");
         assertValidName("neu://pelle@neuclear.org/abcdefg232Avc");
+        assertValidName("/help/abcd_efg.-232Avc/");
 
         assertInvalidName("neu:/");
         assertInvalidName("neu://pelle@");
@@ -131,7 +136,7 @@ public class NSToolsTest extends TestCase {
         assertInvalidName("neu");
         assertInvalidName("");
         assertInvalidName("neu://abcde%01&^");
-        assertInvalidName("/help/abcd_efg.-232Avc/");
+        assertInvalidName("/help/test@test/");
     }
 
     public static void testNormalize() throws NeuClearException {

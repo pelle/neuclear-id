@@ -1,6 +1,10 @@
 /*
- * $Id: SigningServlet.java,v 1.7 2003/10/29 21:16:27 pelle Exp $
+ * $Id: SigningServlet.java,v 1.8 2003/11/05 23:40:21 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.8  2003/11/05 23:40:21  pelle
+ * A few minor fixes to make all the unit tests work
+ * Also the start of getting SigningServlet and friends back working.
+ *
  * Revision 1.7  2003/10/29 21:16:27  pelle
  * Refactored the whole signing process. Now we have an interface called Signer which is the old SignerStore.
  * To use it you pass a byte array and an alias. The sign method then returns the signature.
@@ -142,13 +146,25 @@
  */
 package org.neuclear.signers.servlet;
 
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
+import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.configuration.Configuration;
 import org.neuclear.commons.configuration.ConfigurationException;
-import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.InvalidIdentityException;
+import org.neuclear.id.NSTools;
+import org.neuclear.id.builders.NamedObjectBuilder;
 import org.neuclear.receiver.ReceiverServlet;
+import org.neuclear.signers.InvalidPassphraseException;
+import org.neuclear.signers.NonExistingSignerException;
 import org.neudist.crypto.Signer;
 import org.neudist.utils.ServletTools;
 import org.neudist.utils.Utility;
+import org.neudist.xml.xmlsec.XMLSecTools;
+import org.neudist.xml.xmlsec.XMLSecurityException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -156,6 +172,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class SigningServlet extends ReceiverServlet {
     public void init(ServletConfig config) throws ServletException {
@@ -166,7 +183,7 @@ public class SigningServlet extends ReceiverServlet {
             System.out.println("NEUDIST: Initialising SigningServlet");
             title = Utility.denullString(config.getInitParameter("title").toString(), "NeuDist Signing Service");
             if (signer == null) {
-                signer = (Signer) Configuration.getComponent(Signer.class, "neuclear-id");
+                signer = (Signer) Configuration.getComponent(Signer.class, "neuclear-signing-servlet");
             }
             System.out.println("NEUDIST: Finished SigningServlet Init ");
 
@@ -197,68 +214,67 @@ public class SigningServlet extends ReceiverServlet {
         String b64xml = request.getParameter("base64xml");
         String xml = request.getParameter("xml");
         String endpoint = request.getParameter("endpoint");
-        String passphrase = request.getParameter("passphrase");
-        SignedNamedObject named;
-/*
-        boolean isSigned = false;
+        NamedObjectBuilder named;
         Element elem = null;
+        boolean isSigned = false;
         try {
             if (!Utility.isEmpty(xml)) {
                 elem = DocumentHelper.parseText(xml).getRootElement();
             } else if (!Utility.isEmpty(b64xml)) {
                 elem = XMLSecTools.decodeElementBase64(b64xml);
             }
-            sigreq = new SignatureRequest(elem);
-            named = sigreq.getPayload();
-            if (!Utility.isEmpty(passphrase) && !Utility.isEmpty(request.getParameter("sign"))) {
-                out.println("Signing ...");
-                out.flush();
-                try {
-                    signObject(named, passphrase.toCharArray());
-                    isSigned = true;
-                    out.println("<br>Done<br>");
-                } catch (InvalidIdentityException e) {
-                    out.println("<br><font color=\"red\"><b>ERROR: Invalid Identity</b></font><br>");
-                    isSigned = false;
-                } catch (InvalidPassphraseException e) {
-                    out.println("<br><font color=\"red\"><b>ERROR: Wrong Passphrase</b></font><br>");
-                    isSigned = false;
-                } catch (NonExistingSignerException e) {
-                    out.println("<br><font color=\"red\"><b>ERROR: We Aren't Able to Sign for that Identity</b></font><br>");
-                    isSigned = false;
+
+            if (elem != null) {
+
+                named = new NamedObjectBuilder(elem);
+                if (!Utility.isEmpty(request.getParameter("sign"))) {
+                    out.println("Signing ...");
+                    out.flush();
+                    try {
+                        named.sign(NSTools.getParentNSURI(named.getName()), signer);
+                        isSigned = true;
+                        out.println("<br>Done<br>");
+                    } catch (InvalidIdentityException e) {
+                        out.println("<br><font color=\"red\"><b>ERROR: Invalid Identity</b></font><br>");
+                        isSigned = false;
+                    } catch (InvalidPassphraseException e) {
+                        out.println("<br><font color=\"red\"><b>ERROR: Wrong Passphrase</b></font><br>");
+                        isSigned = false;
+                    } catch (NonExistingSignerException e) {
+                        out.println("<br><font color=\"red\"><b>ERROR: We Aren't Able to Sign for that Identity</b></font><br>");
+                        isSigned = false;
+                    }
+
                 }
+                out.println("<table bgcolor=\"#708070\"><tr><td><h4 style=\"color: white\">");
+                if (isSigned)
+                    out.println("Signed Item");
+                else
+                    out.println("Item to Sign:");
+                out.println("</h4>");
+                out.print("<pre>");
+                StringWriter sw = new StringWriter();
+                OutputFormat format = OutputFormat.createPrettyPrint();
+                XMLWriter writer = new XMLWriter(sw, format);
+                writer.write(elem);
+                out.write(sw.toString());
+                out.println("</pre></td></tr></table>");
+                if (!isSigned) {
+                    out.println("<table bgcolor=\"#D0FFD0\"><tr><td bgcolor=\"#026A32\"><h4 style=\"color: white\">Do you wish to sign this?</h4></td></tr>");
+                    out.println("<tr><td><form action=\"Signer\" method=\"POST\"><input name=\"base64xml\" value=\"");
+                    out.println(XMLSecTools.encodeElementBase64(elem));
+                    out.println("\" type=\"hidden\">\n <input name=\"endpoint\" value=\"");
+                    out.println(endpoint);
+                    out.println("\" type=\"hidden\"/>\nPassphrase: <input name=\"passphrase\" type=\"password\" size=\"40\">");
+                    out.println(" <input type=\"submit\" name=\"sign\" value=\"Sign\"></form></td></tr></table>");
+                } else if (!Utility.isEmpty(endpoint)) {
+                    out.println("<h3><a href=\"");
+                    out.println(endpoint);
+                    out.println("\">Click here to return to ");
+                    out.println(endpoint);
+                    out.println("</a></h4>");
 
-            }
-            out.println("<table bgcolor=\"#708070\"><tr><td><h4 style=\"color: white\">");
-            if (isSigned)
-                out.println("Signed Item");
-            else
-                out.println("Item to Sign:");
-            out.println("</h4>");
-//            ExplanationWriter explwriter=new ExplanationWriter(out);
-//            explwriter.write(((Explainable)named).explain());
-            out.print("<pre>");
-            StringWriter sw = new StringWriter();
-            OutputFormat format = OutputFormat.createPrettyPrint();
-            XMLWriter writer = new XMLWriter(sw, format);
-            writer.write(elem);
-            out.write(sw.toString());
-            out.println("</pre></td></tr></table>");
-            if (!isSigned) {
-                out.println("<table bgcolor=\"#D0FFD0\"><tr><td bgcolor=\"#026A32\"><h4 style=\"color: white\">Do you wish to sign this?</h4></td></tr>");
-                out.println("<tr><td><form action=\"Signer\" method=\"POST\"><input name=\"base64xml\" value=\"");
-                out.println(XMLSecTools.encodeElementBase64(elem));
-                out.println("\" type=\"hidden\">\n <input name=\"endpoint\" value=\"");
-                out.println(endpoint);
-                out.println("\" type=\"hidden\"/>\nPassphrase: <input name=\"passphrase\" type=\"password\" size=\"40\">");
-                out.println(" <input type=\"submit\" name=\"sign\" value=\"Sign\"></form></td></tr></table>");
-            } else if (!Utility.isEmpty(endpoint)) {
-                out.println("<h3><a href=\"");
-                out.println(endpoint);
-                out.println("\">Click here to return to ");
-                out.println(endpoint);
-                out.println("</a></h4>");
-
+                }
             }
         } catch (DocumentException e) {
             out.println("<br><font color=\"red\"><pre>");
@@ -268,9 +284,12 @@ public class SigningServlet extends ReceiverServlet {
             out.println("<br><font color=\"red\"><pre>");
             e.printStackTrace(out);
             out.println("</pre></font>");
+        } catch (XMLSecurityException e) {
+            out.println("<br><font color=\"red\"><pre>");
+            e.printStackTrace(out);
+            out.println("</pre></font>");
         }
         out.println("<p align\"left\"><img src=\"images/neubia40x40.png\"><br><a href=\"http://www.neubia.com\"><i>&copy; 2002 Antilles Software Ventures SA</i></a></body></html>");
-*/
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

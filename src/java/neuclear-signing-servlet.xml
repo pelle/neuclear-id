@@ -1,0 +1,7 @@
+<components>
+    <component type="org.neudist.crypto.Signer"
+        class="org.neuclear.signers.DefaultSigner"/>
+    <component type="org.neuclear.passphraseagents.PassPhraseAgent"
+        class="org.neuclear.passphraseagents.GuiDialogAgent"/>
+
+</components>

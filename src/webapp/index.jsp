@@ -5,57 +5,33 @@
                  org.neuclear.contracts.nsauth.AuthenticationTicket,
                  org.neuclear.id.NSTools,
                  org.neudist.utils.ServletTools
-                "%>
+                 ,
+                 org.neuclear.id.Identity,
+                 org.neuclear.id.resolver.NSResolver"%>
  <%
     response.setHeader("Pragma","no-cache");
     response.setDateHeader("Expires",0);
     Cookie cookies[]=request.getCookies();
-    String userns=null;
+    Identity userns=null;
     boolean loggedin=false;
     HttpSession sess=request.getSession(true);
     if (!Utility.isEmpty(request.getParameter("logout"))) {
-        sess.removeAttribute("NSAuthTicket");
-        sess.removeAttribute("nsauth");
+        sess.removeAttribute("NeuClearAuthTicket");
 
     }
-    AuthenticationTicket ticket=(AuthenticationTicket)sess.getAttribute("NSAuthTicket");
-    String ticketname=(String)sess.getAttribute("nsauth");
-        if (ticket==null&&!Utility.isEmpty(ticketname)) {
-            SignedNamedObject named=null;//=NamedObjectFactory.fetchNamedObject(ticketname);
-            if (named!=null){
-                if (named instanceof AuthenticationTicket) {
-                    ticket=(AuthenticationTicket)named;
-                    sess.setAttribute("NSAuthTicket",named);
-                } else {
-                    out.println("Found ticket but it isn't an AuthenticationTicket it is a: "+named.getClass().toString());
-                }
-            }
-        }
-
-//        if (ticket!=null) {
-//            out.println("found ticket: ");
-//            out.println(ticket.getName());
-//        }
+    AuthenticationTicket ticket=(AuthenticationTicket)sess.getAttribute("NeuClearAuthTicket");
 
         if (ticket!=null){
-            if (true /*ticket. isNameValid()*/) {//TODO Que pasa aca?
-                loggedin=true;
-                userns=NSTools.getParentNSURI(ticket.getName());
-            }  else {
-                out.println("Ticket ");
-                out.println(ticket.getName());
-                out.println(" is invalid");
-                sess.removeAttribute("NSAuthTicket");
-                sess.removeAttribute("nsauth");
-            }
-
-        }
-
-        if (cookies!=null){
-            for (int i=0;i<cookies.length;i++) {
-                if(cookies[i].getName().equals("namespace")) {
-                    userns=cookies[i].getValue();
-                    i=cookies.length;
+            loggedin=true;
+            userns=ticket.getSignatory();
+        } else {
+            loggedin=false;
+            if (cookies!=null){
+                for (int i=0;i<cookies.length;i++) {
+                    if(cookies[i].getName().equals("identity")) {
+                        userns=NSResolver.resolveIdentity(cookies[i].getValue());
+                        i=cookies.length;
+                    }
                 }
             }
         }
@@ -71,7 +47,7 @@ NeuDist Sample Web App
 %>
 <form action="login.jsp" method="POST">
 <table bgcolor="#FFFFE0"><tr><td valign="top">
-    <input name="namespace" value="<%=Utility.denullString(userns)%>" type="text" size="30">
+    <input name="identity" value="<%=(userns!=null)?userns.getName():""%>" type="text" size="30">
     </td><td valign="top">
     <input type="submit" name="submit" value="Login">
     </td>

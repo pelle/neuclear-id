@@ -22,8 +22,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: GuiDialogAgent.java,v 1.2 2003/10/31 23:58:53 pelle Exp $
+$Id: GuiDialogAgent.java,v 1.3 2003/11/05 23:40:21 pelle Exp $
 $Log: GuiDialogAgent.java,v $
+Revision 1.3  2003/11/05 23:40:21  pelle
+A few minor fixes to make all the unit tests work
+Also the start of getting SigningServlet and friends back working.
+
 Revision 1.2  2003/10/31 23:58:53  pelle
 The IdentityCreator now fully works with the new Signer architecture.
 
@@ -57,12 +61,9 @@ public final class GuiDialogAgent implements InteractiveAgent {
         Panel text = new Panel(new FlowLayout());
         panel.add(text, BorderLayout.NORTH);
 
-        java.awt.MediaTracker tracker = new java.awt.MediaTracker(text);
-        img = Toolkit.getDefaultToolkit().getImage(this.getClass().getClassLoader().getResource("org/neuclear/passphraseagents/neuclear.png"));
-        tracker.addImage(img, 0);
 
         try {
-            tracker.waitForID(0);
+            img = Toolkit.getDefaultToolkit().getImage(this.getClass().getClassLoader().getResource("org/neuclear/passphraseagents/neuclear.png"));
             Canvas canvas = new Canvas() {
                 public void paint(Graphics g) {
                     setSize(50, 50);
@@ -72,7 +73,9 @@ public final class GuiDialogAgent implements InteractiveAgent {
             };
             canvas.setSize(50, 50);
             text.add(canvas);
-        } catch (InterruptedException ex) {
+        } catch (Throwable e) {
+            ;
+//        } catch (InterruptedException e) {
             ;//System.out.println("Couldn't load Image");
         }
 

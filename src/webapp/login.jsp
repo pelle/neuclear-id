@@ -12,13 +12,13 @@
     response.setHeader("Pragma","no-cache");
     response.setDateHeader("Expires",0);
     String siteurl=ServletTools.getAbsoluteURL(request,"/");
-    String userns=request.getParameter("namespace");
+    String userns=request.getParameter("identity");
     if (Utility.isEmpty(userns)) {
         response.sendError(500,"No Identity");
         response.flushBuffer();
         return;
     }
-    Cookie usercookie=new Cookie("namespace",userns);
+    Cookie usercookie=new Cookie("identity",userns);
     //usercookie.setSecure(true);
     usercookie.setMaxAge(2592000);
     response.addCookie(usercookie);
