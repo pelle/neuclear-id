@@ -1,6 +1,9 @@
 /*
- * $Id: ReceiverServlet.java,v 1.1 2004/03/03 23:26:43 pelle Exp $
+ * $Id: ReceiverServlet.java,v 1.2 2004/04/20 23:33:08 pelle Exp $
  * $Log: ReceiverServlet.java,v $
+ * Revision 1.2  2004/04/20 23:33:08  pelle
+ * All unit tests (junit and cactus) work. The AssetControllerServlet is operational.
+ *
  * Revision 1.1  2004/03/03 23:26:43  pelle
  * Updated various tests to use the AbstractObjectCreationTest
  *
@@ -148,7 +151,7 @@ public class ReceiverServlet extends XMLInputStreamServlet {
     public void init(final ServletConfig config) throws ServletException {
         super.init(config);
         try {
-            serviceid = ServletTools.getInitParam("serviceid", config);
+            alias = ServletTools.getInitParam("serviceid", config);
             title = ServletTools.getInitParam("title", config);
             signer = createSigner(config);
         } catch (Exception e) {
@@ -177,9 +180,14 @@ public class ReceiverServlet extends XMLInputStreamServlet {
         if (isXML)
             writer.print(receipt.getEncoded());
         else {
-            writer.print("<h1>");
+            writer.print("<h1>Successful</h1><div style=\"font-size:small\">Receipt:</br>");
             writer.print(receipt.getName());
-            writer.print("</h1>");
+            writer.print("</div>");
+            writer.println("<form><textarea rows=\"30\" cols=\"80\">");
+            writer.println(receipt.getEncoded());
+            writer.println("</textarea></form><hr><a href=\"");
+            writer.println(ServletTools.getAbsoluteURL(request, "/SECURE/"));
+            writer.println("\">Go to Menu</a>");
         }
 
         writer.close();
@@ -205,14 +213,14 @@ public class ReceiverServlet extends XMLInputStreamServlet {
         return title;
     }
 
-    public final String getServiceid() {
-        return serviceid;
+    public final String getAlias() {
+        return alias;
     }
 
     private Receiver receiver;
     private Signer signer;
     private static final Element OK = DocumentHelper.createElement("Status");
-    private String serviceid;
+    private String alias;
     private String title;
 
     {

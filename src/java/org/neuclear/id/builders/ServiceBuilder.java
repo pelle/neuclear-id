@@ -10,8 +10,11 @@ import org.neuclear.xml.xmlsec.KeyInfo;
 import java.security.PublicKey;
 
 /*
-$Id: ServiceBuilder.java,v 1.2 2004/04/17 19:28:21 pelle Exp $
+$Id: ServiceBuilder.java,v 1.3 2004/04/20 23:33:07 pelle Exp $
 $Log: ServiceBuilder.java,v $
+Revision 1.3  2004/04/20 23:33:07  pelle
+All unit tests (junit and cactus) work. The AssetControllerServlet is operational.
+
 Revision 1.2  2004/04/17 19:28:21  pelle
 Identity is now fully html based as is the ServiceBuilder.
 VerifyingReader correctly identifies html files and parses them as such.
@@ -34,6 +37,11 @@ public class ServiceBuilder extends IdentityBuilder {
         super(type);
         addTarget(serviceUrl, "controller");
 
+        Element style = head.addElement("style");
+        style.setText("th { background:#EEF;}\n" +
+                "table {background:#CCC;font-size:small;border:1px;}\n" +
+                "pre {font-size:xx-small}\n" +
+                "td {vertical-align:top;border:thin;background:#eee}\n");
         body.addElement("h1").setText(title);
         description = body.addElement("div");
         description.addAttribute("id", "rules");
