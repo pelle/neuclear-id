@@ -1,6 +1,9 @@
 /*
- * $Id: SignedNamedCore.java,v 1.20 2004/03/02 18:59:11 pelle Exp $
+ * $Id: SignedNamedCore.java,v 1.21 2004/03/03 23:26:42 pelle Exp $
  * $Log: SignedNamedCore.java,v $
+ * Revision 1.21  2004/03/03 23:26:42  pelle
+ * Updated various tests to use the AbstractObjectCreationTest
+ *
  * Revision 1.20  2004/03/02 18:59:11  pelle
  * Further cleanups in neuclear-id. Moved everything under id.
  *
@@ -361,7 +364,7 @@ public final class SignedNamedCore {
      * @return 
      * @throws InvalidNamedObjectException
      */
-    public final static SignedNamedCore read(final Element elem) throws InvalidNamedObjectException, NameResolutionException {
+    public final static SignedNamedCore read(final Element elem) throws InvalidNamedObjectException {
         try {
             return readUnnamed(elem);
         } catch (XMLSecurityException e) {

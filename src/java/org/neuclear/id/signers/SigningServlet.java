@@ -1,6 +1,9 @@
 /*
- * $Id: SigningServlet.java,v 1.1 2004/03/02 18:59:10 pelle Exp $
+ * $Id: SigningServlet.java,v 1.2 2004/03/03 23:26:43 pelle Exp $
  * $Log: SigningServlet.java,v $
+ * Revision 1.2  2004/03/03 23:26:43  pelle
+ * Updated various tests to use the AbstractObjectCreationTest
+ *
  * Revision 1.1  2004/03/02 18:59:10  pelle
  * Further cleanups in neuclear-id. Moved everything under id.
  *
@@ -201,7 +204,7 @@
  * part of the framework.
  *
  * Revision 1.10  2002/10/10 21:29:31  pelle
- * Oops. XML-Signature's SignedInfo element I had coded as SignatureInfo
+ * Oops. XML-Signature's SignedInfo element I had coded as SignedInfo
  * As I thought Canonicalisation doesnt seem to be standard.
  * Updated the SignedServlet to default to using ~/.neuclear/signers.ks
  *
@@ -295,7 +298,7 @@ public class SigningServlet extends XMLInputStreamServlet {
         context = config.getServletContext();
         context.log("NEUCLEAR: Initialising SigningServlet");
         try {
-            title = ServletTools.getInitParam("title",config);
+            title = ServletTools.getInitParam("title", config);
             signer = createSigner(config);
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
@@ -335,7 +338,7 @@ public class SigningServlet extends XMLInputStreamServlet {
         final String username = sigreq.getUserid();
         boolean isSigned = false;
         if (!signer.canSignFor(username)) {
-             out.println("<h3>Can not Sign for:");
+            out.println("<h3>Can not Sign for:");
             out.println(username);
             out.println("</h3>");
         }
@@ -354,7 +357,7 @@ public class SigningServlet extends XMLInputStreamServlet {
             out.println(sigreq.getDescription());
         }
         out.println("</td></tr><tr><td style=\"background:lightgrey;color:black\"><tt>");
-        Matcher matcher=xmlescape.matcher(named.asXML());
+        Matcher matcher = xmlescape.matcher(named.asXML());
         out.println(matcher.replaceAll("&lt;"));
 
         out.println("</td></tr></table>");
@@ -363,7 +366,7 @@ public class SigningServlet extends XMLInputStreamServlet {
             out.println("<div id=\"log\" style=\"background:#003;color:#EEE\"><tt><ul><li>Signing with " + username + "...</li>");
             out.flush();
             try {
-                isSigned = sign(named,username, out);
+                isSigned = sign(named, username, out);
 
             } catch (InvalidNamedObjectException e) {
 //                System.out.println("<br><font color=\"red\"><b>ERROR: Invalid Identity</b></font><br>");
@@ -405,10 +408,10 @@ public class SigningServlet extends XMLInputStreamServlet {
 
     }
 
-    private boolean sign(final Builder named, String username,final PrintWriter out) throws NeuClearException, XMLException {
+    private boolean sign(final Builder named, String username, final PrintWriter out) throws NeuClearException, XMLException {
         boolean isSigned;
         context.log("SIGN: Signing with " + username);
-        final SignedNamedObject signed = named.convert(username,signer);
+        final SignedNamedObject signed = named.convert(username, signer);
         isSigned = true;
         out.println("<li>Signed</li>");
         out.println("<li>" + signed.getName() + " Verified</li>");
@@ -428,6 +431,7 @@ public class SigningServlet extends XMLInputStreamServlet {
     /**
      * Return True when ready to sign.
      * Multirequest signers, need to verify that the correct request parameters are available.
+     *
      * @param request
      * @return
      */
@@ -440,9 +444,8 @@ public class SigningServlet extends XMLInputStreamServlet {
     }
 
 
-
     protected javax.servlet.ServletContext context;
     private Signer signer;
     private String title;
-    static private Pattern xmlescape=Pattern.compile("(\\<)");
+    static private Pattern xmlescape = Pattern.compile("(\\<)");
 }

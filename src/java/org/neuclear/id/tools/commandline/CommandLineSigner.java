@@ -1,5 +1,8 @@
-/* $Id: CommandLineSigner.java,v 1.11 2004/02/19 19:38:13 pelle Exp $
+/* $Id: CommandLineSigner.java,v 1.12 2004/03/03 23:26:43 pelle Exp $
  * $Log: CommandLineSigner.java,v $
+ * Revision 1.12  2004/03/03 23:26:43  pelle
+ * Updated various tests to use the AbstractObjectCreationTest
+ *
  * Revision 1.11  2004/02/19 19:38:13  pelle
  * At times IntelliJ IDEA can cause some real hassle. On my last checkin it optimized away all of the dom4j and command line imports.
  * We'll now, Ive added them all back.
@@ -181,7 +184,7 @@
  * part of the framework.
  *
  * Revision 1.4  2002/10/10 21:29:25  pelle
- * Oops. XML-Signature's SignedInfo element I had coded as SignatureInfo
+ * Oops. XML-Signature's SignedInfo element I had coded as SignedInfo
  * As I thought Canonicalisation doesnt seem to be standard.
  * Updated the SignedServlet to default to using ~/.neuclear/signers.ks
  *
@@ -221,6 +224,7 @@
  */
 package org.neuclear.id.tools.commandline;
 
+import org.apache.commons.cli.*;
 import org.dom4j.Document;
 import org.neuclear.commons.LowLevelException;
 import org.neuclear.commons.NeuClearException;
@@ -240,13 +244,12 @@ import org.neuclear.id.builders.Builder;
 import org.neuclear.id.resolver.NSResolver;
 import org.neuclear.xml.XMLException;
 import org.neuclear.xml.XMLTools;
-import org.apache.commons.cli.*;
 
 import java.io.*;
 
 /**
  * @author pelleb
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class CommandLineSigner {
     private final String executable;
@@ -362,8 +365,8 @@ public class CommandLineSigner {
                     outFile.getParentFile().mkdirs();
                 dest = new FileOutputStream(of);
                 System.out.println("Outputting to: " + of);
+                XMLTools.writeFile(outFile, subject.getElement().getDocument());
             }
-            XMLTools.writeFile(dest, subject.getElement());
             System.out.println();
             System.out.println("You now need to copy the file: " + of + " to your webserver so it is visible at a given location");
 

@@ -27,6 +27,10 @@ public class SignedMessageTest extends AbstractObjectCreationTest {
         assertNotNull(msg.getMessage());
     }
 
+    protected Class getRequiredClass() {
+        return SignedMessage.class;
+    }
+
     protected Builder createBuilder() throws NeuClearException {
         return new SignedMessageBuilder("neu://alice@test","Test","Hello there");
     }

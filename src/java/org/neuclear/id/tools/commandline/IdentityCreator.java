@@ -1,5 +1,8 @@
-/* $Id: IdentityCreator.java,v 1.9 2004/03/02 18:59:11 pelle Exp $
+/* $Id: IdentityCreator.java,v 1.10 2004/03/03 23:26:43 pelle Exp $
  * $Log: IdentityCreator.java,v $
+ * Revision 1.10  2004/03/03 23:26:43  pelle
+ * Updated various tests to use the AbstractObjectCreationTest
+ *
  * Revision 1.9  2004/03/02 18:59:11  pelle
  * Further cleanups in neuclear-id. Moved everything under id.
  *
@@ -177,7 +180,7 @@
  * part of the framework.
  *
  * Revision 1.4  2002/10/10 21:29:25  pelle
- * Oops. XML-Signature's SignedInfo element I had coded as SignatureInfo
+ * Oops. XML-Signature's SignedInfo element I had coded as SignedInfo
  * As I thought Canonicalisation doesnt seem to be standard.
  * Updated the SignedServlet to default to using ~/.neuclear/signers.ks
  *
@@ -233,7 +236,7 @@ import java.security.PublicKey;
 
 /**
  * @author pelleb
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public final class IdentityCreator extends CommandLineSigner {
     public IdentityCreator(final String[] args) throws UserCancellationException, ParseException, InvalidNamedObjectException {
@@ -260,14 +263,14 @@ public final class IdentityCreator extends CommandLineSigner {
             final String defaultsigner = Utility.denullString(cmd.getOptionValue("s"), "http://localhost:11870/Signer");
             final String defaultlogger = Utility.denullString(cmd.getOptionValue("l"), LogSender.LOGGER);
             final String defaultreceiver = cmd.getOptionValue("b");
-            if (!sig.canSignFor(alias)){
+            if (!sig.canSignFor(alias)) {
                 System.out.println("You do not currently have a key matching this name. Do you with to create one?");
                 if (!Utility.getAffirmative(true)) {
                     System.out.println("OK, Bye");
                     System.exit(0);
                 }
-                System.out.println("Generating Keys for "+alias+"... ");
-                PublicKey pub=sig.generateKey(alias);
+                System.out.println("Generating Keys for " + alias + "... ");
+                PublicKey pub = sig.generateKey(alias);
                 System.out.println("DONE");
                 System.out.println("STORING Keys");
                 sig.save();
@@ -275,9 +278,9 @@ public final class IdentityCreator extends CommandLineSigner {
             }
             final PublicKey newkid = pksource.getPublicKey(alias);
 
-            return new IdentityBuilder(newkid,  defaultsigner, defaultlogger, defaultreceiver);
+            return new IdentityBuilder(newkid, defaultsigner, defaultlogger, defaultreceiver);
         } catch (InvalidNamedObjectException e) {
-            System.err.println("The name: "+e.getName()+" is not valid. ");
+            System.err.println("The name: " + e.getName() + " is not valid. ");
             System.exit(1);
         } catch (NonExistingSignerException e) {
             e.printStackTrace();
@@ -289,7 +292,7 @@ public final class IdentityCreator extends CommandLineSigner {
         try {
             final IdentityCreator signer = new IdentityCreator(args);
             signer.execute();
-        } catch (UserCancellationException e){
+        } catch (UserCancellationException e) {
             System.out.println("Bye");
         } catch (Exception e) {
             e.printStackTrace();

@@ -28,8 +28,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: VerifyingReader.java,v 1.20 2004/03/02 18:59:11 pelle Exp $
+$Id: VerifyingReader.java,v 1.21 2004/03/03 23:26:43 pelle Exp $
 $Log: VerifyingReader.java,v $
+Revision 1.21  2004/03/03 23:26:43  pelle
+Updated various tests to use the AbstractObjectCreationTest
+
 Revision 1.20  2004/03/02 18:59:11  pelle
 Further cleanups in neuclear-id. Moved everything under id.
 
@@ -187,7 +190,7 @@ public final class VerifyingReader {
         }
     }
 
-    public final SignedNamedObject read(final Element elem) throws InvalidNamedObjectException, NameResolutionException {
+    public final SignedNamedObject read(final Element elem) throws InvalidNamedObjectException {
         return resolveReader(elem).read(SignedNamedCore.read(elem), elem);
     }
 

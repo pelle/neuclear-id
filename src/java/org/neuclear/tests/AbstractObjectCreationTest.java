@@ -24,12 +24,15 @@ public abstract class AbstractObjectCreationTest extends AbstractSigningTest {
         Builder builder=createBuilder();
         assertNotNull(builder);
 //        assertTrue(NSTools.isNamedObject(builder.getElement()));
-        SignedNamedObject obj=builder.convert("neu://test",getSigner());
+        SignedNamedObject obj=builder.convert(NAME,getSigner());
         assertNotNull(obj);
+        assertEquals(getRequiredClass(),obj.getClass());
         verifyObject(obj);
     }
 
-    protected abstract void verifyObject(SignedNamedObject obj) throws NonExistingSignerException;
-
+    protected abstract void verifyObject(SignedNamedObject obj) throws Exception;
+    protected abstract Class getRequiredClass();
     protected abstract Builder createBuilder() throws Exception;
+
+    public static final String NAME="test";
 }

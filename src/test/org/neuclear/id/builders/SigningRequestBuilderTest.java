@@ -2,9 +2,13 @@ package org.neuclear.id.builders;
 
 import org.neuclear.id.auth.AuthenticationTicket;
 import org.neuclear.commons.NeuClearException;
+import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.id.InvalidNamedObjectException;
 import org.neuclear.id.SignatureRequest;
+import org.neuclear.id.SignedNamedObject;
+import org.neuclear.id.NameResolutionException;
 import org.neuclear.tests.AbstractSigningTest;
+import org.neuclear.tests.AbstractObjectCreationTest;
 import org.neuclear.xml.XMLException;
 
 import java.security.GeneralSecurityException;
@@ -27,8 +31,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningRequestBuilderTest.java,v 1.11 2004/03/02 18:59:12 pelle Exp $
+$Id: SigningRequestBuilderTest.java,v 1.12 2004/03/03 23:26:45 pelle Exp $
 $Log: SigningRequestBuilderTest.java,v $
+Revision 1.12  2004/03/03 23:26:45  pelle
+Updated various tests to use the AbstractObjectCreationTest
+
 Revision 1.11  2004/03/02 18:59:12  pelle
 Further cleanups in neuclear-id. Moved everything under id.
 
@@ -87,31 +94,32 @@ There had been an issue in the canonicalizer when dealing with the embedded obje
  * Date: Nov 17, 2003
  * Time: 3:28:05 PM
  */
-public final class SigningRequestBuilderTest extends AbstractSigningTest {
+public final class SigningRequestBuilderTest extends AbstractObjectCreationTest {
     public SigningRequestBuilderTest(final String string) throws NeuClearException, GeneralSecurityException {
         super(string);
     }
 
-    public final void testSignatureRequest() throws NeuClearException, XMLException {
-        final AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://users.neuclear.org:8080");
-        final SignatureRequestBuilder sigreq = new SignatureRequestBuilder( "neu://bob@test", authreq, "For testing purposes");
-//        assertEquals(sigreq.getSignatory().getName(), "neu://test");
-        try {
-            final SignatureRequest tosign = (SignatureRequest) sigreq.convert("neu://test",signer);
-            assertTrue(sigreq.isSigned());
-
-            final Builder auth2 = tosign.getUnsigned();
+    protected void verifyObject(SignedNamedObject obj) throws Exception  {
+        SignatureRequest tosign=(SignatureRequest) obj;
+        assertNotNull(tosign.getUnsigned());
+        final Builder auth2 = tosign.getUnsigned();
 //            assertEquals(auth2.getSignatory().getName(), "neu://bob@test");
-            assertNotNull(auth2);
-            assertNotNull(auth2.getElement());
-            final AuthenticationTicket auth = (AuthenticationTicket) auth2.convert("neu://bob@test",signer);
-            assertTrue(auth2.isSigned());
+        assertNotNull(auth2);
+        assertNotNull(auth2.getElement());
+        final AuthenticationTicket auth = (AuthenticationTicket) auth2.convert("neu://bob@test",signer);
+        assertTrue(auth2.isSigned());
 //            assertEquals(auth.getName(), authreq.getName());
-            assertEquals(auth.getSiteHref(), "http://users.neuclear.org:8080");
-        } catch (InvalidNamedObjectException e) {
-            e.printStackTrace();
-            assertTrue(false);
-        }
+        assertEquals(auth.getSiteHref(), "http://users.neuclear.org:8080");
 
     }
+
+    protected Class getRequiredClass() {
+        return SignatureRequest.class;
+    }
+
+    protected Builder createBuilder() throws Exception {
+        final AuthenticationTicketBuilder authreq = new AuthenticationTicketBuilder("neu://bob@test", "neu://test", "http://users.neuclear.org:8080");
+        return new SignatureRequestBuilder( "neu://bob@test", authreq, "For testing purposes");
+    }
+
 }

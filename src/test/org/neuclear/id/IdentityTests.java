@@ -6,6 +6,7 @@ import org.dom4j.Element;
 import org.neuclear.commons.NeuClearException;
 import org.neuclear.commons.crypto.CryptoException;
 import org.neuclear.commons.crypto.CryptoTools;
+import org.neuclear.commons.crypto.Base32;
 import org.neuclear.commons.crypto.signers.NonExistingSignerException;
 import org.neuclear.id.builders.Builder;
 import org.neuclear.id.builders.IdentityBuilder;
@@ -26,23 +27,25 @@ import java.security.NoSuchAlgorithmException;
  * To change this template use Options | File Templates.
  */
 public class IdentityTests extends AbstractObjectCreationTest {
-    private static final String NAME = "neu://test";
     private static final String SIGNER = "http://localhost:11870/Signer";
 
     public IdentityTests(String string) throws NeuClearException, GeneralSecurityException {
         super(string);
     }
 
-    protected void verifyObject(SignedNamedObject obj) throws NonExistingSignerException {
+    protected void verifyObject(SignedNamedObject obj) throws CryptoException {
         assertTrue(obj instanceof Identity);
         Identity id=(Identity) obj;
-        assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(signer.getPublicKey(NAME).getEncoded())),obj.getName().substring(5,37));
-//        assertEquals(id.getLogger(),LOGGER);
-//        assertEquals(id.getName());
-//        assertEquals(id.getRepository(),REPOSITORY);
+        assertEquals(CryptoTools.encodeBase32(CryptoTools.digest(signer.getPublicKey(NAME).getEncoded())),
+                obj.getName().substring(5,37));
+        assertEquals(new String(CryptoTools.digest(signer.getPublicKey(NAME).getEncoded())),
+                new String(Base32.decode(obj.getName().substring(5,37))));
         assertEquals(id.getSigner(),SIGNER);
-//        assertEquals(id.getReceiver(),RECEIVER);
         assertNotNull(id.getPublicKey());
+    }
+
+    protected Class getRequiredClass() {
+        return Identity.class;
     }
 
     protected Builder createBuilder() throws NeuClearException {
@@ -59,6 +62,7 @@ public class IdentityTests extends AbstractObjectCreationTest {
         assertEquals(kp.getPublic(),id.getPublicKey());
 
     }
+
     public void testEmbedded() throws NoSuchAlgorithmException, XMLSecurityException, CryptoException, NameResolutionException, InvalidNamedObjectException{
         KeyPair kp=CryptoTools.createTinyKeyPair();
         Document doc=DocumentHelper.createDocument();

@@ -35,7 +35,7 @@ public class Builder extends SignedElement {
         super(elem);
         createDocument();    }
 
-    final public SignedNamedObject convert() throws InvalidNamedObjectException, NameResolutionException{
+    final public SignedNamedObject convert() throws InvalidNamedObjectException{
 
         return VerifyingReader.getInstance().read(getElement());
     }
@@ -62,7 +62,7 @@ public class Builder extends SignedElement {
         }
     }
 
-    public final SignedNamedObject convert(String name,Signer signer) throws NameResolutionException, InvalidNamedObjectException {
+    public final SignedNamedObject convert(String name,Signer signer) throws  InvalidNamedObjectException {
         try {
             sign(name,signer);
         } catch (XMLSecurityException e) {

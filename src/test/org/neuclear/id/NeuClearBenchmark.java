@@ -68,8 +68,6 @@ public class NeuClearBenchmark implements Runnable{
             finished();
         } catch (InvalidNamedObjectException e) {
             e.printStackTrace();  //To change body of catch statement use Options | File Templates.
-        } catch (NameResolutionException e) {
-            e.printStackTrace();  //To change body of catch statement use Options | File Templates.
         }
     }
     private Signer signer;
