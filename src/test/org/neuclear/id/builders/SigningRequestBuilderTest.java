@@ -27,8 +27,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: SigningRequestBuilderTest.java,v 1.3 2003/11/21 04:45:17 pelle Exp $
+$Id: SigningRequestBuilderTest.java,v 1.4 2003/11/21 17:55:16 pelle Exp $
 $Log: SigningRequestBuilderTest.java,v $
+Revision 1.4  2003/11/21 17:55:16  pelle
+misc fixes
+
 Revision 1.3  2003/11/21 04:45:17  pelle
 EncryptedFileStore now works. It uses the PBECipher with DES3 afair.
 Otherwise You will Finaliate.
@@ -71,7 +74,8 @@ public final class SigningRequestBuilderTest extends AbstractSigningTest {
 
             final NamedObjectBuilder auth2 = tosign.getUnsigned();
             assertEquals(auth2.getParent().getName(), "neu://bob@test");
-
+            assertNotNull(auth2);
+            assertNotNull(auth2.getElement());
             final AuthenticationTicket auth = (AuthenticationTicket) auth2.sign(signer);
             assertTrue(auth2.isSigned());
             assertEquals(auth.getName(), authreq.getName());

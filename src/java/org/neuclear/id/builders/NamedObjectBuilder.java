@@ -1,6 +1,9 @@
 /*
- * $Id: NamedObjectBuilder.java,v 1.12 2003/11/21 13:57:27 pelle Exp $
+ * $Id: NamedObjectBuilder.java,v 1.13 2003/11/21 17:55:16 pelle Exp $
  * $Log: NamedObjectBuilder.java,v $
+ * Revision 1.13  2003/11/21 17:55:16  pelle
+ * misc fixes
+ *
  * Revision 1.12  2003/11/21 13:57:27  pelle
  * Changed some mutable fields in immutable classes, making them truely immutable. Thus safer.
  *
@@ -440,7 +443,7 @@ public class NamedObjectBuilder extends SignedElement implements Named,Cloneable
      */
     public Object clone() throws CloneNotSupportedException {
         try {
-            return new NamedObjectBuilder(getElement().createCopy());
+            return new NamedObjectBuilder(getElement().c());
         } catch (XMLSecurityException e) {
             throw new RuntimeException(e);
         }
