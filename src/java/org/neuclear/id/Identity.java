@@ -1,6 +1,10 @@
 /*
- * $Id: Identity.java,v 1.34 2004/04/23 23:34:11 pelle Exp $
+ * $Id: Identity.java,v 1.35 2004/04/29 13:16:41 pelle Exp $
  * $Log: Identity.java,v $
+ * Revision 1.35  2004/04/29 13:16:41  pelle
+ * Changed Identity.receive(obj) to Identity.send(obj) it makes more sense.
+ * Updated documentation.
+ *
  * Revision 1.34  2004/04/23 23:34:11  pelle
  * Major update. Added an original url and nickname to Identity and friends.
  *
@@ -368,7 +372,7 @@ public class Identity extends SignedNamedObject implements Principal {
     }
 
 
-    public final SignedNamedObject receive(final SignedNamedObject obj) throws NeuClearException {
+    public final SignedNamedObject send(final SignedNamedObject obj) throws NeuClearException {
         targets.send(obj);
         return null;
     }

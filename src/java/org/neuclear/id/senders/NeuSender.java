@@ -18,7 +18,7 @@ public class NeuSender extends Sender {
     public SignedNamedObject send(String endpoint, SignedNamedObject obj) throws NeuClearException, XMLException, UnsupportedEndpointException {
         if (NSTools.isValidName(endpoint)) {
             Identity id = Resolver.resolveIdentity(endpoint);
-            return id.receive(obj);
+            return id.send(obj);
         }
         throw new UnsupportedEndpointException(this, endpoint);
     }

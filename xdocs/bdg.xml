@@ -28,14 +28,14 @@
         </section>
         <section name="Signed Objects">
             <p>
-                <a href="/apidocs/org/neuclear/id/SignedNamedObject.html">SignedNamedObjects</a> is the core super class of
+                <a href="apidocs/org/neuclear/id/SignedNamedObject.html">SignedNamedObjects</a> is the core super class of
                 all business objects within NeuClear. Behind each SignedNamedObject is a XML file with an
                 <a href="http://dev.neuclear.org/xmlsig/">XML Signature</a>.
             </p>
             <p>
                 The two key pieces of information you would want to get from a SignedNamedObject is who signed it
                 (
-                <a href="/apidocs/org/neuclear/id/Signatory.html">Signatory</a>) and it's Digest (Unique Identifier).
+                <a href="apidocs/org/neuclear/id/Signatory.html">Signatory</a>) and it's Digest (Unique Identifier).
                 These can be found with:
             </p>
             <ul>
@@ -58,17 +58,17 @@ System.out.println("Signatory: "+obj.getSignatory().getName());
 Signatory: sfjaenowpzytkls4wtqdqhks7k55obbc</source>
             <p>
                 The
-                <a href="/apidocs/org/neuclear/id/resolver/Resolver.html">Resolver</a> is a handy class which will attempt to get the object from either a URL or from its local cache.
+                <a href="apidocs/org/neuclear/id/resolver/Resolver.html">Resolver</a> is a handy class which will attempt to get the object from either a URL or from its local cache.
             </p>
         </section>
         <section name="Creating Signed Objects">
             <p>
                 Any xml following the XML Signature standard for Enveloped Signature with an embedded PublicKey can be used as
                 a Signed Object. NeuClearID offers an easy class
-                <a href="/apidocs/org/neuclear/id/builders/Builder.html">Builder</a> to
+                <a href="apidocs/org/neuclear/id/builders/Builder.html">Builder</a> to
                 create your own. Builder should generally speaking be subclassed to create objects in your business domain. Here we
                 will use a
-                <a href="/apidocs/org/neuclear/id/builders/SignedMessageBuilder.html">SignedMessageBuilder</a> to create
+                <a href="apidocs/org/neuclear/id/builders/SignedMessageBuilder.html">SignedMessageBuilder</a> to create
                 and sign a simple message.
             </p>
             <source>// First lets create a Signer
@@ -93,7 +93,98 @@ SignedMessage message=(SignedMessage) builder.convert(signer);
                 <tt>SignedMessage</tt>
             </p>
         </section>
+        <section name="Identity Objects">
+            <p>
+                NeuClear uses the concept of Identity objects. These are simply HTML pages where you can put whatever you want
+                about your self and then sign it. The main object at this is a simple way to give people your public key.
+                These identity pages help provide trust to yourself as well. If you provide a link to a blog from your identity
+                page, people might trust you more than if you were some anonymous no one.
+            </p>
+            <p>
+                To create an identity object create a html page about yourself. Write as little or as much as you want to.
+                Use a nickname or your real name. You decide. Decide a nickname that people can use to describe you to yourself.
+                Lets say you chose the nickname 'bob'. Pick a piece of html somewhere on your page and add the following:
+            </p>
+            <source><![CDATA[<div id="nickname">bob</div>]]></source>
+            <p>or</p>
+            <source><![CDATA[<h1 id="nickname">bob</h1>]]></source>
+            <p>
+                The key is that an element named nickname exists within the page and that the program can extract your
+                nickname from the document. In future releases we expect to support
+                <a href="http://xmlns.com/foaf/0.1/">FOAF</a>
+                vocabulary within your Identity html to support Social Networking and web of trust applications as well.
+            </p>
+            <h4>Adding Targets</h4>
+            <p>
+                Targets are where people and services can send you receipts, requests etc. For now you can use your email address.
+                You specify your targets as
+                <tt>&lt;link/></tt> elements within the
+                <tt>&lt;head/></tt> element of your html:
+            </p>
+            <source>
+                <span style="color:#AAA">&lt;html>
+                    &lt;head>
+                    &lt;title>Bob Smith's Identity Page&lt;/title>
+                    <span style="color:#008">&lt;link rel="neu:receiver" href="mailto:bob@test.com"/></span>
+                    &lt;/head>
+                    &lt;body>
+        ...
+                    &lt;/body>
+                    &lt;/html>
+                </span>
+            </source>
+            <h4>Specifying Original Source URL</h4>
+            <p>
+                Its a good idea to specify as well in this html file the "original source url" which is the URL where
+                this file lives. eg. http://bobsmith.com/bobid.html
+            </p>
+            <source>
+                <span style="color:#AAA">&lt;html>
+                    &lt;head>
+                    &lt;title>Bob Smith's Identity Page&lt;/title>
+                    &lt;link rel="neu:receiver" href="mailto:bob@test.com"/>
+                    <span style="color:#008">&lt;link rel="original" href=http://bobsmith.com/bobid.html"/></span>
+                    &lt;/head>
+                    &lt;body>
+        ...
+                    &lt;/body>
+                    &lt;/html>
+                </span>
+            </source>
+        </section>
+        <section name="Sending a Signed Object">
+            <p>
+                We now expand on our previous code to send the signed message to our Identity.
+            </p>
+            <source>// First lets create a Signer
+BrowsableSigner signer=new DefaultSigner(new SwingAgent());
 
+// Build the unsigned message
+SignedMessageBuilder builder=new SignedMessageBuilder("Hello World","How do you do?");
+
+// Sign and convert message
+SignedMessage message=(SignedMessage) builder.convert(signer);
+
+// Fetch Identity
+Identity id=Resolver.resolveIdentity("http://bobsmith.com/bobid.html");
+
+// Send Message
+id.send(message);
+            </source>
+            <p>
+                The resolver has a special version of
+                <tt>resolve()</tt> called
+                <tt>resolveIdentity()</tt> which
+                returns an Identity object. Remember the Identity object is a subclass of SignedNamedObject. The Identity
+                object has a method
+                <tt>send()</tt> which allows you to send messages to the targets of the Identity.
+            </p>
+        </section>
+        <section name="Creating Web Services">
+            <p>
+                Coming soon.
+            </p>
+        </section>
 
     </body>
 

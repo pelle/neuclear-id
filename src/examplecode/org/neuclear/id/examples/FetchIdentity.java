@@ -29,8 +29,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-$Id: FetchIdentity.java,v 1.1 2004/04/28 23:51:08 pelle Exp $
+$Id: FetchIdentity.java,v 1.2 2004/04/29 13:16:41 pelle Exp $
 $Log: FetchIdentity.java,v $
+Revision 1.2  2004/04/29 13:16:41  pelle
+Changed Identity.receive(obj) to Identity.send(obj) it makes more sense.
+Updated documentation.
+
 Revision 1.1  2004/04/28 23:51:08  pelle
 Created various sample programs in src/examplecode/
 Preparing documentation for release 0.9
@@ -60,7 +64,7 @@ public class FetchIdentity {
             SignedMessage message = (SignedMessage) builder.convert(signer);
 
             // Send it to Id
-            id.receive(message);
+            id.send(message);
 
             System.out.println("Finished");
             System.exit(0);

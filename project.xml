@@ -18,7 +18,7 @@
     Java framework for NeuClear Distributed PKI Authentication Framework
     </description>
 
-    <url>http://old.neuclear.org/id/</url>
+    <url>http://dev.neuclear.org/id/</url>
     <repository>
         <connection>
          scm:cvs:pserver:anonymous@cvs.neuclear.sourceforge.net:/cvsroot/neuclear:neuclear-id
@@ -28,7 +28,7 @@
         </url>
     </repository>
 
-    <siteAddress>old.neuclear.org</siteAddress>
+    <siteAddress>dev.neuclear.org</siteAddress>
     <siteDirectory>/home/sites/neuclear.org/public_html/id/</siteDirectory>
     <issueTrackingUrl>http://jira.neuclear.org/</issueTrackingUrl>
     <mailingLists>
@@ -159,6 +159,7 @@
 
         <!--    <sourceDirectories>-->
         <sourceDirectory>src/java</sourceDirectory>
+        <!--<sourceDirectory>src/examplecode</sourceDirectory>-->
         <!--    </sourceDirectories>-->
 
         <unitTestSourceDirectory>src/test</unitTestSourceDirectory>

@@ -14,37 +14,37 @@
                 If you are running Mac OS/X Jaguar or Panther you should already be set. Please let us know of any problems.
             </p>
         </section>
-        <section name="NeuClear Executable">
-            <p>
-                 Download the
-                <a href="http://prdownloads.sourceforge.net/neuclear/neuclear-id-app-0.8.jar?download">NeuClear ID Executable</a>.
-                 Excuse the long and ugly name, we will package it nicer later on. Currently this tool allows you to create a certificate and
-                 sign it. The jar file also contains all the required libraries and should be suitable for unpacking and
-                adding to your favorite IDE's classpath.
-            </p>
-            <p>
-                The tool is intended to be used from the commandline like this:
-            </p>
-            <source>$ java -jar neuclear-id-app-0.8.jar</source>
-            <p>
-                This will list the options available. For more indepth information on the tool see the <a href="bdg.html">
-                    Busy Developers Guide
-                </a>
-            </p>
-        </section>
-        <section name="Sample Web Application">
-            <p>
-                We provide a sample web application showing how to integrate NeuClear into an existing web application.
-                Download the
-                <a href="http://prdownloads.sourceforge.net/neuclear/neuclear-id.war?download">NeuClear ID War</a> here.
-            </p>
-            <p>
-                This should be suitable for deployment on any servlet engine or J2EE appserver that supports version 2.3
-                of the Servlet API.
-            </p>
-            <p>
-                In tomcat you can simply drop it into the <tt>$CATALINA_HOME/webapps</tt> folder.
-            </p>
-        </section>
+        <!--        <section name="NeuClear Executable">
+                    <p>
+                         Download the
+                        <a href="http://prdownloads.sourceforge.net/neuclear/neuclear-id-app-0.8.jar?download">NeuClear ID Executable</a>.
+                         Excuse the long and ugly name, we will package it nicer later on. Currently this tool allows you to create a certificate and
+                         sign it. The jar file also contains all the required libraries and should be suitable for unpacking and
+                        adding to your favorite IDE's classpath.
+                    </p>
+                    <p>
+                        The tool is intended to be used from the commandline like this:
+                    </p>
+                    <source>$ java -jar neuclear-id-app-0.8.jar</source>
+                    <p>
+                        This will list the options available. For more indepth information on the tool see the <a href="bdg.html">
+                            Busy Developers Guide
+                        </a>
+                    </p>
+                </section>
+                <section name="Sample Web Application">
+                    <p>
+                        We provide a sample web application showing how to integrate NeuClear into an existing web application.
+                        Download the
+                        <a href="http://prdownloads.sourceforge.net/neuclear/neuclear-id.war?download">NeuClear ID War</a> here.
+                    </p>
+                    <p>
+                        This should be suitable for deployment on any servlet engine or J2EE appserver that supports version 2.3
+                        of the Servlet API.
+                    </p>
+                    <p>
+                        In tomcat you can simply drop it into the <tt>$CATALINA_HOME/webapps</tt> folder.
+                    </p>
+                </section>-->
     </body>
 </document>

@@ -43,7 +43,7 @@ public class IdentityTests extends AbstractObjectCreationTest {
         assertNotNull(id.getSignatory().getPublicKey());
         assertEquals("test", id.getNickname());
         assertEquals("http://test.com", id.getURL());
-        id.receive(obj);
+        id.send(obj);
     }
 
     protected Class getRequiredClass() {
